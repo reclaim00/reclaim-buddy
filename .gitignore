@@ -1,6 +1,7 @@
 # Only track ReClaim app files
 *.*
 !ReClaim.html
+!index.html
 !manifest.json
 !icon.svg
 !.gitignore
