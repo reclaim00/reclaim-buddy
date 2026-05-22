@@ -244,8 +244,9 @@ var DB = firebase.firestore();
 // ====== CLOUD SYNC (Firestore cross-device) ======
 function syncToFirestore() {
   if (!AUTH_EMAIL) return;
+  if (!firebase || !firebase.auth().currentUser) return;
   D._lastSync = Date.now();
-  (firebase.auth().currentUser ? firebase.auth().currentUser.getIdToken(true) : Promise.resolve()).then(function(){
+  firebase.auth().currentUser.getIdToken(true).then(function(){
     DB.collection('appData').doc(AUTH_EMAIL).set({
       data: JSON.parse(JSON.stringify(D)),
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
@@ -278,15 +279,20 @@ function onAuthReady(email, isNew) {
   document.body.classList.add('logged-in');
   if (isNew) { D.joinDate = Date.now(); saveData(); }
   registerCurrentUser();
-  loadFromFirestore(function(cloudData) {
-    if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
+  if (firebase && firebase.auth().currentUser) {
+    loadFromFirestore(function(cloudData) {
+      if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
+      render();
+      if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
+    });
+  } else {
     render();
     if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
-  });
+  }
   if (isLockSet()) { showLockScreen(); } else { resetLockTimer(); }
 }
 
-firebase.auth().onAuthStateChanged(function(user) {
+try { firebase.auth().onAuthStateChanged(function(user) {
   if (user && user.email) {
     AUTH_RESTORED = true;
     var wasSignedOut = !AUTH_USER;
@@ -296,7 +302,6 @@ firebase.auth().onAuthStateChanged(function(user) {
     }
     if (wasSignedOut) {
       var isNew = !loadData().joinDate;
-      // Force token refresh before any Firestore operations
       user.getIdToken(true).then(function() {
         onAuthReady(email, isNew);
       }).catch(function() {
@@ -306,7 +311,7 @@ firebase.auth().onAuthStateChanged(function(user) {
   } else if (AUTH_RESTORED) {
     signOutCleanup();
   }
-});
+}); } catch(e) {}
 
 // ====== DATA ======
 function defaultData() {
@@ -572,6 +577,13 @@ function safetyPlanHTML() {
 
 function normId(id) { return id.toLowerCase().trim(); }
 
+function localHash(pwd, email) {
+  var s = 'rc:' + email.toLowerCase() + ':' + pwd;
+  var h = 0;
+  for (var i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
+  return 'h' + Math.abs(h).toString(36);
+}
+
 function handleAuth() {
   var email = document.getElementById('si-email');
   var password = document.getElementById('si-password');
@@ -580,12 +592,18 @@ function handleAuth() {
   if (!password || !password.value || password.value.length < 4) { alert('Password must be at least 4 characters.'); return; }
   if (error) error.textContent = '';
   var isSignUp = SIGN_IN_MODE === 'up';
+  var id = normId(email.value);
+  var key = 'rc_auth_' + id;
+  var stored = localStorage.getItem(key);
+  var hash = localHash(password.value, id);
   if (isSignUp) {
-    firebase.auth().createUserWithEmailAndPassword(email.value.trim(), password.value)
-      .catch(function(err) { if (error) error.textContent = err.message; });
+    if (stored) { if (error) error.textContent = 'Account already exists. Sign in instead.'; return; }
+    localStorage.setItem(key, hash);
+    onAuthReady(id, true);
   } else {
-    firebase.auth().signInWithEmailAndPassword(email.value.trim(), password.value)
-      .catch(function(err) { if (error) error.textContent = err.message; });
+    if (!stored) { if (error) error.textContent = 'Account not found. Sign up first.'; return; }
+    if (stored !== hash) { if (error) error.textContent = 'Incorrect password.'; return; }
+    onAuthReady(id, false);
   }
 }
 
@@ -598,7 +616,7 @@ function signOutCleanup() {
 }
 
 function signOut() {
-  firebase.auth().signOut();
+  signOutCleanup();
 }
 
 // ====== THEME ======
@@ -2447,6 +2465,7 @@ function saveRegisteredBuddies(list) {
 }
 
 function fetchGlobalBuddies(callback) {
+  if (!firebase || !firebase.auth().currentUser) { callback(null); return; }
   DB.collection('users').get()
     .then(function(snapshot){
       var list = [];
@@ -2457,6 +2476,7 @@ function fetchGlobalBuddies(callback) {
 }
 
 function syncToGlobal(entry) {
+  if (!firebase || !firebase.auth().currentUser) return;
   DB.collection('users').doc(AUTH_EMAIL).set(entry).catch(function(){});
 }
 
