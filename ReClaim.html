@@ -3188,6 +3188,7 @@ function profileHTML() {
   h += '<p style="font-size:10px;color:var(--muted);margin-top:2px">Morning: "Set your intention and log your mood" &middot; Evening: "Journal what happened and how you feel"</p>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">Export My Data</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">Import Data</button>';
+  h += '<button class="btn btn-primary btn-sm" onclick="showShareQR()" style="margin-top:6px">Share Re.Claim</button>';
   if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">Sign Out</button>';
   h += '</div>';
   h += '<div class="card"><h3>About Re.Claim</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">Re.Claim is your recovery & wellness companion. Track mood & habits, journal, practice self-care, reflect on journal entries with Arthur, monitor sobriety, take assessments, read articles, find music, view weekly reports, and connect with an accountability partner. Your journal, moods & habits stay on your device. Buddy features sync via Firebase Firestore.</p></div>';
@@ -3221,6 +3222,19 @@ function importData() {
     reader.readAsText(file);
   };
   input.click();
+}
+
+function showShareQR() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;padding:24px">' +
+    '<div style="font-size:14px;font-weight:700;margin-bottom:4px">Share Re.Claim</div>' +
+    '<p style="font-size:12px;color:var(--muted);margin-bottom:12px">Scan to open the app on your device</p>' +
+    '<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://reclaim00.github.io/reclaim-buddy/" alt="QR Code" style="width:240px;height:240px;border-radius:12px;margin:0 auto;display:block">' +
+    '<p style="font-size:11px;color:var(--muted);margin-top:10px">reclaim00.github.io/reclaim-buddy</p>' +
+    '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()" style="margin-top:12px">Close</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
 }
 
 // ====== CRAVING / TRIGGER LOG ======
