@@ -1583,7 +1583,7 @@ function saveJournal(btn) {
   D.journal.push(entry);
   saveData();
   overlay.remove();
-  checkCrisis(text.value.trim());
+  if (checkCrisis(text.value.trim())) { showCrisisAlert(text.value.trim()); }
 }
 
 var CRISIS_PATTERNS = [
@@ -1591,16 +1591,20 @@ var CRISIS_PATTERNS = [
   /\b(self[- ]?harm|selfharm|cut myself|hurt myself|harm myself)\b/i,
   /\b(can\'?t go on|no reason to live|don\'?t want to live|ready to die)\b/i,
   /\b(suicid(al|e)?|ending it|want out of this)\b/i,
-  /\b(no one would notice|no one cares|world without me|disappear forever)\b/i
+  /\b(no one would notice|no one cares|world without me|disappear forever)\b/i,
+  /\b(gonna kill|going to kill|going to hurt|wanna hurt|want to hurt|gonna hurt)\b/i,
+  /\b(going to end it|gonna end it|about to end)\b/i,
+  /\b(about to relapse|going to relapse|gonna relapse|about to use|about to drink|gonna use|gonna drink|can\'?t stop myself|about to cave|about to break)\b/i,
+  /\b(I give up|I\'?m giving up|fuck it all|screw it all|what\'?s the point|nothing matters anymore|done with everything)\b/i
 ];
 
 function checkCrisis(text) {
   for (var i=0;i<CRISIS_PATTERNS.length;i++) {
     if (CRISIS_PATTERNS[i].test(text)) {
-      showCrisisAlert(text);
-      return;
+      return true;
     }
   }
+  return false;
 }
 
 function showCrisisAlert(text) {
@@ -1875,6 +1879,7 @@ function showReflection(idx) {
   try {
   var entry = D.journal[idx];
   if (!entry) return;
+  if (checkCrisis(entry.text)) { showCrisisAlert(entry.text); return; }
   var result = detectMood(entry.text);
   var mood = result.primary;
   var scores = result.scores;
