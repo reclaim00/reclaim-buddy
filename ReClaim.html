@@ -1743,22 +1743,24 @@ function getSong(mood) {
 function detectMood(text) {
   var t = text.toLowerCase();
   var scores = {sad:0, angry:0, anxious:0, happy:0, grateful:0, reflective:0, hopeful:0};
-  if (t.match(/sad|depres|lonel|down|cry|cried|crying|unhappy|grief|heartbrok|miserable|hopeless/g)) scores.sad += 3;
-  if (t.match(/angr|frustrat|mad|pissed|rage|irritat|annoyed|furiou|hate|annoying/g)) scores.angry += 3;
-  if (t.match(/anxi|worr|panic|nervous|scared|fear|overwhelm|stress|tense|terrifi/g)) scores.anxious += 3;
+  function negCheck(i, m) { var before = t.substring(Math.max(0,i-12),i).trim(); if (before.match(/not|n't|never|no|don't|doesn't|didn't|won't|can't|couldn't$/)) return; scores[m] += 3; }
+  var m; while ((m = /(sad|depres|lonel|down|cry|cried|crying|unhappy|grief|heartbrok|miserable|hopeless)/g.exec(t)) !== null) { negCheck(m.index,'sad'); m.lastIndex = m.index+1; }
+  while ((m = /(angr|frustrat|mad|pissed|rage|irritat|annoyed|furiou|hate|annoying)/g.exec(t)) !== null) { negCheck(m.index,'angry'); m.lastIndex = m.index+1; }
+  while ((m = /(anxi|worr|panic|nervous|scared|fear|overwhelm|stress|tense|terrifi)/g.exec(t)) !== null) { negCheck(m.index,'anxious'); m.lastIndex = m.index+1; }
   if (t.match(/happ|joy|excite|wonderful|beautiful|gratefu|luck|bless|love|warm|smile|laugh/g)) scores.happy += 2;
   if (t.match(/grateful|thank|blessed|appreciate|fortunat|blessing/g)) scores.grateful += 3;
   if (t.match(/think|wonder|reflect|maybe|perhap|understand|realiz|notic|aware|meani/g)) scores.reflective += 2;
   if (t.match(/hope|believe|can do|better|forward|excited|optimis|potential|possib/g)) scores.hopeful += 2;
   if (t.match(/okay|fine|alright|normal|neutral|nothing|whatever/g)) scores.reflective += 1;
   if (t.split(' ').length < 5) scores.reflective += 1;
+  scores.reflective += Math.min(3, Math.floor(t.split(' ').length / 50));
   var max = 'reflective', maxScore = 0;
   for (var k in scores) { if (scores[k] > maxScore) { maxScore = scores[k]; max = k; } }
   if (maxScore === 0) { var moods = ['reflective','hopeful','mixed']; max = moods[Math.floor(Math.random()*moods.length)]; }
   if (max === 'happy' && scores.grateful > 0) { var r = Math.random(); if (r < 0.4) max = 'grateful'; }
   if (scores.sad > 0 && scores.angry > 0) max = 'mixed';
   if (scores.anxious > 0 && scores.sad > 0) max = 'mixed';
-  return max;
+  return { primary: max, scores: scores };
 }
 
 var ART_REFLECTIONS = {
@@ -1873,27 +1875,89 @@ function showReflection(idx) {
   try {
   var entry = D.journal[idx];
   if (!entry) return;
-  var mood = detectMood(entry.text);
+  var result = detectMood(entry.text);
+  var mood = result.primary;
+  var scores = result.scores;
   var reflection = getReflection(mood);
   var suggestion = getSuggestion(mood);
   var song = getSong(mood);
+  var name = D.name || 'there';
+  var dayCount = soberDays();
+  var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
+  var totalEntries = D.journal.length;
+  var streak = D.streak || 0;
+
+  var moodEmojis = {sad:'😔', angry:'😤', anxious:'😰', happy:'😊', grateful:'🙏', reflective:'🤔', hopeful:'🌟', mixed:'🎭'};
+  var moodLabels = {sad:'Sadness', angry:'Anger', anxious:'Anxiety', happy:'Happiness', grateful:'Gratitude', reflective:'Reflection', hopeful:'Hope', mixed:'Mixed'};
+  var sorted = Object.keys(scores).sort(function(a,b){return scores[b]-scores[a]}).filter(function(k){return scores[k]>0});
+  var moodBar = sorted.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px"><span>'+moodEmojis[k]+'</span><div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,Math.round(scores[k]/Math.max(1,sorted[0])*100))+'%;background:var(--primary);border-radius:4px;transition:width .5s"></div></div><span style="color:var(--muted);font-size:10px;width:16px;text-align:right">'+scores[k]+'</span></div>'}).join('');
+
+  var contextLines = [];
+  if (dayCount > 0) contextLines.push('🌟 You\'re <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong> — that\'s strength in action.');
+  if (hasCravings) contextLines.push('⚠️ I notice you logged a craving recently. That takes courage to track. Let\'s explore what might help.');
+  if (streak > 3) contextLines.push('🔥 You\'ve journaled <strong>' + streak + ' day' + (streak!==1?'s':'') + ' in a row</strong>. Consistency is how change happens.');
+  if (totalEntries <= 2) contextLines.push('🌱 This is one of your first entries — thank you for starting this journey.');
+  if (entry.type === 'gratitude') contextLines.push('💛 A gratitude entry — actively looking for the good rewires your brain over time.');
+  if (entry.type === 'checkin') contextLines.push('📋 Honest check-ins like this build self-awareness, the foundation of all growth.');
+
+  var reflectionQs = {
+    sad: 'What would feel like a tiny act of kindness toward yourself right now?',
+    angry: 'What need or boundary might this anger be protecting?',
+    anxious: 'What is one small thing within your control right now?',
+    happy: 'How can you carry this feeling into tomorrow?',
+    grateful: 'Who in your life deserves to hear this gratitude?',
+    reflective: 'What pattern do you notice in your thoughts today?',
+    hopeful: 'What\'s one step you can take toward what you\'re hoping for?',
+    mixed: 'If these feelings had a color, what would it be and why?'
+  };
+  var reflectionQ = reflectionQs[mood] || 'What does this moment need from you?';
+
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   var h = '<div class="overlay-content">';
-  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><div><div style="font-weight:700;font-size:16px">Arthur\'s Reflection</div><div style="font-size:12px;color:var(--muted)">' + entry.date + '</div></div></div>';
-  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">I sense: <strong>' + mood.charAt(0).toUpperCase() + mood.slice(1) + '</strong> tone</div>';
-  h += '<div class="card" style="background:var(--primary-light);padding:14px;border-left:4px solid var(--primary);font-size:14px;line-height:1.6">' + reflection + '</div>';
-  h += '<div class="card" style="padding:12px"><h3>Suggestion</h3><p style="font-size:13px;line-height:1.5">' + suggestion + '</p></div>';
-  h += '<div class="card" style="padding:12px;text-align:center"><h3>Recommended Song</h3>';
-  h += '<div style="font-weight:700;font-size:16px;margin:4px 0">' + song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
-  h += '<div style="font-size:13px;color:var(--muted)">' + song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
-  h += '<div style="display:flex;gap:8px;justify-content:center;margin-top:8px;flex-wrap:wrap">';
-  h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none">&#9654; Spotify</a>';
-  h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none">&#9654; YouTube</a>';
-  h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none">&#9654; Apple Music</a>';
+
+  // Header
+  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><div><div style="font-weight:700;font-size:16px">Arthur\'s Reflection</div><div style="font-size:12px;color:var(--muted)">' + entry.date + ' &middot; ' + (entry.type ? entry.type : 'journal') + '</div></div></div>';
+
+  // Mood analysis
+  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted)">&#128202; Mood Analysis</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:24px">' + (moodEmojis[mood]||'🤔') + '</span><span style="font-weight:700;font-size:15px">Primary: ' + (moodLabels[mood]||mood) + '</span></div>';
+  if (sorted.length > 1) h += '<div style="font-size:11px;color:var(--muted);margin-bottom:4px">All emotions detected:</div>' + moodBar;
+  h += '</div>';
+
+  // Personal context
+  if (contextLines.length) {
+    h += '<div class="card" style="padding:12px;margin-bottom:8px;background:var(--primary-light)">';
+    for (var ci=0;ci<contextLines.length;ci++) h += '<div style="font-size:12px;line-height:1.6;padding:1px 0">' + contextLines[ci] + '</div>';
+    h += '</div>';
+  }
+
+  // Main reflection
+  h += '<div class="card" style="padding:14px;border-left:4px solid var(--primary);font-size:14px;line-height:1.6;margin-bottom:8px">';
+  h += '<p style="margin-bottom:6px">Hey ' + name + ',</p>';
+  h += '<p>' + reflection + '</p></div>';
+
+  // Tiny win suggestion
+  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:16px">&#127775;</span><span style="font-weight:600;font-size:13px">Try this</span></div><p style="font-size:13px;line-height:1.5;color:var(--text)">' + suggestion + '</p></div>';
+
+  // Reflection question
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;background:var(--purple-light);border-left:3px solid var(--purple)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:14px">&#128218;</span><span style="font-weight:600;font-size:13px;color:var(--purple)">A question for you</span></div><p style="font-size:14px;line-height:1.5;color:var(--text);font-style:italic">"' + reflectionQ + '"</p></div>';
+
+  // Song
+  h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; A song that matches this energy</div>';
+  h += '<div style="font-weight:700;font-size:15px;margin:2px 0">' + song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
+  h += '<div style="font-size:12px;color:var(--muted)">' + song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
+  h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap">';
+  h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Spotify</a>';
+  h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; YouTube</a>';
+  h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Apple Music</a>';
   h += '</div></div>';
-  h += '<div class="card" style="padding:12px"><h3>Your Entry</h3><p style="font-size:12px;color:var(--muted);line-height:1.5">"' + entry.text.substring(0,200).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + (entry.text.length > 200 ? '...' : '') + '"</p></div>';
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
+
+  // Original entry
+  h += '<details style="margin-bottom:8px"><summary style="font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);padding:4px 0">&#128196; Read your entry</summary>';
+  h += '<div class="card" style="padding:12px;margin-top:6px"><p style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap">' + entry.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p></div></details>';
+
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:4px">Close</button></div>';
   D.reflectionCount = (D.reflectionCount || 0) + 1;
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
