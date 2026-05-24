@@ -3118,6 +3118,7 @@ function moreHTML() {
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'profile\')">Profile</div>';
   h += '<div class="sub-item" onclick="showRecommendations()">Recommendations</div>';
+  h += '<div class="sub-item" onclick="showShareQR()" style="border-color:var(--primary)">Share App</div>';
   h += '</div>';
   return h;
 }
@@ -3188,7 +3189,6 @@ function profileHTML() {
   h += '<p style="font-size:10px;color:var(--muted);margin-top:2px">Morning: "Set your intention and log your mood" &middot; Evening: "Journal what happened and how you feel"</p>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">Export My Data</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">Import Data</button>';
-  h += '<button class="btn btn-primary btn-sm" onclick="showShareQR()" style="margin-top:6px">Share Re.Claim</button>';
   if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">Sign Out</button>';
   h += '</div>';
   h += '<div class="card"><h3>About Re.Claim</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">Re.Claim is your recovery & wellness companion. Track mood & habits, journal, practice self-care, reflect on journal entries with Arthur, monitor sobriety, take assessments, read articles, find music, view weekly reports, and connect with an accountability partner. Your journal, moods & habits stay on your device. Buddy features sync via Firebase Firestore.</p></div>';
