@@ -1962,54 +1962,10 @@ function showReflection(idx) {
   if (entry.type === 'gratitude') contextLines.push('💛 A gratitude entry — actively looking for the good rewires your brain over time.');
   if (entry.type === 'checkin') contextLines.push('📋 Honest check-ins like this build self-awareness, the foundation of all growth.');
 
-  var reflectionQs = {
-    sad: 'What would feel like a tiny act of kindness toward yourself right now?',
-    angry: 'What need or boundary might this anger be protecting?',
-    anxious: 'What is one small thing within your control right now?',
-    happy: 'How can you carry this feeling into tomorrow?',
-    grateful: 'Who in your life deserves to hear this gratitude?',
-    reflective: 'What pattern do you notice in your thoughts today?',
-    hopeful: 'What\'s one step you can take toward what you\'re hoping for?',
-    mixed: 'If these feelings had a color, what would it be and why?'
-  };
-  var reflectionQ = reflectionQs[mood] || 'What does this moment need from you?';
-
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var h = '<div class="overlay-content">';
-
-  // Header
-  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><div><div style="font-weight:700;font-size:16px">Arthur\'s Reflection</div><div style="font-size:12px;color:var(--muted)">' + entry.date + ' &middot; ' + (entry.type ? entry.type : 'journal') + '</div></div></div>';
-
-  // Mood analysis
-  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted)">&#128202; Mood Analysis</div>';
-  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:24px">' + (moodEmojis[mood]||'🤔') + '</span><span style="font-weight:700;font-size:15px">Primary: ' + (moodLabels[mood]||mood) + '</span></div>';
-  if (sorted.length > 1) h += '<div style="font-size:11px;color:var(--muted);margin-bottom:4px">All emotions detected:</div>' + moodBar;
-  h += '</div>';
-
-  // Personal context
-  if (contextLines.length) {
-    h += '<div class="card" style="padding:12px;margin-bottom:8px;background:var(--primary-light)">';
-    for (var ci=0;ci<contextLines.length;ci++) h += '<div style="font-size:12px;line-height:1.6;padding:1px 0">' + contextLines[ci] + '</div>';
-    h += '</div>';
-  }
-
-  // Main reflection
-  h += '<div class="card" style="padding:14px;border-left:4px solid var(--primary);font-size:14px;line-height:1.6;margin-bottom:8px">';
-  h += '<p style="margin-bottom:6px">Hey ' + name + ',</p>';
-  h += '<p>' + reflection + '</p></div>';
-
-  // Tiny win suggestion
-  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:16px">&#127775;</span><span style="font-weight:600;font-size:13px">Try this</span></div><p style="font-size:13px;line-height:1.5;color:var(--text)">' + suggestion + '</p></div>';
-
-  // Motivation reference
   var mot = getMotivation(mood);
   if (mot) {
     h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--blue)"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#127918; ' + mot.c + ' — ' + mot.p + '</div><div style="font-size:15px;font-style:italic;line-height:1.5;color:var(--text)">' + mot.q + '</div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Why this matters</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + mot.t + '</p></details></div>';
   }
-
-  // Reflection question
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:14px">&#128218;</span><span style="font-weight:600;font-size:13px;color:var(--purple)">A question for you</span></div><p class="rq" style="font-size:14px;line-height:1.5;color:var(--text);font-style:italic">"' + reflectionQ + '"</p></div>';
 
   // Song
   h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; A song that matches this energy</div>';
