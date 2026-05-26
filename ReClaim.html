@@ -2003,11 +2003,11 @@ function showReflection(idx) {
   // Motivation reference
   var mot = getMotivation(mood);
   if (mot) {
-    h += '<div class="card" style="padding:12px;margin-bottom:8px;background:var(--blue-light);border-left:3px solid var(--blue)"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#127918; ' + mot.c + ' — ' + mot.p + '</div><div style="font-size:15px;font-style:italic;line-height:1.5">' + mot.q + '</div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Why this matters</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + mot.t + '</p></details></div>';
+    h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--blue)"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#127918; ' + mot.c + ' — ' + mot.p + '</div><div style="font-size:15px;font-style:italic;line-height:1.5;color:var(--text)">' + mot.q + '</div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Why this matters</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + mot.t + '</p></details></div>';
   }
 
   // Reflection question
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:14px">&#128218;</span><span style="font-weight:600;font-size:13px;color:var(--purple)">A question for you</span></div><p style="font-size:14px;line-height:1.5;font-style:italic">"' + reflectionQ + '"</p></div>';
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:14px">&#128218;</span><span style="font-weight:600;font-size:13px;color:var(--purple)">A question for you</span></div><p style="font-size:14px;line-height:1.5;color:var(--text);font-style:italic">"' + reflectionQ + '"</p></div>';
 
   // Song
   h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; A song that matches this energy</div>';
