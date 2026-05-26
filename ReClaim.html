@@ -24,6 +24,7 @@ body.dark{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--border:#4
 [theme=teal] body.dark{--primary-light:#134e4a;--primary-dark:#99f6e4}
 body.dark .badge-gold{background:#78350f;color:#fef3c7}
 body.dark select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")}
+body.dark .rq{color:#000!important}
 body.dark .sos-btn-float{box-shadow:0 2px 10px rgba(239,68,68,.7)}
 body.dark .quote{background:var(--primary-light);color:var(--text)}
 body.dark .stat-card{background:var(--primary-light)}
@@ -1587,15 +1588,16 @@ function saveJournal(btn) {
 }
 
 var CRISIS_PATTERNS = [
-  /\b(kill myself|end my life|want to die|better off dead|end it all|take my own)\b/i,
+  /\b(kill myself|killing myself|kill themselves|killing themselves|kill people|killing people|kill someone|killing someone|end my life|want to die|better off dead|end it all|take my own)\b/i,
   /\b(self[- ]?harm|selfharm|cut myself|hurt myself|harm myself)\b/i,
   /\b(can\'?t go on|no reason to live|don\'?t want to live|ready to die)\b/i,
   /\b(suicid(al|e)?|ending it|want out of this)\b/i,
   /\b(no one would notice|no one cares|world without me|disappear forever)\b/i,
   /\b(gonna kill|going to kill|going to hurt|wanna hurt|want to hurt|gonna hurt)\b/i,
   /\b(going to end it|gonna end it|about to end)\b/i,
-  /\b(about to relapse|going to relapse|gonna relapse|about to use|about to drink|gonna use|gonna drink|can\'?t stop myself|about to cave|about to break)\b/i,
-  /\b(I give up|I\'?m giving up|fuck it all|screw it all|what\'?s the point|nothing matters anymore|done with everything)\b/i
+  /\b(relaps(e|ing)|about to relapse|going to relapse|gonna relapse|about to use|about to drink|gonna use|gonna drink|can\'?t stop myself|about to cave|about to break|i\'?m about to break)\b/i,
+  /\b(I give up|I\'?m giving up|fuck it all|screw it all|what\'?s the point|nothing matters anymore|done with everything)\b/i,
+  /\b(kill you|going to kill you|gonna kill you|hurt you|going to hurt you)\b/i
 ];
 
 function checkCrisis(text) {
@@ -2007,7 +2009,7 @@ function showReflection(idx) {
   }
 
   // Reflection question
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:14px">&#128218;</span><span style="font-weight:600;font-size:13px;color:var(--purple)">A question for you</span></div><p style="font-size:14px;line-height:1.5;color:var(--text);font-style:italic">"' + reflectionQ + '"</p></div>';
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:14px">&#128218;</span><span style="font-weight:600;font-size:13px;color:var(--purple)">A question for you</span></div><p class="rq" style="font-size:14px;line-height:1.5;color:var(--text);font-style:italic">"' + reflectionQ + '"</p></div>';
 
   // Song
   h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; A song that matches this energy</div>';
