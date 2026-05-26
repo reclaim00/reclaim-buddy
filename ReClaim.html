@@ -1825,7 +1825,10 @@ var MOTIVATION_POOL = [
   {q:'"Pain is temporary. Quitting lasts forever."', p:'Lance Armstrong', c:'Sports', m:'angry', t:'Controversial figure, but the quote stands — discomfort passes, regret lingers.'},
   {q:'"Hard work beats talent when talent doesn\'t work hard."', p:'Tim Notke', c:'Sports', m:'reflective', t:'A high school coach\'s words that became legendary in sports culture.'},
   {q:'"Winning isn\'t everything, but wanting to win is."', p:'Vince Lombardi', c:'Sports', m:'hopeful', t:'The drive matters more than the outcome.'},
-  {q:'"Don\'t let what you cannot do interfere with what you can do."', p:'John Wooden', c:'Sports', m:'anxious', t:'Legendary UCLA coach who won 10 NCAA championships with this philosophy.'}
+  {q:'"Don\'t let what you cannot do interfere with what you can do."', p:'John Wooden', c:'Sports', m:'anxious', t:'Legendary UCLA coach who won 10 NCAA championships with this philosophy.'},
+  {q:'"Down 28 with 6 minutes left? That\'s when legends wake up."', p:'Caleb Williams', c:'Sports', m:'hopeful', t:'Led the Chicago Bears to one of the greatest comebacks in franchise history against the Green Bay Packers. When everyone counted him out, he kept slinging. Some fights aren\'t about the score — they\'re about who refuses to quit.'},
+  {q:'"They had us dead to rights. But the game\'s not over until the clock hits zero."', p:'Caleb Williams', c:'Sports', m:'angry', t:'The Bears QB engineered a miracle comeback vs the Packers, proving that no deficit is too big when you keep believing. Recovery is the same — it doesn\'t matter how far behind you feel, you\'re still in the game.'},
+  {q:'"Bear down. That\'s all you can do."', p:'Caleb Williams', c:'Sports', m:'reflective', t:'Sometimes the simplest advice hits hardest. When everything\'s falling apart, you just... bear down. Keep playing. The next play could change everything.'}
 ];
 
 function dailySpark() {
@@ -2004,7 +2007,7 @@ function showReflection(idx) {
   }
 
   // Reflection question
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;background:var(--purple-light);border-left:3px solid var(--purple)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:14px">&#128218;</span><span style="font-weight:600;font-size:13px;color:var(--purple)">A question for you</span></div><p style="font-size:14px;line-height:1.5;color:var(--text);font-style:italic">"' + reflectionQ + '"</p></div>';
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:14px">&#128218;</span><span style="font-weight:600;font-size:13px;color:var(--purple)">A question for you</span></div><p style="font-size:14px;line-height:1.5;font-style:italic">"' + reflectionQ + '"</p></div>';
 
   // Song
   h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; A song that matches this energy</div>';
