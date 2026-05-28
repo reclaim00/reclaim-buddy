@@ -316,7 +316,7 @@ try { firebase.auth().onAuthStateChanged(function(user) {
 // ====== DATA ======
 function defaultData() {
   return {
-    name: '', phoneNumber: '', joinDate: Date.now(), theme: 'green', darkMode: false,
+    name: '', phoneNumber: '', avatar: '', joinDate: Date.now(), theme: 'green', darkMode: false,
     language: 'English',
     moods: [],
     journal: [],
@@ -332,8 +332,8 @@ function defaultData() {
     savedMusic: [],
     lastReportDate: null,
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
-    notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00' },
-    chatHistory: [], reflectionCount: 0, sosUsed: false, letters: [], gratitude: [], assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: []
+    notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00' },
+    chatHistory: [], reflectionCount: 0, sosUsed: false, letters: [], gratitude: [], assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], dailyCost: 0
   };
 }
 
@@ -744,6 +744,10 @@ function soberLevelProgress() {
   var range = next.minDays - current.minDays;
   var progress = days - current.minDays;
   return Math.min(100, Math.round((progress / range) * 100));
+}
+
+function moneySaved() {
+  return ((D.dailyCost || 0) * soberDays()).toFixed(2);
 }
 
 function soberLevelHTML() {
@@ -1749,9 +1753,9 @@ function detectMood(text) {
   var t = text.toLowerCase();
   var scores = {sad:0, angry:0, anxious:0, happy:0, grateful:0, reflective:0, hopeful:0};
   function negCheck(i, m) { var before = t.substring(Math.max(0,i-12),i).trim(); if (before.match(/not|n't|never|no|don't|doesn't|didn't|won't|can't|couldn't$/)) return; scores[m] += 3; }
-  var m; while ((m = /(sad|depres|lonel|down|cry|cried|crying|unhappy|grief|heartbrok|miserable|hopeless)/g.exec(t)) !== null) { negCheck(m.index,'sad'); m.lastIndex = m.index+1; }
-  while ((m = /(angr|frustrat|mad|pissed|rage|irritat|annoyed|furiou|hate|annoying)/g.exec(t)) !== null) { negCheck(m.index,'angry'); m.lastIndex = m.index+1; }
-  while ((m = /(anxi|worr|panic|nervous|scared|fear|overwhelm|stress|tense|terrifi)/g.exec(t)) !== null) { negCheck(m.index,'anxious'); m.lastIndex = m.index+1; }
+  var m, sadRe = /(sad|depres|lonel|down|cry|cried|crying|unhappy|grief|heartbrok|miserable|hopeless)/g; while ((m = sadRe.exec(t)) !== null) { negCheck(m.index,'sad'); m.lastIndex = m.index+1; }
+  var angryRe = /(angr|frustrat|mad|pissed|rage|irritat|annoyed|furiou|hate|annoying)/g; while ((m = angryRe.exec(t)) !== null) { negCheck(m.index,'angry'); m.lastIndex = m.index+1; }
+  var anxiRe = /(anxi|worr|panic|nervous|scared|fear|overwhelm|stress|tense|terrifi)/g; while ((m = anxiRe.exec(t)) !== null) { negCheck(m.index,'anxious'); m.lastIndex = m.index+1; }
   if (t.match(/happ|joy|excite|wonderful|beautiful|gratefu|luck|bless|love|warm|smile|laugh/g)) scores.happy += 2;
   if (t.match(/grateful|thank|blessed|appreciate|fortunat|blessing/g)) scores.grateful += 3;
   if (t.match(/think|wonder|reflect|maybe|perhap|understand|realiz|notic|aware|meani/g)) scores.reflective += 2;
@@ -1951,7 +1955,10 @@ function showReflection(idx) {
   var moodEmojis = {sad:'😔', angry:'😤', anxious:'😰', happy:'😊', grateful:'🙏', reflective:'🤔', hopeful:'🌟', mixed:'🎭'};
   var moodLabels = {sad:'Sadness', angry:'Anger', anxious:'Anxiety', happy:'Happiness', grateful:'Gratitude', reflective:'Reflection', hopeful:'Hope', mixed:'Mixed'};
   var sorted = Object.keys(scores).sort(function(a,b){return scores[b]-scores[a]}).filter(function(k){return scores[k]>0});
-  var moodBar = sorted.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px"><span>'+moodEmojis[k]+'</span><div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,Math.round(scores[k]/Math.max(1,sorted[0])*100))+'%;background:var(--primary);border-radius:4px;transition:width .5s"></div></div><span style="color:var(--muted);font-size:10px;width:16px;text-align:right">'+scores[k]+'</span></div>'}).join('');
+  var moodBar = sorted.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px"><span>'+moodEmojis[k]+'</span><div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,Math.round(scores[k]/Math.max(1,scores[sorted[0]])*100))+'%;background:var(--primary);border-radius:4px;transition:width .5s"></div></div><span style="color:var(--muted);font-size:10px;width:16px;text-align:right">'+scores[k]+'</span></div>'}).join('');
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var h = '<div class="overlay-content"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><div><h3 style="margin:0;font-size:16px">Arthur\'s Reflection</h3><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">Based on your journal entry</p></div></div>';
 
   var contextLines = [];
   if (dayCount > 0) contextLines.push('🌟 You\'re <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong> — that\'s strength in action.');
@@ -1960,6 +1967,22 @@ function showReflection(idx) {
   if (totalEntries <= 2) contextLines.push('🌱 This is one of your first entries — thank you for starting this journey.');
   if (entry.type === 'gratitude') contextLines.push('💛 A gratitude entry — actively looking for the good rewires your brain over time.');
   if (entry.type === 'checkin') contextLines.push('📋 Honest check-ins like this build self-awareness, the foundation of all growth.');
+
+  // Context lines
+  if (contextLines.length) {
+    h += '<div class="card" style="padding:12px;margin-bottom:8px">';
+    for (var ci=0;ci<contextLines.length;ci++) h += '<div style="font-size:13px;line-height:1.6;padding:2px 0">' + contextLines[ci] + '</div>';
+    h += '</div>';
+  }
+
+  // Mood bar
+  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">Mood analysis</div>' + moodBar + '</div>';
+
+  // Reflection
+  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💭 Arthur\'s insight</div><div style="font-size:14px;line-height:1.6">' + reflection + '</div></div>';
+
+  // Suggestion
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 Arthur\'s suggestion</div><div style="font-size:14px;line-height:1.6">' + suggestion + '</div></div>';
 
   var mot = getMotivation(mood);
   if (mot) {
@@ -2385,10 +2408,14 @@ var LIB_ARTICLES = [
   {title:'Mindfulness for Beginners', desc:'Start your meditation practice', url:'https://www.mindful.org/meditation/mindfulness-getting-started/'}
 ];
 var LIB_BOOKS = [
-  {title:'The Body Keeps the Score', desc:'Bessel van der Kolk', url:'https://www.besselvanderkolk.com/the-body-keeps-the-score'},
-  {title:'Atomic Habits', desc:'James Clear', url:'https://jamesclear.com/atomic-habits'},
-  {title:'In the Realm of Hungry Ghosts', desc:'Gabor Maté', url:'https://drgabormate.com/book/in-the-realm-of-hungry-ghosts/'},
-  {title:'Daring Greatly', desc:'Brené Brown', url:'https://brenebrown.com/book/daring-greatly/'}
+  {title:'The Body Keeps the Score', desc:'Bessel van der Kolk', url:'https://www.barnesandnoble.com/s/The+Body+Keeps+the+Score'},
+  {title:'Atomic Habits', desc:'James Clear', url:'https://www.barnesandnoble.com/s/Atomic+Habits'},
+  {title:'In the Realm of Hungry Ghosts', desc:'Gabor Maté', url:'https://www.barnesandnoble.com/s/In+the+Realm+of+Hungry+Ghosts'},
+  {title:'Daring Greatly', desc:'Brené Brown', url:'https://www.barnesandnoble.com/s/Daring+Greatly'},
+  {title:'The Power of Habit', desc:'Charles Duhigg', url:'https://www.barnesandnoble.com/s/The+Power+of+Habit'},
+  {title:'The Gifts of Imperfection', desc:'Brené Brown', url:'https://www.barnesandnoble.com/s/The+Gifts+of+Imperfection'},
+  {title:'Feeling Good', desc:'David D. Burns', url:'https://www.barnesandnoble.com/s/Feeling+Good+David+Burns'},
+  {title:'Man\'s Search for Meaning', desc:'Viktor Frankl', url:'https://www.barnesandnoble.com/s/Man%27s+Search+for+Meaning'}
 ];
 var LIB_PODCASTS = [
   {title:'The Recovery Show', desc:'12-step based recovery stories', url:'https://www.recoveryshow.com/'},
@@ -2409,7 +2436,7 @@ function libraryHTML() {
   }
   h += '</div><div class="card"><h3>Books</h3>';
   for (var i=0;i<LIB_BOOKS.length;i++) {
-    h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_BOOKS[i].title+'</div><div class="desc">'+LIB_BOOKS[i].desc+'</div><a class="link" href="'+LIB_BOOKS[i].url+'" target="_blank">Learn more</a></div></div>';
+    h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_BOOKS[i].title+'</div><div class="desc">'+LIB_BOOKS[i].desc+'</div><a class="link" href="'+LIB_BOOKS[i].url+'" target="_blank">Buy at Barnes &amp; Noble</a></div></div>';
   }
   h += '</div><div class="card"><h3>Podcasts</h3>';
   for (var i=0;i<LIB_PODCASTS.length;i++) {
@@ -2464,78 +2491,110 @@ function musicHTML() {
 }
 
 // ====== REPORTS ======
+var REPORT_PERIOD = 'week';
 function reportsHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Weekly Report</h2>';
+  var periods = { week: 7, month: 30 };
+  var days = periods[REPORT_PERIOD] || 7;
+  var periodLabel = REPORT_PERIOD === 'month' ? 'Monthly' : 'Weekly';
+  var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0">';
+  h += '<h2 style="font-size:20px;font-weight:700;margin:0">' + periodLabel + ' Report</h2>';
+  h += '<div style="display:flex;gap:4px">';
+  h += '<button class="btn btn-sm ' + (REPORT_PERIOD==='week'?'btn-primary':'btn-outline') + '" onclick="REPORT_PERIOD=\'week\';render()" style="font-size:11px;padding:6px 10px">Week</button>';
+  h += '<button class="btn btn-sm ' + (REPORT_PERIOD==='month'?'btn-primary':'btn-outline') + '" onclick="REPORT_PERIOD=\'month\';render()" style="font-size:11px;padding:6px 10px">Month</button>';
+  h += '</div></div>';
   var now = new Date();
-  var weekAgo = new Date(now.getTime() - 7*86400000);
+  var cutoff = new Date(now.getTime() - days*86400000);
 
-  // Mood stats
-  var weekMoods = D.moods.filter(function(m){return new Date(m.date).getTime() > weekAgo.getTime()});
-  var avgMood = weekMoods.length ? (weekMoods.reduce(function(s,m){return s+m.val},0)/weekMoods.length).toFixed(1) : 'No data';
-  var moodCount = weekMoods.length;
+  var periodMoods = D.moods.filter(function(m){return new Date(m.date).getTime() > cutoff.getTime()});
+  var avgMood = periodMoods.length ? (periodMoods.reduce(function(s,m){return s+m.val},0)/periodMoods.length).toFixed(1) : 'No data';
 
-  // Habit stats
   var habitsDone = 0;
-  var habitsTotal = 0;
   for (var i=0;i<D.habits.length;i++) {
     if (D.habits[i].logs) {
       for (var j=0;j<D.habits[i].logs.length;j++) {
-        if (new Date(D.habits[i].logs[j]).getTime() > weekAgo.getTime()) habitsDone++;
+        if (new Date(D.habits[i].logs[j]).getTime() > cutoff.getTime()) habitsDone++;
       }
     }
-    habitsTotal += 7; // max possible per habit per week
   }
-
-  // Journal
-  var journalCount = D.journal.filter(function(j){return new Date(j.date).getTime() > weekAgo.getTime()}).length;
-
-  // Check-ins
-  var checkinCount = D.checkins.filter(function(c){return new Date(c.date).getTime() > weekAgo.getTime()}).length;
-
-  // Sobriety
+  var journalCount = D.journal.filter(function(j){return new Date(j.date).getTime() > cutoff.getTime()}).length;
+  var checkinCount = D.checkins.filter(function(c){return new Date(c.date).getTime() > cutoff.getTime()}).length;
   var sober = soberDays();
 
-  h += '<div class="card"><h3>Overview</h3>';
-  h += '<div class="report-section"><h4>Week of '+weekAgo.toLocaleDateString()+' &mdash; '+now.toLocaleDateString()+'</h4></div>';
+  var soberStreaks = D.checkins.filter(function(c){return new Date(c.date).getTime() > cutoff.getTime()}).length;
+  var cravingsCount = D.cravings ? D.cravings.filter(function(c){return c.timestamp > cutoff.getTime()}).length : 0;
+  var breatheCount = D.breatheCount || 0;
+  var moodChart = '';
+  if (periodMoods.length) {
+    var moodEmojis = ['😞','😕','😐','🙂','😄'];
+    moodChart = '<div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin:8px 0">';
+    var maxVal = 5;
+    for (var mi=0;mi<periodMoods.length;mi++) {
+      var hgt = Math.round((periodMoods[mi].val/maxVal)*60);
+      moodChart += '<div title="' + periodMoods[mi].date + '" style="flex:1;height:'+Math.max(4,hgt)+'px;background:var(--primary);border-radius:3px 3px 0 0;min-width:4px"></div>';
+    }
+    moodChart += '</div>';
+  }
 
+  h += '<div class="card"><h3>Overview</h3>';
+  h += '<div class="report-section"><h4>' + periodLabel + ' of ' + cutoff.toLocaleDateString() + ' &mdash; ' + now.toLocaleDateString() + '</h4></div>';
   h += '<div class="stat-grid">';
-  h += '<div class="stat-card"><div class="num">'+avgMood+'</div><div class="label">Avg Mood</div></div>';
-  h += '<div class="stat-card"><div class="num">'+journalCount+'</div><div class="label">Journaled</div></div>';
-  h += '<div class="stat-card"><div class="num">'+checkinCount+'</div><div class="label">Check-Ins</div></div>';
-  h += '</div></div>';
+  h += '<div class="stat-card"><div class="num">' + avgMood + '</div><div class="label">Avg Mood</div></div>';
+  h += '<div class="stat-card"><div class="num">' + journalCount + '</div><div class="label">Journaled</div></div>';
+  h += '<div class="stat-card"><div class="num">' + checkinCount + '</div><div class="label">Check-Ins</div></div>';
+  if (D.dailyCost) h += '<div class="stat-card"><div class="num" style="font-size:16px">$' + moneySaved() + '</div><div class="label">Saved</div></div>';
+  h += '</div>';
+  if (moodChart) { h += '<div style="font-size:11px;color:var(--muted);margin:4px 0 2px">Mood timeline</div>' + moodChart; }
+  h += '</div>';
+
+  // Additional stats for monthly
+  if (REPORT_PERIOD === 'month') {
+    h += '<div class="card"><h3>Monthly Breakdown</h3>';
+    var monthMoods = [0,0,0,0,0];
+    for (var mi2=0;mi2<periodMoods.length;mi2++) monthMoods[periodMoods[mi2].val-1]++;
+    var totalMoods = periodMoods.length || 1;
+    h += '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;text-align:center;font-size:11px">';
+    var ml = ['Terrible','Bad','Okay','Good','Great'];
+    var mc = ['#ef4444','#f97316','#eab308','#22c55e','#059669'];
+    for (var mi3=0;mi3<5;mi3++) {
+      var pct = Math.round(monthMoods[mi3]/totalMoods*100);
+      h += '<div><div style="font-size:10px;color:var(--muted)">' + ml[mi3] + '</div><div style="font-size:18px;font-weight:700;color:' + mc[mi3] + '">' + pct + '%</div></div>';
+    }
+    h += '</div></div>';
+  }
 
   // Milestones
   h += '<div class="card"><h3>Milestones</h3>';
   var milestones = [];
-  if (sober >= 1) milestones.push({icon:'',title:'1 Day Sober',desc:'You started your journey'});
-  if (sober >= 3) milestones.push({icon:'',title:'3 Days Sober',desc:'Building momentum'});
-  if (sober >= 7) milestones.push({icon:'',title:'1 Week Sober',desc:'Incredible progress'});
-  if (sober >= 14) milestones.push({icon:'',title:'2 Weeks Sober',desc:'Building strong habits'});
-  if (sober >= 30) milestones.push({icon:'',title:'1 Month Sober',desc:'Amazing commitment'});
-  if (sober >= 60) milestones.push({icon:'',title:'2 Months Sober',desc:'You are transforming'});
-  if (sober >= 90) milestones.push({icon:'',title:'90 Days Sober',desc:'Quarter of a year!'});
-  if (sober >= 180) milestones.push({icon:'',title:'6 Months Sober',desc:'Half a year of freedom'});
-  if (sober >= 365) milestones.push({icon:'',title:'1 Year Sober',desc:'One year of reclaiming your life'});
-  if (journalCount >= 3) milestones.push({icon:'',title:'Consistent Journaler',desc:'Wrote 3+ times this week'});
-  if (checkinCount >= 5) milestones.push({icon:'',title:'Daily Check-In Champ',desc:'Checked in 5+ times this week'});
-  if (D.habits.length > 0 && habitsDone >= D.habits.length * 5) milestones.push({icon:'',title:'Habit Hero',desc:'Completed most habits this week'});
-  if (!milestones.length) h += '<div class="empty-state">Complete more activities to earn milestones. Keep going!</div>';
+  if (sober >= 1) milestones.push({icon:'🌱',title:'1 Day Sober',desc:'You started your journey'});
+  if (sober >= 3) milestones.push({icon:'🔥',title:'3 Days Sober',desc:'Building momentum'});
+  if (sober >= 7) milestones.push({icon:'⭐',title:'1 Week Sober',desc:'Incredible progress'});
+  if (sober >= 14) milestones.push({icon:'🌟',title:'2 Weeks Sober',desc:'Building strong habits'});
+  if (sober >= 30) milestones.push({icon:'🏆',title:'1 Month Sober',desc:'Amazing commitment'});
+  if (sober >= 60) milestones.push({icon:'💪',title:'2 Months Sober',desc:'You are transforming'});
+  if (sober >= 90) milestones.push({icon:'🎯',title:'90 Days Sober',desc:'Quarter of a year!'});
+  if (sober >= 180) milestones.push({icon:'🌈',title:'6 Months Sober',desc:'Half a year of freedom'});
+  if (sober >= 365) milestones.push({icon:'👑',title:'1 Year Sober',desc:'One year of reclaiming your life'});
+  if (journalCount >= (REPORT_PERIOD==='month'?10:3)) milestones.push({icon:'📝',title:'Consistent Journaler',desc:'Wrote ' + (REPORT_PERIOD==='month'?'10+':'3+') + ' times'});
+  if (checkinCount >= (REPORT_PERIOD==='month'?20:5)) milestones.push({icon:'✅',title:D.checkins.length>=20?'Check-In Champion':'Daily Check-In Champ',desc:'Checked in ' + (REPORT_PERIOD==='month'?'20+':'5+') + ' times'});
+  if (D.habits.length > 0 && habitsDone >= D.habits.length * (REPORT_PERIOD==='month'?20:5)) milestones.push({icon:'🎯',title:'Habit Hero',desc:'Most habits completed'});
+  if (!milestones.length) h += '<div class="empty-state">Complete more activities to earn milestones!</div>';
   for (var i=0;i<milestones.length;i++) {
-    h += '<div class="milestone"><div class="info"><div class="title">'+milestones[i].title+'</div><div class="desc">'+milestones[i].desc+'</div></div></div>';
+    h += '<div class="milestone"><div class="info"><div class="title">' + milestones[i].title + '</div><div class="desc">' + milestones[i].desc + '</div></div></div>';
   }
   h += '</div>';
 
   // Habit completion
   if (D.habits.length) {
-    var pct = habitsTotal > 0 ? Math.round(habitsDone/habitsTotal*100) : 0;
-    h += '<div class="card"><h3>Habit Completion</h3><p style="font-size:13px;color:var(--muted)">'+habitsDone+'/'+habitsTotal+' total habit checks this week</p><div class="progress-bar"><div class="fill" style="width:'+pct+'%"></div></div></div>';
+    var habitGoal = D.habits.length * days;
+    var pct = habitGoal > 0 ? Math.round(habitsDone/habitGoal*100) : 0;
+    h += '<div class="card"><h3>Habit Completion</h3><p style="font-size:13px;color:var(--muted)">' + habitsDone + '/' + habitGoal + ' habit checks</p><div class="progress-bar"><div class="fill" style="width:' + pct + '%"></div></div></div>';
   }
 
   // Mood trend
-  if (weekMoods.length >= 3) {
-    var trending = weekMoods[weekMoods.length-1].val > weekMoods[0].val ? 'up' : weekMoods[weekMoods.length-1].val < weekMoods[0].val ? 'down' : 'stable';
+  if (periodMoods.length >= 3) {
+    var trending = periodMoods[periodMoods.length-1].val > periodMoods[0].val ? 'up' : periodMoods[periodMoods.length-1].val < periodMoods[0].val ? 'down' : 'stable';
     var trendText = trending === 'up' ? 'Your mood is trending upward. You\'re making progress!' : trending === 'down' ? 'Your mood has dipped. Be gentle with yourself.' : 'Your mood has been steady. Stability is strength.';
-    h += '<div class="card"><h3>Mood Trend</h3><p style="font-size:13px;color:var(--muted)">'+trendText+'</p></div>';
+    h += '<div class="card"><h3>Mood Trend</h3><p style="font-size:13px;color:var(--muted)">' + trendText + '</p></div>';
   }
 
   return h;
@@ -2665,6 +2724,33 @@ function connectToBuddy(email) {
   }).catch(function(){alert('Could not reach global directory. Try again later.')});
 }
 
+function findBuddyAuto() {
+  if (!firebase || !firebase.auth().currentUser) { alert('Sign in to find a buddy.'); return; }
+  var btn = event && event.target ? event.target : document.getElementById('find-buddy-btn');
+  if (btn) { btn.textContent = 'Searching...'; btn.disabled = true; }
+  var lang = D.language || 'English';
+  DB.collection('users').get().then(function(snapshot){
+    var available = [];
+    snapshot.forEach(function(doc){
+      if (doc.id !== AUTH_EMAIL && doc.data().language === lang) available.push(doc.data());
+    });
+    if (btn) { btn.textContent = 'Find Me a Buddy'; btn.disabled = false; }
+    if (!available.length) {
+      var el = document.getElementById('auto-buddy-result');
+      if (el) el.innerHTML = '<div style="text-align:center;padding:12px;background:var(--primary-light);border-radius:10px"><div style="font-size:12px;color:var(--muted)">No available buddies in <strong>' + lang + '</strong> right now. Try generating a pairing code to invite someone!</div></div>';
+      return;
+    }
+    var pick = available[Math.floor(Math.random() * available.length)];
+    finishPairing(pick, pick.email);
+    var el = document.getElementById('auto-buddy-result');
+    if (el) el.innerHTML = '<div style="text-align:center;padding:12px;background:var(--primary-light);border-radius:10px;border:2px solid var(--primary)"><div style="font-size:24px;margin-bottom:4px">🎉</div><div style="font-weight:700;font-size:15px;color:var(--primary)">Connected with ' + pick.name + '!</div><div style="font-size:12px;color:var(--muted)">You can support each other on your recovery journey.</div><button class="btn btn-sm btn-primary" onclick="goTo(\'buddy\')" style="margin-top:6px">Go to Buddy Page</button></div>';
+  }).catch(function(){
+    if (btn) { btn.textContent = 'Find Me a Buddy'; btn.disabled = false; }
+    var el = document.getElementById('auto-buddy-result');
+    if (el) el.innerHTML = '<div style="text-align:center;padding:12px;background:var(--danger-bg);border-radius:10px;font-size:12px;color:var(--danger)">Could not reach the buddy directory. Check your connection.</div>';
+  });
+}
+
 // ====== BUDDY ======
 function buddyHTML() {
   if (!D.buddy || !D.buddy.name) return setupBuddyHTML();
@@ -2704,7 +2790,7 @@ function buddyHTML() {
   }
   h += '</div>';
   // Progress sharing
-  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Let ' + D.buddy.name + ' see your recovery stats. Share your progress so they can celebrate with you.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button></div>';
+  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Let ' + D.buddy.name + ' see your recovery stats. Sharing is automatic when you visit this page.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button></div>';
   h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128170;</div><h3 style="margin:0">' + D.buddy.name + '\'s Progress</h3></div><div id="buddy-progress"><div class="empty-state">Loading...</div></div></div>';
   // Streak competition
   h += buddyCompetitionHTML();
@@ -2717,6 +2803,7 @@ function buddyHTML() {
   h += '<button class="btn btn-danger btn-sm" onclick="removeBuddy()" style="flex:1">Remove</button>';
   h += '</div>';
   setTimeout(fetchBuddyProgress, 400);
+  setTimeout(function(){ shareProgressWithBuddy(true); }, 600);
   return h;
 }
 
@@ -2801,6 +2888,10 @@ function setupBuddyHTML() {
   h += '</select>';
   h += '<button class="btn btn-primary" onclick="saveBuddy()">Add Buddy</button></div>';
   // Find buddies by pairing code (works across the world)
+  h += '<div class="card" style="border:2px solid var(--accent);text-align:center"><h3>Find Me a Buddy</h3>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">I\'ll automatically match you with someone who speaks <strong>' + (D.language || 'English') + '</strong>.</p>';
+  h += '<button class="btn btn-primary" id="find-buddy-btn" onclick="findBuddyAuto()" style="margin-bottom:6px">Find Me a Buddy</button>';
+  h += '<div id="auto-buddy-result"></div></div>';
   h += '<div class="card" style="border:2px solid var(--primary)"><h3>Worldwide Buddy Pairing</h3>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Your language: <strong>' + (D.language || 'English') + '</strong></p>';
   h += '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">Generate a pairing code to share with your buddy anywhere in the world. When they enter the same code, you\'ll be connected automatically via our global directory.</div>';
@@ -2938,13 +3029,14 @@ function progressSnapshot() {
   };
 }
 
-function shareProgressWithBuddy() {
+function shareProgressWithBuddy(quiet) {
   var progress = progressSnapshot();
   DB.collection('progress').doc(AUTH_EMAIL).set(progress).then(function(){
     var btn = document.getElementById('share-progress-btn');
-    if (btn) { btn.textContent = 'Shared! Updated ' + progress.updated; btn.disabled = true; btn.style.opacity = '0.6'; }
-    alert('Your progress has been shared with ' + (D.buddy ? D.buddy.name : 'your buddy') + '!');
-  }).catch(function(){alert('Could not share. Check your internet connection.');});
+    if (btn) { btn.textContent = '✅ Shared! (' + progress.updated + ')'; btn.style.background = 'var(--primary-light)'; btn.style.color = 'var(--primary-dark)'; }
+    if (!quiet) { alert('Your progress has been shared with ' + (D.buddy ? D.buddy.name : 'your buddy') + '!'); }
+    fetchBuddyProgress();
+  }).catch(function(){ if (!quiet) alert('Could not share. Check your internet connection.'); });
 }
 
 function fetchBuddyProgress() {
@@ -3188,6 +3280,7 @@ function moreHTML() {
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">Journal</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">Calendar</div>';
+  h += '<div class="sub-item" onclick="goTo(\'profile\')">Savings</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">Recovery</h3>';
   h += '<div class="sub-grid">';
@@ -3235,17 +3328,25 @@ function submitRecommendation() {
 function profileHTML() {
   var h = '';
   h += '<div class="card" style="text-align:center;padding:24px">';
-  h += '<div style="width:64px;height:64px;border-radius:32px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px;font-weight:700;color:#fff">' + ((D.name||AUTH_USER||'Y')[0].toUpperCase()) + '</div>';
+  h += '<div style="position:relative;display:inline-block">';
+  if (D.avatar) {
+    h += '<div style="width:72px;height:72px;border-radius:36px;overflow:hidden;margin:0 auto 8px;border:3px solid var(--primary-light)"><img src="' + D.avatar.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '" style="width:100%;height:100%;object-fit:cover" alt="Profile"></div>';
+  } else {
+    h += '<div style="width:72px;height:72px;border-radius:36px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:32px;font-weight:700;color:#fff">' + ((D.name||AUTH_USER||'Y')[0].toUpperCase()) + '</div>';
+  }
+  h += '<button class="btn btn-sm btn-outline" onclick="changeAvatar()" style="position:absolute;bottom:4px;right:-8px;width:28px;height:28px;border-radius:14px;padding:0;font-size:14px;line-height:1;min-width:0;background:var(--card);border:1px solid var(--border)">&#9998;</button></div>';
   h += '<div style="font-weight:700;font-size:18px">' + (D.name || 'You') + '</div>';
   h += '<div style="font-size:13px;color:var(--muted)">' + (AUTH_EMAIL || 'Local User') + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">Joined ' + (D.joinDate ? new Date(D.joinDate).toLocaleDateString() : 'today') + '</div>';
   h += '<div style="font-size:12px;color:var(--muted)">Sober ' + soberDays() + ' days</div>';
-  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div></div>';
-  h += '</div>';
+  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
+  if (D.dailyCost) h += '<div style="margin-top:8px;font-size:14px;font-weight:700;color:var(--primary)">Total saved: $' + moneySaved() + '</div>';
+  h += '</div></div>';
   h += '<div class="card"><h3>Settings</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Name</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Phone (optional)</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Language</span><select onchange="D.language=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Phone (optional)</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Savings Tracker</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">Set your estimated daily cost to see how much you\'ve saved since starting your journey.</p><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">Daily cost ($)</span><input type="number" value="'+(D.dailyCost||'')+'" min="0" step="0.01" onchange="D.dailyCost=parseFloat(this.value)||0;saveData()" style="width:100px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div><div style="font-size:14px;font-weight:700;color:var(--primary);text-align:center;padding:8px 0">Total saved: $' + moneySaved() + '</div></div>';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Language</span><select onchange="D.language=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Theme</span><select onchange="D.theme=this.value;saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0">';
@@ -3269,11 +3370,14 @@ function profileHTML() {
     h += '<div style="display:flex;gap:6px"><input type="password" id="lock-pin-new" placeholder="4-6 digit passcode" inputmode="numeric" maxlength="6" style="flex:1;padding:6px 10px;font-size:16px;text-align:center;letter-spacing:4px;font-weight:700"><button class="btn btn-sm btn-primary" onclick="var p=document.getElementById(\'lock-pin-new\');if(!p||!p.value.trim()||p.value.length<4||p.value.length>6){alert(\'Passcode must be 4-6 digits.\');return}enableLock(p.value.trim());alert(\'Passcode enabled! The app will lock when you switch tabs or after 5 min of inactivity.\');render()">Enable Lock</button></div>';
   }
   h += '</div>';
-  var notif = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00'};
+  var notif = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00'};
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications</h3></div>';
   h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0">';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">&#127749;</span><div><div style="font-size:13px;font-weight:600">Morning</div><div style="font-size:11px;color:var(--muted)">Set your intention</div></div></div><div style="display:flex;align-items:center;gap:8px"><input type="time" value="'+notif.morningTime+'" onchange="D.notifications.morningTime=this.value;saveData()" style="width:auto;padding:4px 8px;font-size:12px;margin:0;border-radius:8px;border:1px solid var(--border)"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(notif.morning?'checked':'')+' onchange="D.notifications.morning=this.checked;if(this.checked)requestNotif();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(notif.morning?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(notif.morning?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">&#127769;</span><div><div style="font-size:13px;font-weight:600">Evening</div><div style="font-size:11px;color:var(--muted)">Reflect on your day</div></div></div><div style="display:flex;align-items:center;gap:8px"><input type="time" value="'+notif.eveningTime+'" onchange="D.notifications.eveningTime=this.value;saveData()" style="width:auto;padding:4px 8px;font-size:12px;margin:0;border-radius:8px;border:1px solid var(--border)"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(notif.evening?'checked':'')+' onchange="D.notifications.evening=this.checked;if(this.checked)requestNotif();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(notif.evening?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(notif.evening?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
+  h += notifRowHTML('morning', '🌅', 'Morning', 'Set your intention');
+  h += notifRowHTML('evening', '🌙', 'Evening', 'Reflect on your day');
+  h += notifRowHTML('craving', '⚠️', 'Craving Check-In', 'Log & manage cravings');
+  h += notifRowHTML('journal', '📝', 'Journal Prompt', 'Write about your day');
+  h += notifRowHTML('breathe', '🫁', 'Breathing Exercise', 'Take a mindful moment');
   h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">Export My Data</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">Import Data</button>';
@@ -3283,6 +3387,23 @@ function profileHTML() {
   return h;
 }
 
+function changeAvatar() {
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { alert('Image must be under 2MB.'); return; }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      D.avatar = ev.target.result;
+      saveData();
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
 function exportData() {
   var blob = new Blob([JSON.stringify(D, null, 2)], {type:'application/json'});
   var a = document.createElement('a');
@@ -3620,7 +3741,9 @@ function homeHTML() {
   var entries = D.journal.slice(-3).reverse();
   var q = dailySpark();
 
-  var h = '<div style="font-size:13px;color:var(--muted);padding:8px 0">' + (D.name && 'Hi, '+D.name) + '</div>';
+  var h = '<div style="display:flex;align-items:center;gap:10px;padding:8px 0">';
+  if (D.avatar) h += '<div style="width:36px;height:36px;border-radius:18px;overflow:hidden;flex-shrink:0;border:2px solid var(--primary-light)"><img src="' + D.avatar.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '" style="width:100%;height:100%;object-fit:cover" alt=""></div>';
+  h += '<div style="font-size:13px;color:var(--muted)">' + (D.name && 'Hi, '+D.name) + '</div></div>';
 
   // Sobriety plant + timer at top
   h += plantHTML();
@@ -3632,6 +3755,7 @@ function homeHTML() {
   h += '<div class="stat-card"><div class="num">' + D.streak + '</div><div class="label">Day Streak</div></div>';
   h += '<div class="stat-card"><div class="num">' + D.moods.length + '</div><div class="label">Moods</div></div>';
   h += '<div class="stat-card"><div class="num">' + D.journal.length + '</div><div class="label">Journal</div></div>';
+  if (D.dailyCost) h += '<div class="stat-card"><div class="num" style="font-size:16px">$' + moneySaved() + '</div><div class="label">Saved</div></div>';
   h += '</div>';
 
   // Quick actions grid
@@ -3676,6 +3800,13 @@ function homeHTML() {
 }
 
 // ====== NOTIFICATIONS ======
+function notifRowHTML(key, emoji, label, desc) {
+  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00'};
+  var enabled = n[key] || false;
+  var timeKey = key + 'Time';
+  var timeVal = n[timeKey] || (key==='morning'?'08:00':key==='evening'?'20:00':key==='craving'?'14:00':key==='journal'?'12:00':'10:00');
+  return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+emoji+'</span><div><div style="font-size:13px;font-weight:600">'+label+'</div><div style="font-size:11px;color:var(--muted)">'+desc+'</div></div></div><div style="display:flex;align-items:center;gap:8px"><input type="time" value="'+timeVal+'" onchange="D.notifications.'+timeKey+'=this.value;saveData()" style="width:auto;padding:4px 8px;font-size:12px;margin:0;border-radius:8px;border:1px solid var(--border)"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.'+key+'=this.checked;if(this.checked)requestNotif();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
+}
 function requestNotif() {
   if (!("Notification" in window)) return;
   if (Notification.permission === "default") Notification.requestPermission();
@@ -3689,20 +3820,32 @@ function swNotify(title, body, icon, tag) {
 }
 function checkNotifications() {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
-  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00'};
+  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00'};
   var now = new Date();
   var hm = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   var s = D.streak || 0;
   if (n.morning && hm === n.morningTime && !D._notifiedMorning) {
     swNotify('Re.Claim Morning', s > 0 ? 'Day ' + s + '! Log your mood and set your intention.' : 'Log your mood and set your intention for today.', 'https://emojicdn.elk.sh/%F0%9F%8C%B1', 'reclaim-morning');
-    D._notifiedMorning = true; D._notifiedEvening = false;
+    D._notifiedMorning = true;
   }
   if (n.evening && hm === n.eveningTime && !D._notifiedEvening) {
     swNotify('Re.Claim Evening', s > 0 ? 'Day ' + s + ' made it! Journal what happened today.' : 'Journal what happened and how you feel today.', 'https://emojicdn.elk.sh/%F0%9F%8C%99', 'reclaim-evening');
-    D._notifiedEvening = true; D._notifiedMorning = false;
+    D._notifiedEvening = true;
+  }
+  if (n.craving && hm === n.cravingTime && !D._notifiedCraving) {
+    swNotify('Craving Check-In', 'Pause and check in with yourself. Log any cravings or urges you\'re feeling.', 'https://emojicdn.elk.sh/%E2%9A%A0%EF%B8%8F', 'reclaim-craving');
+    D._notifiedCraving = true;
+  }
+  if (n.journal && hm === n.journalTime && !D._notifiedJournal) {
+    swNotify('Journal Prompt', 'Take 5 minutes to write about what\'s on your mind. You\'ve got this.', 'https://emojicdn.elk.sh/%F0%9F%93%9D', 'reclaim-journal');
+    D._notifiedJournal = true;
+  }
+  if (n.breathe && hm === n.breatheTime && !D._notifiedBreathe) {
+    swNotify('Time to Breathe', 'Take a 2-minute breathing exercise. Inhale calm, exhale stress.', 'https://emojicdn.elk.sh/%F0%9F%AB%81', 'reclaim-breathe');
+    D._notifiedBreathe = true;
   }
   // Reset flags at midnight
-  if (hm === '00:01') { D._notifiedMorning = false; D._notifiedEvening = false; }
+  if (hm === '00:01') { D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false; }
 }
 setInterval(checkNotifications, 60000);
 
