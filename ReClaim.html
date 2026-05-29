@@ -1741,6 +1741,8 @@ function populateSongPool() {
     }
   }
   SONG_POOL_GENERATED = true;
+  var customSong = generateSong('You Are Not Alone','Michael Jackson');
+  ['sad','hopeful','reflective'].forEach(function(m){ if (REFLECT_SONGS[m]) REFLECT_SONGS[m].push(customSong); });
 }
 
 function getSong(mood) {
