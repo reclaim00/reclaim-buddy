@@ -1752,23 +1752,29 @@ function getSong(mood) {
 function detectMood(text) {
   var t = text.toLowerCase();
   var scores = {sad:0, angry:0, anxious:0, happy:0, grateful:0, reflective:0, hopeful:0};
-  function negCheck(i, m) { var before = t.substring(Math.max(0,i-12),i).trim(); if (before.match(/not|n't|never|no|don't|doesn't|didn't|won't|can't|couldn't$/)) return; scores[m] += 3; }
-  var m, sadRe = /(sad|depres|lonel|down|cry|cried|crying|unhappy|grief|heartbrok|miserable|hopeless)/g; while ((m = sadRe.exec(t)) !== null) { negCheck(m.index,'sad'); m.lastIndex = m.index+1; }
-  var angryRe = /(angr|frustrat|mad|pissed|rage|irritat|annoyed|furiou|hate|annoying)/g; while ((m = angryRe.exec(t)) !== null) { negCheck(m.index,'angry'); m.lastIndex = m.index+1; }
-  var anxiRe = /(anxi|worr|panic|nervous|scared|fear|overwhelm|stress|tense|terrifi)/g; while ((m = anxiRe.exec(t)) !== null) { negCheck(m.index,'anxious'); m.lastIndex = m.index+1; }
-  if (t.match(/happ|joy|excite|wonderful|beautiful|gratefu|luck|bless|love|warm|smile|laugh/g)) scores.happy += 2;
-  if (t.match(/grateful|thank|blessed|appreciate|fortunat|blessing/g)) scores.grateful += 3;
-  if (t.match(/think|wonder|reflect|maybe|perhap|understand|realiz|notic|aware|meani/g)) scores.reflective += 2;
-  if (t.match(/hope|believe|can do|better|forward|excited|optimis|potential|possib/g)) scores.hopeful += 2;
-  if (t.match(/okay|fine|alright|normal|neutral|nothing|whatever/g)) scores.reflective += 1;
-  if (t.split(' ').length < 5) scores.reflective += 1;
-  scores.reflective += Math.min(3, Math.floor(t.split(' ').length / 50));
+  var negWords = /^(not|n't|never|no|don't|doesn't|didn't|won't|can't|couldn't|wasn't|weren't|isn't|aren't|ain't|haven't|hasn't|hadn't)$/;
+  var boostWords = /^(very|really|extremely|so|truly|deeply|incredibly|absolutely|terribly)$/;
+  var dampenWords = /^(slightly|somewhat|barely|hardly|a|bit|little)$/;
+  var words = t.split(/\s+/);
+  function wordBefore(idx) { var before = t.substring(Math.max(0,idx-30),idx).trim().split(/\s+/); return before.length ? before[before.length-1] : ''; }
+  function intensity(idx) { var b = t.substring(Math.max(0,idx-25),idx).trim().split(/\s+/).slice(-3); for (var i=b.length-1;i>=0;i--) { if (boostWords.test(b[i])) return 1.5; if (dampenWords.test(b[i])) return 0.5; } return 1; }
+  function scoreMood(re, mood) { var r = new RegExp(re.source,'g'), match; while ((match = r.exec(t)) !== null) { if (!negWords.test(wordBefore(match.index))) scores[mood] += Math.round(3 * intensity(match.index)); r.lastIndex = match.index+1; } }
+  scoreMood(/\b(sad|depres|lonel|down|cry|cried|crying|unhappy|grief|heartbrok|miserable|hopeless|gloom|sorrow|mourn|ache|suffer|devastat|despair|hurt|pain)\b/,'sad');
+  scoreMood(/\b(angr|frustrat|mad|pissed|rage|irritat|annoyed|furiou|hate|annoying|fury|outraged|resent|bitter|fuming|livid)\b/,'angry');
+  scoreMood(/\b(anxi|worr|panic|nervous|scared|fear|overwhelm|stress|tense|terrifi|dread|uneasy|restless|doubt|insecure)\b/,'anxious');
+  scoreMood(/\b(joy|excite|wonderful|beautiful|love|warm|smile|laugh|happy|happier|happiest|delight|cheer|glad|elated|thrille|bliss|radiant|content|peace|calm|serene|grateful)\b/,'happy');
+  scoreMood(/\b(grateful|thank|blessed|appreciate|fortunat|blessing|gratitude)\b/,'grateful');
+  scoreMood(/\b(think|wonder|reflect|maybe|perhap|understand|realiz|notic|aware|meani|ponder|contemplat|curious|lesson|grow|growth|learn|insight|wisdom|mindful)\b/,'reflective');
+  scoreMood(/\b(hope|believe|better|forward|excited|optimis|potential|possib|confident|bright|progress|stronger|heal|recover|faith|aspire|dream|purpose|motivat)\b/,'hopeful');
+  if (t.match(/\b(okay|fine|alright|normal|neutral|nothing|whatever|average|mediocre)\b/g)) scores.reflective += 1;
+  if (words.length < 5) scores.reflective += 1;
+  scores.reflective += Math.min(3, Math.floor(words.length / 50));
   var max = 'reflective', maxScore = 0;
   for (var k in scores) { if (scores[k] > maxScore) { maxScore = scores[k]; max = k; } }
   if (maxScore === 0) { var moods = ['reflective','hopeful','mixed']; max = moods[Math.floor(Math.random()*moods.length)]; }
   if (max === 'happy' && scores.grateful > 0) { var r = Math.random(); if (r < 0.4) max = 'grateful'; }
-  if (scores.sad > 0 && scores.angry > 0) max = 'mixed';
-  if (scores.anxious > 0 && scores.sad > 0) max = 'mixed';
+  if (scores.sad > 0 && scores.angry > 0 && scores.sad + scores.angry > maxScore * 0.6) max = 'mixed';
+  if (scores.anxious > 0 && scores.sad > 0 && scores.anxious + scores.sad > maxScore * 0.6) max = 'mixed';
   return { primary: max, scores: scores };
 }
 
