@@ -1865,6 +1865,47 @@ function getSuggestion(mood) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+function extractTopics(text) {
+  var t = text.toLowerCase(); var topics = [];
+  if (t.match(/crav|urge|trigger|relaps|slip|drink|smok|using|tempted|withdraw|addict|substance|alcohol|weed|pill|shot|bottle|beer|wine|vodka/)) topics.push('craving');
+  if (t.match(/job|work|career|boss|coworker|interview|fired|promot|quit|retire|office|meeting|deadline|project|colleague|profession|employ|unemploy|resign|layoff/)) topics.push('work');
+  if (t.match(/mom|dad|mother|father|sister|brother|wife|husband|partner|boyfriend|girlfriend|spouse|child|kid|family|parent|marri|divorce|dating|relation|friend|roommate|neighbor|grandma|grandpa|aunt|uncle|cousin|son|daughter/)) topics.push('relationships');
+  if (t.match(/doctor|therapist|appointment|medication|prescri|diagnos|pain|sick|ill|disease|injur|surgery|hospital|clinic|mental|health|anxiety|depression|bipolar|ptsd|adhd|therapy|counsel|psychiatr|nurse|check.?up/)) topics.push('health');
+  if (t.match(/exercise|workout|gym|run|walk|yoga|meditat|breathe|sleep|insomnia|tired|exhaust|energy|fit|fitness|diet|eat|food|meal|cook|nutrit|water|hydrat|hungry|fasting/)) topics.push('wellness');
+  if (t.match(/school|class|college|university|course|exam|test|study|homework|assignment|grade|teacher|student|professor|lecture|lesson|train|certif|degree|major|minor|semester|graduate/)) topics.push('school');
+  if (t.match(/money|bills|pay|debt|loan|mortgage|rent|budget|finance|savings|spend|bought|purchase|expensive|afford|income|salary|wage|bank|account|credit|owe/)) topics.push('finances');
+  if (t.match(/proud|accomplish|achieved|milestone|goal|progress|win|success|completed|finished|earned|improved|grew|growth|heal|recover|stronger|sober.*day|day.*sober/)) topics.push('progress');
+  if (t.match(/alone|lonely|isolat|miss|grief|loss|mourn|grieving|died|passed|gone|leave|abandon|reject|ignore|forgotten|invisible|nobody|no one|empty|numb/)) topics.push('loneliness');
+  return topics;
+}
+
+function findPastRelevantEntry(entries, currentIdx) {
+  for (var i = Math.min(currentIdx, entries.length - 1) - 1; i >= 0; i--) {
+    var e = entries[i];
+    if (e.text && (e.text.match(/proud|accomplish|achieved|milestone|goal|progress|win|success|completed|finished|earned|improved|grew|growth|heal|recover|stronger|sober|grateful|overcame|survived|made it|got through|did it|kept going|faced.*fear|push.*through|didn.*?t give|refused.*give|stood.*up|spoke.*up|asked.*help|reach.*out/i))) return e;
+  }
+  return null;
+}
+
+function buildPersonalReflection(entry, mood, entries, idx) {
+  var topics = extractTopics(entry.text);
+  var baseReflection = getReflection(mood);
+  var past = findPastRelevantEntry(entries, idx);
+  var parts = [];
+  if (topics.length) {
+    var topicRefs = {craving:'navigating cravings',work:'your work situation',relationships:'your relationships',health:'your health journey',wellness:'taking care of yourself',school:'your studies',finances:'your financial situation',progress:'the progress you mentioned',loneliness:'feeling alone'};
+    var ref = '';
+    for (var ti=0;ti<Math.min(2,topics.length);ti++) { ref += (ti?', and ':'') + (topicRefs[topics[ti]]||'what you\'re going through'); }
+    parts.push('I was moved by what you shared about ' + ref + '.');
+  }
+  parts.push(baseReflection);
+  if (past) {
+    var pastSnippet = past.text.length > 60 ? past.text.substring(0,57) + '...' : past.text;
+    parts.push('I also remember when you wrote: "' + pastSnippet.replace(/"/g,'&quot;').replace(/</g,'&lt;') + '" — you got through that, and it\'s proof of your resilience.');
+  }
+  return parts.join(' ');
+}
+
 function updateWordCount(el) {
   var count = el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
   var display = document.getElementById('word-count');
@@ -1949,7 +1990,7 @@ function showReflection(idx) {
   var result = detectMood(entry.text);
   var mood = result.primary;
   var scores = result.scores;
-  var reflection = getReflection(mood);
+  var reflection = buildPersonalReflection(entry, mood, D.journal, idx);
   var suggestion = getSuggestion(mood);
   var song = getSong(mood);
   var name = D.name || 'there';
