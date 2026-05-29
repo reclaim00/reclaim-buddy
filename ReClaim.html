@@ -2067,10 +2067,14 @@ function showReflection(idx) {
 
   var contextLines = [];
   var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
-  if (entryHour >= 5 && entryHour < 12) contextLines.push('🌅 Good morning — starting your day with journaling sets a strong tone.');
-  if (entryHour >= 12 && entryHour < 17) contextLines.push('☀️ Checking in midday — a mindful pause in the middle of everything.');
-  if (entryHour >= 17 && entryHour < 21) contextLines.push('🌆 Reflecting in the evening — a great way to process the day.');
-  if (entryHour >= 21 || (entryHour >= 0 && entryHour < 5)) contextLines.push('🌙 Late night reflections — some of the deepest thoughts come when the world is quiet.');
+  var morningGreets = ['🌅 Good morning — starting your day with journaling sets a strong tone.','🌅 Morning pages are a powerful practice — you\'re already ahead today.','🌅 There\'s something powerful about writing before the world wakes up.','🌅 A fresh start and a blank page — that\'s a powerful combination.'];
+  var middayGreets = ['☀️ Checking in midday — a mindful pause in the middle of everything.','☀️ A midday check-in shows you\'re staying present — that\'s real growth.','☀️ Pausing to reflect in the middle of a busy day takes intention.','☀️ You stopped to check in with yourself — that matters more than you think.'];
+  var eveningGreets = ['🌆 Reflecting in the evening — a great way to process the day.','🌆 Winding down and writing it all out — that\'s how you make sense of the day.','🌆 Evening reflections help you close the day with clarity.','🌆 Taking time to process your day before sleep is a gift to yourself.'];
+  var nightGreets = ['🌙 Late night reflections — some of the deepest thoughts come when the world is quiet.','🌙 There\'s something honest about writing when everyone else is asleep.','🌙 Late nights like this are when the mind finally speaks freely.','🌙 The quiet hours have a way of bringing clarity. I\'m glad you\'re writing it down.'];
+  if (entryHour >= 5 && entryHour < 12) contextLines.push(morningGreets[Math.floor(Math.random()*morningGreets.length)]);
+  if (entryHour >= 12 && entryHour < 17) contextLines.push(middayGreets[Math.floor(Math.random()*middayGreets.length)]);
+  if (entryHour >= 17 && entryHour < 21) contextLines.push(eveningGreets[Math.floor(Math.random()*eveningGreets.length)]);
+  if (entryHour >= 21 || (entryHour >= 0 && entryHour < 5)) contextLines.push(nightGreets[Math.floor(Math.random()*nightGreets.length)]);
   if (dayCount > 0) contextLines.push('🌟 You\'re <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong> — that\'s strength in action.');
   if (hasCravings) contextLines.push('⚠️ I notice you logged a craving recently. That takes courage to track. Let\'s explore what might help.');
   if (streak > 3) contextLines.push('🔥 You\'ve journaled <strong>' + streak + ' day' + (streak!==1?'s':'') + ' in a row</strong>. Consistency is how change happens.');
