@@ -1985,23 +1985,26 @@ function reflectHTML() {
   var types = [
     {id:'free', label:'Free Write', icon:'&#128221;', desc:'Write whatever is on your mind'},
     {id:'gratitude', label:'Gratitude', icon:'&#10024;', desc:'What are you thankful for today?'},
-    {id:'checkin', label:'Check-In', icon:'&#128204;', desc:'How are you really feeling right now?'}
+    {id:'quick', label:'Quick Mood', icon:'&#9889;', desc:'Just log your mood'}
   ];
   h += '<div style="display:flex;gap:6px;margin:8px 0" id="journal-types">';
   for (var ti=0;ti<types.length;ti++) {
-    h += '<button class="btn btn-sm ' + (ti===0?'btn-primary':'btn-outline') + '" onclick="document.querySelectorAll(\'#journal-types .btn\').forEach(function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';document.getElementById(\'ref-entry\').placeholder=this.getAttribute(\'data-ph\')" data-type="' + types[ti].id + '" data-ph="' + types[ti].desc + '" style="flex:1;font-size:11px">' + types[ti].icon + ' ' + types[ti].label + '</button>';
+    (function(tid, tdesc){
+      h += '<button class="btn btn-sm ' + (ti===0?'btn-primary':'btn-outline') + '" onclick="document.querySelectorAll(\'#journal-types .btn\').forEach(function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';document.getElementById(\'ref-entry\').placeholder=this.getAttribute(\'data-ph\');var q=document.getElementById(\'quick-mood-area\');if(\''+tid+'\'===\'quick\'){document.getElementById(\'ref-entry\').style.display=\'none\';document.getElementById(\'word-count-row\').style.display=\'none\';document.getElementById(\'save-entry-btn\').style.display=\'none\';if(q)q.style.display=\'block\'}else{document.getElementById(\'ref-entry\').style.display=\'block\';document.getElementById(\'word-count-row\').style.display=\'flex\';document.getElementById(\'save-entry-btn\').style.display=\'inline-block\';if(q)q.style.display=\'none\'}" data-type="' + tid + '" data-ph="' + tdesc + '" style="flex:1;font-size:11px">' + types[ti].icon + ' ' + types[ti].label + '</button>';
+    })(types[ti].id, types[ti].desc);
   }
   h += '</div>';
   h += '<div class="mood-row" id="ref-moods">';
-  var moodEmojis = ['😞','😕','😐','🙂','😄'];
+  var moodEmojis = ['&#128542;','&#128533;','&#128528;','&#128578;','&#128513;'];
   var labels = ['Terrible','Bad','Okay','Good','Great'];
   for (var i=0;i<5;i++) {
     h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="document.querySelectorAll(\'#ref-moods .mood-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')"><span style="font-size:18px;display:block">'+moodEmojis[i]+'</span>'+labels[i]+'</button>';
   }
   h += '</div>';
+  h += '<div id="quick-mood-area" style="display:none;text-align:center;padding:16px 0"><div style="font-size:13px;color:var(--muted);margin-bottom:10px">Tap your mood above, then save:</div><button class="btn btn-primary" onclick="saveQuickMood()" style="width:100%">&#9889; Log Quick Mood</button></div>';
   h += '<textarea id="ref-entry" placeholder="Write whatever is on your mind..." style="min-height:140px" oninput="updateWordCount(this)"></textarea>';
-  h += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:2px 0 6px"><span id="word-count">0 words</span><span>Goal: ' + goal + ' words</span></div>';
-  h += '<button class="btn btn-primary" onclick="saveRefJournal()">Save Entry</button>';
+  h += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:2px 0 6px" id="word-count-row"><span id="word-count">0 words</span><span>Goal: ' + goal + ' words</span></div>';
+  h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">Save Entry</button>';
   h += '</div>';
   h += artDailyRoutineHTML();
   h += journalInsightsHTML();
@@ -2024,6 +2027,18 @@ function reflectHTML() {
   return h;
 }
 
+function saveQuickMood() {
+  var active = document.querySelector('#ref-moods .mood-btn.active');
+  if (!active) { alert('Select a mood first.'); return; }
+  var mood = parseInt(active.getAttribute('data-val'));
+  var now = new Date();
+  D.journal.push({text:'Quick mood check-in', date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'), mood:mood, type:'quick'});
+  if (!D.moods) D.moods = [];
+  D.moods.push({val:mood, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
+  saveData();
+  render();
+}
+
 function saveRefJournal() {
   var text = document.getElementById('ref-entry');
   if (!text||!text.value.trim()) { alert('Write something first.'); return; }
@@ -2043,6 +2058,17 @@ function saveRefJournal() {
   var idx = D.journal.length - 1;
   saveData();
   try { setTimeout(function() { showReflection(idx); }, 400); } catch(e) {}
+}
+
+function confetti() {
+  var colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#c084fc','#f472b6','#fb923c'];
+  for (var i=0;i<60;i++) {
+    var el = document.createElement('div');
+    el.style.cssText = 'position:fixed;width:'+(6+Math.random()*6)+'px;height:'+(6+Math.random()*6)+'px;background:'+colors[i%colors.length]+';left:'+Math.random()*100+'vw;top:-10px;border-radius:'+(Math.random()>.5?'50%':'2px')+';z-index:99999;pointer-events:none';
+    document.body.appendChild(el);
+    var drift = (Math.random()-0.5)*300;
+    el.animate([{transform:'translateY(0) translateX(0) rotate(0deg)',opacity:1},{transform:'translateY('+(window.innerHeight+50)+'px) translateX('+drift+'px) rotate('+(Math.random()*1080-540)+'deg)',opacity:0}],{duration:2500+Math.random()*2000,easing:'cubic-bezier(.25,.46,.45,.94)'}).onfinish=function(){el.remove()};
+  }
 }
 
 function showReflection(idx) {
@@ -2081,6 +2107,7 @@ function showReflection(idx) {
   if (entryHour >= 17 && entryHour < 21) contextLines.push(eveningGreets[Math.floor(Math.random()*eveningGreets.length)]);
   if (entryHour >= 21 || (entryHour >= 0 && entryHour < 5)) contextLines.push(nightGreets[Math.floor(Math.random()*nightGreets.length)]);
   if (dayCount > 0) contextLines.push('🌟 You\'re <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong> — that\'s strength in action.');
+  if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || dayCount % 365 === 0) contextLines.push('🎉 ' + dayCount + ' days sober! That\'s a major milestone — you deserve to celebrate this.');
   if (hasCravings) contextLines.push('⚠️ I notice you logged a craving recently. That takes courage to track. Let\'s explore what might help.');
   if (streak > 3) contextLines.push('🔥 You\'ve journaled <strong>' + streak + ' day' + (streak!==1?'s':'') + ' in a row</strong>. Consistency is how change happens.');
   if (totalEntries <= 2) contextLines.push('🌱 This is one of your first entries — thank you for starting this journey.');
@@ -2132,6 +2159,7 @@ function showReflection(idx) {
   D.reflectionCount = (D.reflectionCount || 0) + 1;
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
+  if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || (dayCount > 365 && dayCount % 365 === 0)) setTimeout(confetti, 300);
   } catch(e) { alert('Arthur had trouble reflecting: ' + e.message); }
 }
 
@@ -2507,6 +2535,25 @@ var DAILY_PROMPTS = [
 ];
 
 function todayPrompt() {
+  var entries = D.journal || [];
+  if (entries.length > 0) {
+    var last = entries[entries.length-1].text.toLowerCase();
+    if (last.match(/crav|urge|relaps|trigger|tempted|slip/)) return 'You mentioned a trigger recently. What strategies helped you get through it? How are you feeling about it now?';
+    if (last.match(/proud|accomplish|achieved|milestone|win|success|progress|goal|completed|finished/)) return 'That progress you mentioned — how did it feel? What helped you get there? Take a moment to really sit with that win.';
+    if (last.match(/sad|depres|lonel|alone|cry|grief|sorrow|despair|mourn/)) return 'You were feeling heavy last time. What do you need right now that you haven\'t given yourself? It\'s okay to not be okay.';
+    if (last.match(/angr|frustrat|mad|rage|pissed|furiou|annoyed|irritat/)) return 'Last time you wrote about frustration. Has that shifted? What would help you release what\'s still lingering?';
+    if (last.match(/anxi|worr|panic|scared|fear|stress|nervous|overwhelm|tense/)) return 'You were carrying anxiety last time. Let\'s check in — what\'s the volume of that worry today? What do you need to feel safer?';
+    if (last.match(/grateful|thank|blessed|appreciate|gratitude|blessing/)) return 'You found something to appreciate last time. What else has been good since then? Let\'s keep collecting those moments.';
+    if (last.match(/friend|family|mom|dad|partner|husband|wife|boyfriend|girlfriend|sister|brother/)) return 'How are things with the people you mentioned last time? Any updates worth noting? Connection matters in recovery.';
+    if (last.match(/job|work|career|boss|coworker|interview|fired|promot|office|meeting|deadline|project/)) return 'Last time you wrote about work. How is that situation evolving? What\'s one thing you can do today to improve it?';
+    if (last.match(/sleep|tired|exhaust|insomnia|rest/)) return 'You mentioned being exhausted last time. Have you been able to rest since then? Sleep is a foundation of recovery — how is yours?';
+    if (last.match(/exercise|workout|gym|run|walk|yoga|meditat/)) return 'You were focusing on wellness last time. How has your routine been? What feels good for your body today?';
+    if (last.match(/school|class|college|university|exam|test|study|course|grade/)) return 'You wrote about your studies last time. How are things going? What\'s one small step you can take today?';
+    if (last.match(/money|bills|debt|loan|rent|budget|finance|afford/)) return 'Finances were on your mind last time. Has anything shifted? What\'s within your control right now?';
+    if (last.match(/alone|lonely|isolat|miss|nobody|no one|empty|numb/)) return 'You were feeling isolated last time. I want you to know you\'re not alone in this. What would make you feel even 1% more connected today?';
+    if (last.match(/doctor|therapist|appointment|medication|therapy|counsel/)) return 'You mentioned your health journey last time. How did that appointment go? How are you feeling about your treatment?';
+    if (last.match(/sober.*day|day.*sober|clean|recover|heal|stronger|growth|progress/)) return 'You\'re building real momentum. What\'s working for you right now that you want to keep doing? Let\'s lock in those habits.';
+  }
   var now = new Date();
   var start = new Date(now.getFullYear(), 0, 0);
   var dayOfYear = Math.floor((now - start) / 86400000);
