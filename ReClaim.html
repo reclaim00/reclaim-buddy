@@ -1744,7 +1744,10 @@ function populateSongPool() {
 }
 
 function getSong(mood) {
-  if (!SONG_POOL_GENERATED) populateSongPool();
+  if (!SONG_POOL_GENERATED) {
+    if (!window._songPoolLoading) { window._songPoolLoading = true; setTimeout(function(){ populateSongPool(); window._songPoolLoading = false; }, 100); }
+    return null;
+  }
   var pool = REFLECT_SONGS[mood] || REFLECT_SONGS.reflective;
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -2106,13 +2109,18 @@ function showReflection(idx) {
   // Song
   var songDesc = {sad:'A song that understands the weight you\'re carrying', angry:'A track to match the fire in you', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space for it all'};
   h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; ' + (songDesc[mood] || 'A song that matches your energy') + '</div>';
-  h += '<div style="font-weight:700;font-size:15px;margin:2px 0">' + song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
-  h += '<div style="font-size:12px;color:var(--muted)">' + song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
-  h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap">';
-  h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Spotify</a>';
-  h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; YouTube</a>';
-  h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Apple Music</a>';
-  h += '</div></div>';
+  if (song) {
+    h += '<div style="font-weight:700;font-size:15px;margin:2px 0">' + song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
+    h += '<div style="font-size:12px;color:var(--muted)">' + song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
+    h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap">';
+    h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Spotify</a>';
+    h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; YouTube</a>';
+    h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Apple Music</a>';
+    h += '</div>';
+  } else {
+    h += '<div style="font-size:13px;color:var(--muted);padding:6px 0">🎵 Arthur is picking the perfect song...</div>';
+  }
+  h += '</div>';
 
   // Original entry
   h += '<details style="margin-bottom:8px"><summary style="font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);padding:4px 0">&#128196; Read your entry</summary>';
@@ -4054,6 +4062,7 @@ document.getElementById('tabs').addEventListener('click', function(e) {
 
 // ====== INIT ======
 applyTheme();
+setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
 // Show sign-in by default; onAuthStateChanged will auto-transition if a session exists
 showSignIn();
 // If local session exists, optimistically show the app while Firebase restores auth
