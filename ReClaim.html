@@ -3566,11 +3566,20 @@ function changeAvatar() {
   input.onchange = function(e) {
     var file = e.target.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) { alert('Image must be under 2MB.'); return; }
     var reader = new FileReader();
     reader.onload = function(ev) {
-      D.avatar = ev.target.result;
-      saveData();
+      var img = new Image();
+      img.onload = function() {
+        var maxDim = 400;
+        var w = img.width, h = img.height;
+        if (w > maxDim || h > maxDim) { if (w > h) { h = h / w * maxDim; w = maxDim; } else { w = w / h * maxDim; h = maxDim; } }
+        var c = document.createElement('canvas'); c.width = w; c.height = h;
+        var ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, w, h);
+        D.avatar = c.toDataURL('image/jpeg', 0.7);
+        saveData();
+        render();
+      };
+      img.src = ev.target.result;
     };
     reader.readAsDataURL(file);
   };
