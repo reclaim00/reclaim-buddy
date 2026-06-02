@@ -338,7 +338,7 @@ function defaultData() {
     lastReportDate: null,
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00' },
-    chatHistory: [], reflectionCount: 0, sosUsed: false, letters: [], gratitude: [], assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], dailyCost: 0
+    chatHistory: [], reflectionCount: 0, sosUsed: false, letters: [], assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], dailyCost: 0
   };
 }
 
@@ -1658,30 +1658,6 @@ function showCrisisAlert(text) {
 function deleteJournalEntry(idx) {
   if (!confirm('Delete this journal entry?')) return;
   D.journal.splice(idx, 1);
-  saveData();
-}
-
-// ====== GRATITUDE LOG ======
-function gratitudeHTML() {
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-size:20px">&#10024;</div><h3 style="margin:0">Gratitude Log</h3></div><p style="font-size:12px;color:var(--muted);margin-bottom:8px">Write down what you are grateful for today. Practicing gratitude rewires your brain for positivity.</p><textarea id="gratitude-text" placeholder="I am grateful for..." style="min-height:60px;margin-bottom:6px"></textarea><div style="display:flex;gap:6px"><button class="btn btn-primary btn-sm" onclick="saveGratitude()" style="flex:1">Log Gratitude</button></div></div>';
-  if (D.gratitude && D.gratitude.length) {
-    var recent = D.gratitude.slice().reverse().slice(0,10);
-    h += '<div class="card"><h3>Recent Gratitude</h3>';
-    for (var gi=0;gi<recent.length;gi++) {
-      h += '<div class="entry-item"><div class="date">' + recent[gi].date + '</div><div class="preview" style="white-space:normal">&#10024; ' + recent[gi].text + '</div></div>';
-    }
-    if (D.gratitude.length > 10) h += '<div style="font-size:11px;color:var(--muted);text-align:center;padding:4px 0">+' + (D.gratitude.length - 10) + ' more entries</div>';
-    h += '</div>';
-  }
-  return h;
-}
-
-function saveGratitude() {
-  var text = document.getElementById('gratitude-text');
-  if (!text || !text.value.trim()) { alert('Write what you are grateful for.'); return; }
-  if (!D.gratitude) D.gratitude = [];
-  D.gratitude.push({ text: text.value.trim(), date: new Date().toDateString(), time: String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0') });
-  text.value = '';
   saveData();
 }
 
@@ -3831,13 +3807,13 @@ var MONTHLY_CHALLENGES = [
   {month:1, title:'Log your mood every day', icon:'💭', target:'mood', count:28}, // Feb
   {month:2, title:'Complete 20 habits', icon:'✅', target:'habit', count:20}, // Mar
   {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20}, // Apr
-  {month:4, title:'Write 10 gratitude entries', icon:'✨', target:'gratitude', count:10}, // May
+  {month:4, title:'Journal 15 days this month', icon:'📝', target:'journal', count:15}, // May
   {month:5, title:'Stay sober all month', icon:'🌿', target:'sober', count:30}, // Jun
   {month:6, title:'Journal 20 days this month', icon:'📝', target:'journal', count:20}, // Jul
   {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25}, // Aug
   {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25}, // Sep
   {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25}, // Oct
-  {month:10, title:'Practice gratitude 15 times', icon:'✨', target:'gratitude', count:15}, // Nov
+  {month:10, title:'Journal 20 days this month', icon:'📝', target:'journal', count:20}, // Nov
   {month:11, title:'End the year strong — journal 20 days', icon:'🎯', target:'journal', count:20} // Dec
 ];
 
@@ -3859,7 +3835,6 @@ function getChallengeProgress(challenge) {
     case 'mood': count = D.moods.filter(function(m){var d=new Date(m.date);return d.getMonth()===month&&d.getFullYear()===year}).length; break;
     case 'habit': count = D.habits.reduce(function(s,h){return s+(h.logs?h.logs.filter(function(l){var d=new Date(l);return d.getMonth()===month&&d.getFullYear()===year}).length:0)},0); break;
     case 'checkin': count = D.checkins.filter(function(c){var d=new Date(c.date);return d.getMonth()===month&&d.getFullYear()===year}).length; break;
-    case 'gratitude': count = (D.gratitude||[]).filter(function(g){var d=new Date(g.date);return d.getMonth()===month&&d.getFullYear()===year}).length; break;
     case 'sober': count = soberDays(); break;
   }
   // Auto-save challenge progress
