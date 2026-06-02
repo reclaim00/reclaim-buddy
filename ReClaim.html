@@ -1233,22 +1233,18 @@ function quizPrev() {
 }
 
 function submitAssessment() {
-  var prefix = document.getElementById('quiz').getAttribute('data-prefix');
   var score = 0, count = 0;
-  for (var i=0;i<ASSESS_QUESTIONS.length;i++) {
-    var sel = document.querySelector('input[name="' + prefix + i + '"]:checked');
-    if (sel) { score += parseInt(sel.value); count++; }
+  if (D.assessmentProgress) {
+    for (var i=0;i<D.assessmentProgress.length;i++) {
+      if (D.assessmentProgress[i] !== null) { score += D.assessmentProgress[i]; count++; }
+    }
   }
   score = count > 0 ? Math.round(score / count) : 0;
   D.assessmentTaken = true;
-  D.assessmentResult = { score: score, date: Date.now(), answers: [] };
-  for (var i=0;i<ASSESS_QUESTIONS.length;i++) {
-    var sel = document.querySelector('input[name="' + prefix + i + '"]:checked');
-    D.assessmentResult.answers.push(sel ? parseInt(sel.value) : 0);
-  }
+  D.assessmentResult = { score: score, date: Date.now(), answers: D.assessmentProgress ? D.assessmentProgress.slice() : [] };
+  D.assessmentProgress = null;
   var costEl = document.getElementById('quiz-daily-cost');
   if (costEl) D.dailyCost = parseFloat(costEl.value) || 0;
-  D.assessmentProgress = null;
   saveData();
   setTimeout(function(){ showLetterPrompt('assessment'); }, 500);
 }
@@ -1321,19 +1317,15 @@ function osiNext() { saveQuizProgress('oq'); if (OSI_CURRENT < ASSESS_TOTAL_STEP
 function osiPrev() { if (OSI_CURRENT > 0) osiGoTo(OSI_CURRENT - 1); }
 
 function submitOverlayAssessment(btn) {
-  var prefix = 'oq';
   var score = 0, count = 0;
-  for (var i=0;i<ASSESS_QUESTIONS.length;i++) {
-    var sel = document.querySelector('input[name="' + prefix + i + '"]:checked');
-    if (sel) { score += parseInt(sel.value); count++; }
+  if (D.assessmentProgress) {
+    for (var i=0;i<D.assessmentProgress.length;i++) {
+      if (D.assessmentProgress[i] !== null) { score += D.assessmentProgress[i]; count++; }
+    }
   }
   score = count > 0 ? Math.round(score / count) : 0;
   D.assessmentTaken = true;
-  D.assessmentResult = { score: score, date: Date.now(), answers: [] };
-  for (var i=0;i<ASSESS_QUESTIONS.length;i++) {
-    var sel = document.querySelector('input[name="' + prefix + i + '"]:checked');
-    D.assessmentResult.answers.push(sel ? parseInt(sel.value) : 0);
-  }
+  D.assessmentResult = { score: score, date: Date.now(), answers: D.assessmentProgress ? D.assessmentProgress.slice() : [] };
   var costEl = document.getElementById('osi-daily-cost');
   if (costEl) D.dailyCost = parseFloat(costEl.value) || 0;
   D.assessmentProgress = null;
