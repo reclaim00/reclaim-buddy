@@ -1928,11 +1928,6 @@ function getReflection(mood) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function getSuggestion(mood) {
-  var pool = ART_SUGGESTIONS[mood] || ART_SUGGESTIONS.reflective;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
 function extractTopics(text) {
   var t = text.toLowerCase(); var topics = [];
   if (t.match(/crav|urge|trigger|relaps|slip|drink|smok|using|tempted|withdraw|addict|substance|alcohol|weed|pill|shot|bottle|beer|wine|vodka/)) topics.push('craving');
@@ -1947,31 +1942,146 @@ function extractTopics(text) {
   return topics;
 }
 
-function findPastRelevantEntry(entries, currentIdx) {
+function findEntriesByTopic(entries, topics, currentIdx) {
+  var results = [];
   for (var i = Math.min(currentIdx, entries.length - 1) - 1; i >= 0; i--) {
     var e = entries[i];
-    if (e.text && (e.text.match(/proud|accomplish|achieved|milestone|goal|progress|win|success|completed|finished|earned|improved|grew|growth|heal|recover|stronger|sober|grateful|overcame|survived|made it|got through|did it|kept going|faced.*fear|push.*through|didn.*?t give|refused.*give|stood.*up|spoke.*up|asked.*help|reach.*out/i))) return e;
+    if (!e.text) continue;
+    var matchedTopics = extractTopics(e.text);
+    for (var ti = 0; ti < topics.length; ti++) {
+      if (matchedTopics.indexOf(topics[ti]) !== -1) {
+        results.push({ entry: e, topic: topics[ti] });
+        break;
+      }
+    }
   }
-  return null;
+  return results;
 }
+
+function countTopicFrequency(entries) {
+  var counts = {};
+  for (var i = 0; i < entries.length; i++) {
+    if (!entries[i].text) continue;
+    var topics = extractTopics(entries[i].text);
+    for (var t = 0; t < topics.length; t++) {
+      counts[topics[t]] = (counts[topics[t]] || 0) + 1;
+    }
+  }
+  return counts;
+}
+
+var TOPIC_SUGGESTIONS = {
+  work: ['Try setting a clear boundary between work and rest — even 10 minutes of silence between tasks can reset your mind.', 'Write down three things you accomplished today at work, no matter how small.', 'Consider talking to your manager or a trusted coworker about what you\'re feeling.', 'Open the Coping Cards in the Care section and try the grounding exercise — it helps with work overwhelm.'],
+  relationships: ['Reach out to someone you trust and tell them how you feel. Connection is medicine.', 'Write a letter you don\'t have to send — just get the feelings out on paper.', 'Consider setting a small boundary this week that protects your peace.', 'Go to the Letters page and write a letter to the person you\'re thinking about — share it when you\'re ready.'],
+  health: ['Be proud of yourself for tracking your health. Small steps compound into big changes.', 'Try the breathing exercise in the Care section — it supports both mental and physical calm.', 'If you haven\'t already, consider scheduling a check-up. Taking action reduces anxiety.', 'Your health journey deserves celebration. Open your Progress page and look at how far you\'ve come.'],
+  craving: ['You just acknowledged a craving — that\'s a win. Awareness is the first line of defense.', 'Try the Urge Surfing card in Coping Cards. Ride the wave — it will pass.', 'Call or text your buddy right now. Connection breaks the craving cycle.', 'Remind yourself why you started. Open your relapse prevention plan in the Care section.'],
+  school: ['Learning is growth. Even when it\'s hard, every class page you read moves you forward.', 'Break your study time into 25-minute focused blocks with 5-minute breaks.', 'Reach out to a classmate or professor — asking for help is strength, not weakness.'],
+  wellness: ['You\'re taking care of yourself, and that\'s everything. Keep showing up for you.', 'Try a 5-minute walk or stretch — your body and mind will thank you.', 'Hydrate, eat something nourishing, and give yourself permission to rest.'],
+  finances: ['Money stress is real and heavy. Naming it here is the first step to managing it.', 'Focus on what you can control today — even a $5 decision made intentionally is a win.', 'Consider listing out your expenses. Seeing them on paper often reduces their power over you.'],
+  progress: ['Reading your own progress is powerful. You\'ve earned these words.', 'Share this win with someone — your buddy, a friend, or write it in your journal again.', 'Take a moment to feel this. You worked for it. Let yourself be proud.'],
+  loneliness: ['I hear you. You\'re not as alone as it feels right now.', 'Consider reaching out to your buddy or writing a letter on the Letters page.', 'Sometimes presence helps — go somewhere with people, even if you don\'t talk to anyone.', 'Open your coping cards and try the self-compassion break. You deserve kindness from yourself.'],
+  general: ['Try putting on a song that matches your mood and letting yourself feel it for 3 minutes.', 'Write one thing you\'re grateful for — even if it feels small.', 'Take 5 slow, deep breaths. In through your nose, out through your mouth.']
+};
+
+var RESILIENCE_PHRASES = [
+  'you showed up the next day and kept going',
+  'you found a way through',
+  'you didn\'t let it stop you',
+  'you kept writing, kept showing up',
+  'you proved to yourself that you could handle it',
+  'you chose to keep going even when it was hard',
+  'you trusted the process and it carried you'
+];
 
 function buildPersonalReflection(entry, mood, entries, idx) {
   var topics = extractTopics(entry.text);
   var baseReflection = getReflection(mood);
-  var past = findPastRelevantEntry(entries, idx);
+  var pastMatches = findEntriesByTopic(entries, topics.length ? topics : ['progress', 'grateful', 'growth', 'heal', 'stronger'], idx);
+  var topicFreq = countTopicFrequency(entries);
   var parts = [];
+  var text = entry.text;
+
+  var isShort = text.length < 60;
+  if (isShort) {
+    parts.push('Even in a few words, there\'s meaning. Thank you for showing up and writing today.');
+  }
+
   if (topics.length) {
-    var topicRefs = {craving:'navigating cravings',work:'your work situation',relationships:'your relationships',health:'your health journey',wellness:'taking care of yourself',school:'your studies',finances:'your financial situation',progress:'the progress you mentioned',loneliness:'feeling alone'};
-    var ref = '';
-    for (var ti=0;ti<Math.min(2,topics.length);ti++) { ref += (ti?', and ':'') + (topicRefs[topics[ti]]||'what you\'re going through'); }
-    parts.push('I was moved by what you shared about ' + ref + '.');
+    var topicLabels = {craving:'navigating cravings',work:'work',relationships:'your relationships',health:'your health',wellness:'your well-being',school:'your studies',finances:'finances',progress:'your progress',loneliness:'feeling alone'};
+    var topTopic = topics[0];
+    parts.push('I noticed you mentioned ' + (topicLabels[topTopic] || 'what you\'re going through') + ' in your entry.');
+
+    var topicFreqCount = topicFreq[topTopic] || 0;
+    if (topicFreqCount >= 3) {
+      parts.push('This has come up ' + topicFreqCount + ' times in your journal — it\'s clearly something important you\'re working through, and I can see you giving it real attention.');
+    } else if (topicFreqCount >= 2) {
+      parts.push('This isn\'t the first time you\'ve written about this — I can see you processing it over time, and that\'s how real change happens.');
+    }
   }
+
   parts.push(baseReflection);
-  if (past) {
-    var pastSnippet = past.text.length > 60 ? past.text.substring(0,57) + '...' : past.text;
-    parts.push('I also remember when you wrote: "' + pastSnippet.replace(/"/g,'&quot;').replace(/</g,'&lt;') + '" — you got through that, and it\'s proof of your resilience.');
+
+  if (pastMatches.length) {
+    var best = pastMatches[0];
+    var entryText = best.entry.text;
+    var keepText = entryText.length > 80 ? entryText.substring(0, 77) + '...' : entryText;
+    var phrase = RESILIENCE_PHRASES[Math.floor(Math.random() * RESILIENCE_PHRASES.length)];
+    var timeAgo = '';
+    var entryDate = best.entry.date;
+    if (entryDate) {
+      var diffDays = Math.round((Date.now() - new Date(entryDate).getTime()) / 86400000);
+      if (diffDays === 1) timeAgo = 'Just yesterday ';
+      else if (diffDays < 7) timeAgo = diffDays + ' days ago ';
+      else if (diffDays < 30) timeAgo = Math.floor(diffDays / 7) + ' week' + (Math.floor(diffDays / 7) > 1 ? 's' : '') + ' ago ';
+      else timeAgo = Math.floor(diffDays / 30) + ' month' + (Math.floor(diffDays / 30) > 1 ? 's' : '') + ' ago ';
+    }
+    parts.push('I remember ' + timeAgo + 'you wrote about this too: "' + keepText.replace(/"/g, '&quot;').replace(/</g, '&lt;') + '" — and ' + phrase + '. You\'ve been building resilience all along.');
   }
+
+  if (entries.length >= 5) {
+    var sadCount = 0, happyCount = 0;
+    for (var i = Math.max(0, entries.length - 7); i < entries.length; i++) {
+      if (entries[i].mood <= 2) sadCount++;
+      if (entries[i].mood >= 4) happyCount++;
+    }
+    if (sadCount >= 4) parts.push('I also notice you\'ve been feeling low recently. That\'s a lot to carry. Be extra kind to yourself — rest is not a setback, it\'s how you recharge for the next chapter.');
+    else if (happyCount >= 3) parts.push('Your recent entries have a lighter energy. It\'s good to see you letting yourself feel good — you\'ve earned it.');
+  }
+
   return parts.join(' ');
+}
+
+function buildSuggestions(entry, mood, entries, idx) {
+  var topics = extractTopics(entry.text);
+  var suggestions = [];
+  var dayCount = soberDays();
+
+  if (topics.length) {
+    var topicPicks = TOPIC_SUGGESTIONS[topics[0]] || TOPIC_SUGGESTIONS.general;
+    suggestions.push(topicPicks[Math.floor(Math.random() * topicPicks.length)]);
+    if (topics.length > 1) {
+      var second = TOPIC_SUGGESTIONS[topics[1]] || TOPIC_SUGGESTIONS.general;
+      suggestions.push(second[Math.floor(Math.random() * second.length)]);
+    }
+  } else {
+    var moodSuggestions = ART_SUGGESTIONS[mood] || ART_SUGGESTIONS.reflective;
+    suggestions.push(moodSuggestions[Math.floor(Math.random() * moodSuggestions.length)]);
+  }
+
+  if (dayCount > 0 && dayCount < 90) suggestions.push('You\'re ' + dayCount + ' days into your sobriety journey. Early recovery is intense — have you set up your Relapse Prevention Plan in the Care section yet?');
+  if (dayCount > 90) suggestions.push('Over ' + dayCount + ' days sober. That\'s serious momentum. Don\'t forget to check your Progress page to see how far you\'ve come.');
+
+  var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
+  if (hasCravings) suggestions.push('I see you logged a craving recently. Try the Urge Surfing card in Coping Cards — it\'s designed for exactly this moment.');
+
+  var streak = D.streak || 0;
+  if (streak > 5) suggestions.push('You\'re on a ' + streak + '-day journaling streak. Consistency like this is how recovery becomes a lifestyle, not just a goal.');
+
+  if (D.name && D.buddyCode) suggestions.push('Have you shared this entry with your buddy yet? Sometimes the people closest to us see our growth before we do.');
+
+  suggestions.push('Check in with the Coping Cards or Breathing Exercise in the Care section whenever you need a reset.');
+
+  return suggestions;
 }
 
 function updateWordCount(el) {
@@ -2085,7 +2195,7 @@ function showReflection(idx) {
   var mood = result.primary;
   var scores = result.scores;
   var reflection = buildPersonalReflection(entry, mood, D.journal, idx);
-  var suggestion = getSuggestion(mood);
+  var suggestions = buildSuggestions(entry, mood, D.journal, idx);
   var song = getSong(mood);
   var name = D.name || 'there';
   var dayCount = soberDays();
@@ -2132,8 +2242,13 @@ function showReflection(idx) {
   // Reflection
   h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💭 Arthur\'s insight</div><div style="font-size:14px;line-height:1.6">' + reflection + '</div></div>';
 
-  // Suggestion
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 Arthur\'s suggestion</div><div style="font-size:14px;line-height:1.6">' + suggestion + '</div></div>';
+  // Suggestions
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 Arthur\'s suggestions for you</div>';
+  for (var si = 0; si < Math.min(suggestions.length, 3); si++) {
+    var icon = ['►', '→', '▪'][si] || '•';
+    h += '<div style="font-size:13px;line-height:1.5;padding:4px 0;border-bottom:' + (si < Math.min(suggestions.length, 3) - 1 ? '1px solid var(--border)' : 'none') + '">' + icon + ' ' + suggestions[si] + '</div>';
+  }
+  h += '</div>';
 
   var mot = getMotivation(mood);
   if (mot) {
