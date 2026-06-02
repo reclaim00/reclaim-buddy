@@ -386,6 +386,7 @@ async function enableLock(pin) {
 function disableLock() {
   localStorage.removeItem('rc_lock_hash');
   localStorage.removeItem('rc_lock_salt');
+  localStorage.removeItem('rc_bio_cred');
   LOCK_ENABLED = false;
   D.passcodeEnabled = false;
   saveData();
@@ -401,6 +402,7 @@ async function checkPin(pin) {
 
 function showLockScreen() {
   var app = document.getElementById('app');
+  var bioAvailable = window.PublicKeyCredential && localStorage.getItem('rc_bio_cred');
   app.innerHTML =
     '<div class="si-bg">' +
     '<div class="si-card">' +
@@ -409,6 +411,7 @@ function showLockScreen() {
     '<input class="si-input" type="password" id="lock-pin-input" placeholder="Enter passcode" inputmode="numeric" maxlength="6" style="text-align:center;font-size:24px;letter-spacing:8px;font-weight:700" onkeydown="if(event.key===\'Enter\')unlockApp()">' +
     '<button class="si-btn" onclick="unlockApp()">Unlock</button>' +
     '<div id="lock-error" style="font-size:12px;color:var(--danger);margin-top:4px"></div>' +
+    (bioAvailable ? '<button class="btn btn-outline btn-sm" onclick="unlockWithBiometric()" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Face ID</button>' : '<button class="btn btn-outline btn-sm" onclick="setupBiometric()" id="bio-setup-btn" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Set Up Face ID</button>') +
     '<button class="btn btn-outline btn-sm" onclick="if(confirm(\'This will erase all local data and let you sign in again.\')){localStorage.removeItem(\'rc_lock_hash\');localStorage.removeItem(\'rc_lock_salt\');localStorage.removeItem(\'rc_user\');localStorage.removeItem(\'rc_email\');sessionStorage.clear();location.reload()}" style="margin-top:12px;width:auto;display:inline-flex">Reset &amp; Sign Out</button>' +
     '</div></div>';
   document.getElementById('tabs').style.display = 'none';
@@ -448,6 +451,48 @@ function handleLockBlur() {
     LOCK_ENABLED = true;
     setTimeout(function(){ showLockScreen(); }, 100);
   }
+}
+
+async function setupBiometric() {
+  if (!window.PublicKeyCredential) { alert('Face ID is not supported on this browser. Try Safari on iPhone.'); return; }
+  try {
+    var challenge = crypto.getRandomValues(new Uint8Array(32));
+    var cred = await navigator.credentials.create({publicKey:{
+      challenge: challenge,
+      rp: {name:'Re.Claim', id:location.hostname},
+      user: {id: crypto.getRandomValues(new Uint8Array(16)), name:'reclaim-user', displayName:'Re.Claim User'},
+      pubKeyCredParams: [{type:'public-key', alg:-7}],
+      authenticatorSelection: {authenticatorAttachment:'platform', userVerification:'required', residentKey:'required'},
+      timeout: 30000
+    }});
+    localStorage.setItem('rc_bio_cred', btoa(String.fromCharCode.apply(null, new Uint8Array(cred.rawId))));
+    var btn = document.getElementById('bio-setup-btn');
+    if (btn) { btn.textContent = '&#128065; Face ID'; btn.onclick = function(){ unlockWithBiometric(); }; }
+    alert('Face ID set up successfully!');
+  } catch(e) { alert('Face ID setup failed: ' + e.message); }
+}
+
+async function unlockWithBiometric() {
+  if (!window.PublicKeyCredential) { alert('Face ID is not available on this browser.'); return; }
+  try {
+    var credIdRaw = localStorage.getItem('rc_bio_cred');
+    if (!credIdRaw) { setupBiometric(); return; }
+    var credId = Uint8Array.from(atob(credIdRaw), function(c){return c.charCodeAt(0)});
+    var challenge = crypto.getRandomValues(new Uint8Array(32));
+    var assertion = await navigator.credentials.get({publicKey:{
+      challenge: challenge,
+      allowCredentials: [{type:'public-key', id:credId, transports:['internal']}],
+      userVerification: 'required',
+      timeout: 30000
+    }});
+    if (assertion) {
+      LOCK_ENABLED = false;
+      D = loadData();
+      document.body.classList.add('logged-in');
+      render();
+      resetLockTimer();
+    }
+  } catch(e) { document.getElementById('lock-error').textContent = 'Face ID failed. Try your passcode.'; }
 }
 
 var D = AUTH_USER ? loadData() : defaultData();
@@ -3646,7 +3691,9 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Journal Settings</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">Daily word goal</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveData()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Privacy Lock</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.</p>';
   if (isLockSet()) {
+    var bioReady = !!localStorage.getItem('rc_bio_cred');
     h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="var p=prompt(\'Enter current passcode to change:\');if(p&&p.trim()){checkPin(p.trim()).then(function(v){if(v){var np=prompt(\'Enter new 4-6 digit passcode:\');if(np&&np.trim().length>=4&&np.trim().length<=6){enableLock(np.trim());alert(\'Passcode updated!\');render()}else{alert(\'Passcode must be 4-6 digits.\')}}else{alert(\'Incorrect current passcode.\')}})})" style="font-size:11px">Change Passcode</button>';
+    h += '<button class="btn btn-sm btn-outline" onclick="if(localStorage.getItem(\'rc_bio_cred\')){unlockWithBiometric();}else{setupBiometric();}" style="font-size:11px">' + (bioReady ? '&#9989; Face ID Set Up' : '&#128065; Set Up Face ID') + '</button>';
     h += '<button class="btn btn-sm btn-danger" onclick="if(confirm(\'Disable passcode lock?\')){disableLock();render()}" style="font-size:11px">Disable Lock</button></div>';
   } else {
     h += '<div style="display:flex;gap:6px"><input type="password" id="lock-pin-new" placeholder="4-6 digit passcode" inputmode="numeric" maxlength="6" style="flex:1;padding:6px 10px;font-size:16px;text-align:center;letter-spacing:4px;font-weight:700"><button class="btn btn-sm btn-primary" onclick="var p=document.getElementById(\'lock-pin-new\');if(!p||!p.value.trim()||p.value.length<4||p.value.length>6){alert(\'Passcode must be 4-6 digits.\');return}enableLock(p.value.trim());alert(\'Passcode enabled! The app will lock when you switch tabs or after 5 min of inactivity.\');render()">Enable Lock</button></div>';
