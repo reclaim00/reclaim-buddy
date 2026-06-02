@@ -2116,7 +2116,6 @@ function reflectHTML() {
   // Journal type selector
   var types = [
     {id:'free', label:'Free Write', icon:'&#128221;', desc:'Write whatever is on your mind'},
-    {id:'gratitude', label:'Gratitude', icon:'&#10024;', desc:'What are you thankful for today?'},
     {id:'quick', label:'Quick Mood', icon:'&#9889;', desc:'Just log your mood'}
   ];
   h += '<div style="display:flex;gap:6px;margin:8px 0" id="journal-types">';
@@ -2243,7 +2242,6 @@ function showReflection(idx) {
   if (hasCravings) contextLines.push('⚠️ I notice you logged a craving recently. That takes courage to track. Let\'s explore what might help.');
   if (streak > 3) contextLines.push('🔥 You\'ve journaled <strong>' + streak + ' day' + (streak!==1?'s':'') + ' in a row</strong>. Consistency is how change happens.');
   if (totalEntries <= 2) contextLines.push('🌱 This is one of your first entries — thank you for starting this journey.');
-  if (entry.type === 'gratitude') contextLines.push('💛 A gratitude entry — actively looking for the good rewires your brain over time.');
   if (entry.type === 'checkin') contextLines.push('📋 Honest check-ins like this build self-awareness, the foundation of all growth.');
 
   // Context lines
@@ -3650,12 +3648,10 @@ function profileHTML() {
   h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">Joined ' + (D.joinDate ? new Date(D.joinDate).toLocaleDateString() : 'today') + '</div>';
   h += '<div style="font-size:12px;color:var(--muted)">Sober ' + soberDays() + ' days</div>';
   h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
-  if (D.dailyCost) h += '<div style="margin-top:8px;font-size:14px;font-weight:700;color:var(--primary)">Total saved: $' + moneySaved() + '</div>';
   h += '</div></div>';
   h += '<div class="card"><h3>Settings</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Name</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Phone (optional)</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Savings Tracker</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">Set your estimated daily cost to see how much you\'ve saved since starting your journey.</p><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">Daily cost ($)</span><input type="number" value="'+(D.dailyCost||'')+'" min="0" step="0.01" onchange="D.dailyCost=parseFloat(this.value)||0;saveData()" style="width:100px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div><div style="font-size:14px;font-weight:700;color:var(--primary);text-align:center;padding:8px 0">Total saved: $' + moneySaved() + '</div></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Language</span><select onchange="D.language=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
