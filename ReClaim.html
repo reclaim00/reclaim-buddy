@@ -1132,7 +1132,7 @@ function assessmentHTML() {
     D.assessmentProgress = new Array(ASSESS_QUESTIONS.length).fill(null);
   }
   h += '<div class="card" id="quiz" data-prefix="q">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span id="quiz-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + ASSESS_QUESTIONS.length + '</span><span id="quiz-progress-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span id="quiz-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + ASSESS_TOTAL_STEPS + '</span><span id="quiz-progress-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
   h += '<div class="progress-bar" style="margin-bottom:10px"><div class="fill" id="quiz-progress-bar" style="width:0%"></div></div>';
   h += '<div id="quiz-question"></div>';
   h += '<div style="display:flex;gap:8px;margin-top:10px" id="quiz-nav">';
@@ -1156,21 +1156,27 @@ function quizGoTo(idx, prefix) {
   var nextEl = document.getElementById('quiz-next');
   var submitEl = document.getElementById('quiz-submit');
   if (!qEl) return;
-  var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
-  qEl.innerHTML = '<div><p style="font-weight:600;font-size:15px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML(prefix + idx, savedVal) + '</div>';
-  if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_QUESTIONS.length;
-  var pct = Math.round(((idx+1) / ASSESS_QUESTIONS.length) * 100);
+  var isLast = idx >= ASSESS_QUESTIONS.length;
+  if (isLast) {
+    qEl.innerHTML = '<div class="card" style="background:var(--primary-light);border-left:3px solid var(--primary);padding:12px;margin:4px 0"><p style="font-weight:600;font-size:14px;margin-bottom:6px">' + (idx+1) + '. On average, how much did you spend per day on your addiction?</p><p style="font-size:11px;color:var(--muted);margin-bottom:8px">This helps us track how much you\'ve saved since starting your journey.</p><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px;font-weight:700">$</span><input type="number" id="quiz-daily-cost" value="' + (D.dailyCost || '') + '" min="0" step="0.01" placeholder="0.00" style="flex:1;font-size:16px;padding:10px 12px;margin:0;text-align:center"></div></div>';
+    if (stepEl) stepEl.textContent = 'Question ' + ASSESS_TOTAL_STEPS + ' of ' + ASSESS_TOTAL_STEPS;
+  } else {
+    var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
+    qEl.innerHTML = '<div><p style="font-weight:600;font-size:15px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML(prefix + idx, savedVal) + '</div>';
+    if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
+  }
+  var pct = Math.round(((idx+1) / ASSESS_TOTAL_STEPS) * 100);
   if (barEl) barEl.style.width = pct + '%';
   if (pctEl) pctEl.textContent = pct + '%';
   if (prevEl) prevEl.style.display = idx === 0 ? 'none' : 'block';
-  if (nextEl) nextEl.style.display = idx >= ASSESS_QUESTIONS.length - 1 ? 'none' : 'block';
-  if (submitEl) submitEl.style.display = idx >= ASSESS_QUESTIONS.length - 1 ? 'block' : 'none';
-  setTimeout(function(){ restoreQuizVisuals(prefix); }, 50);
+  if (nextEl) nextEl.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'none' : 'block';
+  if (submitEl) submitEl.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'block' : 'none';
+  if (!isLast) setTimeout(function(){ restoreQuizVisuals(prefix); }, 50);
 }
 
 function quizNext() {
   saveQuizProgress(document.getElementById('quiz').getAttribute('data-prefix'));
-  if (QUIZ_CURRENT < ASSESS_QUESTIONS.length - 1) {
+  if (QUIZ_CURRENT < ASSESS_TOTAL_STEPS - 1) {
     quizGoTo(QUIZ_CURRENT + 1, document.getElementById('quiz').getAttribute('data-prefix'));
   }
 }
@@ -1195,6 +1201,8 @@ function submitAssessment() {
     var sel = document.querySelector('input[name="' + prefix + i + '"]:checked');
     D.assessmentResult.answers.push(sel ? parseInt(sel.value) : 0);
   }
+  var costEl = document.getElementById('quiz-daily-cost');
+  if (costEl) D.dailyCost = parseFloat(costEl.value) || 0;
   D.assessmentProgress = null;
   saveData();
   setTimeout(function(){ showLetterPrompt('assessment'); }, 500);
@@ -1220,7 +1228,7 @@ function showAssessmentAfterSignIn() {
   h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:24px">🔍</div><div><h3 style="font-size:18px;font-weight:700;margin:0">Addiction Assessment</h3><p style="font-size:12px;color:var(--muted);margin:2px 0 0">Help us understand where you are on your journey</p></div></div>';
   h += sev;
   if (!D.assessmentTaken) {
-    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span id="osi-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + ASSESS_QUESTIONS.length + '</span><span id="osi-progress-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span id="osi-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + (ASSESS_QUESTIONS.length + 1) + '</span><span id="osi-progress-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
     h += '<div class="progress-bar" style="margin-bottom:8px"><div class="fill" id="osi-progress-bar" style="width:0%"></div></div>';
     h += '<div id="osi-question"></div>';
     h += '<div style="display:flex;gap:8px;margin-top:10px">';
@@ -1239,25 +1247,32 @@ function showAssessmentAfterSignIn() {
 }
 
 var OSI_CURRENT = 0;
+var ASSESS_TOTAL_STEPS = ASSESS_QUESTIONS.length + 1;
 function osiGoTo(idx) {
   OSI_CURRENT = idx;
   var qEl = document.getElementById('osi-question');
   if (!qEl) return;
-  var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
-  qEl.innerHTML = '<div><p style="font-weight:600;font-size:14px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML('oq' + idx, savedVal) + '</div>';
   var stepEl = document.getElementById('osi-step');
   var barEl = document.getElementById('osi-progress-bar');
   var pctEl = document.getElementById('osi-progress-pct');
-  if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_QUESTIONS.length;
-  var pct = Math.round(((idx+1) / ASSESS_QUESTIONS.length) * 100);
+  var isLast = idx >= ASSESS_QUESTIONS.length;
+  if (isLast) {
+    qEl.innerHTML = '<div class="card" style="background:var(--primary-light);border-left:3px solid var(--primary);padding:12px;margin:4px 0"><p style="font-weight:600;font-size:14px;margin-bottom:6px">' + (idx+1) + '. On average, how much did you spend per day on your addiction?</p><p style="font-size:11px;color:var(--muted);margin-bottom:8px">This helps us track how much you\'ve saved since starting your journey.</p><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px;font-weight:700">$</span><input type="number" id="osi-daily-cost" value="' + (D.dailyCost || '') + '" min="0" step="0.01" placeholder="0.00" style="flex:1;font-size:16px;padding:10px 12px;margin:0;text-align:center"></div></div>';
+    if (stepEl) stepEl.textContent = 'Question ' + ASSESS_TOTAL_STEPS + ' of ' + ASSESS_TOTAL_STEPS;
+  } else {
+    var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
+    qEl.innerHTML = '<div><p style="font-weight:600;font-size:14px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML('oq' + idx, savedVal) + '</div>';
+    if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
+  }
+  var pct = Math.round(((idx+1) / ASSESS_TOTAL_STEPS) * 100);
   if (barEl) barEl.style.width = pct + '%';
   if (pctEl) pctEl.textContent = pct + '%';
   document.getElementById('osi-prev').style.display = idx === 0 ? 'none' : 'block';
-  document.getElementById('osi-next').style.display = idx >= ASSESS_QUESTIONS.length - 1 ? 'none' : 'block';
-  document.getElementById('osi-submit').style.display = idx >= ASSESS_QUESTIONS.length - 1 ? 'block' : 'none';
-  setTimeout(function(){ restoreQuizVisuals('oq'); }, 50);
+  document.getElementById('osi-next').style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'none' : 'block';
+  document.getElementById('osi-submit').style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'block' : 'none';
+  if (!isLast) setTimeout(function(){ restoreQuizVisuals('oq'); }, 50);
 }
-function osiNext() { saveQuizProgress('oq'); if (OSI_CURRENT < ASSESS_QUESTIONS.length - 1) osiGoTo(OSI_CURRENT + 1); }
+function osiNext() { saveQuizProgress('oq'); if (OSI_CURRENT < ASSESS_TOTAL_STEPS - 1) osiGoTo(OSI_CURRENT + 1); }
 function osiPrev() { if (OSI_CURRENT > 0) osiGoTo(OSI_CURRENT - 1); }
 
 function submitOverlayAssessment(btn) {
@@ -1274,6 +1289,8 @@ function submitOverlayAssessment(btn) {
     var sel = document.querySelector('input[name="' + prefix + i + '"]:checked');
     D.assessmentResult.answers.push(sel ? parseInt(sel.value) : 0);
   }
+  var costEl = document.getElementById('osi-daily-cost');
+  if (costEl) D.dailyCost = parseFloat(costEl.value) || 0;
   D.assessmentProgress = null;
   saveData();
   var overlay = btn.closest('.overlay');
