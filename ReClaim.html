@@ -337,7 +337,7 @@ function defaultData() {
     savedMusic: [],
     lastReportDate: null,
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
-    notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
+    notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00' },
     chatHistory: [], reflectionCount: 0, sosUsed: false, letters: [], assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], dailyCost: 0, reminders: []
   };
 }
@@ -3790,7 +3790,6 @@ function showAddictionPrompt() {
 
 // ====== REMINDERS ======
 var REPEAT_OPTIONS = [{v:'none',l:'Never'},{v:'daily',l:'Daily'},{v:'weekly',l:'Weekly'},{v:'monthly',l:'Monthly'}];
-
 function remindersHTML() {
   var h = '';
   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0"><h2 style="font-size:20px;font-weight:700;margin:0">Reminders</h2><button class="btn btn-sm btn-primary" onclick="showNewReminder()" style="width:auto;padding:8px 16px">+ New</button></div>';
@@ -3820,12 +3819,10 @@ function remindersHTML() {
   h += '<button class="btn btn-outline" onclick="goTo(\'more\')" style="margin-top:4px">Back to More</button>';
   return h;
 }
-
 function isPastReminder(r) {
   var dtStr = r.date + (r.time ? 'T'+r.time : 'T23:59');
   return new Date(dtStr) < new Date();
 }
-
 function formatReminderDate(date, time) {
   if (!date) return '';
   var parts = date.split('-');
@@ -3837,7 +3834,6 @@ function formatReminderDate(date, time) {
   if (time) label += ' at '+time;
   return label;
 }
-
 function showNewReminder(editId) {
   var r = (editId!==undefined && D.reminders && D.reminders[editId]) ? D.reminders[editId] : null;
   var overlay = document.createElement('div');
@@ -3864,7 +3860,6 @@ function showNewReminder(editId) {
     document.getElementById('rem-date').value = def;
   }
 }
-
 function saveReminder(btn, editId) {
   var title = document.getElementById('rem-title');
   var date = document.getElementById('rem-date');
@@ -3888,7 +3883,6 @@ function saveReminder(btn, editId) {
   btn.closest('.overlay').remove();
   render();
 }
-
 function deleteReminder(id) {
   if (!D.reminders||!D.reminders[id]) return;
   if (!confirm('Delete this reminder?')) return;
@@ -3896,7 +3890,6 @@ function deleteReminder(id) {
   saveData();
   render();
 }
-
 function exportReminderICS(id) {
   var r = D.reminders&&D.reminders[id];
   if (!r) return;
@@ -3913,20 +3906,13 @@ function exportReminderICS(id) {
   else if (r.repeat==='weekly') rrule = 'RRULE:FREQ=WEEKLY';
   else if (r.repeat==='monthly') rrule = 'RRULE:FREQ=MONTHLY';
   var icsLines = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//Re.Claim//Reminders//EN',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
+    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Re.Claim//Reminders//EN',
+    'CALSCALE:GREGORIAN','METHOD:PUBLISH',
     'BEGIN:VEVENT',
-    'UID:reminder-'+r.id+'@reclaim',
-    'DTSTAMP:'+dtStamp,
-    'DTSTART:'+dtStart,
+    'UID:reminder-'+r.id+'@reclaim','DTSTAMP:'+dtStamp,'DTSTART:'+dtStart,
     'SUMMARY:'+(r.title||'').replace(/\n/g,'\\n'),
     r.notes ? 'DESCRIPTION:'+r.notes.replace(/\n/g,'\\n') : '',
-    rrule,
-    'END:VEVENT',
-    'END:VCALENDAR'
+    rrule,'END:VEVENT','END:VCALENDAR'
   ];
   var ics = icsLines.filter(function(l){return l}).join('\r\n');
   var blob = new Blob([ics],{type:'text/calendar;charset=utf-8'});
@@ -3939,7 +3925,6 @@ function exportReminderICS(id) {
   document.body.removeChild(a);
   setTimeout(function(){URL.revokeObjectURL(url)},1000);
 }
-
 // ====== MORE PAGE ======
 function moreHTML() {
   var h = '';
@@ -4048,7 +4033,6 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += notifRowHTML('craving', '⚠️', 'Craving Check-In', 'Log & manage cravings');
   h += notifRowHTML('journal', '📝', 'Journal Prompt', 'Write about your day');
   h += notifRowHTML('breathe', '🫁', 'Breathing Exercise', 'Take a mindful moment');
-  h += reminderNotifRowHTML();
   h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">Export My Data</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">Import Data</button>';
@@ -4486,11 +4470,6 @@ function notifRowHTML(key, emoji, label, desc) {
   var timeVal = n[timeKey] || (key==='morning'?'08:00':key==='evening'?'20:00':key==='craving'?'14:00':key==='journal'?'12:00':'10:00');
   return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+emoji+'</span><div><div style="font-size:13px;font-weight:600">'+label+'</div><div style="font-size:11px;color:var(--muted)">'+desc+'</div></div></div><div style="display:flex;align-items:center;gap:8px"><input type="time" value="'+timeVal+'" onchange="D.notifications.'+timeKey+'=this.value;saveData()" style="width:auto;padding:4px 8px;font-size:12px;margin:0;border-radius:8px;border:1px solid var(--border)"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.'+key+'=this.checked;if(this.checked)requestNotif();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
 }
-function reminderNotifRowHTML() {
-  var n = D.notifications || {};
-  var enabled = n.reminderNotif !== false;
-  return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">&#9200;</span><div><div style="font-size:13px;font-weight:600">Reminders</div><div style="font-size:11px;color:var(--muted)">Get notified when a reminder is due</div></div></div><div style="display:flex;align-items:center;gap:8px"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.reminderNotif=this.checked;if(this.checked)requestNotif();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
-}
 function requestNotif() {
   if (!("Notification" in window)) return;
   if (Notification.permission === "default") Notification.requestPermission();
@@ -4528,24 +4507,8 @@ function checkNotifications() {
     swNotify('Time to Breathe', 'Take a 2-minute breathing exercise. Inhale calm, exhale stress.', 'https://emojicdn.elk.sh/%F0%9F%AB%81', 'reclaim-breathe');
     D._notifiedBreathe = true;
   }
-  // Check due reminders
-  if (n.reminderNotif !== false && D.reminders) {
-    for (var ri=0;ri<D.reminders.length;ri++) {
-      var rr = D.reminders[ri];
-      if (rr.notified) continue;
-      var rDtStr = rr.date + (rr.time ? 'T'+rr.time : 'T23:59');
-      if (new Date(rDtStr) <= now) {
-        swNotify('Reminder: '+(rr.title||'Reminder'), rr.notes || 'You have a reminder due.', 'https://emojicdn.elk.sh/%F0%9F%93%85', 'reclaim-reminder-'+ri);
-        rr.notified = true;
-        saveData();
-      }
-    }
-  }
   // Reset flags at midnight
-  if (hm === '00:01') {
-    D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false;
-    if (D.reminders) D.reminders.forEach(function(rr){if(rr.repeat&&rr.repeat!=='none')rr.notified=false});
-  }
+  if (hm === '00:01') { D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false; }
 }
 setInterval(checkNotifications, 60000);
 
