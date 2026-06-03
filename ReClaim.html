@@ -337,8 +337,8 @@ function defaultData() {
     savedMusic: [],
     lastReportDate: null,
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
-    notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00' },
-    chatHistory: [], reflectionCount: 0, sosUsed: false, letters: [], assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], dailyCost: 0
+    notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
+    chatHistory: [], reflectionCount: 0, sosUsed: false, letters: [], assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], dailyCost: 0, reminders: []
   };
 }
 
@@ -1740,46 +1740,138 @@ function artDailyRoutineHTML() {
 // Song recommendations by emotional tone
 var REFLECT_SONGS = {};
 var SONG_POOL_GENERATED = false;
-var ALL_ARTISTS = {
-  sad: ['Michael Jackson','The Beach Boys','The Doobie Brothers','Lady Gaga','Adele','Coldplay','Radiohead','Sam Smith','Lewis Capaldi','Billie Eilish','The Beatles','Eric Clapton','Johnny Cash','Jeff Buckley','Sinead O\'Connor','Passenger','Sia','Selena Gomez','Bruno Mars','Hozier','Tracy Chapman','R.E.M.','Nirvana','Bon Iver','Elliott Smith','Damien Rice','James Blunt','Norah Jones','Lana Del Rey','The Smiths','Joy Division','Nick Drake','Cat Power','Mazzy Star','Red Hot Chili Peppers','Alice In Chains','Soundgarden','Pearl Jam','Stone Temple Pilots','Rise Against','Three Days Grace','Breaking Benjamin','Evanescence','Linkin Park','Korn','Deftones','System of a Down','Tool','A Perfect Circle','Pink Floyd','The Cure','Depeche Mode','Radiohead','Moby','Massive Attack','Portishead','Tricky','UNKLE','Boards of Canada','Aphex Twin','Ryuichi Sakamoto','Max Richter','Ludovico Einaudi','Yiruma','Joep Beving','Nils Frahm','Olafur Arnalds','Dustin O\'Halloran','Jóhann Jóhannsson','Clint Mansell','Hans Zimmer','Alexandre Desplat','Ennio Morricone','Philip Glass','Steve Reich','John Cage','Arvo Pärt','Henryk Górecki','Samuel Barber','Johann Sebastian Bach','Wolfgang Amadeus Mozart','Ludwig van Beethoven','Frédéric Chopin','Franz Schubert','Pyotr Ilyich Tchaikovsky','Claude Debussy','Miles Davis','John Coltrane','Bill Evans','Dave Brubeck','Thelonious Monk','Charles Mingus','Duke Ellington','Count Basie','Louis Armstrong','Ella Fitzgerald','Billie Holiday','Nina Simone','Aretha Franklin','Ray Charles','Otis Redding','Sam Cooke','Marvin Gaye','Stevie Wonder','Al Green','Curtis Mayfield','James Brown','The Temptations','The Drifters','Smokey Robinson','Lionel Richie','Luther Vandross','Anita Baker','Whitney Houston','Mariah Carey','Toni Braxton','Boyz II Men','Brian McKnight','R. Kelly','Usher','Chris Brown','Trey Songz','Ne-Yo','John Legend','Alicia Keys','Mary J. Blige','Lauryn Hill','Erykah Badu','Jill Scott','India.Arie','Angie Stone','Maxwell','D\'Angelo','Erykah Badu','Musiq Soulchild','Anthony Hamilton','Raphael Saadiq','Charlie Wilson','Bilal','Marsha Ambrosius','Ledisi','Lalah Hathaway','Corinne Bailey Rae','Sade','George Michael','Elton John','Billy Joel','Bruce Springsteen','Bob Dylan','Leonard Cohen','Tom Waits','Nick Cave','Scott Walker','David Bowie','Lou Reed','Iggy Pop','Patti Smith','The Velvet Underground','The Doors','Janis Joplin','Jimi Hendrix','Eric Clapton','Jeff Beck','Jimmy Page','Carlos Santana','Prince','Lenny Kravitz','Gary Clark Jr.','John Mayer','Jack Johnson','Ben Harper','Dave Matthews','Jason Mraz','Colbie Caillat','Sara Bareilles','Ingrid Michaelson','Regina Spektor','Feist','Kate Nash','Lily Allen','Amy Winehouse','Duffy','Paloma Faith','Joss Stone','Macy Gray','Mavis Staples','Sharon Jones','Bettye LaVette','Etta James','Gladys Knight','Patti LaBelle','Chaka Khan','Tina Turner','Donna Summer','Cher','Cyndi Lauper','Madonna','Janet Jackson','Paula Abdul','Taylor Dayne','Debbie Gibson','Tiffany','Britney Spears','Christina Aguilera','Pink','Kesha','Lady Gaga','Katy Perry','Rihanna','Beyoncé','Jennifer Lopez','Shakira','Gwen Stefani','No Doubt','Alanis Morissette','Fiona Apple','Tori Amos','Sinéad O\'Connor','Björk','Kate Bush','Annie Lennox','Siouxsie Sioux','Debbie Harry','Grace Jones','Sade','Lauryn Hill','Missy Elliott','Queen Latifah','Lil\' Kim','Foxy Brown','Eve','Trina','Remy Ma','Nicki Minaj','Cardi B','Megan Thee Stallion','Doja Cat','Saweetie','City Girls','Latto','Flo Milli','Coi Leray','Ice Spice','Sexyy Red','BIA','Kaliii','Big Boss Vette','Erica Banks','BeatKing','Megan Thee Stallion'],
-  angry: ['Lady Gaga','Charli XCX','Linkin Park','Eminem','Rage Against The Machine','Metallica','Foo Fighters','Nirvana','Guns N\' Roses','Limp Bizkit','Slipknot','System of a Down','Korn','Deftones','Marilyn Manson','Nine Inch Nails','Tool','A Perfect Circle','Rammstein','Pantera','Slayer','Megadeth','Anthrax','Testament','Exodus','Overkill','Motorhead','Black Sabbath','Ozzy Osbourne','Dio','Judas Priest','Iron Maiden','Accept','Saxon','Helloween','Blind Guardian','Gamma Ray','HammerFall','Sabaton','Powerwolf','DragonForce','Children of Bodom','Arch Enemy','In Flames','At the Gates','Dark Tranquillity','Soilwork','Opeth','Meshuggah','Gojira','Mastodon','Lamb of God','Trivium','Killswitch Engage','As I Lay Dying','All That Remains','Unearth','Shadows Fall','The Black Dahlia Murder','Whitechapel','Cannibal Corpse','Morbid Angel','Deicide','Behemoth','Dimmu Borgir','Cradle of Filth','Emperor','Mayhem','Burzum','Darkthrone','Immortal','Satyricon','Enslaved','Bathory','Amon Amarth','Ensiferum','Finntroll','Korpiklaani','Eluveitie','Arkona','Turisas','Alestorm','Gloryhammer','Twilight Force','Rhapsody of Fire','Nightwish','Epica','Within Temptation','After Forever','Delain','Leaves\' Eyes','Xandria','Sirenia','Tristania','The Sins of Thy Beloved','Trail of Tears','Draconian','Swallow the Sun','My Dying Bride','Paradise Lost','Anathema','Katatonia','Insomnium','Be\'lakor','Ne Obliviscaris','Wilderun','Xanthochroid','Persefone','Obscura','Beyond Creation','First Fragment','Archspire','Origin','Spawn of Possession','Brain Drill','Fleshgod Apocalypse','Septicflesh','Ex Deo','Vader','Behemoth','Hate','Decapitated','Vital Remains','Nile','Hour of Penance','Decrepit Birth','Suffocation','Dying Fetus','Cannibal Corpse','Vile','Broken Hope','Internal Bleeding','Pyrexia','Devourment','Slam','Kraanium','Cerebral Incubation','Cystgurgle','Rectal Smegma','Fecal Disgorge','Guttural Slug','Cenotaph','Disgorge','Defeated Sanity','Beneath the Massacre','Cryptopsy','Origin','Spawn of Possession','Brain Drill','Rings of Saturn','The Faceless','Necrophagist','Obscura','Beyond Creation','First Fragment','Archspire','Origin','Spawn of Possession'],
-  anxious: ['Tame Impala','Pink Floyd','Massive Attack','Moby','The xx','Bon Iver','Sigur Rós','Radiohead','Aphex Twin','Boards of Canada','Brian Eno','Harold Budd','Steve Roach','Enya','Clannad','Enya','Enya','Secret Garden','Yanni','Kitaro','Vangelis','Jean-Michel Jarre','Mike Oldfield','Tangerine Dream','Klaus Schulze','Ash Ra Tempel','Popol Vuh','Cluster','Harmonia','Neu!','La Düsseldorf','Kraftwerk','Can','Faust','Amon Düül II','Guru Guru','Embryo','Agitation Free','Eloy','Nektar','Grobschnitt','Stern-Combo Meißen','Karat','Puhdys','City','Keimzeit','Die Toten Hosen','Die Ärzte','Die Sterne','Tocotronic','Blumfeld','Element of Crime','Wir sind Helden','Juli','Silbermond','Revolverheld','Johannes Oerding','Peter Fox','Seeed','Culcha Candela','Deichkind','Fettes Brot','Die Fantastischen Vier','Absolute Beginner','Dendemann','Samy Deluxe','Kool Savas','Sido','Bushido','Kollegah','Farid Bang','Capital Bra','Ufo361','Apache 207','RIN','Loredana','Nimo','Summer Cem','KC Rebell','PA Sports','Kianush','Fard','Manuellsen','Eko Fresh','Azad','Kontra K','Fero47','Veysel','Mero','Luciano','Miksu','Macloud','Bausa','Loredana','Nura','Badmómzjay','Lea','Lena','Max Giesinger','Andreas Bourani','Tim Bendzko','Johannes Strate','Clueso','Sido','Nisse','Joris','Wincent Weiss','Lukas Rieger','Benjamin Grosvenor','Yann Tiersen','Michael Nyman','Max Richter','Ludovico Einaudi','Alexandre Desplat','Hans Zimmer','John Williams','Howard Shore','James Horner','John Barry','Ennio Morricone','Danny Elfman','Alan Silvestri','Michael Giacchino','Jerry Goldsmith','Bernard Herrmann','Alexandre Desplat','Thomas Newman','Randy Newman','Mark Isham','Cliff Martinez','Trent Reznor','Atticus Ross','John Carpenter','Andrew Hewitt','Brittany Allen','Joseph Bishara','Marco Beltrami','Brian Tyler','Ramin Djawadi','Bear McCreary','Jóhann Jóhannsson','Hildur Guðnadóttir','Carter Burwell','Jonny Greenwood','Alexandre Desplat','Nicholas Britell','Ludwig Göransson','Hans Zimmer','Harry Gregson-Williams','Steve Jablonsky','Tom Holkenborg','Bobby Krlic','Ben Salisbury','Geoff Barrow','Johann Johannsson','Colin Stetson','Ben Frost','Tim Hecker','William Basinski','Eli Keszler','Oneohtrix Point Never','Arca','Holly Herndon','Matmos','Autechre','Squarepusher','Aphex Twin','Boards of Canada','Plaid','Clark','µ-Ziq','Luke Vibert','Jimi Tenor','Todd Terje','Lindstrøm','Prins Thomas','Giorgio Moroder','Kraftwerk','Depeche Mode','New Order','Pet Shop Boys','Erasure','Yazoo','The Human League','Heaven 17','Soft Cell','Gary Numan','Tubeway Army','John Foxx','Ultravox','Visage','Japan','Roxy Music','Brian Eno','David Bowie','Krafterk','Tangerine Dream','Vangelis','Jean-Michel Jarre','Mike Oldfield','Yanni','Enya','Secret Garden','Clannad','Enya','Enya','Enya'],
-  happy: ['Michael Jackson','Queen','Jamiroquai','Masayoshi Takanaka','The Beach Boys','The Doobie Brothers','Tame Impala','Lady Gaga','Charli XCX','Katy Perry','Pharrell Williams','Taylor Swift','Bruno Mars','Katy Perry','Queen','The Beatles','Journey','Black Eyed Peas','OutKast','Miley Cyrus','Justin Timberlake','Uptown Funk','Mark Ronson','Beyoncé','Lady Gaga','Rihanna','Shakira','Jennifer Lopez','Pitbull','Flo Rida','Ke$ha','Avicii','David Guetta','Calvin Harris','Daft Punk','The Weeknd','Justin Bieber','Ariana Grande','Dua Lipa','Ed Sheeran','Shawn Mendes','Camila Cabello','Harry Styles','Lizzo','Lil Nas X','Doja Cat','Nicki Minaj','Cardi B','Megan Thee Stallion','Saweetie','City Girls','Latto','Yung Gravy','bbno$','Lil Dicky','Jack Harlow','Post Malone','Travis Scott','Drake','Kendrick Lamar','J. Cole','Chance the Rapper','Anderson .Paak','Bruno Mars','Pharrell Williams','Mark Ronson','Daft Punk','Nile Rodgers','Chic','Earth Wind & Fire','Kool & the Gang','KC & the Sunshine Band','The Trammps','Bee Gees','ABBA','The Jackson 5','Michael Jackson','Prince','Rick James','Parliament','Funkadelic','Sly & the Family Stone','Tower of Power','Average White Band','Wild Cherry','Brick','Cameo','Zapp','Roger Troutman','The Time','Morris Day','Jesse Johnson','Alexander O\'Neal','Cherrelle','Janet Jackson','Paula Abdul','Taylor Dayne','Debbie Gibson','Tiffany','Britney Spears','Christina Aguilera','Pink','Kesha','Lady Gaga','Katy Perry','Rihanna','Beyoncé','Jennifer Lopez','Shakira','Gwen Stefani','No Doubt','Alanis Morissette','Fiona Apple','Tori Amos','Sinéad O\'Connor','Björk','Kate Bush','Annie Lennox','Siouxsie Sioux','Debbie Harry','Grace Jones','Sade','Lauryn Hill','Missy Elliott','Queen Latifah','Lil\' Kim','Foxy Brown','Eve','Trina','Remy Ma','Nicki Minaj','Cardi B','Megan Thee Stallion','Doja Cat','Saweetie','City Girls','Latto','Flo Milli','Coi Leray','Ice Spice','Sexyy Red','BIA','Kaliii','Big Boss Vette','Erica Banks','Megan Thee Stallion','Dua Lipa','Artemas','Tate McRae','Charlie XCX','Bebe Rexha','Ava Max','Daya','Tove Lo','Tove Styrke','MØ','Sigrid','Astrid S','Aurora','Kacey Musgraves','Zach Bryan','Morgan Wallen','Luke Combs','Lainey Wilson','Bailey Zimmerman','Jelly Roll','HARDY','Tyler Hubbard','Dierks Bentley','Tim McGraw','Faith Hill','Keith Urban','Blake Shelton','Carrie Underwood','Miranda Lambert','Eric Church','Jason Aldean','Luke Bryan','Thomas Rhett','Chris Stapleton','Sturgill Simpson','Tyler Childers','Charley Crockett','Billy Strings','Molly Tuttle','Sierra Ferrell','Marcus King','Blackberry Smoke','The Steel Woods','Whiskey Myers','Turnpike Troubadours','Flatland Cavalry','Zach Bryan','Koe Wetzel','Giovannie and the Hired Guns','Pecos & the Rooftops','Treaty Oak Revival','49 Winchester','Stephen Wilson Jr.','Wyatt Flores','Evan Honer','Jake Kohn','Max McNown','The Red Clay Strays','Brent Cobb','Cole Chaney','Logan Halstead','Cole Barnhill','Kyle Gray','Jarrod Morris','Sawyer Hill','Ian Samuel','Cash Milton','Austin Neal','Graham Hagins','Noah Henderson','William Beck'],
-  grateful: ['Michael Jackson','The Beatles','Louis Armstrong','Bill Withers','Ben E. King','Israel Kamakawiwo\'ole','Bob Marley','Cat Stevens','Jack Johnson','Donavon Frankenreiter','Ben Harper','Xavier Rudd','Michael Franti','Trevor Hall','Matisyahu','Rebelution','Slightly Stoopid','Sublime','Stick Figure','Iration','The Green','Tribal Seeds','Groundation','Steel Pulse','Third World','Toots and the Maytals','Jimmy Cliff','Peter Tosh','Burning Spear','Bunny Wailer','Lee \"Scratch\" Perry','U-Roy','Dennis Brown','Gregory Isaacs','Barrington Levy','Eek-A-Mouse','Yellowman','Shabba Ranks','Lady Saw','Patra','Sean Paul','Beenie Man','Buju Banton','Capleton','Sizzla','Bounty Killer','Elephant Man','Vybz Kartel','Popcaan','Alkaline','Koffee','Konshens','Busy Signal','Mr. Vegas','Spice','Shenseea','Skillibeng','Jada Kingdom','Chronic Law','Laa Lee','Skeng','Intence','Mavado','Aidonia','Dexta Daps','Teejay','Prince Allah','Richie Spice','Anthony B','Turbulence','Queen Ifrica','Etana','Tarrus Riley','Romaine Virgo','Protoje','Lila Iké','Jah9','Chronixx','Keznamdi','Mortimer','Imeru Tafari','Samory I','Busy Signal','Alborosie','Gentleman','Patrice','Seeed','Peter Fox','Marteria','Casper','Kraftklub','Die Toten Hosen','Die Ärzte','Die Sterne','Tocotronic','Blumfeld','Element of Crime','Wir sind Helden','Juli','Silbermond','Revolverheld','Johannes Oerding','Peter Fox','Seeed','Culcha Candela','Deichkind','Fettes Brot','Die Fantastischen Vier','Absolute Beginner','Dendemann','Samy Deluxe','Kool Savas','Sido','Bushido','Kollegah','Farid Bang','Capital Bra','Ufo361','Apache 207','RIN','Loredana','Nimo','Summer Cem','KC Rebell','PA Sports','Kianush','Fard','Manuellsen','Eko Fresh','Azad','Kontra K','Michael Jackson','Prince','Queen','Bruno Mars'],
-  reflective: ['The Beatles','The Doobie Brothers','Tame Impala','Fleetwood Mac','Bon Iver','Lord Huron','Jeff Buckley','John Lennon','Queen','Pink Floyd','Led Zeppelin','Eagles','Bob Dylan','Neil Young','Joni Mitchell','Paul Simon','Van Morrison','Leonard Cohen','Tom Waits','Nick Drake','Elliott Smith','Jeff Buckley','Joni Mitchell','Bob Dylan','Neil Young','Leonard Cohen','Paul Simon','Van Morrison','Nick Cave','PJ Harvey','St. Vincent','Tori Amos','Fiona Apple','Regina Spektor','Aimee Mann','Joanna Newsom','Cat Power','Mazzy Star','The Cowboy Junkies','The Sundays','The Cranberries','The Smiths','Morrissey','R.E.M.','The National','Arcade Fire','Vampire Weekend','Modest Mouse','Death Cab for Cutie','The Shins','Broken Social Scene','Feist','The New Pornographers','Sufjan Stevens','The Microphones','Mount Eerie','The Mountain Goats','Andrew Bird','The Decemberists','The Fray','Snow Patrol','Keane','U2','Coldplay','Radiohead','Muse','The Killers','Arctic Monkeys','The Strokes','Interpol','Editors','White Lies','Editors','The National','Bon Iver','Fleet Foxes','Band of Horses','The Head and the Heart','The Lumineers','Mumford & Sons','Edward Sharpe & The Magnetic Zerose','The Avett Brothers','The Civil Wars','The Oh Hellos','The Paper Kites','Vance Joy','The Teskey Brothers','The War on Drugs','Kurt Vile','Real Estate','Mac DeMarco','Beach Fossils','DIIV','Wild Nothing','The Radio Dept.','The Rapture','LCD Soundsystem','Tame Impala','MGMT','Empire of the Sun','Pond','GUM','Unknown Mortal Orchestra','King Gizzard & the Lizard Wizard','Osees','Thee Oh Sees','Ty Segall','Mild High Club','Drugdealer','Strawberry Alarm Clock','Ultimate Painting','Mood rings','HOMESHAKE','Men I Trust','Crumb','Melody\'s Echo Chamber','La Femme','L\'Impératrice','Paradis','Étienne Daho','Joe Le Taxi','Vanessa Paradis','Serge Gainsbourg','Françoise Hardy','Jacques Brel','Édith Piaf','Charles Aznavour','Georges Brassens','Léo Ferré','Alain Souchon','Maxime Le Forestier','Francis Cabrel','Renaud','Jean-Jacques Goldman','Michel Sardou','Patrick Bruel','Johnny Hallyday','Jacques Dutronc','Gainsbourg','Bashung','Higelin','Miossec','Dominique A','Mathieu Boogaerts','Alex Beaupain','Bertrand Belin','La Femme','Juliette Armanet','Clara Luciani','Angèle','Pomme','Suzane','Zaho de Sagazan','Yelle','Coeur de Pirate','Lorie','Jenifer','Nolwenn','Larusso','Alizée'],
-  hopeful: ['Michael Jackson','Queen','Jamiroquai','Masayoshi Takanaka','The Beach Boys','The Doobie Brothers','Tame Impala','Lady Gaga','Katy Perry','Natasha Bedingfield','Andra Day','Sara Bareilles','Rachel Platten','Katy Perry','Survivor','Kanye West','The Script','Bon Jovi','Queen','Michael Jackson','Prince','Bruno Mars','U2','Imagine Dragons','OneRepublic','Coldplay','The Killers','Muse','Arcade Fire','The National','Vampire Weekend','Foster the People','Portugal. The Man','Glass Animals','AJR','Fitz and the Tantrums','Of Monsters and Men','Bastille','American Authors','X Ambassadors','AWOLNATION','twenty one pilots','Panic! at the Disco','Fall Out Boy','My Chemical Romance','Paramore','Flyleaf','Evanescence','Breaking Benjamin','Daughtry','Skillet','Thousand Foot Krutch','Disciple','TFK','Demon Hunter','Project 86','Blindside','Decyfer Down','Pillar','Day of Fire','P.O.D.','Creed','Shinedown','Theory of a Deadman','Three Days Grace','Saint Asonia','Art of Dying','Red','Chevelle','Seether','Breaking Benjamin','10 Years','Earshot','Cold','Trust Company','The Exies','Default','Socialburn','Eve 6','Vertical Horizon','Tantric','7-10 Split','Lifer','Die Trying','Red Jumpsuit Apparatus','Story of the Year','The Used','Atreyu','Avenged Sevenfold','Bullet for My Valentine','Trivium','All That Remains','Killswitch Engage','Miss May I','As I Lay Dying','Parkway Drive','August Burns Red','The Devil Wears Prada','Of Mice & Men','Bring Me the Horizon','Enter Shikari','A Day to Remember','Four Year Strong','The Wonder Years','The Story So Far','Neck Deep','State Champs','Knuckle Puck','Real Friends','Like Pacific','Northbound','Broadside','Between You & Me','We Set Signals','With Confidence','Stand Atlantic','Mat Kerekes','House Parties','Young Culture','Heart Attack Man','Youth Fountain','Free Throw','Hot Mulligan','Citizen','Turnover','Balance and Composure','Tigers Jaw','The Front Bottoms','Modern Baseball','The Hotelier','Pup','Jeff Rosenstock','Korean Beef','Rozwell Kid','Great Grandpa','Remember Sports','Bad Bad Hats','Happyness','Field Medic','Honeywater','Florist','Tomberlin','Many Rooms','Katie Von Schleicher','Frankie Cosmos','Diet Cig','The Regrettes','The Beths','Alvvays','Hatchie','Snail Mail','Lomelda','Soccer Mommy','boygenius','Julien Baker','Phoebe Bridgers','Lucy Dacus','Big Thief','Adrianne Lenker','Julia Sanders','Sharon Van Etten','Angel Olsen','Weyes Blood','Lana Del Rey','Lorde','FKA twigs','Solange','Beyoncé','Rihanna','H.E.R.','Summer Walker','Jhené Aiko','Tinashe','Kehlani','Ella Mai','Ari Lennox','Jorja Smith','Mahalia','Tiana Major9','Syd','Solange','Erykah Badu','Jill Scott','Lauryn Hill','Alicia Keys','Mary J. Blige','Toni Braxton','Whitney Houston','Mariah Carey','Beyoncé','Rihanna','Lady Gaga','Katy Perry','Taylor Swift','Ariana Grande','Dua Lipa','Billie Eilish','Olivia Rodrigo','Sabrina Carpenter','Miley Cyrus','Demi Lovato','Selena Gomez','Zara Larsson','Rita Ora','Anne-Marie','Cher Lloyd','Little Mix','Fifth Harmony','The Pussycat Dolls','Girls Aloud','Spice Girls','Destiny\'s Child','Beyoncé','Kelly Rowland','Michelle Williams','LeToya Luckett','LaTavia Roberson','Farrah Franklin','Yonce','Blue Ivy','Solange Knowles','Tina Knowles','Matthew Knowles','Angela Bassett','Lady Gaga','Ariana Grande','Dua Lipa']
+var CURATED_SONGS = var CURATED_SONGS = {
+  sad: [
+    {title:'Someone Like You',artist:'Adele',url_spotify:'https://open.spotify.com/search/Adele Someone Like You',url_youtube:'https://www.youtube.com/results?search_query=adele+someone+like+you',url_apple:'https://music.apple.com/search?term=Adele Someone Like You'},
+    {title:'Fix You',artist:'Coldplay',url_spotify:'https://open.spotify.com/search/Coldplay Fix You',url_youtube:'https://www.youtube.com/results?search_query=coldplay+fix+you',url_apple:'https://music.apple.com/search?term=Coldplay Fix You'},
+    {title:'Hurt',artist:'Johnny Cash',url_spotify:'https://open.spotify.com/search/Johnny Cash Hurt',url_youtube:'https://www.youtube.com/results?search_query=johnny+cash+hurt',url_apple:'https://music.apple.com/search?term=Johnny Cash Hurt'},
+    {title:'Tears in Heaven',artist:'Eric Clapton',url_spotify:'https://open.spotify.com/search/Eric Clapton Tears in Heaven',url_youtube:'https://www.youtube.com/results?search_query=eric+clapton+tears+in+heaven',url_apple:'https://music.apple.com/search?term=Eric Clapton Tears in Heaven'},
+    {title:'When the Party\'s Over',artist:'Billie Eilish',url_spotify:'https://open.spotify.com/search/Billie Eilish When the Party Over',url_youtube:'https://www.youtube.com/results?search_query=billie+eilish+when+the+party+over',url_apple:'https://music.apple.com/search?term=Billie Eilish When the Party Over'},
+    {title:'Nothing Compares 2 U',artist:'Sinead O\'Connor',url_spotify:'https://open.spotify.com/search/Sinead O\'Connor Nothing Compares 2 U',url_youtube:'https://www.youtube.com/results?search_query=sinead+oconnor+nothing+compares+2+u',url_apple:'https://music.apple.com/search?term=Sinead O\'Connor Nothing Compares 2 U'},
+    {title:'Stay With Me',artist:'Sam Smith',url_spotify:'https://open.spotify.com/search/Sam Smith Stay With Me',url_youtube:'https://www.youtube.com/results?search_query=sam+smith+stay+with+me',url_apple:'https://music.apple.com/search?term=Sam Smith Stay With Me'},
+    {title:'Someone You Loved',artist:'Lewis Capaldi',url_spotify:'https://open.spotify.com/search/Lewis Capaldi Someone You Loved',url_youtube:'https://www.youtube.com/results?search_query=lewis+capaldi+someone+you+loved',url_apple:'https://music.apple.com/search?term=Lewis Capaldi Someone You Loved'},
+    {title:'Let Her Go',artist:'Passenger',url_spotify:'https://open.spotify.com/search/Passenger Let Her Go',url_youtube:'https://www.youtube.com/results?search_query=passenger+let+her+go',url_apple:'https://music.apple.com/search?term=Passenger Let Her Go'},
+    {title:'Chandelier',artist:'Sia',url_spotify:'https://open.spotify.com/search/Sia Chandelier',url_youtube:'https://www.youtube.com/results?search_query=sia+chandelier',url_apple:'https://music.apple.com/search?term=Sia Chandelier'},
+    {title:'When I Was Your Man',artist:'Bruno Mars',url_spotify:'https://open.spotify.com/search/Bruno Mars When I Was Your Man',url_youtube:'https://www.youtube.com/results?search_query=bruno+mars+when+i+was+your+man',url_apple:'https://music.apple.com/search?term=Bruno Mars When I Was Your Man'},
+    {title:'The Night We Met',artist:'Lord Huron',url_spotify:'https://open.spotify.com/search/Lord Huron The Night We Met',url_youtube:'https://www.youtube.com/results?search_query=lord+huron+the+night+we+met',url_apple:'https://music.apple.com/search?term=Lord Huron The Night We Met'},
+    {title:'Skinny Love',artist:'Bon Iver',url_spotify:'https://open.spotify.com/search/Bon Iver Skinny Love',url_youtube:'https://www.youtube.com/results?search_query=bon+iver+skinny+love',url_apple:'https://music.apple.com/search?term=Bon Iver Skinny Love'},
+    {title:'You Are Not Alone',artist:'Michael Jackson',url_spotify:'https://open.spotify.com/search/Michael Jackson You Are Not Alone',url_youtube:'https://www.youtube.com/results?search_query=michael+jackson+you+are+not+alone',url_apple:'https://music.apple.com/search?term=Michael Jackson You Are Not Alone'},
+    {title:'Lose You To Love Me',artist:'Selena Gomez',url_spotify:'https://open.spotify.com/search/Selena Gomez Lose You To Love Me',url_youtube:'https://www.youtube.com/results?search_query=selena+gomez+lose+you+to+love+me',url_apple:'https://music.apple.com/search?term=Selena Gomez Lose You To Love Me'}
+  ],
+  angry: [
+    {title:'In the End',artist:'Linkin Park',url_spotify:'https://open.spotify.com/search/Linkin Park In the End',url_youtube:'https://www.youtube.com/results?search_query=linkin+park+in+the+end',url_apple:'https://music.apple.com/search?term=Linkin Park In the End'},
+    {title:'Lose Yourself',artist:'Eminem',url_spotify:'https://open.spotify.com/search/Eminem Lose Yourself',url_youtube:'https://www.youtube.com/results?search_query=eminem+lose+yourself',url_apple:'https://music.apple.com/search?term=Eminem Lose Yourself'},
+    {title:'Killing in the Name',artist:'Rage Against The Machine',url_spotify:'https://open.spotify.com/search/Rage Against The Machine Killing in the Name',url_youtube:'https://www.youtube.com/results?search_query=rage+against+the+machine+killing+in+the+name',url_apple:'https://music.apple.com/search?term=Rage Against The Machine Killing in the Name'},
+    {title:'Enter Sandman',artist:'Metallica',url_spotify:'https://open.spotify.com/search/Metallica Enter Sandman',url_youtube:'https://www.youtube.com/results?search_query=metallica+enter+sandman',url_apple:'https://music.apple.com/search?term=Metallica Enter Sandman'},
+    {title:'Everlong',artist:'Foo Fighters',url_spotify:'https://open.spotify.com/search/Foo Fighters Everlong',url_youtube:'https://www.youtube.com/results?search_query=foo+fighters+everlong',url_apple:'https://music.apple.com/search?term=Foo Fighters Everlong'},
+    {title:'Smells Like Teen Spirit',artist:'Nirvana',url_spotify:'https://open.spotify.com/search/Nirvana Smells Like Teen Spirit',url_youtube:'https://www.youtube.com/results?search_query=nirvana+smells+like+teen+spirit',url_apple:'https://music.apple.com/search?term=Nirvana Smells Like Teen Spirit'},
+    {title:'Welcome to the Jungle',artist:'Guns N\' Roses',url_spotify:'https://open.spotify.com/search/Guns N Roses Welcome to the Jungle',url_youtube:'https://www.youtube.com/results?search_query=guns+n+roses+welcome+to+the+jungle',url_apple:'https://music.apple.com/search?term=Guns N Roses Welcome to the Jungle'},
+    {title:'Chop Suey',artist:'System of a Down',url_spotify:'https://open.spotify.com/search/System of a Down Chop Suey',url_youtube:'https://www.youtube.com/results?search_query=system+of+a+down+chop+suey',url_apple:'https://music.apple.com/search?term=System of a Down Chop Suey'},
+    {title:'Numb',artist:'Linkin Park',url_spotify:'https://open.spotify.com/search/Linkin Park Numb',url_youtube:'https://www.youtube.com/results?search_query=linkin+park+numb',url_apple:'https://music.apple.com/search?term=Linkin Park Numb'},
+    {title:'The Pretender',artist:'Foo Fighters',url_spotify:'https://open.spotify.com/search/Foo Fighters The Pretender',url_youtube:'https://www.youtube.com/results?search_query=foo+fighters+the+pretender',url_apple:'https://music.apple.com/search?term=Foo Fighters The Pretender'},
+    {title:'Break Stuff',artist:'Limp Bizkit',url_spotify:'https://open.spotify.com/search/Limp Bizkit Break Stuff',url_youtube:'https://www.youtube.com/results?search_query=limp+bizkit+break+stuff',url_apple:'https://music.apple.com/search?term=Limp Bizkit Break Stuff'},
+    {title:'Animal I Have Become',artist:'Three Days Grace',url_spotify:'https://open.spotify.com/search/Three Days Grace Animal I Have Become',url_youtube:'https://www.youtube.com/results?search_query=three+days+grace+animal+i+have+become',url_apple:'https://music.apple.com/search?term=Three Days Grace Animal I Have Become'},
+    {title:'Given Up',artist:'Linkin Park',url_spotify:'https://open.spotify.com/search/Linkin Park Given Up',url_youtube:'https://www.youtube.com/results?search_query=linkin+park+given+up',url_apple:'https://music.apple.com/search?term=Linkin Park Given Up'},
+    {title:'Bad Romance',artist:'Lady Gaga',url_spotify:'https://open.spotify.com/search/Lady Gaga Bad Romance',url_youtube:'https://www.youtube.com/results?search_query=lady+gaga+bad+romance',url_apple:'https://music.apple.com/search?term=Lady Gaga Bad Romance'},
+    {title:'Vossi Bop',artist:'Stormzy',url_spotify:'https://open.spotify.com/search/Stormzy Vossi Bop',url_youtube:'https://www.youtube.com/results?search_query=stormzy+vossi+bop',url_apple:'https://music.apple.com/search?term=Stormzy Vossi Bop'}
+  ],
+  anxious: [
+    {title:'Breathe Me',artist:'Sia',url_spotify:'https://open.spotify.com/search/Sia Breathe Me',url_youtube:'https://www.youtube.com/results?search_query=sia+breathe+me',url_apple:'https://music.apple.com/search?term=Sia Breathe Me'},
+    {title:'Comfortably Numb',artist:'Pink Floyd',url_spotify:'https://open.spotify.com/search/Pink Floyd Comfortably Numb',url_youtube:'https://www.youtube.com/results?search_query=pink+floyd+comfortably+numb',url_apple:'https://music.apple.com/search?term=Pink Floyd Comfortably Numb'},
+    {title:'Teardrop',artist:'Massive Attack',url_spotify:'https://open.spotify.com/search/Massive Attack Teardrop',url_youtube:'https://www.youtube.com/results?search_query=massive+attack+teardrop',url_apple:'https://music.apple.com/search?term=Massive Attack Teardrop'},
+    {title:'Porcelain',artist:'Moby',url_spotify:'https://open.spotify.com/search/Moby Porcelain',url_youtube:'https://www.youtube.com/results?search_query=moby+porcelain',url_apple:'https://music.apple.com/search?term=Moby Porcelain'},
+    {title:'Intro',artist:'The xx',url_spotify:'https://open.spotify.com/search/The xx Intro',url_youtube:'https://www.youtube.com/results?search_query=the+xx+intro',url_apple:'https://music.apple.com/search?term=The xx Intro'},
+    {title:'Holocene',artist:'Bon Iver',url_spotify:'https://open.spotify.com/search/Bon Iver Holocene',url_youtube:'https://www.youtube.com/results?search_query=bon+iver+holocene',url_apple:'https://music.apple.com/search?term=Bon Iver Holocene'},
+    {title:'Daydreaming',artist:'Radiohead',url_spotify:'https://open.spotify.com/search/Radiohead Daydreaming',url_youtube:'https://www.youtube.com/results?search_query=radiohead+daydreaming',url_apple:'https://music.apple.com/search?term=Radiohead Daydreaming'},
+    {title:'Weightless',artist:'Marconi Union',url_spotify:'https://open.spotify.com/search/Marconi Union Weightless',url_youtube:'https://www.youtube.com/results?search_query=marconi+union+weightless',url_apple:'https://music.apple.com/search?term=Marconi Union Weightless'},
+    {title:'On the Nature of Daylight',artist:'Max Richter',url_spotify:'https://open.spotify.com/search/Max Richter On the Nature of Daylight',url_youtube:'https://www.youtube.com/results?search_query=max+richter+on+the+nature+of+daylight',url_apple:'https://music.apple.com/search?term=Max Richter On the Nature of Daylight'},
+    {title:'Experience',artist:'Ludovico Einaudi',url_spotify:'https://open.spotify.com/search/Ludovico Einaudi Experience',url_youtube:'https://www.youtube.com/results?search_query=ludovico+einaudi+experience',url_apple:'https://music.apple.com/search?term=Ludovico Einaudi Experience'},
+    {title:'Let It Happen',artist:'Tame Impala',url_spotify:'https://open.spotify.com/search/Tame Impala Let It Happen',url_youtube:'https://www.youtube.com/results?search_query=tame+impala+let+it+happen',url_apple:'https://music.apple.com/search?term=Tame Impala Let It Happen'},
+    {title:'Avril 14th',artist:'Aphex Twin',url_spotify:'https://open.spotify.com/search/Aphex Twin Avril 14th',url_youtube:'https://www.youtube.com/results?search_query=aphex+twin+avril+14th',url_apple:'https://music.apple.com/search?term=Aphex Twin Avril 14th'},
+    {title:'Electric Feel',artist:'MGMT',url_spotify:'https://open.spotify.com/search/MGMT Electric Feel',url_youtube:'https://www.youtube.com/results?search_query=mgmt+electric+feel',url_apple:'https://music.apple.com/search?term=MGMT Electric Feel'},
+    {title:'Oceans',artist:'Seafret',url_spotify:'https://open.spotify.com/search/Seafret Oceans',url_youtube:'https://www.youtube.com/results?search_query=seafret+oceans',url_apple:'https://music.apple.com/search?term=Seafret Oceans'},
+    {title:'Youth',artist:'Daughter',url_spotify:'https://open.spotify.com/search/Daughter Youth',url_youtube:'https://www.youtube.com/results?search_query=daughter+youth',url_apple:'https://music.apple.com/search?term=Daughter Youth'}
+  ],
+  happy: [
+    {title:'Happy',artist:'Pharrell Williams',url_spotify:'https://open.spotify.com/search/Pharrell Williams Happy',url_youtube:'https://www.youtube.com/results?search_query=pharrell+williams+happy',url_apple:'https://music.apple.com/search?term=Pharrell Williams Happy'},
+    {title:'Don\'t Stop Believin\'',artist:'Journey',url_spotify:'https://open.spotify.com/search/Journey Don\'t Stop Believin',url_youtube:'https://www.youtube.com/results?search_query=journey+dont+stop+believin',url_apple:'https://music.apple.com/search?term=Journey Don\'t Stop Believin'},
+    {title:'Uptown Funk',artist:'Mark Ronson ft Bruno Mars',url_spotify:'https://open.spotify.com/search/Mark Ronson Uptown Funk',url_youtube:'https://www.youtube.com/results?search_query=mark+ronson+uptown+funk',url_apple:'https://music.apple.com/search?term=Mark Ronson Uptown Funk'},
+    {title:'Can\'t Stop the Feeling',artist:'Justin Timberlake',url_spotify:'https://open.spotify.com/search/Justin Timberlake Can\'t Stop the Feeling',url_youtube:'https://www.youtube.com/results?search_query=justin+timberlake+cant+stop+the+feeling',url_apple:'https://music.apple.com/search?term=Justin Timberlake Can\'t Stop the Feeling'},
+    {title:'Good Vibrations',artist:'The Beach Boys',url_spotify:'https://open.spotify.com/search/The Beach Boys Good Vibrations',url_youtube:'https://www.youtube.com/results?search_query=beach+boys+good+vibrations',url_apple:'https://music.apple.com/search?term=The Beach Boys Good Vibrations'},
+    {title:'Here Comes the Sun',artist:'The Beatles',url_spotify:'https://open.spotify.com/search/The Beatles Here Comes the Sun',url_youtube:'https://www.youtube.com/results?search_query=beatles+here+comes+the+sun',url_apple:'https://music.apple.com/search?term=The Beatles Here Comes the Sun'},
+    {title:'Dancing Queen',artist:'ABBA',url_spotify:'https://open.spotify.com/search/ABBA Dancing Queen',url_youtube:'https://www.youtube.com/results?search_query=abba+dancing+queen',url_apple:'https://music.apple.com/search?term=ABBA Dancing Queen'},
+    {title:'September',artist:'Earth Wind & Fire',url_spotify:'https://open.spotify.com/search/Earth Wind and Fire September',url_youtube:'https://www.youtube.com/results?search_query=earth+wind+fire+september',url_apple:'https://music.apple.com/search?term=Earth Wind and Fire September'},
+    {title:'Get Lucky',artist:'Daft Punk',url_spotify:'https://open.spotify.com/search/Daft Punk Get Lucky',url_youtube:'https://www.youtube.com/results?search_query=daft+punk+get+lucky',url_apple:'https://music.apple.com/search?term=Daft Punk Get Lucky'},
+    {title:'Virtual Insanity',artist:'Jamiroquai',url_spotify:'https://open.spotify.com/search/Jamiroquai Virtual Insanity',url_youtube:'https://www.youtube.com/results?search_query=jamiroquai+virtual+insanity',url_apple:'https://music.apple.com/search?term=Jamiroquai Virtual Insanity'},
+    {title:'Don\'t Stop Me Now',artist:'Queen',url_spotify:'https://open.spotify.com/search/Queen Don\'t Stop Me Now',url_youtube:'https://www.youtube.com/results?search_query=queen+dont+stop+me+now',url_apple:'https://music.apple.com/search?term=Queen Don\'t Stop Me Now'},
+    {title:'Shake It Off',artist:'Taylor Swift',url_spotify:'https://open.spotify.com/search/Taylor Swift Shake It Off',url_youtube:'https://www.youtube.com/results?search_query=taylor+swift+shake+it+off',url_apple:'https://music.apple.com/search?term=Taylor Swift Shake It Off'},
+    {title:'Billie Jean',artist:'Michael Jackson',url_spotify:'https://open.spotify.com/search/Michael Jackson Billie Jean',url_youtube:'https://www.youtube.com/results?search_query=michael+jackson+billie+jean',url_apple:'https://music.apple.com/search?term=Michael Jackson Billie Jean'},
+    {title:'Roar',artist:'Katy Perry',url_spotify:'https://open.spotify.com/search/Katy Perry Roar',url_youtube:'https://www.youtube.com/results?search_query=katy+perry+roar',url_apple:'https://music.apple.com/search?term=Katy Perry Roar'},
+    {title:'Boom Clap',artist:'Charli XCX',url_spotify:'https://open.spotify.com/search/Charli XCX Boom Clap',url_youtube:'https://www.youtube.com/results?search_query=charli+xcx+boom+clap',url_apple:'https://music.apple.com/search?term=Charli XCX Boom Clap'},
+    {title:'Poker Face',artist:'Lady Gaga',url_spotify:'https://open.spotify.com/search/Lady Gaga Poker Face',url_youtube:'https://www.youtube.com/results?search_query=lady+gaga+poker+face',url_apple:'https://music.apple.com/search?term=Lady Gaga Poker Face'}
+  ],
+  grateful: [
+    {title:'What a Wonderful World',artist:'Louis Armstrong',url_spotify:'https://open.spotify.com/search/Louis Armstrong What a Wonderful World',url_youtube:'https://www.youtube.com/results?search_query=louis+armstrong+what+a+wonderful+world',url_apple:'https://music.apple.com/search?term=Louis Armstrong What a Wonderful World'},
+    {title:'Lean on Me',artist:'Bill Withers',url_spotify:'https://open.spotify.com/search/Bill Withers Lean on Me',url_youtube:'https://www.youtube.com/results?search_query=bill+withers+lean+on+me',url_apple:'https://music.apple.com/search?term=Bill Withers Lean on Me'},
+    {title:'Stand by Me',artist:'Ben E King',url_spotify:'https://open.spotify.com/search/Ben E King Stand by Me',url_youtube:'https://www.youtube.com/results?search_query=ben+e+king+stand+by+me',url_apple:'https://music.apple.com/search?term=Ben E King Stand by Me'},
+    {title:'Somewhere Over the Rainbow',artist:'Israel Kamakawiwo\'ole',url_spotify:'https://open.spotify.com/search/Israel Kamakawiwo\'ole Somewhere Over the Rainbow',url_youtube:'https://www.youtube.com/results?search_query=israel+kamakawiwo+somewhere+over+the+rainbow',url_apple:'https://music.apple.com/search?term=Israel Kamakawiwo\'ole Somewhere Over the Rainbow'},
+    {title:'Three Little Birds',artist:'Bob Marley',url_spotify:'https://open.spotify.com/search/Bob Marley Three Little Birds',url_youtube:'https://www.youtube.com/results?search_query=bob+marley+three+little+birds',url_apple:'https://music.apple.com/search?term=Bob Marley Three Little Birds'},
+    {title:'Morning Has Broken',artist:'Cat Stevens',url_spotify:'https://open.spotify.com/search/Cat Stevens Morning Has Broken',url_youtube:'https://www.youtube.com/results?search_query=cat+stevens+morning+has+broken',url_apple:'https://music.apple.com/search?term=Cat Stevens Morning Has Broken'},
+    {title:'Better Together',artist:'Jack Johnson',url_spotify:'https://open.spotify.com/search/Jack Johnson Better Together',url_youtube:'https://www.youtube.com/results?search_query=jack+johnson+better+together',url_apple:'https://music.apple.com/search?term=Jack Johnson Better Together'},
+    {title:'Count on Me',artist:'Bruno Mars',url_spotify:'https://open.spotify.com/search/Bruno Mars Count on Me',url_youtube:'https://www.youtube.com/results?search_query=bruno+mars+count+on+me',url_apple:'https://music.apple.com/search?term=Bruno Mars Count on Me'},
+    {title:'Thank You',artist:'Led Zeppelin',url_spotify:'https://open.spotify.com/search/Led Zeppelin Thank You',url_youtube:'https://www.youtube.com/results?search_query=led+zeppelin+thank+you',url_apple:'https://music.apple.com/search?term=Led Zeppelin Thank You'},
+    {title:'Lovely Day',artist:'Bill Withers',url_spotify:'https://open.spotify.com/search/Bill Withers Lovely Day',url_youtube:'https://www.youtube.com/results?search_query=bill+withers+lovely+day',url_apple:'https://music.apple.com/search?term=Bill Withers Lovely Day'},
+    {title:'Here Comes the Sun',artist:'The Beatles',url_spotify:'https://open.spotify.com/search/The Beatles Here Comes the Sun',url_youtube:'https://www.youtube.com/results?search_query=beatles+here+comes+the+sun',url_apple:'https://music.apple.com/search?term=The Beatles Here Comes the Sun'},
+    {title:'Man in the Mirror',artist:'Michael Jackson',url_spotify:'https://open.spotify.com/search/Michael Jackson Man in the Mirror',url_youtube:'https://www.youtube.com/results?search_query=michael+jackson+man+in+the+mirror',url_apple:'https://music.apple.com/search?term=Michael Jackson Man in the Mirror'},
+    {title:'Praise You',artist:'Fatboy Slim',url_spotify:'https://open.spotify.com/search/Fatboy Slim Praise You',url_youtube:'https://www.youtube.com/results?search_query=fatboy+slim+praise+you',url_apple:'https://music.apple.com/search?term=Fatboy Slim Praise You'},
+    {title:'Thankful',artist:'Kelly Clarkson',url_spotify:'https://open.spotify.com/search/Kelly Clarkson Thankful',url_youtube:'https://www.youtube.com/results?search_query=kelly+clarkson+thankful',url_apple:'https://music.apple.com/search?term=Kelly Clarkson Thankful'},
+    {title:'Blessings',artist:'Chance the Rapper',url_spotify:'https://open.spotify.com/search/Chance the Rapper Blessings',url_youtube:'https://www.youtube.com/results?search_query=chance+the+rapper+blessings',url_apple:'https://music.apple.com/search?term=Chance the Rapper Blessings'}
+  ],
+  reflective: [
+    {title:'Landslide',artist:'Fleetwood Mac',url_spotify:'https://open.spotify.com/search/Fleetwood Mac Landslide',url_youtube:'https://www.youtube.com/results?search_query=fleetwood+mac+landslide',url_apple:'https://music.apple.com/search?term=Fleetwood Mac Landslide'},
+    {title:'Hallelujah',artist:'Jeff Buckley',url_spotify:'https://open.spotify.com/search/Jeff Buckley Hallelujah',url_youtube:'https://www.youtube.com/results?search_query=jeff+buckley+hallelujah',url_apple:'https://music.apple.com/search?term=Jeff Buckley Hallelujah'},
+    {title:'Imagine',artist:'John Lennon',url_spotify:'https://open.spotify.com/search/John Lennon Imagine',url_youtube:'https://www.youtube.com/results?search_query=john+lennon+imagine',url_apple:'https://music.apple.com/search?term=John Lennon Imagine'},
+    {title:'Wish You Were Here',artist:'Pink Floyd',url_spotify:'https://open.spotify.com/search/Pink Floyd Wish You Were Here',url_youtube:'https://www.youtube.com/results?search_query=pink+floyd+wish+you+were+here',url_apple:'https://music.apple.com/search?term=Pink Floyd Wish You Were Here'},
+    {title:'Hotel California',artist:'Eagles',url_spotify:'https://open.spotify.com/search/Eagles Hotel California',url_youtube:'https://www.youtube.com/results?search_query=eagles+hotel+california',url_apple:'https://music.apple.com/search?term=Eagles Hotel California'},
+    {title:'The Sound of Silence',artist:'Simon & Garfunkel',url_spotify:'https://open.spotify.com/search/Simon Garfunkel The Sound of Silence',url_youtube:'https://www.youtube.com/results?search_query=simon+garfunkel+sound+of+silence',url_apple:'https://music.apple.com/search?term=Simon Garfunkel The Sound of Silence'},
+    {title:'Bohemian Rhapsody',artist:'Queen',url_spotify:'https://open.spotify.com/search/Queen Bohemian Rhapsody',url_youtube:'https://www.youtube.com/results?search_query=queen+bohemian+rhapsody',url_apple:'https://music.apple.com/search?term=Queen Bohemian Rhapsody'},
+    {title:'The Boxer',artist:'Simon & Garfunkel',url_spotify:'https://open.spotify.com/search/Simon Garfunkel The Boxer',url_youtube:'https://www.youtube.com/results?search_query=simon+garfunkel+the+boxer',url_apple:'https://music.apple.com/search?term=Simon Garfunkel The Boxer'},
+    {title:'Let It Be',artist:'The Beatles',url_spotify:'https://open.spotify.com/search/The Beatles Let It Be',url_youtube:'https://www.youtube.com/results?search_query=beatles+let+it+be',url_apple:'https://music.apple.com/search?term=The Beatles Let It Be'},
+    {title:'The Less I Know the Better',artist:'Tame Impala',url_spotify:'https://open.spotify.com/search/Tame Impala The Less I Know the Better',url_youtube:'https://www.youtube.com/results?search_query=tame+impala+the+less+i+know+the+better',url_apple:'https://music.apple.com/search?term=Tame Impala The Less I Know the Better'},
+    {title:'Long Train Runnin\'',artist:'The Doobie Brothers',url_spotify:'https://open.spotify.com/search/The Doobie Brothers Long Train Runnin',url_youtube:'https://www.youtube.com/results?search_query=doobie+brothers+long+train+runnin',url_apple:'https://music.apple.com/search?term=The Doobie Brothers Long Train Runnin'},
+    {title:'Re: Stacks',artist:'Bon Iver',url_spotify:'https://open.spotify.com/search/Bon Iver Re Stacks',url_youtube:'https://www.youtube.com/results?search_query=bon+iver+re+stacks',url_apple:'https://music.apple.com/search?term=Bon Iver Re Stacks'},
+    {title:'Rivers and Roads',artist:'The Head and the Heart',url_spotify:'https://open.spotify.com/search/The Head and the Heart Rivers and Roads',url_youtube:'https://www.youtube.com/results?search_query=head+and+the+heart+rivers+and+roads',url_apple:'https://music.apple.com/search?term=The Head and the Heart Rivers and Roads'},
+    {title:'Fourth of July',artist:'Sufjan Stevens',url_spotify:'https://open.spotify.com/search/Sufjan Stevens Fourth of July',url_youtube:'https://www.youtube.com/results?search_query=sufjan+stevens+fourth+of+july',url_apple:'https://music.apple.com/search?term=Sufjan Stevens Fourth of July'},
+    {title:'Holocene',artist:'Bon Iver',url_spotify:'https://open.spotify.com/search/Bon Iver Holocene',url_youtube:'https://www.youtube.com/results?search_query=bon+iver+holocene',url_apple:'https://music.apple.com/search?term=Bon Iver Holocene'}
+  ],
+  hopeful: [
+    {title:'Unwritten',artist:'Natasha Bedingfield',url_spotify:'https://open.spotify.com/search/Natasha Bedingfield Unwritten',url_youtube:'https://www.youtube.com/results?search_query=natasha+bedingfield+unwritten',url_apple:'https://music.apple.com/search?term=Natasha Bedingfield Unwritten'},
+    {title:'Rise Up',artist:'Andra Day',url_spotify:'https://open.spotify.com/search/Andra Day Rise Up',url_youtube:'https://www.youtube.com/results?search_query=andra+day+rise+up',url_apple:'https://music.apple.com/search?term=Andra Day Rise Up'},
+    {title:'Brave',artist:'Sara Bareilles',url_spotify:'https://open.spotify.com/search/Sara Bareilles Brave',url_youtube:'https://www.youtube.com/results?search_query=sara+bareilles+brave',url_apple:'https://music.apple.com/search?term=Sara Bareilles Brave'},
+    {title:'Fight Song',artist:'Rachel Platten',url_spotify:'https://open.spotify.com/search/Rachel Platten Fight Song',url_youtube:'https://www.youtube.com/results?search_query=rachel+platten+fight+song',url_apple:'https://music.apple.com/search?term=Rachel Platten Fight Song'},
+    {title:'Eye of the Tiger',artist:'Survivor',url_spotify:'https://open.spotify.com/search/Survivor Eye of the Tiger',url_youtube:'https://www.youtube.com/results?search_query=survivor+eye+of+the+tiger',url_apple:'https://music.apple.com/search?term=Survivor Eye of the Tiger'},
+    {title:'Hall of Fame',artist:'The Script',url_spotify:'https://open.spotify.com/search/The Script Hall of Fame',url_youtube:'https://www.youtube.com/results?search_query=the+script+hall+of+fame',url_apple:'https://music.apple.com/search?term=The Script Hall of Fame'},
+    {title:'Livin\' on a Prayer',artist:'Bon Jovi',url_spotify:'https://open.spotify.com/search/Bon Jovi Livin on a Prayer',url_youtube:'https://www.youtube.com/results?search_query=bon+jovi+livin+on+a+prayer',url_apple:'https://music.apple.com/search?term=Bon Jovi Livin on a Prayer'},
+    {title:'We Will Rock You',artist:'Queen',url_spotify:'https://open.spotify.com/search/Queen We Will Rock You',url_youtube:'https://www.youtube.com/results?search_query=queen+we+will+rock+you',url_apple:'https://music.apple.com/search?term=Queen We Will Rock You'},
+    {title:'Don\'t Stop Believin\'',artist:'Journey',url_spotify:'https://open.spotify.com/search/Journey Don\'t Stop Believin',url_youtube:'https://www.youtube.com/results?search_query=journey+dont+stop+believin',url_apple:'https://music.apple.com/search?term=Journey Don\'t Stop Believin'},
+    {title:'Stronger (What Doesn\'t Kill You)',artist:'Kelly Clarkson',url_spotify:'https://open.spotify.com/search/Kelly Clarkson Stronger',url_youtube:'https://www.youtube.com/results?search_query=kelly+clarkson+stronger',url_apple:'https://music.apple.com/search?term=Kelly Clarkson Stronger'},
+    {title:'Heal the World',artist:'Michael Jackson',url_spotify:'https://open.spotify.com/search/Michael Jackson Heal the World',url_youtube:'https://www.youtube.com/results?search_query=michael+jackson+heal+the+world',url_apple:'https://music.apple.com/search?term=Michael Jackson Heal the World'},
+    {title:'Firework',artist:'Katy Perry',url_spotify:'https://open.spotify.com/search/Katy Perry Firework',url_youtube:'https://www.youtube.com/results?search_query=katy+perry+firework',url_apple:'https://music.apple.com/search?term=Katy Perry Firework'},
+    {title:'Just Dance',artist:'Lady Gaga',url_spotify:'https://open.spotify.com/search/Lady Gaga Just Dance',url_youtube:'https://www.youtube.com/results?search_query=lady+gaga+just+dance',url_apple:'https://music.apple.com/search?term=Lady Gaga Just Dance'},
+    {title:'The Middle',artist:'Zedd ft Maren Morris',url_spotify:'https://open.spotify.com/search/Zedd The Middle',url_youtube:'https://www.youtube.com/results?search_query=zedd+the+middle',url_apple:'https://music.apple.com/search?term=Zedd The Middle'},
+    {title:'Good as Hell',artist:'Lizzo',url_spotify:'https://open.spotify.com/search/Lizzo Good as Hell',url_youtube:'https://www.youtube.com/results?search_query=lizzo+good+as+hell',url_apple:'https://music.apple.com/search?term=Lizzo Good as Hell'}
+  ]
 };
-var SONG_PREFIXES = ['All I Want','Beautiful','Broken','Call Me','Carry On','Changes','Chasing','Close Your Eyes','Come Back','Coming Home','Counting Stars','Crawling','Cry','Dance','Dancing','Demons','Don\'t Let Me Down','Don\'t Stop','Dream','Drown','Enough','Everlong','Everything','Fade','Faded','Falling','Fear','Fight','Find Me','Fire','Fix You','Float','Flying','Follow Me','Forever','Free','Gone','Goodbye','Hallelujah','Hang On','Hear Me','Heartbeat','Help','Hero','Hold Me','Hold On','Home','Hopeful','Hurricane','Hurts','I Believe','I Fall Apart','I Live','I Miss You','I Need You','I Surrender','I Will','Imagine','In My Head','In the End','Into the Fire','Iris','It Is Well','Jumper','Just Breathe','Keep Holding On','Keep Your Head Up','Lay Me Down','Lifeline','Light','Light Up','Lights','Like a Prayer','Lose Yourself','Lost','Love Me','Lullaby','Mended','Mercy','Miracle','Monster','More Than This','My Heart','Never Give Up','Never Let Go','New Day','No Surrender','One More Light','One Step','Only You','Overcome','Rainbow','Rise','Rise Up','Run','Safe','Safe and Sound','Save Me','Saving Grace','Say Something','Shake It Off','Shelter','Shine','Shine On','Sing','Skinny Love','Smile','So Far Away','Sober','Somebody','Someone','Something','Someday','Soul to Squeeze','Stand By Me','Stand Up','Stars','Start Again','Stay','Stay Alive','Stay With Me','Still Breathing','Stronger','Stubborn Love','Sunrise','Sunshine','Surrender','Take Me Home','Take Me to Church','The Cave','The Climb','The Light','The Middle','The Other Side','The Rescue','The River','The Sound','The Story','This Is Me','Thousand Years','Thunder','Titanium','To the Sky','Torn','Try','Unbroken','Unwritten','Up to the Mountain','Wake Me Up','Walk','Walk Through Fire','Waves','Way Down We Go','We Are','We Are Young','We Belong','We Shall Overcome','What About Now','Whatever It Takes','When We Were Young','Where I Belong','Wings','With Arms Wide Open','Wonder','Wonderful','Work It Out','Worth It','Worth the Fight','You Are Not Alone','You Belong','You Found Me','You Get Me','Your Love','You\'re Beautiful','Youth','Zero'];
-
-function generateSong(titleWord, artist) {
-  var a = artist.toLowerCase().replace(/[^a-z0-9]/g,'+');
-  var t = titleWord.toLowerCase().replace(/[^a-z0-9]/g,'+').replace(/\+{2,}/g,'+');
-  return { title: titleWord, artist: artist, url_spotify: 'https://open.spotify.com/search/' + encodeURIComponent(artist + ' ' + titleWord), url_youtube: 'https://www.youtube.com/results?search_query=' + a + '+' + t, url_apple: 'https://music.apple.com/search?term=' + encodeURIComponent(artist + ' ' + titleWord) };
-}
 
 function populateSongPool() {
   if (SONG_POOL_GENERATED) return;
   var moods = ['sad','angry','anxious','happy','grateful','reflective','hopeful'];
   for (var mi=0;mi<moods.length;mi++) {
     var mood = moods[mi];
-    if (!REFLECT_SONGS[mood]) REFLECT_SONGS[mood] = [];
-    var artists = ALL_ARTISTS[mood] || [];
-    for (var ai=0;ai<artists.length;ai++) {
-      var prefixCount = Math.min(3, SONG_PREFIXES.length);
-      for (var pi=0;pi<prefixCount;pi++) {
-        var idx = (ai * 7 + pi * 13) % SONG_PREFIXES.length;
-        var song = generateSong(SONG_PREFIXES[idx], artists[ai]);
-        if (REFLECT_SONGS[mood].length < 2000 / moods.length) {
-          REFLECT_SONGS[mood].push(song);
-        }
-      }
-    }
+    REFLECT_SONGS[mood] = CURATED_SONGS[mood] || [];
   }
   SONG_POOL_GENERATED = true;
-  var customSong = generateSong('You Are Not Alone','Michael Jackson');
-  ['sad','hopeful','reflective'].forEach(function(m){ if (REFLECT_SONGS[m]) REFLECT_SONGS[m].push(customSong); });
 }
-
 function getSong(mood) {
   if (!SONG_POOL_GENERATED) {
     if (!window._songPoolLoading) { window._songPoolLoading = true; setTimeout(function(){ populateSongPool(); window._songPoolLoading = false; }, 100); }
@@ -3789,6 +3881,161 @@ function showAddictionPrompt() {
 }
 
 // ====== MORE PAGE ======
+// ====== HELPERS ======
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ====== REMINDERS ======
+var REPEAT_OPTIONS = [{v:'none',l:'Never'},{v:'daily',l:'Daily'},{v:'weekly',l:'Weekly'},{v:'monthly',l:'Monthly'}];
+
+function remindersHTML() {
+  var h = '';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0"><h2 style="font-size:20px;font-weight:700;margin:0">Reminders</h2><button class="btn btn-sm btn-primary" onclick="showNewReminder()" style="width:auto;padding:8px 16px">+ New</button></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Set reminders and add them to your device calendar.</p>';
+  var reminders = D.reminders || [];
+  if (reminders.length === 0) {
+    h += '<div class="empty-state">No reminders yet. Tap + New to create one.</div>';
+  } else {
+    reminders.sort(function(a,b){var aDt=a.date+' '+(a.time||'00:00'),bDt=b.date+' '+(b.time||'00:00');return aDt.localeCompare(bDt)});
+    for (var i=0;i<reminders.length;i++) {
+      var r = reminders[i];
+      var past = isPastReminder(r);
+      h += '<div class="card" style="margin:8px 0;padding:14px'+(past?';opacity:.5':';opacity:1')+'">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
+      h += '<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(past?'&#10003; ':'')+esc(r.title)+'</div>';
+      h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">'+formatReminderDate(r.date,r.time)+'</div>';
+      if (r.repeat && r.repeat!=='none') h += '<span class="badge badge-green" style="font-size:10px;margin-top:4px;display:inline-block">'+r.repeat.charAt(0).toUpperCase()+r.repeat.slice(1)+'</span>';
+      if (r.notes) h += '<div style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(r.notes)+'</div>';
+      h += '</div>';
+      h += '<div style="display:flex;gap:4px;flex-shrink:0;margin-left:8px">';
+      h += '<button class="btn btn-sm btn-outline" onclick="exportReminderICS('+i+')" title="Add to Calendar" style="font-size:16px;padding:6px 10px;width:auto;line-height:1">&#128197;</button>';
+      h += '<button class="btn btn-sm btn-outline" onclick="showNewReminder('+i+')" title="Edit" style="font-size:12px;padding:6px 10px;width:auto">&#9998;</button>';
+      h += '<button class="btn btn-sm btn-danger" onclick="deleteReminder('+i+')" title="Delete" style="font-size:12px;padding:6px 10px;width:auto">&#10005;</button>';
+      h += '</div></div></div>';
+    }
+  }
+  h += '<button class="btn btn-outline" onclick="goTo(\'more\')" style="margin-top:4px">Back to More</button>';
+  return h;
+}
+
+function isPastReminder(r) {
+  var dtStr = r.date + (r.time ? 'T'+r.time : 'T23:59');
+  return new Date(dtStr) < new Date();
+}
+
+function formatReminderDate(date, time) {
+  if (!date) return '';
+  var parts = date.split('-');
+  if (parts.length!==3) return date;
+  var d = new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var label = days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+  if (time) label += ' at '+time;
+  return label;
+}
+
+function showNewReminder(editId) {
+  var r = (editId!==undefined && D.reminders && D.reminders[editId]) ? D.reminders[editId] : null;
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+(r?'Edit Reminder':'New Reminder')+'</h3>';
+  h += '<input type="text" id="rem-title" placeholder="Reminder title" value="'+(r?esc(r.title):'')+'">';
+  h += '<label style="font-size:13px;font-weight:600;display:block;margin:4px 0 2px">Date</label><input type="date" id="rem-date" value="'+(r?r.date:'')+'">';
+  h += '<label style="font-size:13px;font-weight:600;display:block;margin:4px 0 2px">Time (optional)</label><input type="time" id="rem-time" value="'+(r&&r.time?r.time:'')+'">';
+  h += '<label style="font-size:13px;font-weight:600;display:block;margin:4px 0 2px">Repeat</label><select id="rem-repeat">';
+  for (var i=0;i<REPEAT_OPTIONS.length;i++) {
+    h += '<option value="'+REPEAT_OPTIONS[i].v+'"'+(r&&r.repeat===REPEAT_OPTIONS[i].v?' selected':'')+'>'+REPEAT_OPTIONS[i].l+'</option>';
+  }
+  h += '</select>';
+  h += '<textarea id="rem-notes" placeholder="Notes (optional)" style="min-height:60px">'+(r?esc(r.notes||''):'')+'</textarea>';
+  h += '<button class="btn btn-primary" onclick="saveReminder(this'+(editId!==undefined?','+editId:'')+')">'+(r?'Save':'Create Reminder')+'</button>';
+  if (r) h += '<button class="btn btn-outline" onclick="exportReminderICS('+editId+');this.closest(\'.overlay\').remove()" style="margin-top:6px">&#128197; Add to Calendar</button>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+  if (!r) {
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate()+1);
+    var def = tomorrow.getFullYear()+'-'+String(tomorrow.getMonth()+1).padStart(2,'0')+'-'+String(tomorrow.getDate()).padStart(2,'0');
+    document.getElementById('rem-date').value = def;
+  }
+}
+
+function saveReminder(btn, editId) {
+  var title = document.getElementById('rem-title');
+  var date = document.getElementById('rem-date');
+  var time = document.getElementById('rem-time');
+  var repeat = document.getElementById('rem-repeat');
+  var notes = document.getElementById('rem-notes');
+  if (!title||!title.value.trim()){alert('Please enter a title.');return}
+  if (!date||!date.value){alert('Please select a date.');return}
+  if (!D.reminders) D.reminders = [];
+  var obj = {
+    id: Date.now(), title: title.value.trim(), date: date.value,
+    time: time?time.value:'', repeat: repeat?repeat.value:'none',
+    notes: notes?notes.value.trim():'', created: Date.now(), notified: false
+  };
+  if (editId!==undefined && D.reminders[editId]) {
+    D.reminders[editId] = obj;
+  } else {
+    D.reminders.push(obj);
+  }
+  saveData();
+  btn.closest('.overlay').remove();
+  render();
+}
+
+function deleteReminder(id) {
+  if (!D.reminders||!D.reminders[id]) return;
+  if (!confirm('Delete this reminder?')) return;
+  D.reminders.splice(id,1);
+  saveData();
+  render();
+}
+
+function exportReminderICS(id) {
+  var r = D.reminders&&D.reminders[id];
+  if (!r) return;
+  var now = new Date();
+  var pad2 = function(n){return String(n).padStart(2,'0')};
+  var fmtDT = function(d){return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+'T'+pad2(d.getHours())+pad2(d.getMinutes())+'00'};
+  var dtParts = r.date.split('-');
+  var startDate = new Date(parseInt(dtParts[0]),parseInt(dtParts[1])-1,parseInt(dtParts[2]));
+  if (r.time) { var tm=r.time.split(':');startDate.setHours(parseInt(tm[0]),parseInt(tm[1])) }
+  var dtStart = fmtDT(startDate);
+  var dtStamp = fmtDT(now);
+  var rrule = '';
+  if (r.repeat==='daily') rrule = 'RRULE:FREQ=DAILY';
+  else if (r.repeat==='weekly') rrule = 'RRULE:FREQ=WEEKLY';
+  else if (r.repeat==='monthly') rrule = 'RRULE:FREQ=MONTHLY';
+  var icsLines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Re.Claim//Reminders//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:reminder-'+r.id+'@reclaim',
+    'DTSTAMP:'+dtStamp,
+    'DTSTART:'+dtStart,
+    'SUMMARY:'+r.title.replace(/\n/g,'\\n'),
+    r.notes ? 'DESCRIPTION:'+r.notes.replace(/\n/g,'\\n') : '',
+    rrule,
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ];
+  var ics = icsLines.filter(function(l){return l}).join('\r\n');
+  var blob = new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'reminder-'+r.title.replace(/[^a-z0-9]/gi,'-').toLowerCase().slice(0,40)+'.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url)},1000);
+}
+
 function moreHTML() {
   var h = '';
   h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">More Tools</h2>';
@@ -3796,6 +4043,7 @@ function moreHTML() {
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">Journal</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">Calendar</div>';
+  h += '<div class="sub-item" onclick="goTo(\'reminders\')">Reminders</div>';
   h += '<div class="sub-item" onclick="goTo(\'profile\')">Savings</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">Recovery</h3>';
@@ -3895,6 +4143,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += notifRowHTML('craving', '⚠️', 'Craving Check-In', 'Log & manage cravings');
   h += notifRowHTML('journal', '📝', 'Journal Prompt', 'Write about your day');
   h += notifRowHTML('breathe', '🫁', 'Breathing Exercise', 'Take a mindful moment');
+  h += reminderNotifRowHTML();
   h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">Export My Data</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">Import Data</button>';
@@ -4332,6 +4581,11 @@ function notifRowHTML(key, emoji, label, desc) {
   var timeVal = n[timeKey] || (key==='morning'?'08:00':key==='evening'?'20:00':key==='craving'?'14:00':key==='journal'?'12:00':'10:00');
   return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+emoji+'</span><div><div style="font-size:13px;font-weight:600">'+label+'</div><div style="font-size:11px;color:var(--muted)">'+desc+'</div></div></div><div style="display:flex;align-items:center;gap:8px"><input type="time" value="'+timeVal+'" onchange="D.notifications.'+timeKey+'=this.value;saveData()" style="width:auto;padding:4px 8px;font-size:12px;margin:0;border-radius:8px;border:1px solid var(--border)"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.'+key+'=this.checked;if(this.checked)requestNotif();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
 }
+function reminderNotifRowHTML() {
+  var n = D.notifications || {};
+  var enabled = n.reminderNotif !== false;
+  return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">&#9200;</span><div><div style="font-size:13px;font-weight:600">Reminders</div><div style="font-size:11px;color:var(--muted)">Get notified when a reminder is due</div></div></div><div style="display:flex;align-items:center;gap:8px"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.reminderNotif=this.checked;if(this.checked)requestNotif();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
+}
 function requestNotif() {
   if (!("Notification" in window)) return;
   if (Notification.permission === "default") Notification.requestPermission();
@@ -4369,8 +4623,25 @@ function checkNotifications() {
     swNotify('Time to Breathe', 'Take a 2-minute breathing exercise. Inhale calm, exhale stress.', 'https://emojicdn.elk.sh/%F0%9F%AB%81', 'reclaim-breathe');
     D._notifiedBreathe = true;
   }
+  // Check due reminders
+  if (n.reminderNotif !== false && D.reminders) {
+    for (var ri=0;ri<D.reminders.length;ri++) {
+      var rr = D.reminders[ri];
+      if (rr.notified) continue;
+      var rDtStr = rr.date + (rr.time ? 'T'+rr.time : 'T23:59');
+      if (new Date(rDtStr) <= now) {
+        swNotify('Reminder: '+rr.title, rr.notes || 'You have a reminder due.', 'https://emojicdn.elk.sh/%F0%9F%93%85', 'reclaim-reminder-'+ri);
+        rr.notified = true;
+        saveData();
+      }
+    }
+  }
   // Reset flags at midnight
-  if (hm === '00:01') { D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false; }
+  if (hm === '00:01') {
+    D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false;
+    // Reset notified for repeating reminders so they fire again today
+    if (D.reminders) D.reminders.forEach(function(rr){if(rr.repeat&&rr.repeat!=='none')rr.notified=false});
+  }
 }
 setInterval(checkNotifications, 60000);
 
@@ -4382,7 +4653,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','letters','calendar','library','music','reports','buddy','coping','assessment','profile','safety'];
+var MORE_SUB_PAGES = ['journal','letters','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders'];
 var REFLECT_SUB_PAGES = [];
 
 function safetyHTML() {
@@ -4428,6 +4699,7 @@ function render() {
     reports: reportsHTML, buddy: buddyHTML, coping: copingHTML,
     assessment: assessmentHTML, profile: profileHTML,
     letters: lettersHTML, calendar: calendarHTML, safety: safetyHTML,
+    reminders: remindersHTML,
   };
   var fn = pages[pg];
   if (fn) app.innerHTML = fn();
