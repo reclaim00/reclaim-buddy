@@ -128,13 +128,6 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .cal-legend span{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted)}
 .cal-legend .swatch{width:10px;height:10px;border-radius:3px}
 /* ====== LETTERS ====== */
-.letter-card{padding:14px;margin:8px 0;border-radius:12px;border-left:4px solid;cursor:pointer;transition:.15s}
-.letter-card.sealed{border-left-color:var(--accent);background:var(--card)}
-.letter-card.received{border-left-color:var(--primary);background:var(--primary-light)}
-.letter-card .l-title{font-weight:700;font-size:14px}
-.letter-card .l-meta{font-size:11px;color:var(--muted);margin-top:2px}
-.letter-card .l-status{font-size:11px;font-weight:600;margin-top:4px}
-.letter-content{white-space:pre-wrap;font-size:14px;line-height:1.6;padding:12px;background:var(--card);border-radius:12px;margin:8px 0}
 /* ====== SIGN-IN ====== */
 .si-bg{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;background:linear-gradient(160deg,var(--primary-light) 0%,var(--bg) 60%)}
 .si-card{background:var(--card);border-radius:24px;padding:32px 24px;max-width:360px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.08);text-align:center;animation:siFade .5s ease}
@@ -338,7 +331,7 @@ function defaultData() {
     lastReportDate: null,
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
-    chatHistory: [], reflectionCount: 0, sosUsed: false, letters: [], assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], dailyCost: 0, reminders: []
+    chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: []
   };
 }
 
@@ -796,10 +789,6 @@ function soberLevelProgress() {
   return Math.min(100, Math.round((progress / range) * 100));
 }
 
-function moneySaved() {
-  return ((D.dailyCost || 0) * soberDays()).toFixed(2);
-}
-
 function soberLevelHTML() {
   var level = soberLevel();
   var progress = soberLevelProgress();
@@ -999,11 +988,6 @@ function showRelapseRecovery() {
   h += '<div class="card" style="border-left:4px solid var(--accent);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128204; Next 24 Hours</div><div style="font-size:13px;color:var(--text);line-height:1.5">Identify the trigger — what happened right before? Log it in your journal. Restore your environment (remove triggers). Re-commit to your sobriety timer. Reach out to your buddy or a support group. Read your safety plan from Arthur. Be kind to yourself — shame fuels the cycle, honesty breaks it.</div></div>';
   // Next week
   h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128198; Next 1 Week</div><div style="font-size:13px;color:var(--text);line-height:1.5">Review what led to the relapse and update your trigger list. Strengthen your daily routine — add one extra check-in or coping practice. Forgive yourself fully. Relapse is part of recovery for many people. What matters is what you do next. You are still on the path.</div></div>';
-  h += '<div class="card" style="border-left:4px solid var(--purple);padding:12px;margin-bottom:8px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128172; Write to Your Future Self</div><div style="font-size:13px;color:var(--text);line-height:1.5">This moment matters. Write a letter to your future self about what happened, what you learned, and what you hope for. It will be sealed and delivered to you later.</div><button class="btn btn-sm btn-outline" onclick="this.closest(\'.overlay\').remove();setTimeout(function(){showLetterPrompt(\'relapse\')},100)" style="margin-top:6px;width:auto">Write a Letter</button></div>';
-  h += '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()">I\'ve Got This</button></div>';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-}
 
 var END_SOBRIETY_ACTIVITIES = [
   'Take a 5-minute walk and notice 3 things you see, hear, and feel.',
@@ -1201,22 +1185,16 @@ function quizGoTo(idx, prefix) {
   var nextEl = document.getElementById('quiz-next');
   var submitEl = document.getElementById('quiz-submit');
   if (!qEl) return;
-  var isLast = idx >= ASSESS_QUESTIONS.length;
-  if (isLast) {
-    qEl.innerHTML = '<div class="card" style="background:var(--primary-light);border-left:3px solid var(--primary);padding:12px;margin:4px 0"><p style="font-weight:600;font-size:14px;margin-bottom:6px">' + (idx+1) + '. On average, how much did you spend per day on your addiction?</p><p style="font-size:11px;color:var(--muted);margin-bottom:8px">This helps us track how much you\'ve saved since starting your journey.</p><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px;font-weight:700">$</span><input type="number" id="quiz-daily-cost" value="' + (D.dailyCost || '') + '" min="0" step="0.01" placeholder="0.00" style="flex:1;font-size:16px;padding:10px 12px;margin:0;text-align:center"></div></div>';
-    if (stepEl) stepEl.textContent = 'Question ' + ASSESS_TOTAL_STEPS + ' of ' + ASSESS_TOTAL_STEPS;
-  } else {
-    var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
-    qEl.innerHTML = '<div><p style="font-weight:600;font-size:15px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML(prefix + idx, savedVal) + '</div>';
-    if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
-  }
+  var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
+  qEl.innerHTML = '<div><p style="font-weight:600;font-size:15px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML(prefix + idx, savedVal) + '</div>';
+  if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
   var pct = Math.round(((idx+1) / ASSESS_TOTAL_STEPS) * 100);
   if (barEl) barEl.style.width = pct + '%';
   if (pctEl) pctEl.textContent = pct + '%';
   if (prevEl) prevEl.style.display = idx === 0 ? 'none' : 'block';
   if (nextEl) nextEl.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'none' : 'block';
   if (submitEl) submitEl.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'block' : 'none';
-  if (!isLast) setTimeout(function(){ restoreQuizVisuals(prefix); }, 50);
+  setTimeout(function(){ restoreQuizVisuals(prefix); }, 50);
 }
 
 function quizNext() {
@@ -1243,10 +1221,7 @@ function submitAssessment() {
   D.assessmentTaken = true;
   D.assessmentResult = { score: score, date: Date.now(), answers: D.assessmentProgress ? D.assessmentProgress.slice() : [] };
   D.assessmentProgress = null;
-  var costEl = document.getElementById('quiz-daily-cost');
-  if (costEl) D.dailyCost = parseFloat(costEl.value) || 0;
   saveData();
-  setTimeout(function(){ showLetterPrompt('assessment'); }, 500);
 }
 
 function showAssessmentAfterSignIn() {
@@ -1269,7 +1244,7 @@ function showAssessmentAfterSignIn() {
   h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:24px">🔍</div><div><h3 style="font-size:18px;font-weight:700;margin:0">Addiction Assessment</h3><p style="font-size:12px;color:var(--muted);margin:2px 0 0">Help us understand where you are on your journey</p></div></div>';
   h += sev;
   if (!D.assessmentTaken) {
-    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span id="osi-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + (ASSESS_QUESTIONS.length + 1) + '</span><span id="osi-progress-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span id="osi-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + ASSESS_TOTAL_STEPS + '</span><span id="osi-progress-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
     h += '<div class="progress-bar" style="margin-bottom:8px"><div class="fill" id="osi-progress-bar" style="width:0%"></div></div>';
     h += '<div id="osi-question"></div>';
     h += '<div style="display:flex;gap:8px;margin-top:10px">';
@@ -1288,7 +1263,7 @@ function showAssessmentAfterSignIn() {
 }
 
 var OSI_CURRENT = 0;
-var ASSESS_TOTAL_STEPS = ASSESS_QUESTIONS.length + 1;
+var ASSESS_TOTAL_STEPS = ASSESS_QUESTIONS.length;
 function osiGoTo(idx) {
   OSI_CURRENT = idx;
   var qEl = document.getElementById('osi-question');
@@ -1296,22 +1271,16 @@ function osiGoTo(idx) {
   var stepEl = document.getElementById('osi-step');
   var barEl = document.getElementById('osi-progress-bar');
   var pctEl = document.getElementById('osi-progress-pct');
-  var isLast = idx >= ASSESS_QUESTIONS.length;
-  if (isLast) {
-    qEl.innerHTML = '<div class="card" style="background:var(--primary-light);border-left:3px solid var(--primary);padding:12px;margin:4px 0"><p style="font-weight:600;font-size:14px;margin-bottom:6px">' + (idx+1) + '. On average, how much did you spend per day on your addiction?</p><p style="font-size:11px;color:var(--muted);margin-bottom:8px">This helps us track how much you\'ve saved since starting your journey.</p><div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px;font-weight:700">$</span><input type="number" id="osi-daily-cost" value="' + (D.dailyCost || '') + '" min="0" step="0.01" placeholder="0.00" style="flex:1;font-size:16px;padding:10px 12px;margin:0;text-align:center"></div></div>';
-    if (stepEl) stepEl.textContent = 'Question ' + ASSESS_TOTAL_STEPS + ' of ' + ASSESS_TOTAL_STEPS;
-  } else {
-    var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
-    qEl.innerHTML = '<div><p style="font-weight:600;font-size:14px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML('oq' + idx, savedVal) + '</div>';
-    if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
-  }
+  var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
+  qEl.innerHTML = '<div><p style="font-weight:600;font-size:14px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML('oq' + idx, savedVal) + '</div>';
+  if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
   var pct = Math.round(((idx+1) / ASSESS_TOTAL_STEPS) * 100);
   if (barEl) barEl.style.width = pct + '%';
   if (pctEl) pctEl.textContent = pct + '%';
   document.getElementById('osi-prev').style.display = idx === 0 ? 'none' : 'block';
   document.getElementById('osi-next').style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'none' : 'block';
   document.getElementById('osi-submit').style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'block' : 'none';
-  if (!isLast) setTimeout(function(){ restoreQuizVisuals('oq'); }, 50);
+  setTimeout(function(){ restoreQuizVisuals('oq'); }, 50);
 }
 function osiNext() { saveQuizProgress('oq'); if (OSI_CURRENT < ASSESS_TOTAL_STEPS - 1) osiGoTo(OSI_CURRENT + 1); }
 function osiPrev() { if (OSI_CURRENT > 0) osiGoTo(OSI_CURRENT - 1); }
@@ -1326,14 +1295,10 @@ function submitOverlayAssessment(btn) {
   score = count > 0 ? Math.round(score / count) : 0;
   D.assessmentTaken = true;
   D.assessmentResult = { score: score, date: Date.now(), answers: D.assessmentProgress ? D.assessmentProgress.slice() : [] };
-  var costEl = document.getElementById('osi-daily-cost');
-  if (costEl) D.dailyCost = parseFloat(costEl.value) || 0;
-  D.assessmentProgress = null;
   saveData();
   var overlay = btn.closest('.overlay');
   overlay.remove();
   showAssessmentAfterSignIn();
-  setTimeout(function(){ showLetterPrompt(); }, 800);
 }
 
 // ====== HABITS ======
@@ -2375,6 +2340,9 @@ function reflectHTML() {
   if (!D.journal.length) {
     h += '<div class="card"><div class="empty-state">No entries yet. Write something above and Arthur will reflect on it.</div></div>';
   } else {
+    h += '<div class="card" style="text-align:center;cursor:pointer;padding:10px" onclick="var e=document.getElementById(\'past-journals\');if(e){var v=e.style.display!==\'none\';e.style.display=v?\'none\':\'block\';this.querySelector(\'.pj-toggle\').textContent=v?\'Show All (' + D.journal.length + ' entries)\':\'Hide Past Journals\'}">';
+    h += '<span class="pj-toggle" style="font-weight:600;font-size:13px;color:var(--primary)">Show All (' + D.journal.length + ' entries)</span></div>';
+    h += '<div id="past-journals" style="display:none">';
     var entries = D.journal.slice().reverse();
     for (var i=0;i<entries.length;i++) {
       var idx = D.journal.length - 1 - i;
@@ -2384,6 +2352,7 @@ function reflectHTML() {
       h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect with Arthur</button>';
       h += '</div>';
     }
+    h += '</div>';
   }
   return h;
 }
@@ -3078,7 +3047,6 @@ function reportsHTML() {
   h += '<div class="stat-card"><div class="num">' + avgMood + '</div><div class="label">Avg Mood</div></div>';
   h += '<div class="stat-card"><div class="num">' + journalCount + '</div><div class="label">Journaled</div></div>';
   h += '<div class="stat-card"><div class="num">' + checkinCount + '</div><div class="label">Check-Ins</div></div>';
-  if (D.dailyCost) h += '<div class="stat-card"><div class="num" style="font-size:16px">$' + moneySaved() + '</div><div class="label">Saved</div></div>';
   h += '</div>';
   if (moodChart) { h += '<div style="font-size:11px;color:var(--muted);margin:4px 0 2px">Mood timeline</div>' + moodChart; }
   h += '</div>';
@@ -3659,135 +3627,6 @@ function showDayDetail(dateStr) {
   document.body.appendChild(overlay);
 }
 
-// ====== LETTER TO FUTURE / PAST SELF ======
-var LETTER_DURATIONS = [
-  {label:'1 day', ms:86400000},
-  {label:'3 days', ms:259200000},
-  {label:'7 days', ms:604800000},
-  {label:'14 days', ms:1209600000},
-  {label:'30 days', ms:2592000000},
-  {label:'90 days', ms:7776000000}
-];
-
-function lettersHTML() {
-  var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0">';
-  h += '<h2 style="font-size:20px;font-weight:700">Letters</h2>';
-  h += '<button class="btn btn-sm btn-primary" onclick="showNewLetter()">+ New Letter</button></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Write a letter to your future self. It stays sealed until the timer expires.</p>';
-  if (!D.letters || !D.letters.length) {
-    h += '<div class="card"><div class="empty-state">No letters yet. Write one to your future self!</div></div>';
-  } else {
-    for (var i=D.letters.length-1;i>=0;i--) {
-      var l = D.letters[i];
-      var now = Date.now();
-      var received = now >= l.receiveDate;
-      var timeLeft = l.receiveDate - now;
-      var daysLeft = Math.ceil(timeLeft / 86400000);
-      var cls = received ? 'received' : 'sealed';
-      var status = received ? 'Ready to read' : 'Sealed - opens in '+daysLeft+' day'+(daysLeft!==1?'s':'');
-      h += '<div class="letter-card '+cls+'" onclick="'+(received?'showLetterContent('+i+')':'')+'">';
-      h += '<div class="l-title">'+(l.title||'Letter to myself')+'</div>';
-      h += '<div class="l-meta">Written '+l.sentDate+'</div>';
-      h += '<div class="l-meta">'+(received?'Received '+new Date(l.receiveDate).toLocaleDateString():'Opens '+new Date(l.receiveDate).toLocaleDateString())+'</div>';
-      h += '<div class="l-status" style="color:'+(received?'var(--primary)':'var(--accent)')+'">'+status+'</div>';
-      h += '</div>';
-    }
-  }
-  return h;
-}
-
-function showNewLetter() {
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Write a Letter</h3>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">What do you want to tell your future self? It will be sealed until the timer expires.</p>';
-  h += '<input type="text" id="l-title" placeholder="Letter title (e.g. A note for next month)">';
-  h += '<textarea id="l-text" placeholder="Dear future me..." style="min-height:120px"></textarea>';
-  h += '<label style="font-size:13px;font-weight:600;display:block;margin:4px 0">Deliver in:</label><select id="l-duration">';
-  for (var i=0;i<LETTER_DURATIONS.length;i++) {
-    h += '<option value="'+LETTER_DURATIONS[i].ms+'">'+LETTER_DURATIONS[i].label+'</option>';
-  }
-  h += '</select>';
-  h += '<button class="btn btn-primary" onclick="saveLetter(this)">Seal and Send</button>';
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-}
-
-function saveLetter(btn) {
-  var title = document.getElementById('l-title');
-  var text = document.getElementById('l-text');
-  var dur = document.getElementById('l-duration');
-  if (!text || !text.value.trim()) { alert('Write something in your letter.'); return; }
-  if (!D.letters) D.letters = [];
-  D.letters.push({
-    id: Date.now(), title: (title&&title.value.trim())||'Letter to myself', text: text.value.trim(),
-    sentDate: new Date().toLocaleDateString(), sentTimestamp: Date.now(),
-    receiveDate: Date.now() + parseInt(dur?dur.value:86400000), read: false
-  });
-  saveData();
-  btn.closest('.overlay').remove();
-}
-
-function showLetterContent(idx) {
-  var l = D.letters[idx];
-  if (!l) return;
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><h3 style="font-size:18px;font-weight:700">'+(l.title||'Letter to myself')+'</h3></div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Written '+l.sentDate+' &middot; Received '+new Date(l.receiveDate).toLocaleDateString()+'</div>';
-  h += '<div class="letter-content">'+l.text+'</div>';
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
-  l.read = true;
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-  saveData();
-}
-
-function showLetterPrompt(context) {
-  var existing = document.querySelector('.overlay');
-  if (existing) return;
-  var prompts = {
-    assessment: 'You just completed your assessment. Now take a moment to write a letter to your future self — words of encouragement, goals, or what you hope to remember.',
-    relapse: 'You just recorded a relapse. That takes honesty. Write a letter to your future self — what you learned, what you\'ll do differently, and the strength you still have.'
-  };
-  var msg = prompts[context] || 'Take a moment to write a letter to your future self — words of encouragement, hopes, or what you want to remember.';
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="max-width:420px;text-align:center">';
-  h += '<div style="font-size:36px;margin-bottom:8px">&#128172;</div>';
-  h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Write to Your Future Self</h3>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">' + msg + '</p>';
-  h += '<input type="text" id="lp-title" placeholder="Letter title (e.g. A note for next month)" style="margin-bottom:6px">';
-  h += '<textarea id="lp-text" placeholder="Dear future me..." style="min-height:100px;margin-bottom:6px"></textarea>';
-  h += '<label style="font-size:13px;font-weight:600;display:block;margin:4px 0">Deliver in:</label><select id="lp-duration" style="margin-bottom:8px">';
-  for (var i=0;i<LETTER_DURATIONS.length;i++) {
-    h += '<option value="'+LETTER_DURATIONS[i].ms+'">'+LETTER_DURATIONS[i].label+'</option>';
-  }
-  h += '</select>';
-  h += '<div style="display:flex;gap:8px">';
-  h += '<button class="btn btn-primary" onclick="savePromptLetter(this)" style="flex:1">Seal &amp; Send</button>';
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="flex:1">Skip</button>';
-  h += '</div></div>';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-}
-
-function savePromptLetter(btn) {
-  var title = document.getElementById('lp-title');
-  var text = document.getElementById('lp-text');
-  var dur = document.getElementById('lp-duration');
-  if (!text || !text.value.trim()) { alert('Write something in your letter.'); return; }
-  if (!D.letters) D.letters = [];
-  D.letters.push({
-    id: Date.now(), title: (title&&title.value.trim())||'Letter to myself', text: text.value.trim(),
-    sentDate: new Date().toLocaleDateString(), sentTimestamp: Date.now(),
-    receiveDate: Date.now() + parseInt(dur?dur.value:86400000), read: false
-  });
-  saveData();
-  btn.closest('.overlay').remove();
-}
-
 function showAddictionPrompt() {
   var existing = document.querySelectorAll('.overlay');
   if (existing.length > 2) return;
@@ -3955,13 +3794,12 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'journal\')">Journal</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">Calendar</div>';
   h += '<div class="sub-item" onclick="goTo(\'reminders\')">Reminders</div>';
-  h += '<div class="sub-item" onclick="goTo(\'profile\')">Savings</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">Recovery</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'reports\')">Reports</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">Buddy</div>';
-  h += '<div class="sub-item" onclick="goTo(\'letters\')">Letters</div>';
+
   h += '<div class="sub-item" onclick="goTo(\'safety\')">Addiction Targets</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">Resources</h3>';
@@ -4442,7 +4280,6 @@ function homeHTML() {
   h += '<div class="stat-card"><div class="num">' + D.streak + '</div><div class="label">Day Streak</div></div>';
   h += '<div class="stat-card"><div class="num">' + D.moods.length + '</div><div class="label">Moods</div></div>';
   h += '<div class="stat-card"><div class="num">' + D.journal.length + '</div><div class="label">Journal</div></div>';
-  if (D.dailyCost) h += '<div class="stat-card"><div class="num" style="font-size:16px">$' + moneySaved() + '</div><div class="label">Saved</div></div>';
   h += '</div>';
 
   // Quick actions grid
@@ -4565,7 +4402,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','letters','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders'];
 var REFLECT_SUB_PAGES = [];
 
 function safetyHTML() {
@@ -4610,7 +4447,7 @@ function render() {
     more: moreHTML, journal: journalHTML, library: libraryHTML, music: musicHTML,
     reports: reportsHTML, buddy: buddyHTML, coping: copingHTML,
     assessment: assessmentHTML, profile: profileHTML,
-    letters: lettersHTML, calendar: calendarHTML, safety: safetyHTML,
+    calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML,
   };
   var fn = pages[pg];
