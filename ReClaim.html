@@ -2153,6 +2153,17 @@ function dailySpark() {
   return D._spark;
 }
 
+function dailyChallenge() {
+  var today = new Date().toDateString();
+  if (D._challengeDate === today && D._challenge) return D._challenge;
+  var pool = DAILY_SPARKS.filter(function(s){ return s.type === 'challenge'; });
+  if (!pool.length) return '';
+  var pick = pool[Math.floor(Math.random() * pool.length)];
+  D._challengeDate = today;
+  D._challenge = '<div class="card" style="padding:16px;margin:10px 0;border-left:3px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">&#127919;</span><span style="font-weight:700;font-size:14px">Daily Challenge</span></div><div style="font-size:14px;line-height:1.5">' + pick.text.replace(/^Challenge:\s*/,'') + '</div></div>';
+  return D._challenge;
+}
+
 function getMotivation(mood) {
   var pool = MOTIVATION_POOL.filter(function(m){ return m.m === mood; });
   if (!pool.length) pool = MOTIVATION_POOL;
@@ -4423,6 +4434,8 @@ function homeHTML() {
   h += plantHTML();
 
   h += q;
+
+  h += dailyChallenge();
 
   // Quick stats
   h += '<div class="stat-grid">';
