@@ -1687,14 +1687,61 @@ function artDailyRoutineHTML() {
   var hasGratitude = recentText.indexOf('grateful') !== -1 || recentText.indexOf('thank') !== -1 || recentText.indexOf('bless') !== -1;
   var hasTired = recentText.indexOf('tired') !== -1 || recentText.indexOf('exhaust') !== -1 || recentText.indexOf('sleep') !== -1;
 
-  var morning = hasTired ? 'Start with 5 minutes of sunlight or stretching to wake up your body.' : (hasSad ? 'Write one thing you are looking forward to today. Keep it small and kind.' : 'Take 3 deep breaths and set one intention for the day.');
-  var midday = hasStress ? 'Step away for 5 minutes. Box breathe: in 4, hold 4, out 4, hold 4.' : (hasCraving ? 'Pause and name one thing you can see, hear, and feel right now to ground yourself.' : 'Check in with your body. Are you hungry, thirsty, or just tired?');
-  var evening = hasAnger ? 'Write down what frustrated you today — then tear it up or delete it. Let it go.' : (hasSad ? 'Before bed, name one small thing that went ok today. Even the smallest win counts.' : 'Reflect on one moment today that you want to remember. Write it down.');
-  var extra = '';
-  if (hasCraving) extra = 'You mentioned cravings recently. Arthur suggests: keep your hands busy — squeeze something, draw, or make tea. Cravings pass in waves.';
-  else if (hasStress) extra = 'You seem stressed lately. Try the 5-4-3-2-1 grounding exercise: 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.';
-  else if (hasGratitude) extra = 'You have been practicing gratitude — that is a powerful recovery tool. Keep it up by sharing one grateful thought with your buddy today.';
-  else extra = 'Every day you stay consistent, your brain builds stronger recovery pathways. You are literally rewiring yourself.';
+  var morningPool = [
+    'Start with 5 minutes of sunlight or stretching to wake up your body.',
+    'Drink a full glass of water before anything else. Hydration fuels clarity.',
+    'Write down one thing you are looking forward to today. Keep it small.',
+    'Take 3 deep breaths and set one intention for the day ahead.',
+    'Stretch your neck, shoulders, and back for 2 minutes. Your body holds tension.',
+    'Name one person you care about and send them a good thought.',
+    'Read yesterday\'s journal entry to see how far you\'ve come in 24 hours.',
+    'Make your bed — one small win before the day begins.',
+    'Step outside for 60 seconds. Feel the air and listen to the sounds around you.',
+    'Say one affirmation out loud. "I am enough. Today is mine."'
+  ];
+  var middayPool = [
+    'Step away for 5 minutes. Box breathe: in 4, hold 4, out 4, hold 4.',
+    'Pause and name one thing you can see, hear, and feel right now to ground yourself.',
+    'Check in with your body. Are you hungry, thirsty, or just tired?',
+    'Close your eyes and take 5 slow breaths before your next task.',
+    'Stand up and stretch. Your body wasn\'t designed to sit all day.',
+    'Drink some water and notice how your mind feels afterward.',
+    'Ask yourself: what do I need right now in this moment?',
+    'Take a 2-minute walk, even if it\'s just to another room and back.',
+    'Listen to one song without doing anything else. Just be with the music.',
+    'Write down one thing that went well so far today.'
+  ];
+  var eveningPool = [
+    'Reflect on one moment today that you want to remember. Write it down.',
+    'Before bed, name one small thing that went ok today. Even the smallest win counts.',
+    'Write down what frustrated you today — then tear it up or delete it. Let it go.',
+    'List 3 things you are grateful for today. No repeats allowed.',
+    'Close your eyes and replay one good moment from today in full detail.',
+    'Take 5 slow breaths and release the day. Tomorrow is a fresh start.',
+    'Write a sentence about how you feel right now. No judgment, just honesty.',
+    'Set one intention for tomorrow before you close your eyes.',
+    'Thank your body for carrying you through today, however it went.',
+    'Put your phone away 15 minutes earlier than usual. Give your mind space to settle.'
+  ];
+  var morning = morningPool[Math.floor(Math.random() * morningPool.length)];
+  var midday = middayPool[Math.floor(Math.random() * middayPool.length)];
+  var evening = eveningPool[Math.floor(Math.random() * eveningPool.length)];
+  var extraPool = [
+    'Every day you stay consistent, your brain builds stronger recovery pathways. You are literally rewiring yourself.',
+    'Healing isn\'t linear. Some days will feel harder — that doesn\'t mean you\'re going backwards.',
+    'You showed up today. That is not small. That is everything.',
+    'The fact that you\'re here, reading this, means you haven\'t given up. That takes strength.',
+    'Be gentle with yourself today. You are doing the best you can with what you have.',
+    'Progress isn\'t measured in perfection. It\'s measured in showing up again and again.',
+    'Your only job today is to be a little kinder to yourself than yesterday.',
+    'Recovery is not about being fixed. It\'s about being free to become who you really are.',
+    'Small steps compound. What you do today matters more than what you did yesterday.',
+    'You don\'t have to have it all figured out. Just keep moving forward.'
+  ];
+  var extra = extraPool[Math.floor(Math.random() * extraPool.length)];
+  if (hasCraving) extra = 'You mentioned cravings. Arthur says: cravings last 15-30 minutes. Surf the wave — it will pass. Keep your hands busy, call someone, or breathe through it.';
+  else if (hasStress) extra = 'You seem stressed. Arthur suggests the 5-4-3-2-1 grounding exercise: 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.';
+  else if (hasGratitude) extra = 'You\'ve been practicing gratitude — that rewires your brain for positivity. Share one grateful thought with someone today.';
 
   h += '<div style="margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px">&#127749;</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Morning</div><div style="font-size:12px;color:var(--muted);line-height:1.4">' + morning + '</div></div></div>';
   h += '<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px">&#9728;&#65039;</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Midday</div><div style="font-size:12px;color:var(--muted);line-height:1.4">' + midday + '</div></div></div>';
