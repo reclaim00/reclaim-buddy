@@ -2118,6 +2118,8 @@ var DAILY_SPARKS = [
 ];
 
 function dailySpark() {
+  var today = new Date().toDateString();
+  if (D._sparkDate === today && D._spark) return D._spark;
   var types = ['quote','challenge','affirmation','tip','scripture'];
   var weights = {quote:18, challenge:22, affirmation:22, tip:25, scripture:13};
   var total = 0;
@@ -2127,7 +2129,9 @@ function dailySpark() {
   var filtered = MOTIVATION_POOL.filter(function(m){ return m.m === 'hopeful' || m.m === 'reflective'; });
   if (chosenType === 'quote' && filtered.length) {
     var pick = filtered[Math.floor(Math.random() * filtered.length)];
-    return '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">&#128293;</span><span style="font-weight:700;font-size:14px">Today\'s Spark</span></div><div style="font-size:15px;font-style:italic;line-height:1.5;margin-bottom:6px">' + pick.q + '</div><div style="font-size:12px;color:var(--muted)">— ' + pick.p + ' <span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + pick.c + '</span></div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Context</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + pick.t + '</p></details></div>';
+    D._sparkDate = today;
+    D._spark = '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">&#128293;</span><span style="font-weight:700;font-size:14px">Today\'s Spark</span></div><div style="font-size:15px;font-style:italic;line-height:1.5;margin-bottom:6px">' + pick.q + '</div><div style="font-size:12px;color:var(--muted)">— ' + pick.p + ' <span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + pick.c + '</span></div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Context</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + pick.t + '</p></details></div>';
+    return D._spark;
   }
   var sparkPool = DAILY_SPARKS.filter(function(s){ return s.type === chosenType; });
   if (!sparkPool.length) sparkPool = DAILY_SPARKS;
@@ -2135,12 +2139,18 @@ function dailySpark() {
   var icons = {quote:'&#128293;', challenge:'&#127919;', affirmation:'&#10024;', tip:'&#128161;', scripture:'&#128591;'};
   var labels = {quote:'Quote', challenge:'Challenge', affirmation:'Affirmation', tip:'Tip', scripture:'Scripture'};
   if (spark.type === 'quote') {
-    return '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">' + (icons[spark.type]||'&#128293;') + '</span><span style="font-weight:700;font-size:14px">Today\'s ' + (labels[spark.type]||'Spark') + '</span></div><div style="font-size:15px;font-style:italic;line-height:1.5;margin-bottom:6px">' + spark.q + '</div><div style="font-size:12px;color:var(--muted)">— ' + (spark.p||'') + ' <span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + spark.c + '</span></div></div>';
+    D._sparkDate = today;
+    D._spark = '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">' + (icons[spark.type]||'&#128293;') + '</span><span style="font-weight:700;font-size:14px">Today\'s ' + (labels[spark.type]||'Spark') + '</span></div><div style="font-size:15px;font-style:italic;line-height:1.5;margin-bottom:6px">' + spark.q + '</div><div style="font-size:12px;color:var(--muted)">— ' + (spark.p||'') + ' <span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + spark.c + '</span></div></div>';
+    return D._spark;
   }
   if (spark.type === 'scripture') {
-    return '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">&#128591;</span><span style="font-weight:700;font-size:14px">Today\'s Scripture</span></div><div style="font-size:14px;line-height:1.6;margin-bottom:6px">' + spark.text + '</div><div style="font-size:11px;color:var(--muted)"><span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + (spark.s||'') + '</span></div></div>';
+    D._sparkDate = today;
+    D._spark = '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">&#128591;</span><span style="font-weight:700;font-size:14px">Today\'s Scripture</span></div><div style="font-size:14px;line-height:1.6;margin-bottom:6px">' + spark.text + '</div><div style="font-size:11px;color:var(--muted)"><span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + (spark.s||'') + '</span></div></div>';
+    return D._spark;
   }
-  return '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">' + (icons[spark.type]||'&#128293;') + '</span><span style="font-weight:700;font-size:14px">Today\'s ' + (labels[spark.type]||'Spark') + '</span></div><div style="font-size:14px;line-height:1.5;margin-bottom:2px">' + (spark.type === 'challenge' ? '🎯 ' : spark.type === 'affirmation' ? '💛 ' : '💡 ') + spark.text + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px"><span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + spark.c + '</span></div></div>';
+  D._sparkDate = today;
+  D._spark = '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">' + (icons[spark.type]||'&#128293;') + '</span><span style="font-weight:700;font-size:14px">Today\'s ' + (labels[spark.type]||'Spark') + '</span></div><div style="font-size:14px;line-height:1.5;margin-bottom:2px">' + (spark.type === 'challenge' ? '🎯 ' : spark.type === 'affirmation' ? '💛 ' : '💡 ') + spark.text + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px"><span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + spark.c + '</span></div></div>';
+  return D._spark;
 }
 
 function getMotivation(mood) {
