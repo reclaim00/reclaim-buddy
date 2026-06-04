@@ -4312,69 +4312,18 @@ function habitBarsHTML() {
 
 // ====== HOME ======
 function homeHTML() {
-  var today = new Date().toDateString();
-  var todaysMood = D.moods.filter(function(m){return m.date===today});
-  var lastMood = todaysMood.length ? todaysMood[todaysMood.length-1] : null;
-  var weekMoods = D.moods.slice(-7);
-  var entries = D.journal.slice(-3).reverse();
-  var q = dailySpark();
-
-  var h = '<div style="display:flex;align-items:center;gap:10px;padding:8px 0">';
-  if (D.avatar) h += '<div style="width:36px;height:36px;border-radius:18px;overflow:hidden;flex-shrink:0;border:2px solid var(--primary-light)"><img src="' + D.avatar.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '" style="width:100%;height:100%;object-fit:cover" alt=""></div>';
-  h += '<div style="font-size:13px;color:var(--muted)">' + (D.name && 'Hi, '+D.name) + '</div></div>';
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Home</h2>';
 
   // Sobriety plant + timer at top
   h += plantHTML();
 
-  h += q;
+  h += dailySpark();
 
   h += dailyChallenge();
-
-  // Quick stats
-  h += '<div class="stat-grid">';
-  h += '<div class="stat-card"><div class="num">' + D.streak + '</div><div class="label">Day Streak</div></div>';
-  h += '<div class="stat-card"><div class="num">' + D.moods.length + '</div><div class="label">Moods</div></div>';
-  h += '<div class="stat-card"><div class="num">' + D.journal.length + '</div><div class="label">Journal</div></div>';
-  h += '</div>';
-
-  // Quick actions grid
-  h += '<div class="sub-grid">';
-  h += '<div class="sub-item" onclick="goTo(\'track\')">Track</div>';
-  h += '<div class="sub-item" onclick="goTo(\'reflect\')">Reflect</div>';
-  h += '<div class="sub-item" onclick="goTo(\'care\')">Care</div>';
-  h += '<div class="sub-item" onclick="goTo(\'journal\')">Journal</div>';
-  h += '</div>';
 
   // Badges
   h += badgesHTML();
 
-  // Today's mood
-  if (lastMood) {
-    h += '<div class="card"><h3>Today\'s Mood</h3><div style="text-align:center;font-size:24px;font-weight:700;color:var(--primary);padding:8px 0">' + MOODS[lastMood.val-1].label + '</div></div>';
-  } else {
-    h += '<div class="card"><h3>How are you?</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Log your first mood of the day.</p><button class="btn btn-primary" onclick="goTo(\'track\')">Log Mood</button></div>';
-  }
-
-  // Buddy card
-  if (D.buddy && D.buddy.name) {
-    h += '<div class="card" style="cursor:pointer" onclick="goTo(\'buddy\')"><div style="display:flex;align-items:center;gap:12px"><div class="buddy-avatar" style="width:40px;height:40px;font-size:18px">' + D.buddy.name[0].toUpperCase() + '</div><div><div style="font-weight:600;font-size:14px">' + D.buddy.name + '</div><div style="font-size:12px;color:var(--muted)">' + (D.buddy.relationship || 'Accountability Partner') + (D.buddy.language ? ' &middot; ' + D.buddy.language : '') + ' &middot; ' + buddyStreak() + ' day streak</div></div></div></div>';
-  }
-
-  // Monthly challenge
-  h += monthlyChallengeHTML();
-
-  // Craving log
-  h += cravingCardHTML();
-
-  // Recent journal
-  if (entries.length) {
-    h += '<div class="card"><h3>Recent Journal</h3>';
-    for (var i=0;i<entries.length;i++) {
-      h += '<div class="entry-item"><div class="date">' + entries[i].date + '</div><div class="preview">' + entries[i].text.substring(0,80) + '</div></div>';
-    }
-    h += '</div>';
-  }
-  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'journal\')" style="margin-top:4px">Write in Journal</button>';
   return h;
 }
 
