@@ -1771,10 +1771,9 @@ var ALL_ARTISTS = {
 };
 var SONG_PREFIXES = ['All I Want','Beautiful','Broken','Call Me','Carry On','Changes','Chasing','Close Your Eyes','Come Back','Coming Home','Counting Stars','Crawling','Cry','Dance','Dancing','Demons','Don\'t Let Me Down','Don\'t Stop','Dream','Drown','Enough','Everlong','Everything','Fade','Faded','Falling','Fear','Fight','Find Me','Fire','Fix You','Float','Flying','Follow Me','Forever','Free','Gone','Goodbye','Hallelujah','Hang On','Hear Me','Heartbeat','Help','Hero','Hold Me','Hold On','Home','Hopeful','Hurricane','Hurts','I Believe','I Fall Apart','I Live','I Miss You','I Need You','I Surrender','I Will','Imagine','In My Head','In the End','Into the Fire','Iris','It Is Well','Jumper','Just Breathe','Keep Holding On','Keep Your Head Up','Lay Me Down','Lifeline','Light','Light Up','Lights','Like a Prayer','Lose Yourself','Lost','Love Me','Lullaby','Mended','Mercy','Miracle','Monster','More Than This','My Heart','Never Give Up','Never Let Go','New Day','No Surrender','One More Light','One Step','Only You','Overcome','Rainbow','Rise','Rise Up','Run','Safe','Safe and Sound','Save Me','Saving Grace','Say Something','Shake It Off','Shelter','Shine','Shine On','Sing','Skinny Love','Smile','So Far Away','Sober','Somebody','Someone','Something','Someday','Soul to Squeeze','Stand By Me','Stand Up','Stars','Start Again','Stay','Stay Alive','Stay With Me','Still Breathing','Stronger','Stubborn Love','Sunrise','Sunshine','Surrender','Take Me Home','Take Me to Church','The Cave','The Climb','The Light','The Middle','The Other Side','The Rescue','The River','The Sound','The Story','This Is Me','Thousand Years','Thunder','Titanium','To the Sky','Torn','Try','Unbroken','Unwritten','Up to the Mountain','Wake Me Up','Walk','Walk Through Fire','Waves','Way Down We Go','We Are','We Are Young','We Belong','We Shall Overcome','What About Now','Whatever It Takes','When We Were Young','Where I Belong','Wings','With Arms Wide Open','Wonder','Wonderful','Work It Out','Worth It','Worth the Fight','You Are Not Alone','You Belong','You Found Me','You Get Me','Your Love','You\'re Beautiful','Youth','Zero'];
 
-function generateSong(titleWord, artist) {
+function generateSong(artist) {
   var a = artist.toLowerCase().replace(/[^a-z0-9]/g,'+');
-  var t = titleWord.toLowerCase().replace(/[^a-z0-9]/g,'+').replace(/\+{2,}/g,'+');
-  return { title: titleWord, artist: artist, url_spotify: 'https://open.spotify.com/search/' + encodeURIComponent(artist + ' ' + titleWord), url_youtube: 'https://www.youtube.com/results?search_query=' + a + '+' + t, url_apple: 'https://music.apple.com/search?term=' + encodeURIComponent(artist + ' ' + titleWord) };
+  return { artist: artist, url_spotify: 'https://open.spotify.com/search/' + encodeURIComponent(artist), url_youtube: 'https://www.youtube.com/results?search_query=' + a, url_apple: 'https://music.apple.com/search?term=' + encodeURIComponent(artist) };
 }
 
 function populateSongPool() {
@@ -1786,17 +1785,14 @@ function populateSongPool() {
     var artists = ALL_ARTISTS[mood] || [];
     for (var ai=0;ai<artists.length;ai++) {
       var prefixCount = Math.min(3, SONG_PREFIXES.length);
-      for (var pi=0;pi<prefixCount;pi++) {
-        var idx = (ai * 7 + pi * 13) % SONG_PREFIXES.length;
-        var song = generateSong(SONG_PREFIXES[idx], artists[ai]);
-        if (REFLECT_SONGS[mood].length < 2000 / moods.length) {
-          REFLECT_SONGS[mood].push(song);
-        }
+      var song = generateSong(artists[ai]);
+      if (REFLECT_SONGS[mood].length < 100) {
+        REFLECT_SONGS[mood].push(song);
       }
     }
   }
   SONG_POOL_GENERATED = true;
-  var customSong = generateSong('You Are Not Alone','Michael Jackson');
+  var customSong = generateSong('Michael Jackson');
   ['sad','hopeful','reflective'].forEach(function(m){ if (REFLECT_SONGS[m]) REFLECT_SONGS[m].push(customSong); });
 }
 
@@ -2546,8 +2542,8 @@ function showReflection(idx) {
   var songDesc = {sad:'A song that understands the weight you\'re carrying', angry:'A track to match the fire in you', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space for it all'};
   h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; ' + (songDesc[mood] || 'A song that matches your energy') + '</div>';
   if (song) {
-    h += '<div style="font-weight:700;font-size:15px;margin:2px 0">' + song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
-    h += '<div style="font-size:12px;color:var(--muted)">' + song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
+    h += '<div style="font-weight:700;font-size:15px;margin:2px 0">' + song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:4px">Search for songs by this artist</div>';
     h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap">';
     h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Spotify</a>';
     h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; YouTube</a>';
