@@ -1668,28 +1668,8 @@ function deleteJournalEntry(idx) {
 }
 
 // ====== ART'S DAILY ROUTINE ======
-function artDailyRoutineHTML() {
-  var today = new Date().toDateString();
-  if (D._artRoutineDate === today && D._artRoutine) return D._artRoutine;
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:16px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:700">A</div><div><h3 style="margin:0;font-size:15px">Arthur\'s Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
-  if (!D.journal.length) {
-    h += '<div class="empty-state">Write in your journal so Arthur can create a personalized daily routine for you.</div></div>';
-    return h;
-  }
-  // Analyze journals for mood and topics
-  var moodCounts = [0,0,0,0,0];
-  for (var mi=0;mi<D.moods.length;mi++) { moodCounts[D.moods[mi].val-1]++; }
-  var topMood = 0;
-  for (var mi2=0;mi2<5;mi2++) { if (moodCounts[mi2] > moodCounts[topMood]) topMood = mi2; }
-  var recentText = D.journal.slice(-3).map(function(j){return j.text.toLowerCase()}).join(' ');
-  var hasStress = recentText.indexOf('stress') !== -1 || recentText.indexOf('anxi') !== -1 || recentText.indexOf('overwhelm') !== -1;
-  var hasSad = recentText.indexOf('sad') !== -1 || recentText.indexOf('lonel') !== -1 || recentText.indexOf('depres') !== -1;
-  var hasAnger = recentText.indexOf('angr') !== -1 || recentText.indexOf('frustrat') !== -1 || recentText.indexOf('mad') !== -1;
-  var hasCraving = recentText.indexOf('craving') !== -1 || recentText.indexOf('trigger') !== -1 || recentText.indexOf('urge') !== -1;
-  var hasGratitude = recentText.indexOf('grateful') !== -1 || recentText.indexOf('thank') !== -1 || recentText.indexOf('bless') !== -1;
-  var hasTired = recentText.indexOf('tired') !== -1 || recentText.indexOf('exhaust') !== -1 || recentText.indexOf('sleep') !== -1;
-
-  var morningPool = [
+var ROUTINE_POOLS = {
+  morning: [
     'Start with 5 minutes of sunlight or stretching to wake up your body.',
     'Drink a full glass of water before anything else. Hydration fuels clarity.',
     'Write down one thing you are looking forward to today. Keep it small.',
@@ -1699,9 +1679,29 @@ function artDailyRoutineHTML() {
     'Read yesterday\'s journal entry to see how far you\'ve come in 24 hours.',
     'Make your bed — one small win before the day begins.',
     'Step outside for 60 seconds. Feel the air and listen to the sounds around you.',
-    'Say one affirmation out loud. "I am enough. Today is mine."'
-  ];
-  var middayPool = [
+    'Say one affirmation out loud. "I am enough. Today is mine."',
+    'Journal three words that describe how you want today to feel.',
+    'Do 10 jumping jacks to get your blood flowing.',
+    'Sit in silence for 2 minutes. Let your mind wake up naturally.',
+    'Write a quick note of encouragement to your future self at the end of the day.',
+    'Tidy one small area of your room. Order outside creates calm inside.',
+    'Splash cold water on your face and take a sharp, energizing breath.',
+    'Ask yourself: who do I want to be today?',
+    'Massage your temples and scalp for 30 seconds to release morning tension.',
+    'Look at yourself in the mirror and say one thing you like about who you are.',
+    'Stretch your arms overhead and let out a long, intentional yawn.',
+    'Sip something warm slowly. Let the warmth settle in your chest.',
+    'Write down one worry you are leaving behind today.',
+    'Clench and release each muscle group from your toes to your jaw.',
+    'Listen to one uplifting song before you look at your phone.',
+    'Trace your day in your mind: what needs to happen, what can wait.',
+    'Roll your shoulders back and down. Open your chest. Breathe deep.',
+    'Light a candle or incense and take 5 slow breaths with the scent.',
+    'Text one person you love and tell them something specific you appreciate about them.',
+    'Do a 1-minute plank to remind yourself that you are stronger than you think.',
+    'Stand barefoot on the floor for 30 seconds. Feel grounded before the day pulls you.'
+  ],
+  midday: [
     'Step away for 5 minutes. Box breathe: in 4, hold 4, out 4, hold 4.',
     'Pause and name one thing you can see, hear, and feel right now to ground yourself.',
     'Check in with your body. Are you hungry, thirsty, or just tired?',
@@ -1711,9 +1711,29 @@ function artDailyRoutineHTML() {
     'Ask yourself: what do I need right now in this moment?',
     'Take a 2-minute walk, even if it\'s just to another room and back.',
     'Listen to one song without doing anything else. Just be with the music.',
-    'Write down one thing that went well so far today.'
-  ];
-  var eveningPool = [
+    'Write down one thing that went well so far today.',
+    'Eat something without any screens. Just you and your food.',
+    'Roll your neck slowly in circles — right, back, left, forward. Repeat.',
+    'Step outside and look at the sky for 30 seconds. Let your eyes rest.',
+    'Close your eyes and imagine your favorite peaceful place for 60 seconds.',
+    'Do 5 wall push-ups to reset your posture and energy.',
+    'Write down one decision you\'re proud of today so far.',
+    'Hum or sing quietly for 10 seconds. Vibrations calm the nervous system.',
+    'Count backward from 30 slowly. If your mind wanders, start over.',
+    'Massage your hands and wrists. We hold so much tension there.',
+    'Name one thing you\'re looking forward to later today.',
+    'Send a kind message to someone you haven\'t talked to in a while.',
+    'Shake out your hands and feet for 10 seconds. Release built-up energy.',
+    'Read one page of something inspiring. Let new thoughts in.',
+    'Close your eyes and visualize finishing one task you\'ve been avoiding.',
+    'Stand up and reach for the ceiling as high as you can. Then side to side.',
+    'Write down one thing you can let go of for the rest of the day.',
+    'Breathe in for 4 seconds, hold for 4, exhale for 6. Lengthen the exhale.',
+    'Look at something green — a plant, a tree, even a photo. Nature calms the mind.',
+    'Ask a coworker or friend how they\'re really doing today.',
+    'Do a quick brain dump: write everything on your mind for 60 seconds.'
+  ],
+  evening: [
     'Reflect on one moment today that you want to remember. Write it down.',
     'Before bed, name one small thing that went ok today. Even the smallest win counts.',
     'Write down what frustrated you today — then tear it up or delete it. Let it go.',
@@ -1723,12 +1743,29 @@ function artDailyRoutineHTML() {
     'Write a sentence about how you feel right now. No judgment, just honesty.',
     'Set one intention for tomorrow before you close your eyes.',
     'Thank your body for carrying you through today, however it went.',
-    'Put your phone away 15 minutes earlier than usual. Give your mind space to settle.'
-  ];
-  var morning = morningPool[Math.floor(Math.random() * morningPool.length)];
-  var midday = middayPool[Math.floor(Math.random() * middayPool.length)];
-  var evening = eveningPool[Math.floor(Math.random() * eveningPool.length)];
-  var extraPool = [
+    'Put your phone away 15 minutes earlier than usual. Give your mind space to settle.',
+    'Douse your face with cool water and look at yourself. You made it through today.',
+    'Write one thing you learned about yourself today.',
+    'Stretch your legs and hips for 3 minutes. Tension collects there from the day.',
+    'Lie down and scan your body from head to toe. Notice without changing anything.',
+    'List 5 sounds you heard today. It trains your brain to notice the present.',
+    'Write a short letter to tomorrow\'s you. What do you want them to know?',
+    'Dim the lights 30 minutes before bed. Signal your brain that it\'s time to rest.',
+    'Think of one person who made your day better, even in a small way.',
+    'Close your eyes and imagine releasing the day like letting go of a balloon.',
+    'Take a warm shower and let the water wash away the weight of the day.',
+    'Write down one thing you forgive yourself for today.',
+    'Read something calming for 5 minutes. Fiction, poetry, or something simple.',
+    'Ask yourself: what was the best moment of my day?',
+    'Press your palms together at your chest and bow your head slightly. A silent thank you.',
+    'Breathe in for 4, hold for 7, exhale for 8. Do this 4 times.',
+    'Write down one thing that went differently than expected. Did it turn out okay?',
+    'Gently roll your ankles and wrists in circles to release the day\'s tension.',
+    'Name one thing you want to remember from today a year from now.',
+    'Put a hand on your chest and say out loud: "I did enough today."',
+    'Turn off all notifications for the night. The world can wait until morning.'
+  ],
+  extra: [
     'Every day you stay consistent, your brain builds stronger recovery pathways. You are literally rewiring yourself.',
     'Healing isn\'t linear. Some days will feel harder — that doesn\'t mean you\'re going backwards.',
     'You showed up today. That is not small. That is everything.',
@@ -1738,9 +1775,56 @@ function artDailyRoutineHTML() {
     'Your only job today is to be a little kinder to yourself than yesterday.',
     'Recovery is not about being fixed. It\'s about being free to become who you really are.',
     'Small steps compound. What you do today matters more than what you did yesterday.',
-    'You don\'t have to have it all figured out. Just keep moving forward.'
-  ];
-  var extra = extraPool[Math.floor(Math.random() * extraPool.length)];
+    'You don\'t have to have it all figured out. Just keep moving forward.',
+    'You are not behind. There is no race. You are exactly where you need to be.',
+    'The urge to quit is temporary. The pride of pushing through lasts forever.',
+    'Healing happens in the quiet moments when no one is watching.',
+    'Your past does not define your future. Every day is a chance to rewrite your story.',
+    'It\'s okay to have a hard day. What matters is how you treat yourself through it.',
+    'Remember why you started. That reason is still valid, even if the path has changed.',
+    'Some days surviving is winning. And winning is enough.',
+    'Growth isn\'t always visible. Like roots, most of it happens underground.',
+    'Your mind lies sometimes. Especially when it tells you that you can\'t do this.',
+    'Be proud of yourself. You\'re fighting battles that nobody knows about.',
+    'There is no such thing as too slow. Only forward.',
+    'You are not your worst moment. You are not your relapse. You are the person who got back up.',
+    'Self-care is not selfish. It\'s how you refuel so you can show up for what matters.',
+    'Today might be tough, but so are you. Tougher, actually.',
+    'One day, this will be a chapter in your story. Not the whole book.',
+    'You don\'t need to be fixed. You need to be understood — starting with yourself.',
+    'Keep going. Your future self is counting on you.',
+    'The braver you are in facing your pain, the freer you become.',
+    'There is strength in asking for help. You don\'t have to do this alone.',
+    'You are allowed to take up space. Your feelings matter. Your recovery matters.'
+  ]
+};
+
+function artDailyRoutineHTML() {
+  var today = new Date().toDateString();
+  if (D._artRoutineDate === today && D._artRoutine) return D._artRoutine;
+  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:16px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:700">A</div><div><h3 style="margin:0;font-size:15px">Arthur\'s Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
+  if (!D.journal.length) {
+    h += '<div class="empty-state">Write in your journal so Arthur can create a personalized daily routine for you.</div></div>';
+    return h;
+  }
+  var moodCounts = [0,0,0,0,0];
+  for (var mi=0;mi<D.moods.length;mi++) { moodCounts[D.moods[mi].val-1]++; }
+  var topMood = 0;
+  for (var mi2=0;mi2<5;mi2++) { if (moodCounts[mi2] > moodCounts[topMood]) topMood = mi2; }
+  var recentText = D.journal.slice(-3).map(function(j){return j.text.toLowerCase()}).join(' ');
+  var hasStress = recentText.indexOf('stress') !== -1 || recentText.indexOf('anxi') !== -1 || recentText.indexOf('overwhelm') !== -1;
+  var hasCraving = recentText.indexOf('craving') !== -1 || recentText.indexOf('trigger') !== -1 || recentText.indexOf('urge') !== -1;
+  var hasGratitude = recentText.indexOf('grateful') !== -1 || recentText.indexOf('thank') !== -1 || recentText.indexOf('bless') !== -1;
+
+  var dayIndex = Math.floor(Date.now() / 86400000);
+  var morningPool = ROUTINE_POOLS.morning;
+  var middayPool = ROUTINE_POOLS.midday;
+  var eveningPool = ROUTINE_POOLS.evening;
+  var extraPool = ROUTINE_POOLS.extra;
+  var morning = morningPool[dayIndex % morningPool.length];
+  var midday = middayPool[(dayIndex + Math.floor(morningPool.length / 2)) % middayPool.length];
+  var evening = eveningPool[(dayIndex + Math.floor(middayPool.length / 2)) % eveningPool.length];
+  var extra = extraPool[(dayIndex + Math.floor(eveningPool.length / 2)) % extraPool.length];
   if (hasCraving) extra = 'You mentioned cravings. Arthur says: cravings last 15-30 minutes. Surf the wave — it will pass. Keep your hands busy, call someone, or breathe through it.';
   else if (hasStress) extra = 'You seem stressed. Arthur suggests the 5-4-3-2-1 grounding exercise: 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.';
   else if (hasGratitude) extra = 'You\'ve been practicing gratitude — that rewires your brain for positivity. Share one grateful thought with someone today.';
