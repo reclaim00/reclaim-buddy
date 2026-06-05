@@ -1889,10 +1889,73 @@ function populateSongPool() {
   SONG_POOL_GENERATED = true;
 }
 
-function getSong(mood) {
+var SONG_KEYWORDS = {
+  rise: [{t:'Rise Up',a:'Andra Day'},{t:'Eye of the Tiger',a:'Survivor'}],
+  stronger: [{t:'Stronger',a:'Kanye West'},{t:'Stronger (What Doesn\'t Kill You)',a:'Kelly Clarkson'}],
+  fight: [{t:'Fight Song',a:'Rachel Platten'},{t:'My Shot',a:'Lin-Manuel Miranda'},{t:'The Pretender',a:'Foo Fighters'}],
+  hope: [{t:'Hopeful',a:'Bars and Melody'},{t:'Don\'t Stop Me Now',a:'Queen'},{t:'Viva la Vida',a:'Coldplay'}],
+  break: [{t:'Breakeven',a:'The Script'},{t:'Break Stuff',a:'Limp Bizkit'}],
+  free: [{t:'Free Fallin\'',a:'Tom Petty'},{t:'Brave',a:'Sara Bareilles'}],
+  home: [{t:'Home',a:'Phillip Phillips'},{t:'Coming Home',a:'Leon Bridges'}],
+  light: [{t:'Light',a:'San Holo'},{t:'The Light',a:'Disturbed'},{t:'Shine',a:'Collective Soul'},{t:'Lights',a:'Ellie Goulding'}],
+  run: [{t:'Run',a:'Snow Patrol'},{t:'Fast Car',a:'Tracy Chapman'}],
+  rain: [{t:'Rainbow',a:'Kacey Musgraves'},{t:'Here Comes the Sun',a:'The Beatles'}],
+  fire: [{t:'Firework',a:'Katy Perry'},{t:'Set Fire to the Rain',a:'Adele'},{t:'We Didn\'t Start the Fire',a:'Billy Joel'}],
+  breathe: [{t:'Breathe Me',a:'Sia'},{t:'Just Breathe',a:'Pearl Jam'}],
+
+  lonely: [{t:'Lonely',a:'Akon'},{t:'All by Myself',a:'Eric Carmen'},{t:'Eleanor Rigby',a:'The Beatles'}],
+  lose: [{t:'Lose Yourself',a:'Eminem'},{t:'Don\'t Lose Hope',a:'Someone'}],
+  saved: [{t:'Save Me',a:'Jelly Roll'},{t:'Saving Grace',a:'Tom Petty'}],
+  save: [{t:'Save Me',a:'Jelly Roll'},{t:'Rescue',a:'Echo Smith'}],
+  miracle: [{t:'Miracle',a:'Carrie Underwood'},{t:'Miracles',a:'Insane Clown Posse'}],
+  angel: [{t:'Angel',a:'Sarah McLachlan'},{t:'Tears in Heaven',a:'Eric Clapton'}],
+  survive: [{t:'Survivor',a:'Destiny\'s Child'},{t:'I Will Survive',a:'Gloria Gaynor'},{t:'Alive',a:'Sia'}],
+  drown: [{t:'Drown',a:'Bring Me the Horizon'},{t:'Someone Like You',a:'Adele'}],
+  sky: [{t:'Mr. Blue Sky',a:'Electric Light Orchestra'},{t:'Purple Rain',a:'Prince'}],
+  afraid: [{t:'Not Afraid',a:'Eminem'},{t:'Fear',a:'Blue October'}],
+  dream: [{t:'Dream On',a:'Aerosmith'},{t:'Dreams',a:'Fleetwood Mac'}],
+  change: [{t:'Changes',a:'2Pac'},{t:'Man in the Mirror',a:'Michael Jackson'}],
+  brave: [{t:'Brave',a:'Sara Bareilles'},{t:'The Climb',a:'Miley Cyrus'}],
+  broken: [{t:'Fix You',a:'Coldplay'},{t:'Broken',a:'Seether'},{t:'Hurt',a:'Johnny Cash'}],
+  heal: [{t:'Heal the World',a:'Michael Jackson'},{t:'The Drugs Don\'t Work',a:'The Verve'}],
+  sorry: [{t:'Sorry Seems to Be the Hardest Word',a:'Elton John'}],
+  believe: [{t:'I Believe I Can Fly',a:'R. Kelly'},{t:'Believer',a:'Imagine Dragons'}],
+  thunder: [{t:'Thunder',a:'Imagine Dragons'},{t:'Thunderstruck',a:'AC/DC'}],
+  fall: [{t:'I Fall Apart',a:'Post Malone'},{t:'Boulevard of Broken Dreams',a:'Green Day'}],
+  yesterday: [{t:'Yesterday',a:'The Beatles'}],
+  today: [{t:'One Day',a:'Matisyahu'},{t:'The Best Day',a:'Taylor Swift'}],
+  tomorrow: [{t:'Tomorrow',a:'Silverchair'},{t:'Wake Me Up When September Ends',a:'Green Day'}],
+  mistake: [{t:'Mistake',a:'NF'},{t:'Everybody Hurts',a:'R.E.M.'}],
+  sorry: [{t:'Sorry',a:'Justin Bieber'},{t:'Apologize',a:'OneRepublic'},{t:'Sorry',a:'Beyoncé'}],
+  alone: [{t:'Alone',a:'Heart'},{t:'All by Myself',a:'Eric Carmen'}],
+  war: [{t:'War Pigs',a:'Black Sabbath'},{t:'Gimme Shelter',a:'The Rolling Stones'}],
+  faith: [{t:'Faith',a:'George Michael'},{t:'I Believe',a:'Fantasia'}],
+  stand: [{t:'Stand By Me',a:'Ben E. King'},{t:'I Stand Alone',a:'Godsmack'}],
+  numb: [{t:'Numb',a:'Linkin Park'},{t:'Comfortably Numb',a:'Pink Floyd'}],
+  crawl: [{t:'Crawling',a:'Linkin Park'},{t:'Creep',a:'Radiohead'}],
+  monster: [{t:'Monster',a:'Skillet'},{t:'Monster',a:'Imagine Dragons'}],
+  help: [{t:'Help!',a:'The Beatles'},{t:'Helplessly Hoping',a:'Crosby, Stills & Nash'}],
+  learn: [{t:'Try',a:'Colbie Caillat'},{t:'What I\'ve Done',a:'Linkin Park'}],
+  silence: [{t:'The Sound of Silence',a:'Simon & Garfunkel'},{t:'Silence',a:'Marshmello ft. Khalid'}],
+  courage: [{t:'Courage',a:'P!nk'},{t:'Brave',a:'Sara Bareilles'}],
+  woke: [{t:'Wake Up',a:'Arcade Fire'},{t:'Waking Up',a:'OneRepublic'}],
+  tired: [{t:'Tired',a:'Alan Walker'},{t:'Fix You',a:'Coldplay'}]
+};
+
+function getSong(entryText, mood) {
   if (!SONG_POOL_GENERATED) {
     if (!window._songPoolLoading) { window._songPoolLoading = true; setTimeout(function(){ populateSongPool(); window._songPoolLoading = false; }, 100); }
     return null;
+  }
+  if (entryText) {
+    var t = entryText.toLowerCase();
+    for (var key in SONG_KEYWORDS) {
+      if (t.indexOf(key) !== -1) {
+        var match = SONG_KEYWORDS[key];
+        var pick = match[Math.floor(Math.random() * match.length)];
+        return generateSong(pick.t, pick.a);
+      }
+    }
   }
   var pool = REFLECT_SONGS[mood] || REFLECT_SONGS.reflective;
   return pool[Math.floor(Math.random() * pool.length)];
@@ -2546,7 +2609,7 @@ function showReflection(idx) {
   var scores = result.scores;
   var reflection = buildPersonalReflection(entry, mood, D.journal, idx);
   var suggestions = buildSuggestions(entry, mood, D.journal, idx);
-  var song = getSong(mood);
+  var song = getSong(entry.text, mood);
   var name = D.name || 'there';
   var dayCount = soberDays();
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
