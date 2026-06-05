@@ -2184,6 +2184,24 @@ function dailyChallenge() {
   return D._challenge;
 }
 
+function dailyQuote() {
+  var today = new Date().toDateString();
+  if (D._quoteDate === today && D._quote) return D._quote;
+  var filtered = MOTIVATION_POOL.filter(function(m){ return m.m === 'hopeful' || m.m === 'reflective'; });
+  if (filtered.length) {
+    var pick = filtered[Math.floor(Math.random() * filtered.length)];
+    D._quoteDate = today;
+    D._quote = '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">&#128293;</span><span style="font-weight:700;font-size:14px">Today\'s Quote</span></div><div style="font-size:15px;font-style:italic;line-height:1.5;margin-bottom:6px">' + pick.q + '</div><div style="font-size:12px;color:var(--muted)">— ' + pick.p + ' <span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + pick.c + '</span></div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Context</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + pick.t + '</p></details></div>';
+    return D._quote;
+  }
+  var sparkPool = DAILY_SPARKS.filter(function(s){ return s.type === 'quote'; });
+  if (!sparkPool.length) return '';
+  var spark = sparkPool[Math.floor(Math.random() * sparkPool.length)];
+  D._quoteDate = today;
+  D._quote = '<div class="card" style="padding:16px;margin:10px 0"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">&#128293;</span><span style="font-weight:700;font-size:14px">Today\'s Quote</span></div><div style="font-size:15px;font-style:italic;line-height:1.5;margin-bottom:6px">' + spark.q + '</div><div style="font-size:12px;color:var(--muted)">— ' + (spark.p||'') + ' <span style="background:var(--primary-light);padding:1px 6px;border-radius:4px;font-size:10px">' + spark.c + '</span></div></div>';
+  return D._quote;
+}
+
 function getMotivation(mood) {
   var pool = MOTIVATION_POOL.filter(function(m){ return m.m === mood; });
   if (!pool.length) pool = MOTIVATION_POOL;
@@ -4312,12 +4330,12 @@ function habitBarsHTML() {
 
 // ====== HOME ======
 function homeHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Home</h2>';
+  var h = '';
 
   // Sobriety plant + timer at top
   h += plantHTML();
 
-  h += dailySpark();
+  h += dailyQuote();
 
   h += dailyChallenge();
 
