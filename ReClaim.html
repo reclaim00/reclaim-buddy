@@ -2316,34 +2316,6 @@ function extractTopics(text) {
   return topics;
 }
 
-function findEntriesByTopic(entries, topics, currentIdx) {
-  var results = [];
-  for (var i = Math.min(currentIdx, entries.length - 1) - 1; i >= 0; i--) {
-    var e = entries[i];
-    if (!e.text) continue;
-    var matchedTopics = extractTopics(e.text);
-    for (var ti = 0; ti < topics.length; ti++) {
-      if (matchedTopics.indexOf(topics[ti]) !== -1) {
-        results.push({ entry: e, topic: topics[ti] });
-        break;
-      }
-    }
-  }
-  return results;
-}
-
-function countTopicFrequency(entries) {
-  var counts = {};
-  for (var i = 0; i < entries.length; i++) {
-    if (!entries[i].text) continue;
-    var topics = extractTopics(entries[i].text);
-    for (var t = 0; t < topics.length; t++) {
-      counts[topics[t]] = (counts[topics[t]] || 0) + 1;
-    }
-  }
-  return counts;
-}
-
 var TOPIC_SUGGESTIONS = {
   work: ['Try setting a clear boundary between work and rest — even 10 minutes of silence between tasks can reset your mind.', 'Write down three things you accomplished today at work, no matter how small.', 'Consider talking to your manager or a trusted coworker about what you\'re feeling.', 'Open the Coping Cards in the Care section and try the grounding exercise — it helps with work overwhelm.'],
   relationships: ['Reach out to someone you trust and tell them how you feel. Connection is medicine.', 'Write a letter you don\'t have to send — just get the feelings out on paper.', 'Consider setting a small boundary this week that protects your peace.', 'Go to the Letters page and write a letter to the person you\'re thinking about — share it when you\'re ready.'],
@@ -2357,60 +2329,18 @@ var TOPIC_SUGGESTIONS = {
   general: ['Try putting on a song that matches your mood and letting yourself feel it for 3 minutes.', 'Write one thing you\'re grateful for — even if it feels small.', 'Take 5 slow, deep breaths. In through your nose, out through your mouth.']
 };
 
-var RESILIENCE_PHRASES = [
-  'you showed up the next day and kept going',
-  'you found a way through',
-  'you didn\'t let it stop you',
-  'you kept writing, kept showing up',
-  'you proved to yourself that you could handle it',
-  'you chose to keep going even when it was hard',
-  'you trusted the process and it carried you'
-];
-
 function buildPersonalReflection(entry, mood, entries, idx) {
   var topics = extractTopics(entry.text);
   var baseReflection = getReflection(mood);
-  var pastMatches = findEntriesByTopic(entries, topics.length ? topics : ['progress', 'grateful', 'growth', 'heal', 'stronger'], idx);
-  var topicFreq = countTopicFrequency(entries);
   var parts = [];
   var text = entry.text;
 
-  var isShort = text.length < 60;
-  if (isShort) {
-    parts.push('Even in a few words, there\'s meaning. Thank you for showing up and writing today.');
-  }
-
   if (topics.length) {
     var topicLabels = {craving:'navigating cravings',work:'work',relationships:'your relationships',health:'your health',wellness:'your well-being',school:'your studies',finances:'finances',progress:'your progress',loneliness:'feeling alone'};
-    var topTopic = topics[0];
-    parts.push('I noticed you mentioned ' + (topicLabels[topTopic] || 'what you\'re going through') + ' in your entry.');
-
-    var topicFreqCount = topicFreq[topTopic] || 0;
-    if (topicFreqCount >= 3) {
-      parts.push('This has come up ' + topicFreqCount + ' times in your journal — it\'s clearly something important you\'re working through, and I can see you giving it real attention.');
-    } else if (topicFreqCount >= 2) {
-      parts.push('This isn\'t the first time you\'ve written about this — I can see you processing it over time, and that\'s how real change happens.');
-    }
+    parts.push('You mentioned ' + (topicLabels[topics[0]] || 'what you\'re going through') + ' in your entry.');
   }
 
   parts.push(baseReflection);
-
-  if (pastMatches.length) {
-    var best = pastMatches[0];
-    var entryText = best.entry.text;
-    var keepText = entryText.length > 80 ? entryText.substring(0, 77) + '...' : entryText;
-    var phrase = RESILIENCE_PHRASES[Math.floor(Math.random() * RESILIENCE_PHRASES.length)];
-    var timeAgo = '';
-    var entryDate = best.entry.date;
-    if (entryDate) {
-      var diffDays = Math.round((Date.now() - new Date(entryDate).getTime()) / 86400000);
-      if (diffDays === 1) timeAgo = 'Just yesterday ';
-      else if (diffDays < 7) timeAgo = diffDays + ' days ago ';
-      else if (diffDays < 30) timeAgo = Math.floor(diffDays / 7) + ' week' + (Math.floor(diffDays / 7) > 1 ? 's' : '') + ' ago ';
-      else timeAgo = Math.floor(diffDays / 30) + ' month' + (Math.floor(diffDays / 30) > 1 ? 's' : '') + ' ago ';
-    }
-    parts.push('I remember ' + timeAgo + 'you wrote about this too: "' + keepText.replace(/"/g, '&quot;').replace(/</g, '&lt;') + '" — and ' + phrase + '. You\'ve been building resilience all along.');
-  }
 
   if (entries.length >= 5) {
     var sadCount = 0, happyCount = 0;
@@ -2418,8 +2348,8 @@ function buildPersonalReflection(entry, mood, entries, idx) {
       if (entries[i].mood <= 2) sadCount++;
       if (entries[i].mood >= 4) happyCount++;
     }
-    if (sadCount >= 4) parts.push('I also notice you\'ve been feeling low recently. That\'s a lot to carry. Be extra kind to yourself — rest is not a setback, it\'s how you recharge for the next chapter.');
-    else if (happyCount >= 3) parts.push('Your recent entries have a lighter energy. It\'s good to see you letting yourself feel good — you\'ve earned it.');
+    if (sadCount >= 4) parts.push('You\'ve been feeling low recently. Be extra kind to yourself.');
+    else if (happyCount >= 3) parts.push('Your recent entries have a lighter energy — that\'s good to see.');
   }
 
   return parts.join(' ');
@@ -2597,26 +2527,16 @@ function showReflection(idx) {
   var h = '<div class="overlay-content"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><div><h3 style="margin:0;font-size:16px">Arthur\'s Reflection</h3><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">Based on your journal entry</p></div></div>';
 
   var contextLines = [];
-  var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
-  var morningGreets = ['🌅 Good morning — starting your day with journaling sets a strong tone.','🌅 Morning pages are a powerful practice — you\'re already ahead today.','🌅 There\'s something powerful about writing before the world wakes up.','🌅 A fresh start and a blank page — that\'s a powerful combination.'];
-  var middayGreets = ['☀️ Checking in midday — a mindful pause in the middle of everything.','☀️ A midday check-in shows you\'re staying present — that\'s real growth.','☀️ Pausing to reflect in the middle of a busy day takes intention.','☀️ You stopped to check in with yourself — that matters more than you think.'];
-  var eveningGreets = ['🌆 Reflecting in the evening — a great way to process the day.','🌆 Winding down and writing it all out — that\'s how you make sense of the day.','🌆 Evening reflections help you close the day with clarity.','🌆 Taking time to process your day before sleep is a gift to yourself.'];
-  var nightGreets = ['🌙 Late night reflections — some of the deepest thoughts come when the world is quiet.','🌙 There\'s something honest about writing when everyone else is asleep.','🌙 Late nights like this are when the mind finally speaks freely.','🌙 The quiet hours have a way of bringing clarity. I\'m glad you\'re writing it down.'];
-  if (entryHour >= 5 && entryHour < 12) contextLines.push(morningGreets[Math.floor(Math.random()*morningGreets.length)]);
-  if (entryHour >= 12 && entryHour < 17) contextLines.push(middayGreets[Math.floor(Math.random()*middayGreets.length)]);
-  if (entryHour >= 17 && entryHour < 21) contextLines.push(eveningGreets[Math.floor(Math.random()*eveningGreets.length)]);
-  if (entryHour >= 21 || (entryHour >= 0 && entryHour < 5)) contextLines.push(nightGreets[Math.floor(Math.random()*nightGreets.length)]);
-  if (dayCount > 0) contextLines.push('🌟 You\'re <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong> — that\'s strength in action.');
-  if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || dayCount % 365 === 0) contextLines.push('🎉 ' + dayCount + ' days sober! That\'s a major milestone — you deserve to celebrate this.');
-  if (hasCravings) contextLines.push('⚠️ I notice you logged a craving recently. That takes courage to track. Let\'s explore what might help.');
-  if (streak > 3) contextLines.push('🔥 You\'ve journaled <strong>' + streak + ' day' + (streak!==1?'s':'') + ' in a row</strong>. Consistency is how change happens.');
-  if (totalEntries <= 2) contextLines.push('🌱 This is one of your first entries — thank you for starting this journey.');
-  if (entry.type === 'checkin') contextLines.push('📋 Honest check-ins like this build self-awareness, the foundation of all growth.');
+  if (dayCount > 0) contextLines.push('🌟 <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong>');
+  if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || dayCount % 365 === 0) contextLines.push('🎉 Major milestone — ' + dayCount + ' days!');
+  if (hasCravings) contextLines.push('⚠️ You logged a craving recently. Let\'s explore that.');
+  if (streak > 3) contextLines.push('🔥 <strong>' + streak + ' day</strong> journal streak');
+  if (totalEntries <= 2) contextLines.push('🌱 One of your first entries — thank you for starting.');
+  if (entry.type === 'checkin') contextLines.push('📋 Honest check-in — builds self-awareness.');
 
-  // Context lines
   if (contextLines.length) {
-    h += '<div class="card" style="padding:12px;margin-bottom:8px">';
-    for (var ci=0;ci<contextLines.length;ci++) h += '<div style="font-size:13px;line-height:1.6;padding:2px 0">' + contextLines[ci] + '</div>';
+    h += '<div class="card" style="padding:8px 12px;margin-bottom:8px;font-size:13px;line-height:1.6">';
+    for (var ci=0;ci<contextLines.length;ci++) h += '<div style="padding:1px 0">' + contextLines[ci] + '</div>';
     h += '</div>';
   }
 
