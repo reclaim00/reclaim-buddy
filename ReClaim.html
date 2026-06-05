@@ -2541,18 +2541,43 @@ function reflectHTML() {
     h += '<div class="card" style="text-align:center;cursor:pointer;padding:10px" onclick="var e=document.getElementById(\'past-journals\');if(e){var v=e.style.display!==\'none\';e.style.display=v?\'none\':\'block\';this.querySelector(\'.pj-toggle\').textContent=v?\'Show All (' + D.journal.length + ' entries)\':\'Hide Past Journals\'}">';
     h += '<span class="pj-toggle" style="font-weight:600;font-size:13px;color:var(--primary)">Show All (' + D.journal.length + ' entries)</span></div>';
     h += '<div id="past-journals" style="display:none">';
+    h += '<div style="position:relative;margin-bottom:8px"><input type="text" id="journal-search" placeholder="Search entries..." oninput="filterJournals(this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);box-sizing:border-box"><span style="position:absolute;right:10px;top:8px;font-size:14px;color:var(--muted)">&#128269;</span></div>';
+    h += '<div id="journal-list">';
     var entries = D.journal.slice().reverse();
     for (var i=0;i<entries.length;i++) {
       var idx = D.journal.length - 1 - i;
-      h += '<div class="card">';
+      h += '<div class="card journal-entry" data-search="' + (entries[i].text.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
       h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + entries[i].date + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
       h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entries[i].text.replace(/\n/g,'<br>') + '</div></div>';
       h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect with Arthur</button>';
       h += '</div>';
     }
     h += '</div>';
+    h += '</div>';
   }
   return h;
+}
+
+function filterJournals(query) {
+  var q = query.toLowerCase().trim();
+  var entries = document.querySelectorAll('#journal-list .journal-entry');
+  var visible = 0;
+  for (var i=0;i<entries.length;i++) {
+    var match = !q || entries[i].getAttribute('data-search').indexOf(q) !== -1;
+    entries[i].style.display = match ? '' : 'none';
+    if (match) visible++;
+  }
+  var empty = document.getElementById('journal-empty');
+  if (!q) { if (empty) empty.remove(); return; }
+  if (!visible) {
+    if (!empty) {
+      var e = document.createElement('div');
+      e.id = 'journal-empty';
+      e.className = 'card';
+      e.innerHTML = '<div class="empty-state">No entries match "' + query + '"</div>';
+      document.getElementById('journal-list').appendChild(e);
+    }
+  } else if (empty) empty.remove();
 }
 
 function saveQuickMood() {
