@@ -331,7 +331,8 @@ function defaultData() {
     lastReportDate: null,
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
-    chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: []
+    chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: [],
+    pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green'
   };
 }
 
@@ -660,13 +661,6 @@ function signOutCleanup() {
 
 function signOut() {
   signOutCleanup();
-}
-
-// ====== THEME ======
-function applyTheme() {
-  document.documentElement.setAttribute('theme', D.theme || 'green');
-  if (D.darkMode) document.body.classList.add('dark');
-  else document.body.classList.remove('dark');
 }
 
 // ====== UI ======
@@ -4078,11 +4072,13 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Language</span><select onchange="D.language=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Theme</span><select onchange="D.theme=this.value;saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0">';
-  var themes = {green:'Green',blue:'Blue',purple:'Purple',warm:'Warm',rose:'Rose',teal:'Teal'};
-  for (var t in themes) h += '<option value="'+t+'"'+(D.theme===t?' selected':'')+'>'+themes[t]+'</option>';
-  h += '</select></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Dark Mode</span><input type="checkbox" onchange="D.darkMode=this.checked;saveData()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Accent Color</span><div style="display:flex;gap:4px">';
+  var colorOpts = {green:'#34d399',blue:'#60a5fa',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
+  for (var co in colorOpts) {
+    h += '<div style="width:28px;height:28px;border-radius:14px;background:'+colorOpts[co]+';cursor:pointer;border:'+(D.accentColor===co?'3px solid var(--text)':'2px solid transparent')+'" onclick="D.accentColor=\''+co+'\';saveData();applyTheme();render()"></div>';
+  }
+  h += '</div></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Dark Mode</span><input type="checkbox" onchange="D.darkMode=this.checked;saveData();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Addiction Targets</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">Select what you are working on. Arthur creates safety plans based on these.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
   var addictions = D.targetAddictions || [];
   for (var ati=0;ati<ADDICTION_TYPES.length;ati++) {
@@ -4332,6 +4328,195 @@ var FAMOUS_RECOVERY = [
   {name:'Craig Ferguson', addiction:'Alcoholism', types:['Alcohol'], story:'Craig Ferguson was a severe alcoholic drinking a bottle of vodka a day by age 20. He got sober at 29 after a particularly dark night where he considered suicide. He has been sober ever since and is one of the funniest and most honest voices about recovery. His stand-up special "I\'m Here to Help" is entirely about his journey.', quote:'"Drinking nearly killed me. The funny thing is, I thought I was having fun. Now I have a life I never could have imagined."'}
 ];
 
+function calcPledgeStreak() {
+  if (!D.pledges || !D.pledges.length) return 0;
+  var streak = 0;
+  var d = new Date();
+  for (var i=0;i<365;i++) {
+    if (D.pledges.indexOf(d.toDateString()) !== -1) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+  }
+  return streak;
+}
+
+function pledgeToday() {
+  var today = new Date().toDateString();
+  if (!D.pledges) D.pledges = [];
+  if (D.pledges.indexOf(today) === -1) D.pledges.push(today);
+  saveData();
+  render();
+}
+
+function pledgeHTML() {
+  var today = new Date().toDateString();
+  var done = D.pledges && D.pledges.indexOf(today) !== -1;
+  var streak = calcPledgeStreak();
+  var h = '<div class="card" style="border-left:3px solid var(--primary);padding:14px;text-align:center">';
+  h += '<div style="font-size:24px;margin-bottom:4px">&#9995;</div>';
+  if (done) {
+    h += '<div style="font-weight:700;font-size:15px;color:var(--primary)">Today\'s Commitment Made</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">You pledged to stay sober today.</div>';
+  } else {
+    h += '<div style="font-weight:700;font-size:15px">Commit to Today</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin:4px 0">I commit to staying sober and taking care of myself today.</div>';
+    h += '<button class="btn btn-primary" onclick="pledgeToday()" style="margin-top:6px;width:100%">&#9995; I Commit</button>';
+  }
+  if (streak > 0) h += '<div style="font-size:12px;color:var(--muted);margin-top:6px">Pledge streak: <strong>' + streak + '</strong> day' + (streak!==1?'s':'') + '</div>';
+  h += '</div>';
+  return h;
+}
+
+function showMilestoneCelebration(days) {
+  if (D.lastMilestoneShown === days) return;
+  D.lastMilestoneShown = days;
+  saveData();
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;animation:scaleIn .3s"><div style="font-size:60px;margin:10px 0">🎉</div><h2 style="margin:8px 0">' + days + ' Days Sober!</h2><p style="font-size:14px;color:var(--muted);line-height:1.5">That is an incredible milestone. You are building something real, one day at a time.</p><div id="confetti-canvas" style="height:100px;margin:10px 0;position:relative;overflow:hidden"></div><button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove();startConfetti()" style="width:100%">&#127881; Celebrate!</button></div>';
+  document.body.appendChild(overlay);
+}
+
+function startConfetti() {
+  var canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  var colors = ['#ff6b35','#f7931e','#34d399','#60a5fa','#a78bfa','#f472b6','#fbbf24'];
+  for (var i=0;i<60;i++) {
+    (function(){
+      var c = document.createElement('div');
+      c.style.cssText = 'position:absolute;width:'+(6+Math.random()*6)+'px;height:'+(6+Math.random()*6)+'px;background:'+colors[Math.floor(Math.random()*colors.length)]+';border-radius:'+(Math.random()>.5?'50%':'2px')+';left:'+(Math.random()*100)+'%;top:-10px;opacity:'+(.7+Math.random()*.3);
+      canvas.appendChild(c);
+      var x = parseFloat(c.style.left);
+      var rot = Math.random()*720;
+      var dur = 1500+Math.random()*2000;
+      var start = Date.now();
+      function anim() {
+        var p = Math.min(1,(Date.now()-start)/dur);
+        c.style.top = (p*120-10)+'px';
+        c.style.left = (x + Math.sin(p*10)*15)+'px';
+        c.style.transform = 'rotate('+(rot*p)+'deg)';
+        c.style.opacity = 1-p;
+        if (p<1) requestAnimationFrame(anim); else c.remove();
+      }
+      requestAnimationFrame(anim);
+    })();
+  }
+}
+
+function checkMilestone() {
+  var days = soberDays();
+  var milestones = [7,14,21,30,60,90,180,365,730,1000];
+  for (var i=0;i<milestones.length;i++) {
+    if (days === milestones[i] && D.lastMilestoneShown < days) { showMilestoneCelebration(days); break; }
+  }
+}
+
+function recoveryGoalsHTML() {
+  var h = '<div class="card" id="recovery-goals-card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Recovery Goals</h3><button class="btn btn-sm btn-outline" onclick="showNewGoal()">+ Add</button></div>';
+  if (!D.recoveryGoals || !D.recoveryGoals.length) {
+    h += '<div class="empty-state">Set goals to track your recovery progress. Examples: journal 5x/week, meditate daily, attend a meeting.</div></div>';
+    return h;
+  }
+  var today = new Date().toDateString();
+  for (var gi=0;gi<D.recoveryGoals.length;gi++) {
+    var g = D.recoveryGoals[gi];
+    var doneToday = g.logs && g.logs.indexOf(today) !== -1;
+    var streak = 0;
+    var d = new Date();
+    for (var si=0;si<365;si++) {
+      if (g.logs && g.logs.indexOf(d.toDateString()) !== -1) { streak++; d.setDate(d.getDate()-1); } else break;
+    }
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">';
+    h += '<div class="check'+(doneToday?' done':'')+'" onclick="toggleGoal('+gi+')" style="width:22px;height:22px;font-size:12px;flex-shrink:0;cursor:pointer">'+(doneToday?'✓':'')+'</div>';
+    h += '<div style="flex:1"><div style="font-size:13px;font-weight:600">' + g.text + '</div><div style="font-size:11px;color:var(--muted)">' + streak + ' day streak</div></div>';
+    h += '<button class="btn btn-sm btn-danger" onclick="D.recoveryGoals.splice('+gi+',1);saveData();render()" style="padding:2px 6px;font-size:10px;width:auto">&#10005;</button></div>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function showNewGoal() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:400px"><h3>New Recovery Goal</h3><input type="text" id="new-goal-text" placeholder="e.g. Journal 5 times this week, Meditate daily" style="margin-bottom:8px"><button class="btn btn-primary" onclick="saveNewGoal()">Add Goal</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  document.body.appendChild(overlay);
+  document.getElementById('new-goal-text').focus();
+}
+
+function saveNewGoal() {
+  var text = document.getElementById('new-goal-text').value.trim();
+  if (!text) return;
+  if (!D.recoveryGoals) D.recoveryGoals = [];
+  D.recoveryGoals.push({ text: text, logs: [] });
+  saveData();
+  document.querySelector('.overlay').remove();
+  render();
+}
+
+function toggleGoal(idx) {
+  var g = D.recoveryGoals[idx];
+  if (!g.logs) g.logs = [];
+  var today = new Date().toDateString();
+  var i = g.logs.indexOf(today);
+  if (i === -1) g.logs.push(today); else g.logs.splice(i, 1);
+  saveData();
+  render();
+}
+
+function showShareCard() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var days = soberDays();
+  var streak = D.streak || 0;
+  var journalCount = D.journal.length;
+  var cravingCount = D.cravings ? D.cravings.length : 0;
+  var pledgeStreak = calcPledgeStreak();
+  var h = '<div class="overlay-content" style="max-width:380px;text-align:center"><div style="font-size:40px;margin-bottom:8px">&#127942;</div><h3 style="margin:0">My Recovery So Far</h3>';
+  h += '<div style="background:linear-gradient(135deg,var(--primary),#34d399);color:#fff;border-radius:16px;padding:20px;margin:12px 0" id="share-card">';
+  h += '<div style="font-size:14px;margin-bottom:8px">' + (D.name || 'Re.Claim User') + '</div>';
+  h += '<div style="font-size:48px;font-weight:800;line-height:1">' + days + '</div><div style="font-size:14px;opacity:.9">days sober</div>';
+  h += '<div style="display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:12px">';
+  h += '<div><strong>' + journalCount + '</strong><br>journal entries</div>';
+  h += '<div><strong>' + streak + '</strong><br>day streak</div>';
+  h += '<div><strong>' + pledgeStreak + '</strong><br>pledge streak</div></div>';
+  h += '<div style="margin-top:10px;font-size:10px;opacity:.6">reclaim00.github.io/reclaim-buddy</div></div>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">Screenshot this card to share your progress.</p>';
+  h += '<button class="btn btn-primary" onclick="shareCardImage()">&#128247; Share Image</button>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Close</button></div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+}
+
+function shareCardImage() {
+  var card = document.getElementById('share-card');
+  if (!card) return;
+  if (navigator.share) {
+    navigator.share({ title: 'My Recovery Progress', text: card.innerText, url: 'https://reclaim00.github.io/reclaim-buddy/' }).catch(function(){});
+  } else {
+    alert('Take a screenshot of the card above to share!');
+  }
+}
+
+function applyTheme() {
+  if (D.darkMode) {
+    document.documentElement.style.setProperty('--bg','#0f0f13');
+    document.documentElement.style.setProperty('--card','#1a1a24');
+    document.documentElement.style.setProperty('--text','#e4e4e7');
+    document.documentElement.style.setProperty('--muted','#8a8a9a');
+    document.documentElement.style.setProperty('--border','#2a2a3a');
+    document.documentElement.style.setProperty('--primary-light','rgba(52,211,153,0.1)');
+  } else {
+    document.documentElement.style.setProperty('--bg','#f5f5f0');
+    document.documentElement.style.setProperty('--card','#ffffff');
+    document.documentElement.style.setProperty('--text','#1a1a2e');
+    document.documentElement.style.setProperty('--muted','#6b7280');
+    document.documentElement.style.setProperty('--border','#e5e7eb');
+    document.documentElement.style.setProperty('--primary-light','#ecfdf5');
+  }
+  var colors = {green:'#34d399',blue:'#60a5fa',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
+  var c = colors[D.accentColor] || '#34d399';
+  document.documentElement.style.setProperty('--primary', c);
+}
+
 function monthlyChallengeHTML() {
   var challenge = currentMonthlyChallenge();
   var progress = getChallengeProgress(challenge);
@@ -4519,12 +4704,18 @@ function homeHTML() {
   // Sobriety plant + timer at top
   h += plantHTML();
 
+  h += pledgeHTML();
+
   h += dailyQuote();
 
   h += dailyChallenge();
 
   // Badges
   h += badgesHTML();
+
+  h += recoveryGoalsHTML();
+
+  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#127942; Share My Progress</button></div>';
 
   // Famous recovery figure (matched to user's addictions)
   var userAddictions = D.targetAddictions || [];
@@ -4681,6 +4872,7 @@ function render() {
   var tb = document.querySelector('.top-bar');
   if (tb) tb.style.display = 'flex';
   applyTheme();
+  if (pg === 'home') { setTimeout(function(){ checkMilestone(); }, 500); }
 }
 
 function goTo(p) {
