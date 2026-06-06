@@ -1891,17 +1891,18 @@ function checkCrisis(text) {
 function showCrisisAlert(text) {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:4px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:18px">I hear you. You are not alone.</h3><p style="font-size:13px;color:var(--text);margin:8px 0;line-height:1.5">I noticed something in your journal that concerns me. These feelings are real and they matter. Please reach out — help is available right now.</p><div style="text-align:left;margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">988 Suicide & Crisis Lifeline</div><a href="tel:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">988</a></div><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Crisis Text Line</div><div style="font-size:11px;color:var(--muted)">Text HOME to</div><a href="tel:741741" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">741741</a></div></div><button class="btn btn-primary btn-sm" onclick="startBreathe()" style="width:100%;margin-bottom:4px">Start Breathing Exercise</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">I\'m okay for now</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:4px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:18px">'+t('I hear you. You are not alone.')+'</h3><p style="font-size:13px;color:var(--text);margin:8px 0;line-height:1.5">'+t('I noticed something in your journal that concerns me. These feelings are real and they matter. Please reach out — help is available right now.')+'</p><div style="text-align:left;margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">988 Suicide & Crisis Lifeline</div><a href="tel:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">988</a></div><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Crisis Text Line</div><div style="font-size:11px;color:var(--muted)">'+t('Text HOME to')+'</div><a href="tel:741741" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">741741</a></div></div><button class="btn btn-primary btn-sm" onclick="startBreathe()" style="width:100%;margin-bottom:4px">'+t('Start Breathing Exercise')+'</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t("I'm okay for now")+'</button></div>';
+
   document.body.appendChild(overlay);
   if (AUTH_EMAIL && D.buddy) {
     setTimeout(function() {
       var notifyBtn = document.createElement('button');
       notifyBtn.className = 'btn btn-sm btn-outline';
-      notifyBtn.textContent = 'Notify my buddy';
+      notifyBtn.textContent = t('Notify my buddy');
       notifyBtn.style.cssText = 'margin-top:4px;width:100%';
       notifyBtn.onclick = function() {
-        var msg = 'I need support right now. Your buddy may be in distress. Please reach out.';
-        DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert('Your buddy has been notified.');notifyBtn.remove();}).catch(function(){});
+        var msg = t('I need support right now. Your buddy may be in distress. Please reach out.');
+        DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('Your buddy has been notified.'));notifyBtn.remove();}).catch(function(){});
       };
       overlay.querySelector('.overlay-content').appendChild(notifyBtn);
     }, 300);
@@ -1910,7 +1911,7 @@ function showCrisisAlert(text) {
 }
 
 function deleteJournalEntry(idx) {
-  if (!confirm('Delete this journal entry?')) return;
+  if (!confirm(t('Delete this journal entry?'))) return;
   D.journal.splice(idx, 1);
   saveData();
 }
@@ -2986,17 +2987,22 @@ function copingHTML() {
 
 // ====== RELAPSE PREVENTION PLAN ======
 function showRelapsePlan() {
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var plan = D.relapsePlan || { triggers: [], warningSigns: [], coping: [], support: [], statement: '' };
-  var h = '<div class="overlay-content" style="max-width:480px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:24px">&#128737;</div><div><h3 style="margin:0;font-size:18px">Relapse Prevention Plan</h3><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">If X happens, I will do Y. Build your plan here.</p></div></div>';
-  h += '<div class="card"><h3>My Triggers</h3><p style="font-size:12px;color:var(--muted);margin-bottom:4px">What situations or feelings might lead to a relapse?</p><textarea id="rp-triggers" placeholder="e.g. Stress at work, being alone on weekends, seeing old friends who use..." style="min-height:60px">' + plan.triggers.join('\n') + '</textarea></div>';
-  h += '<div class="card"><h3>Warning Signs</h3><p style="font-size:12px;color:var(--muted);margin-bottom:4px">How will you know you are heading toward a relapse?</p><textarea id="rp-warnings" placeholder="e.g. Isolating myself, skipping meals, romanticizing past use..." style="min-height:60px">' + plan.warningSigns.join('\n') + '</textarea></div>';
-  h += '<div class="card"><h3>My Coping Strategies</h3><p style="font-size:12px;color:var(--muted);margin-bottom:4px">What will I do instead when I feel triggered?</p><textarea id="rp-coping" placeholder="e.g. Call my buddy, go for a walk, do the breathing exercise, journal..." style="min-height:60px">' + plan.coping.join('\n') + '</textarea></div>';
-  h += '<div class="card"><h3>My Support Network</h3><p style="font-size:12px;color:var(--muted);margin-bottom:4px">Who can I reach out to?</p><textarea id="rp-support" placeholder="e.g. Buddy: John, Sponsor: Sarah, Therapist: Dr. Lee, Crisis line: 988" style="min-height:60px">' + plan.support.join('\n') + '</textarea></div>';
-  h += '<div class="card"><h3>My Commitment Statement</h3><p style="font-size:12px;color:var(--muted);margin-bottom:4px">A promise to yourself for when things get hard.</p><textarea id="rp-statement" placeholder="e.g. I deserve recovery. I will reach out before I use. I am not alone." style="min-height:50px">' + plan.statement + '</textarea></div>';
-  h += '<button class="btn btn-primary" onclick="saveRelapsePlan(this)">Save Plan</button>';
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Close</button></div>';
+  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('My Relapse Prevention Plan')+'</h3>';
+  var steps = [
+    {q:t('What triggers or situations put me at risk?'),key:'relapse_triggers',pl:t('e.g. certain people, places, emotions, times of day')},
+    {q:t('What are my early warning signs?'),key:'relapse_warnings',pl:t('e.g. irritability, isolation, craving intensity spikes, sleep changes')},
+    {q:t('What coping strategies work for me?'),key:'relapse_coping',pl:t('e.g. calling a friend, exercise, breathing, journaling')},
+    {q:t('Who can I reach out to for support?'),key:'relapse_support',pl:t('e.g. sponsor, therapist, family member, friend')},
+    {q:t('What does my daily recovery routine look like?'),key:'relapse_routine',pl:t('e.g. morning meditation, meeting attendance, evening reflection')}
+  ];
+
+  for (var i=0;i<steps.length;i++) {
+    var val = D[steps[i].key] || '';
+    h += '<div style="margin-bottom:8px"><label style="font-size:13px;font-weight:600">' + (i+1) + '. ' + steps[i].q + '</label>';
+    h += '<textarea placeholder="' + steps[i].pl + '" oninput="D[\'' + steps[i].key + '\']=this.value;saveData()" style="min-height:50px;margin-top:4px">' + val.replace(/</g,'&lt;') + '</textarea></div>';
+  }
+  h += '<button class="btn btn-sm btn-primary" onclick="showRelapsePlanSummary()">'+t('View Plan Summary')+'</button>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
   if (plan.statement) renderRelapsePlanSummary();
@@ -3022,22 +3028,22 @@ function showRelapsePlanSummary() {
   if (existing) existing.remove();
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center"><div style="font-size:40px;margin-bottom:4px">&#128737;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:4px">Your Relapse Prevention Plan</h3>';
+  var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center"><div style="font-size:40px;margin-bottom:4px">&#128737;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:4px">'+t('Your Relapse Prevention Plan')+'</h3>';
   h += '<div class="card" style="background:var(--primary-light);border-left:4px solid var(--primary);padding:12px;font-size:14px;font-style:italic;line-height:1.5">"' + plan.statement + '"</div></div>';
-  if (plan.triggers.length) h += '<div class="card"><h3>Triggers</h3><div style="font-size:13px">' + plan.triggers.map(function(t){return '&bull; ' + t}).join('<br>') + '</div></div>';
-  if (plan.warningSigns.length) h += '<div class="card"><h3>Warning Signs</h3><div style="font-size:13px">' + plan.warningSigns.map(function(w){return '&bull; ' + w}).join('<br>') + '</div></div>';
-  if (plan.coping.length) h += '<div class="card"><h3>Coping Strategies</h3><div style="font-size:13px">' + plan.coping.map(function(c){return '&bull; ' + c}).join('<br>') + '</div></div>';
-  if (plan.support.length) h += '<div class="card"><h3>Support Network</h3><div style="font-size:13px">' + plan.support.map(function(s){return '&bull; ' + s}).join('<br>') + '</div></div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="showRelapsePlan()">Edit Plan</button>';
-  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Close</button></div>';
+  if (plan.triggers.length) h += '<div class="card"><h3>'+t('Triggers')+'</h3><div style="font-size:13px">' + plan.triggers.map(function(t){return '&bull; ' + t}).join('<br>') + '</div></div>';
+  if (plan.warningSigns.length) h += '<div class="card"><h3>'+t('Warning Signs')+'</h3><div style="font-size:13px">' + plan.warningSigns.map(function(w){return '&bull; ' + w}).join('<br>') + '</div></div>';
+  if (plan.coping.length) h += '<div class="card"><h3>'+t('Coping Strategies')+'</h3><div style="font-size:13px">' + plan.coping.map(function(c){return '&bull; ' + c}).join('<br>') + '</div></div>';
+  if (plan.support.length) h += '<div class="card"><h3>'+t('Support Network')+'</h3><div style="font-size:13px">' + plan.support.map(function(s){return '&bull; ' + s}).join('<br>') + '</div></div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="showRelapsePlan()">'+t('Edit Plan')+'</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
 
 function addCopingCard() {
-  var title = prompt('Card title:');
+  var title = prompt(t('Card title:'));
   if (!title) return;
-  var text = prompt('Card text (what helps you cope?):');
+  var text = prompt(t('Card text (what helps you cope?):'));
   if (!text) return;
   if (!D.customCopingCards) D.customCopingCards = [];
   D.customCopingCards.push({title:title.trim(),text:text.trim()});
@@ -3362,11 +3368,11 @@ function todayPrompt() {
 function showAffirmations() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700">Daily Affirmations</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">Read these to yourself or out loud.</p>';
+  var h = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700">'+t('Daily Affirmations')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">'+t('Read these to yourself or out loud.')+'</p>';
   for (var i=0;i<AFFIRMATIONS.length;i++) {
     h += '<div class="card" style="padding:12px;cursor:pointer" onclick="this.style.background=\'var(--primary-light)\'"><p style="font-size:14px;line-height:1.5">' + AFFIRMATIONS[i] + '</p></div>';
   }
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
@@ -3963,13 +3969,13 @@ function editBuddy() {
   overlay.className = 'overlay';
   var opts = '';
   for (var li=0;li<LANGUAGES.length;li++) opts += '<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.buddy.language||D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>';
-  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Edit Buddy</h3><input type="text" id="eb-name" value="'+(D.buddy.name||'')+'" placeholder="Name"><input type="text" id="eb-contact" value="'+(D.buddy.contact||'')+'" placeholder="Contact"><input type="text" id="eb-rel" value="'+(D.buddy.relationship||'')+'" placeholder="Relationship"><div style="font-size:12px;color:var(--muted);margin:6px 0 2px">Language</div><select id="eb-lang" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">'+opts+'</select><button class="btn btn-primary" onclick="saveBuddyEdit(this)">Save</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('Edit Buddy')+'</h3><input type="text" id="eb-name" value="'+(D.buddy.name||'')+'" placeholder="'+t('Name')+'"><input type="text" id="eb-contact" value="'+(D.buddy.contact||'')+'" placeholder="'+t('Contact')+'"><input type="text" id="eb-rel" value="'+(D.buddy.relationship||'')+'" placeholder="'+t('Relationship')+'"><div style="font-size:12px;color:var(--muted);margin:6px 0 2px">'+t('Language')+'</div><select id="eb-lang" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">'+opts+'</select><button class="btn btn-primary" onclick="saveBuddyEdit(this)">'+t('Save')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
 function saveBuddyEdit(btn) {
   var name = document.getElementById('eb-name');
-  if (!name || !name.value.trim()) { alert('Name is required.'); return; }
+  if (!name || !name.value.trim()) { alert(t('Name is required.')); return; }
   D.buddy.name = name.value.trim();
   D.buddy.contact = document.getElementById('eb-contact') ? document.getElementById('eb-contact').value.trim() : '';
   D.buddy.relationship = document.getElementById('eb-rel') ? document.getElementById('eb-rel').value.trim() : '';
@@ -3979,7 +3985,7 @@ function saveBuddyEdit(btn) {
 }
 
 function removeBuddy() {
-  if (!confirm('Remove your accountability partner?')) return;
+  if (!confirm(t('Remove your accountability partner?'))) return;
   D.buddy = null;
   saveData();
 }
@@ -4035,10 +4041,10 @@ function calendarHTML() {
   var d = new Date(now.getFullYear(), now.getMonth() + CAL_MONTH_OFFSET, 1);
   var year = d.getFullYear(), month = d.getMonth();
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Streak Calendar</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Color-coded view of your daily activity.</p>';
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Streak Calendar')+'</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Color-coded view of your daily activity.')+'</p>';
   h += '<div class="card">';
-  h += '<div class="cal-nav"><button onclick="CAL_MONTH_OFFSET--;render()">Prev</button><span style="font-weight:700;font-size:15px">'+months[month]+' '+year+'</span><button onclick="CAL_MONTH_OFFSET++;render()">Next</button></div>';
+  h += '<div class="cal-nav"><button onclick="CAL_MONTH_OFFSET--;render()">'+t('Prev')+'</button><span style="font-weight:700;font-size:15px">'+months[month]+' '+year+'</span><button onclick="CAL_MONTH_OFFSET++;render()">'+t('Next')+'</button></div>';
   h += '<div class="cal-grid">';
   var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   for (var i=0;i<7;i++) h += '<div class="cal-header">'+dayNames[i]+'</div>';
@@ -4068,8 +4074,8 @@ function calendarHTML() {
   var rem = 7 - ((firstDay + daysInMonth) % 7);
   if (rem < 7) { for (var i=1;i<=rem;i++) { h += '<div class="cal-day other-month" style="background:transparent;cursor:default">'+i+'</div>'; } }
   h += '</div>';
-  h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>Mood+Habits</span><span><span class="swatch" style="background:#3b82f6"></span>Mood+Journal</span><span><span class="swatch" style="background:#22c55e"></span>Mood</span><span><span class="swatch" style="background:var(--accent)"></span>Check-in/Habits</span><span><span class="swatch" style="background:var(--border)"></span>Inactive</span></div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="CAL_MONTH_OFFSET=0;render()" style="margin-top:8px">Jump to Today</button>';
+  h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#3b82f6"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#22c55e"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Check-in/Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span></div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="CAL_MONTH_OFFSET=0;render()" style="margin-top:8px">'+t('Jump to Today')+'</button>';
   h += '</div>';
   return h;
 }
@@ -4083,7 +4089,7 @@ function showDayDetail(dateStr) {
   var habits = D.habits.filter(function(h){return h.logs && h.logs.indexOf(dateStr)!==-1});
   var journal = D.journal.filter(function(j){return j.date===dateStr});
   h += '<div style="font-size:13px;line-height:1.8">';
-  h += '<div><strong>Mood:</strong> '+(mood.length?MOODS[mood[mood.length-1].val-1].label:'None')+'</div>';
+  h += '<div><strong>'+t('Mood:')+'</strong> '+(mood.length?MOODS[mood[mood.length-1].val-1].label:t('None'))+'</div>';
   h += '<div><strong>Check-in:</strong> '+(check.length?'Yes':'No')+'</div>';
   h += '<div><strong>Habits done:</strong> '+(habits.length?habits.map(function(h){return h.name}).join(', '):'None')+'</div>';
   h += '<div><strong>Journal entries:</strong> '+(journal.length?journal.length:'None')+'</div>';
@@ -4625,7 +4631,7 @@ function showMilestoneCelebration(days) {
   saveData();
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;animation:scaleIn .3s"><div style="font-size:60px;margin:10px 0">🎉</div><h2 style="margin:8px 0">' + days + ' Days Sober!</h2><p style="font-size:14px;color:var(--muted);line-height:1.5">That is an incredible milestone. You are building something real, one day at a time.</p><div id="confetti-canvas" style="height:100px;margin:10px 0;position:relative;overflow:hidden"></div><button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove();startConfetti()" style="width:100%">&#127881; Celebrate!</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;animation:scaleIn .3s"><div style="font-size:60px;margin:10px 0">🎉</div><h2 style="margin:8px 0">' + days + ' '+t('Days Sober!')+'</h2><p style="font-size:14px;color:var(--muted);line-height:1.5">'+t('That is an incredible milestone. You are building something real, one day at a time.')+'</p><div id="confetti-canvas" style="height:100px;margin:10px 0;position:relative;overflow:hidden"></div><button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove();startConfetti()" style="width:100%">&#127881; '+t('Celebrate!')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -4743,9 +4749,9 @@ function shareCardImage() {
   var card = document.getElementById('share-card');
   if (!card) return;
   if (navigator.share) {
-    navigator.share({ title: 'My Recovery Progress', text: card.innerText, url: 'https://reclaim00.github.io/reclaim-buddy/' }).catch(function(){});
+    navigator.share({ title: t('My Recovery Progress'), text: card.innerText, url: 'https://reclaim00.github.io/reclaim-buddy/' }).catch(function(){});
   } else {
-    alert('Take a screenshot of the card above to share!');
+    alert(t('Take a screenshot of the card above to share!'));
   }
 }
 
