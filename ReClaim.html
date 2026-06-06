@@ -205,21 +205,21 @@ body.dark .profile-btn-float{background:var(--card);color:var(--text);border-col
 <div class="app" id="app"></div>
 
 <div class="tabs" id="tabs">
-   <button class="tab active" data-page="home">
-     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home
-   </button>
-   <button class="tab" data-page="reflect">
-     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Reflect
-   </button>
-   <button class="tab" data-page="care">
-     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A3.8 3.8 0 017.8 6.4c1.4 0 2.7.7 3.4 1.8l.8 1.2.8-1.2a4.2 4.2 0 013.4-1.8A3.8 3.8 0 0120 10.2C20 17.5 12 22 12 22z"/></svg>Care
-   </button>
-   <button class="tab" data-page="track">
-     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Track
-   </button>
-   <button class="tab" data-page="more">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>Tools
-   </button>
+    <button class="tab active" data-page="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="tab-label">Home</span>
+    </button>
+    <button class="tab" data-page="reflect">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="tab-label">Reflect</span>
+    </button>
+    <button class="tab" data-page="care">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A3.8 3.8 0 017.8 6.4c1.4 0 2.7.7 3.4 1.8l.8 1.2.8-1.2a4.2 4.2 0 013.4-1.8A3.8 3.8 0 0120 10.2C20 17.5 12 22 12 22z"/></svg><span class="tab-label">Care</span>
+    </button>
+    <button class="tab" data-page="track">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span class="tab-label">Track</span>
+    </button>
+    <button class="tab" data-page="more">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg><span class="tab-label">Tools</span>
+    </button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -337,6 +337,177 @@ function defaultData() {
 }
 
 var LANGUAGES = ['English','Spanish','French','German','Italian','Portuguese','Russian','Chinese','Japanese','Korean','Arabic','Hindi','Bengali','Turkish','Dutch','Polish','Swedish','Norwegian','Danish','Finnish','Greek','Hebrew','Thai','Vietnamese','Indonesian','Malay','Swahili','Tagalog','Romanian','Czech','Hungarian','Ukrainian'];
+
+var TRANS = {
+'Home':{es:'Inicio',fr:'Accueil',de:'Start',it:'Home',pt:'In\u00edcio'},
+'Reflect':{es:'Reflexionar',fr:'R\u00e9fl\u00e9chir',de:'Reflektieren',it:'Riflettere',pt:'Refletir'},
+'Care':{es:'Cuidado',fr:'Soins',de:'F\u00fcrsorge',it:'Cura',pt:'Cuidado'},
+'Track':{es:'Seguimiento',fr:'Suivi',de:'Verfolgen',it:'Monitor',pt:'Acompanhar'},
+'Tools':{es:'Herramientas',fr:'Outils',de:'Werkzeuge',it:'Strumenti',pt:'Ferramentas'},
+'Journal':{es:'Diario',fr:'Journal',de:'Tagebuch',it:'Diario',pt:'Di\u00e1rio'},
+'Calendar':{es:'Calendario',fr:'Calendrier',de:'Kalender',it:'Calendario',pt:'Calend\u00e1rio'},
+'Reminders':{es:'Recordatorios',fr:'Rappels',de:'Erinnerungen',it:'Promemoria',pt:'Lembretes'},
+'Reports':{es:'Informes',fr:'Rapports',de:'Berichte',it:'Report',pt:'Relat\u00f3rios'},
+'Buddy':{es:'Compa\u00f1ero',fr:'Ami',de:'Kumpel',it:'Compagno',pt:'Parceiro'},
+'Library':{es:'Biblioteca',fr:'Biblioth\u00e8que',de:'Bibliothek',it:'Biblioteca',pt:'Biblioteca'},
+'Music':{es:'M\u00fasica',fr:'Musique',de:'Musik',it:'Musica',pt:'M\u00fasica'},
+'Profile':{es:'Perfil',fr:'Profil',de:'Profil',it:'Profilo',pt:'Perfil'},
+'Affirmations':{es:'Afirmaciones',fr:'Affirmations',de:'Best\u00e4tigungen',it:'Affermazioni',pt:'Afirma\u00e7\u00f5es'},
+'Assessment':{es:'Evaluaci\u00f3n',fr:'\u00c9valuation',de:'Bewertung',it:'Valutazione',pt:'Avalia\u00e7\u00e3o'},
+'Breathe':{es:'Respirar',fr:'Respirer',de:'Atmen',it:'Respirare',pt:'Respirar'},
+'Settings':{es:'Ajustes',fr:'Param\u00e8tres',de:'Einstellungen',it:'Impostazioni',pt:'Configura\u00e7\u00f5es'},
+'About':{es:'Acerca de',fr:'\u00c0 Propos',de:'\u00dcber',it:'Informazioni',pt:'Sobre'},
+'Sign In':{es:'Iniciar Sesi\u00f3n',fr:'Connexion',de:'Anmelden',it:'Accedi',pt:'Entrar'},
+'Sign Up':{es:'Registrarse',fr:'S\'inscrire',de:'Registrieren',it:'Iscriviti',pt:'Cadastrar'},
+'Save':{es:'Guardar',fr:'Enregistrer',de:'Speichern',it:'Salva',pt:'Salvar'},
+'Cancel':{es:'Cancelar',fr:'Annuler',de:'Abbrechen',it:'Annulla',pt:'Cancelar'},
+'Close':{es:'Cerrar',fr:'Fermer',de:'Schlie\u00dfen',it:'Chiudi',pt:'Fechar'},
+'Delete':{es:'Eliminar',fr:'Supprimer',de:'L\u00f6schen',it:'Elimina',pt:'Excluir'},
+'Edit':{es:'Editar',fr:'Modifier',de:'Bearbeiten',it:'Modifica',pt:'Editar'},
+'Add':{es:'Agregar',fr:'Ajouter',de:'Hinzuf\u00fcgen',it:'Aggiungi',pt:'Adicionar'},
+'Share':{es:'Compartir',fr:'Partager',de:'Teilen',it:'Condividi',pt:'Compartilhar'},
+'Start':{es:'Comenzar',fr:'Commencer',de:'Starten',it:'Inizia',pt:'Iniciar'},
+'Done':{es:'Hecho',fr:'Termin\u00e9',de:'Fertig',it:'Fatto',pt:'Pronto'},
+'Next':{es:'Siguiente',fr:'Suivant',de:'Weiter',it:'Avanti',pt:'Pr\u00f3ximo'},
+'Previous':{es:'Anterior',fr:'Pr\u00e9c\u00e9dent',de:'Zur\u00fcck',it:'Indietro',pt:'Anterior'},
+'Submit':{es:'Enviar',fr:'Soumettre',de:'Absenden',it:'Invia',pt:'Enviar'},
+'Remove':{es:'Quitar',fr:'Retirer',de:'Entfernen',it:'Rimuovi',pt:'Remover'},
+'Connect':{es:'Conectar',fr:'Connecter',de:'Verbinden',it:'Connetti',pt:'Conectar'},
+'Search':{es:'Buscar',fr:'Rechercher',de:'Suchen',it:'Cerca',pt:'Pesquisar'},
+'Send':{es:'Enviar',fr:'Envoyer',de:'Senden',it:'Invia',pt:'Enviar'},
+'Back':{es:'Volver',fr:'Retour',de:'Zur\u00fcck',it:'Indietro',pt:'Voltar'},
+'Enable':{es:'Activar',fr:'Activer',de:'Aktivieren',it:'Attiva',pt:'Ativar'},
+'Disable':{es:'Desactivar',fr:'D\u00e9sactiver',de:'Deaktivieren',it:'Disattiva',pt:'Desativar'},
+'Change':{es:'Cambiar',fr:'Changer',de:'\u00c4ndern',it:'Cambia',pt:'Alterar'},
+'Lock':{es:'Bloquear',fr:'Verrouiller',de:'Sperren',it:'Blocca',pt:'Bloquear'},
+'Unlock':{es:'Desbloquear',fr:'D\u00e9verrouiller',de:'Entsperren',it:'Sblocca',pt:'Desbloquear'},
+'Reset':{es:'Restablecer',fr:'R\u00e9initialiser',de:'Zur\u00fccksetzen',it:'Ripristina',pt:'Redefinir'},
+'Name':{es:'Nombre',fr:'Nom',de:'Name',it:'Nome',pt:'Nome'},
+'Language':{es:'Idioma',fr:'Langue',de:'Sprache',it:'Lingua',pt:'Idioma'},
+'Date':{es:'Fecha',fr:'Date',de:'Datum',it:'Data',pt:'Data'},
+'Repeat':{es:'Repetir',fr:'R\u00e9p\u00e9ter',de:'Wiederholen',it:'Ripeti',pt:'Repetir'},
+'Notes':{es:'Notas',fr:'Notes',de:'Notizen',it:'Note',pt:'Anota\u00e7\u00f5es'},
+'Title':{es:'T\u00edtulo',fr:'Titre',de:'Titel',it:'Titolo',pt:'T\u00edtulo'},
+'Description':{es:'Descripci\u00f3n',fr:'Description',de:'Beschreibung',it:'Descrizione',pt:'Descri\u00e7\u00e3o'},
+'Score':{es:'Puntaje',fr:'Score',de:'Punktzahl',it:'Punteggio',pt:'Pontua\u00e7\u00e3o'},
+'Level':{es:'Nivel',fr:'Niveau',de:'Level',it:'Livello',pt:'N\u00edvel'},
+'Words':{es:'Palabras',fr:'Mots',de:'W\u00f6rter',it:'Parole',pt:'Palavras'},
+'Entries':{es:'Entradas',fr:'Entr\u00e9es',de:'Eintr\u00e4ge',it:'Voci',pt:'Entradas'},
+'Daily':{es:'Diario',fr:'Quotidien',de:'T\u00e4glich',it:'Giornaliero',pt:'Di\u00e1rio'},
+'Weekly':{es:'Semanal',fr:'Hebdomadaire',de:'W\u00f6chentlich',it:'Settimanale',pt:'Semanal'},
+'Monthly':{es:'Mensual',fr:'Mensuel',de:'Monatlich',it:'Mensile',pt:'Mensal'},
+'Never':{es:'Nunca',fr:'Jamais',de:'Nie',it:'Mai',pt:'Nunca'},
+'Sometimes':{es:'A Veces',fr:'Parfois',de:'Manchmal',it:'A Volte',pt:'\u00c0s Vezes'},
+'Often':{es:'A Menudo',fr:'Souvent',de:'Oft',it:'Spesso',pt:'Frequentemente'},
+'Always':{es:'Siempre',fr:'Toujours',de:'Immer',it:'Sempre',pt:'Sempre'},
+'Rarely':{es:'Raramente',fr:'Rarement',de:'Selten',it:'Raramente',pt:'Raramente'},
+'Streak':{es:'Racha',fr:'S\u00e9rie',de:'Serie',it:'Serie',pt:'Sequ\u00eancia'},
+'Current':{es:'Actual',fr:'Actuel',de:'Aktuell',it:'Attuale',pt:'Atual'},
+'Best Ever':{es:'Mejor Marca',fr:'Meilleur Score',de:'Bestwert',it:'Miglior Record',pt:'Melhor Marca'},
+'Active Days':{es:'D\u00edas Activos',fr:'Jours Actifs',de:'Aktive Tage',it:'Giorni Attivi',pt:'Dias Ativos'},
+'Sober Days':{es:'D\u00edas Sobrio',fr:'Jours Sobres',de:'N\u00fcchterne Tage',it:'Giorni Sobri',pt:'Dias S\u00f3brio'},
+'Mood':{es:'Estado de \u00c1nimo',fr:'Humeur',de:'Stimmung',it:'Umore',pt:'Humor'},
+'Badges':{es:'Insignias',fr:'Badges',de:'Abzeichen',it:'Medaglie',pt:'Medalhas'},
+'Check-Ins':{es:'Registros',fr:'Points',de:'Check-Ins',it:'Check-in',pt:'Check-ins'},
+'Avg Mood':{es:'Estado Promedio',fr:'Humeur Moyenne',de:'Durchschnittsstimmung',it:'Umore Medio',pt:'Humor M\u00e9dio'},
+'Retake':{es:'Repetir',fr:'Reprendre',de:'Wiederholen',it:'Ripeti',pt:'Refazer'},
+'SOS':{es:'SOS',fr:'SOS',de:'SOS',it:'SOS',pt:'SOS'},
+'Copied!':{es:'\u00a1Copiado!',fr:'Copi\u00e9 !',de:'Kopiert!',it:'Copiato!',pt:'Copiado!'},
+'Search entries...':{es:'Buscar entradas...',fr:'Rechercher entr\u00e9es...',de:'Eintr\u00e4ge suchen...',it:'Cerca voci...',pt:'Pesquisar entradas...'},
+'No entries match':{es:'Ninguna entrada coincide',fr:'Aucune entr\u00e9e trouv\u00e9e',de:'Keine Eintr\u00e4ge gefunden',it:'Nessuna voce corrisponde',pt:'Nenhuma entrada corresponde'},
+'Local User':{es:'Usuario Local',fr:'Utilisateur Local',de:'Lokaler Benutzer',it:'Utente Locale',pt:'Usu\u00e1rio Local'},
+'Settings':{es:'Ajustes',fr:'Param\u00e8tres',de:'Einstellungen',it:'Impostazioni',pt:'Configura\u00e7\u00f5es'},
+'Notifications':{es:'Notificaciones',fr:'Notifications',de:'Benachrichtigungen',it:'Notifiche',pt:'Notifica\u00e7\u00f5es'},
+'Privacy Lock':{es:'Bloqueo de Privacidad',fr:'Verrouillage de Confidentialit\u00e9',de:'Datenschutzsperre',it:'Blocco Privacy',pt:'Bloqueio de Privacidade'},
+'Journal Settings':{es:'Configuraci\u00f3n del Diario',fr:'Param\u00e8tres du Journal',de:'Tagebucheinstellungen',it:'Impostazioni Diario',pt:'Configura\u00e7\u00f5es do Di\u00e1rio'},
+'Daily word goal':{es:'Meta diaria de palabras',fr:'Objectif quotidien de mots',de:'T\u00e4gliches Wortziel',it:'Obiettivo parole giornaliero',pt:'Meta di\u00e1ria de palavras'},
+'Export My Data':{es:'Exportar Mis Datos',fr:'Exporter Mes Donn\u00e9es',de:'Meine Daten Exportieren',it:'Esporta i Miei Dati',pt:'Exportar Meus Dados'},
+'Import Data':{es:'Importar Datos',fr:'Importer des Donn\u00e9es',de:'Daten Importieren',it:'Importa Dati',pt:'Importar Dados'},
+'About Re.Claim':{es:'Acerca de Re.Claim',fr:'\u00c0 Propos de Re.Claim',de:'\u00dcber Re.Claim',it:'Informazioni su Re.Claim',pt:'Sobre Re.Claim'},
+'Morning':{es:'Ma\u00f1ana',fr:'Matin',de:'Morgen',it:'Mattina',pt:'Manh\u00e3'},
+'Evening':{es:'Tarde',fr:'Soir',de:'Abend',it:'Sera',pt:'Noite'},
+'Change Passcode':{es:'Cambiar C\u00f3digo',fr:'Changer le Code',de:'Passcode \u00c4ndern',it:'Cambia Codice',pt:'Alterar Senha'},
+'Disable Lock':{es:'Desactivar Bloqueo',fr:'D\u00e9sactiver le Verrouillage',de:'Sperre Deaktivieren',it:'Disattiva Blocco',pt:'Desativar Bloqueio'},
+'Enable Lock':{es:'Activar Bloqueo',fr:'Activer le Verrouillage',de:'Sperre Aktivieren',it:'Attiva Blocco',pt:'Ativar Bloqueio'},
+'Face ID':{es:'Face ID',fr:'Face ID',de:'Face ID',it:'Face ID',pt:'Face ID'},
+'Sign Out':{es:'Cerrar Sesi\u00f3n',fr:'D\u00e9connexion',de:'Abmelden',it:'Esci',pt:'Sair'},
+'Create Reminder':{es:'Crear Recordatorio',fr:'Cr\u00e9er un Rappel',de:'Erinnerung Erstellen',it:'Crea Promemoria',pt:'Criar Lembrete'},
+'Addiction Targets':{es:'Objetivos de Adicci\u00f3n',fr:'Cibles de D\u00e9pendance',de:'Suchtziele',it:'Obiettivi Dipendenza',pt:'Metas de Depend\u00eancia'},
+'Clear All':{es:'Borrar Todo',fr:'Tout Effacer',de:'Alles L\u00f6schen',it:'Cancella Tutto',pt:'Limpar Tudo'},
+'Steps':{es:'Pasos',fr:'\u00c9tapes',de:'Schritte',it:'Passi',pt:'Passos'},
+'Commit to Today':{es:'Compromiso de Hoy',fr:'Engagement du Jour',de:'Heutiges Bekenntnis',it:'Impegno di Oggi',pt:'Compromisso de Hoje'},
+'Today\'s Commitment':{es:'Compromiso de Hoy',fr:'Engagement du Jour',de:'Heutiges Bekenntnis',it:'Impegno di Oggi',pt:'Compromisso de Hoje'},
+'Pledge streak:':{es:'Racha de compromiso:',fr:'S\u00e9rie d\'engagement:',de:'Serie:',it:'Serie di impegno:',pt:'Sequ\u00eancia de compromisso:'},
+'They Recovered Too':{es:'Ellos Tambi\u00e9n se Recuperaron',fr:'Eux Aussi se Sont R\u00e9tablis',de:'Sie Wurden Auch Gesund',it:'Anche Loro si Sono Ripresi',pt:'Eles Tamb\u00e9m se Recuperaram'},
+'Share My Progress':{es:'Compartir Mi Progreso',fr:'Partager Mon Progr\u00e8s',de:'Meinen Fortschritt Teilen',it:'Condividi i Miei Progressi',pt:'Compartilhar Meu Progresso'},
+'Share Image':{es:'Compartir Imagen',fr:'Partager l\'Image',de:'Bild Teilen',it:'Condividi Immagine',pt:'Compartilhar Imagem'},
+'My Recovery So Far':{es:'Mi Recuperaci\u00f3n Hasta Ahora',fr:'Mon R\u00e9tablissement Jusqu\'ici',de:'Meine Genesung Bisher',it:'La Mia Ripresa Finora',pt:'Minha Recupera\u00e7\u00e3o At\u00e9 Agora'},
+'days sober':{es:'d\u00edas sobrio',fr:'jours sobres',de:'Tage n\u00fcchtern',it:'giorni sobri',pt:'dias s\u00f3brio'},
+'day streak':{es:'racha de d\u00edas',fr:'s\u00e9rie de jours',de:'Tageserie',it:'serie di giorni',pt:'sequ\u00eancia de dias'},
+'pledge streak':{es:'racha de compromiso',fr:'s\u00e9rie d\'engagement',de:'Bekenntnisserie',it:'serie di impegno',pt:'sequ\u00eancia de compromisso'},
+'journal entries':{es:'entradas de diario',fr:'entr\u00e9es de journal',de:'Tagebucheintr\u00e4ge',it:'voci di diario',pt:'entradas de di\u00e1rio'},
+'Today\'s Challenge':{es:'Desaf\u00edo de Hoy',fr:'D\u00e9fi du Jour',de:'Heutige Herausforderung',it:'Sfida di Oggi',pt:'Desafio de Hoje'},
+'Today\'s Quote':{es:'Cita de Hoy',fr:'Citation du Jour',de:'Heutiges Zitat',it:'Citazione di Oggi',pt:'Cita\u00e7\u00e3o de Hoje'},
+'I Commit':{es:'Me Comprometo',fr:'Je m\'Engage',de:'Ich Verpflichte Mich',it:'Mi Impegno',pt:'Eu me Comprometo'},
+'Sobriety Tracker':{es:'Seguimiento de Sobriedad',fr:'Suivi de Sobri\u00e9t\u00e9',de:'N\u00fcchternheits-Tracker',it:'Monitor Sobriet\u00e0',pt:'Rastreador de Sobriedade'},
+'Your Streaks':{es:'Tus Rachas',fr:'Vos S\u00e9ries',de:'Deine Serien',it:'Le Tue Serie',pt:'Suas Sequ\u00eancias'},
+'Mood History':{es:'Historial de \u00c1nimo',fr:'Historique d\'Humeur',de:'Stimmungsverlauf',it:'Cronologia dell\'Umore',pt:'Hist\u00f3rico de Humor'},
+'Today\'s Habits':{es:'H\u00e1bitos de Hoy',fr:'Habitudes du Jour',de:'Heutige Gewohnheiten',it:'Abitudini di Oggi',pt:'H\u00e1bitos de Hoje'},
+'Coping Cards':{es:'Tarjetas de Afrontamiento',fr:'Cartes d\'Adaptation',de:'Bew\u00e4ltigungskarten',it:'Schede di Coping',pt:'Cart\u00f5es de Enfrentamento'},
+'Mindful Breathing':{es:'Respiraci\u00f3n Consciente',fr:'Respiration Consciente',de:'Achtsames Atmen',it:'Respirazione Consapevole',pt:'Respira\u00e7\u00e3o Consciente'},
+'Crisis Helplines':{es:'L\u00edneas de Crisis',fr:'Lignes de Crise',de:'Krisenhotlines',it:'Linee di Crisi',pt:'Linhas de Crise'},
+'Relapse Prevention Plan':{es:'Plan de Prevenci\u00f3n de Reca\u00eddas',fr:'Plan de Pr\u00e9vention des Rechutes',de:'R\u00fcckfallpr\u00e4ventionsplan',it:'Piano di Prevenzione delle Ricadute',pt:'Plano de Preven\u00e7\u00e3o de Reca\u00eddas'},
+'My Commitment Statement':{es:'Mi Declaraci\u00f3n de Compromiso',fr:'Ma D\u00e9claration d\'Engagement',de:'Meine Verpflichtungserkl\u00e4rung',it:'La Mia Dichiarazione di Impegno',pt:'Minha Declara\u00e7\u00e3o de Compromisso'},
+'My Support Network':{es:'Mi Red de Apoyo',fr:'Mon R\u00e9seau de Soutien',de:'Mein Unterst\u00fctzungsnetzwerk',it:'La Mia Rete di Supporto',pt:'Minha Rede de Apoio'},
+'My Coping Strategies':{es:'Mis Estrategias de Afrontamiento',fr:'Mes Strat\u00e9gies d\'Adaptation',de:'Meine Bew\u00e4ltigungsstrategien',it:'Le Mie Strategie di Coping',pt:'Minhas Estrat\u00e9gias de Enfrentamento'},
+'Warning Signs':{es:'Se\u00f1ales de Alerta',fr:'Signes d\'Alerte',de:'Warnsignale',it:'Segnali d\'Allarme',pt:'Sinais de Alerta'},
+'My Triggers':{es:'Mis Desencadenantes',fr:'Mes D\u00e9clencheurs',de:'Meine Ausl\u00f6ser',it:'I Miei Trigger',pt:'Meus Gatilhos'},
+'Your Relapse Prevention Plan':{es:'Tu Plan de Prevenci\u00f3n',fr:'Votre Plan de Pr\u00e9vention',de:'Dein R\u00fcckfallpr\u00e4ventionsplan',it:'Il Tuo Piano Anticaduta',pt:'Seu Plano de Preven\u00e7\u00e3o'},
+'Helplines':{es:'L\u00edneas de Ayuda',fr:'Lignes d\'Aide',de:'Hilfshotlines',it:'Linee di Aiuto',pt:'Linhas de Ajuda'},
+'Recovery Goals':{es:'Metas de Recuperaci\u00f3n',fr:'Objectifs de R\u00e9tablissement',de:'Genesungsziele',it:'Obiettivi di Recupero',pt:'Metas de Recupera\u00e7\u00e3o'},
+'Add Goal':{es:'Agregar Meta',fr:'Ajouter un Objectif',de:'Ziel Hinzuf\u00fcgen',it:'Aggiungi Obiettivo',pt:'Adicionar Meta'},
+'New Recovery Goal':{es:'Nueva Meta',fr:'Nouvel Objectif',de:'Neues Ziel',it:'Nuovo Obiettivo',pt:'Nova Meta'},
+'Tracking':{es:'Seguimiento',fr:'Suivi',de:'Verfolgung',it:'Monitoraggio',pt:'Acompanhamento'},
+'Recovery':{es:'Recuperaci\u00f3n',fr:'R\u00e9tablissement',de:'Genesung',it:'Recupero',pt:'Recupera\u00e7\u00e3o'},
+'Resources':{es:'Recursos',fr:'Ressources',de:'Ressourcen',it:'Risorse',pt:'Recursos'},
+'Screenshot this card to share your progress.':{es:'Captura esta tarjeta para compartir tu progreso.',fr:'Capturez cette carte pour partager votre progression.',de:'Mach einen Screenshot dieser Karte, um deinen Fortschritt zu teilen.',it:'Fai uno screenshot di questa scheda per condividere i tuoi progressi.',pt:'Fa\u00e7a uma captura de tela deste cart\u00e3o para compartilhar seu progresso.'},
+'Phone (optional)':{es:'Tel\u00e9fono (opcional)',fr:'T\u00e9l\u00e9phone (facultatif)',de:'Telefon (optional)',it:'Telefono (opzionale)',pt:'Telefone (opcional)'},
+'Accent Color':{es:'Color de Acento',fr:'Couleur d\'Accent',de:'Akzentfarbe',it:'Colore Accento',pt:'Cor de Destaque'},
+'Dark Mode':{es:'Modo Oscuro',fr:'Mode Sombre',de:'Dunkelmodus',it:'Modalit\u00e0 Scura',pt:'Modo Escuro'},
+'Craving Check-In':{es:'Registro de Antojos',fr:'Point sur les Fringales',de:'Craving-Check-in',it:'Check-in dei Desideri',pt:'Check-in de Desejos'},
+'Journal Prompt':{es:'Indicaci\u00f3n del Diario',fr:'Invitation au Journal',de:'Tagebuchaufforderung',it:'Spunto per il Diario',pt:'Sugest\u00e3o para o Di\u00e1rio'},
+'Breathing Exercise':{es:'Ejercicio de Respiraci\u00f3n',fr:'Exercice de Respiration',de:'Atem\u00fcbung',it:'Esercizio di Respirazione',pt:'Exerc\u00edcio de Respira\u00e7\u00e3o'},
+'Set your intention':{es:'Establece tu intenci\u00f3n',fr:'D\u00e9finissez votre intention',de:'Setze deine Absicht',it:'Imposta la tua intenzione',pt:'Defina sua inten\u00e7\u00e3o'},
+'Reflect on your day':{es:'Reflexiona sobre tu d\u00eda',fr:'R\u00e9fl\u00e9chissez \u00e0 votre journ\u00e9e',de:'Reflektiere deinen Tag',it:'Rifletti sulla tua giornata',pt:'Reflita sobre seu dia'},
+'Log & manage cravings':{es:'Registrar y gestionar antojos',fr:'Journaliser et g\u00e9rer les fringales',de:'Craving erfassen und verwalten',it:'Registra e gestisci i desideri',pt:'Registrar e gerenciar desejos'},
+'Write about your day':{es:'Escribe sobre tu d\u00eda',fr:'\u00c9crivez sur votre journ\u00e9e',de:'Schreib \u00fcber deinen Tag',it:'Scrivi della tua giornata',pt:'Escreva sobre seu dia'},
+'Take a mindful moment':{es:'Toma un momento consciente',fr:'Prenez un moment de pleine conscience',de:'Nimm dir einen achtsamen Moment',it:'Prenditi un momento di consapevolezza',pt:'Tenha um momento de aten\u00e7\u00e3o plena'},
+'Reminders':{es:'Recordatorios',fr:'Rappels',de:'Erinnerungen',it:'Promemoria',pt:'Lembretes'},
+'Get notified when a reminder is due':{es:'Recibe notificaci\u00f3n cuando venza un recordatorio',fr:'Recevoir une notification quand un rappel est d\u00fb',de:'Benachrichtigung erhalten, wenn eine Erinnerung f\u00e4llig',it:'Ricevi notifica quando un promemoria \u00e8 in scadenza',pt:'Receba notifica\u00e7\u00e3o quando um lembrete vencer'},
+'Export My Data':{es:'Exportar Mis Datos',fr:'Exporter Mes Donn\u00e9es',de:'Meine Daten Exportieren',it:'Esporta i Miei Dati',pt:'Exportar Meus Dados'},
+'Import Data':{es:'Importar Datos',fr:'Importer des Donn\u00e9es',de:'Daten Importieren',it:'Importa Dati',pt:'Importar Dados'},
+'About Re.Claim':{es:'Acerca de Re.Claim',fr:'\u00c0 Propos de Re.Claim',de:'\u00dcber Re.Claim',it:'Informazioni su Re.Claim',pt:'Sobre Re.Claim'},
+'Set Up Face ID':{es:'Configurar Face ID',fr:'Configurer Face ID',de:'Face ID Einrichten',it:'Configura Face ID',pt:'Configurar Face ID'},
+'Disable passcode lock?':{es:'\u00bfDesactivar bloqueo de c\u00f3digo?',fr:'D\u00e9sactiver le verrouillage par code ?',de:'Passcode-Sperre deaktivieren?',it:'Disattivare il blocco del codice?',pt:'Desativar bloqueio de senha?'},
+'4-6 digit passcode':{es:'c\u00f3digo de 4-6 d\u00edgitos',fr:'code \u00e0 4-6 chiffres',de:'4-6-stelliger Passcode',it:'codice di 4-6 cifre',pt:'senha de 4-6 d\u00edgitos'},
+'Passcode must be 4-6 digits.':{es:'El c\u00f3digo debe ser de 4-6 d\u00edgitos.',fr:'Le code doit comporter 4 \u00e0 6 chiffres.',de:'Passcode muss 4-6 Ziffern haben.',it:'Il codice deve essere di 4-6 cifre.',pt:'A senha deve ter 4-6 d\u00edgitos.'},
+'Passcode updated!':{es:'\u00a1C\u00f3digo actualizado!',fr:'Code mis \u00e0 jour !',de:'Passcode aktualisiert!',it:'Codice aggiornato!',pt:'Senha atualizada!'},
+'Incorrect current passcode.':{es:'C\u00f3digo actual incorrecto.',fr:'Code actuel incorrect.',de:'Aktueller Passcode falsch.',it:'Codice attuale errato.',pt:'Senha atual incorreta.'},
+'Passcode enabled! The app will lock when you switch tabs or after 5 min of inactivity.':{es:'\u00a1C\u00f3digo activado! La app se bloquear\u00e1 al cambiar de pesta\u00f1a o tras 5 min de inactividad.',fr:'Code activ\u00e9 ! L\'app se verrouillera quand vous changez d\'onglet ou apr\u00e8s 5 min d\'inactivit\u00e9.',de:'Passcode aktiviert! Die App sperrt beim Wechseln von Tabs oder nach 5 Min Inaktivit\u00e4t.',it:'Codice attivato! L\'app si bloccher\u00e0 quando cambi scheda o dopo 5 min di inattivit\u00e0.',pt:'Senha ativada! O aplicativo bloquear\u00e1 ao trocar de aba ou ap\u00f3s 5 min de inatividade.'},
+'Enter current passcode to change:':{es:'Ingresa el c\u00f3digo actual para cambiar:',fr:'Entrez le code actuel pour changer :',de:'Aktuellen Passcode eingeben zum \u00c4ndern:',it:'Inserisci il codice attuale per cambiare:',pt:'Digite a senha atual para alterar:'},
+'Enter new 4-6 digit passcode:':{es:'Ingresa un nuevo c\u00f3digo de 4-6 d\u00edgitos:',fr:'Entrez un nouveau code \u00e0 4-6 chiffres :',de:'Neuen 4-6-stelligen Passcode eingeben:',it:'Inserisci un nuovo codice di 4-6 cifre:',pt:'Digite uma nova senha de 4-6 d\u00edgitos:'},
+'Select what you are working on. Arthur creates safety plans based on these.':{es:'Selecciona en qu\u00e9 est\u00e1s trabajando. Arthur crear\u00e1 planes de seguridad basados en esto.',fr:'S\u00e9lectionnez sur quoi vous travaillez. Arthur cr\u00e9era des plans de s\u00e9curit\u00e9 bas\u00e9s sur cela.',de:'W\u00e4hle, woran du arbeitest. Arthur erstellt darauf basierende Sicherheitspl\u00e4ne.',it:'Seleziona su cosa stai lavorando. Arthur creer\u00e0 piani di sicurezza basati su questo.',pt:'Selecione no que voc\u00ea est\u00e1 trabalhando. Arthur criar\u00e1 planos de seguran\u00e7a baseados nisso.'},
+'Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.':{es:'Establece un c\u00f3digo para bloquear la app al cambiar de pesta\u00f1a o alejarte. Tus datos permanecen en este dispositivo.',fr:'D\u00e9finissez un code pour verrouiller l\'app quand vous changez d\'onglet ou vous \u00e9loignez. Vos donn\u00e9es restent sur cet appareil.',de:'Lege einen Passcode fest, um die App beim Wechseln von Tabs oder Weggehen zu sperren. Deine Daten bleiben auf diesem Ger\u00e4t.',it:'Imposta un codice per bloccare l\'app quando cambi scheda o ti allontani. I tuoi dati rimangono su questo dispositivo.',pt:'Defina uma senha para bloquear o app ao trocar de aba ou se afastar. Seus dados permanecem neste dispositivo.'},
+'Re.Claim is your recovery & wellness companion.':{es:'Re.Claim es tu compa\u00f1ero de recuperaci\u00f3n y bienestar.',fr:'Re.Claim est votre compagnon de r\u00e9tablissement et de bien-\u00eatre.',de:'Re.Claim ist dein Begleiter f\u00fcr Genesung und Wohlbefinden.',it:'Re.Claim \u00e8 il tuo compagno di recupero e benessere.',pt:'Re.Claim \u00e9 seu companheiro de recupera\u00e7\u00e3o e bem-estar.'},
+};
+var LANG_CODE = {'English':'en','Spanish':'es','French':'fr','German':'de','Italian':'it','Portuguese':'pt'};
+function t(key) {
+  var lang = (D && D.language) || 'English';
+  var code = LANG_CODE[lang];
+  if (!code) return key;
+  var m = TRANS[key];
+  return (m && m[code]) || key;
+}
 
 function dataKey() { return 'rc_data_' + (AUTH_USER || 'local').replace(/[^a-zA-Z0-9_-]/g,''); }
 
@@ -3999,31 +4170,30 @@ function exportReminderICS(id) {
 // ====== MORE PAGE ======
 function moreHTML() {
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Tools</h2>';
-  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">Tracking</h3>';
+  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Tools')+'</h2>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Tracking')+'</h3>';
   h += '<div class="sub-grid">';
-  h += '<div class="sub-item" onclick="goTo(\'journal\')">Journal</div>';
-  h += '<div class="sub-item" onclick="goTo(\'calendar\')">Calendar</div>';
-  h += '<div class="sub-item" onclick="goTo(\'reminders\')">Reminders</div>';
+  h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'calendar\')">'+t('Calendar')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'reminders\')">'+t('Reminders')+'</div>';
   h += '</div>';
-  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">Recovery</h3>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Recovery')+'</h3>';
   h += '<div class="sub-grid">';
-  h += '<div class="sub-item" onclick="goTo(\'reports\')">Reports</div>';
-  h += '<div class="sub-item" onclick="goTo(\'buddy\')">Buddy</div>';
-
-  h += '<div class="sub-item" onclick="goTo(\'safety\')">Addiction Targets</div>';
+  h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Buddy')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
   h += '</div>';
-  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">Resources</h3>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Resources')+'</h3>';
   h += '<div class="sub-grid">';
-  h += '<div class="sub-item" onclick="goTo(\'library\')">Library</div>';
-  h += '<div class="sub-item" onclick="goTo(\'music\')">Music</div>';
+  h += '<div class="sub-item" onclick="goTo(\'library\')">'+t('Library')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'music\')">'+t('Music')+'</div>';
   h += '</div>';
-  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">Settings</h3>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Settings')+'</h3>';
   h += '<div class="sub-grid">';
-  h += '<div class="sub-item" onclick="goTo(\'profile\')">Profile</div>';
-  h += '<div class="sub-item" onclick="showRecommendations()">Recommendations</div>';
-  h += '<div class="sub-item" onclick="showShareQR()" style="border-color:var(--primary)">Share App</div>';
-  h += '<div class="sub-item" onclick="promptInstall()" style="border-color:var(--accent)">&#128230; Install App</div>';
+  h += '<div class="sub-item" onclick="goTo(\'profile\')">'+t('Profile')+'</div>';
+  h += '<div class="sub-item" onclick="showRecommendations()">'+t('Recommendations')+'</div>';
+  h += '<div class="sub-item" onclick="showShareQR()" style="border-color:var(--primary)">'+t('Share App')+'</div>';
+  h += '<div class="sub-item" onclick="promptInstall()" style="border-color:var(--accent)">&#128230; '+t('Install App')+'</div>';
   h += '</div>';
   return h;
 }
@@ -4061,57 +4231,57 @@ function profileHTML() {
   }
   h += '<button class="btn btn-sm btn-outline" onclick="changeAvatar()" style="position:absolute;bottom:4px;right:-8px;width:28px;height:28px;border-radius:14px;padding:0;font-size:14px;line-height:1;min-width:0;background:var(--card);border:1px solid var(--border)">&#9998;</button></div>';
   h += '<div style="font-weight:700;font-size:18px">' + (D.name || 'You') + '</div>';
-  h += '<div style="font-size:13px;color:var(--muted)">' + (AUTH_EMAIL || 'Local User') + '</div>';
+  h += '<div style="font-size:13px;color:var(--muted)">' + (AUTH_EMAIL || t('Local User')) + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">Joined ' + (D.joinDate ? new Date(D.joinDate).toLocaleDateString() : 'today') + '</div>';
   h += '<div style="font-size:12px;color:var(--muted)">Sober ' + soberDays() + ' days</div>';
   h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
   h += '</div></div>';
-  h += '<div class="card"><h3>Settings</h3>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Name</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Phone (optional)</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Language</span><select onchange="D.language=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
+  h += '<div class="card"><h3>'+t('Settings')+'</h3>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Name')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Phone (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Language')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveData();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Accent Color</span><div style="display:flex;gap:4px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Accent Color')+'</span><div style="display:flex;gap:4px">';
   var colorOpts = {green:'#34d399',blue:'#60a5fa',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
   for (var co in colorOpts) {
     h += '<div style="width:28px;height:28px;border-radius:14px;background:'+colorOpts[co]+';cursor:pointer;border:'+(D.accentColor===co?'3px solid var(--text)':'2px solid transparent')+'" onclick="D.accentColor=\''+co+'\';saveData();applyTheme();render()"></div>';
   }
   h += '</div></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">Dark Mode</span><input type="checkbox" onchange="D.darkMode=this.checked;saveData();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Addiction Targets</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">Select what you are working on. Arthur creates safety plans based on these.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Dark Mode')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveData();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Addiction Targets')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Arthur creates safety plans based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
   var addictions = D.targetAddictions || [];
   for (var ati=0;ati<ADDICTION_TYPES.length;ati++) {
     var sel = addictions.indexOf(ADDICTION_TYPES[ati]) >= 0;
     h += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleTargetAddiction(\''+ADDICTION_TYPES[ati]+'\')" style="font-size:10px;padding:6px">' + ADDICTION_TYPES[ati] + '</button>';
   }
   h += '</div></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Journal Settings</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">Daily word goal</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveData()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Privacy Lock</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.</p>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Journal Settings')+'</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">'+t('Daily word goal')+'</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveData()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Privacy Lock')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.')+'</p>';
   if (isLockSet()) {
     var bioReady = !!localStorage.getItem('rc_bio_cred');
-    h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="var p=prompt(\'Enter current passcode to change:\');if(p&&p.trim()){checkPin(p.trim()).then(function(v){if(v){var np=prompt(\'Enter new 4-6 digit passcode:\');if(np&&np.trim().length>=4&&np.trim().length<=6){enableLock(np.trim());alert(\'Passcode updated!\');render()}else{alert(\'Passcode must be 4-6 digits.\')}}else{alert(\'Incorrect current passcode.\')}})})" style="font-size:11px">Change Passcode</button>';
-    h += '<button class="btn btn-sm btn-outline" onclick="if(localStorage.getItem(\'rc_bio_cred\')){unlockWithBiometric();}else{setupBiometric();}" style="font-size:11px">' + (bioReady ? '&#9989; Face ID Set Up' : '&#128065; Set Up Face ID') + '</button>';
-    h += '<button class="btn btn-sm btn-danger" onclick="if(confirm(\'Disable passcode lock?\')){disableLock();render()}" style="font-size:11px">Disable Lock</button></div>';
+    h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="var p=prompt(\'Enter current passcode to change:\');if(p&&p.trim()){checkPin(p.trim()).then(function(v){if(v){var np=prompt(\'Enter new 4-6 digit passcode:\');if(np&&np.trim().length>=4&&np.trim().length<=6){enableLock(np.trim());alert(\'Passcode updated!\');render()}else{alert(\'Passcode must be 4-6 digits.\')}}else{alert(\'Incorrect current passcode.\')}})})" style="font-size:11px">'+t('Change Passcode')+'</button>';
+    h += '<button class="btn btn-sm btn-outline" onclick="if(localStorage.getItem(\'rc_bio_cred\')){unlockWithBiometric();}else{setupBiometric();}" style="font-size:11px">' + (bioReady ? '&#9989; '+t('Face ID') : '&#128065; '+t('Set Up Face ID')) + '</button>';
+    h += '<button class="btn btn-sm btn-danger" onclick="if(confirm(\''+t('Disable passcode lock?')+'\')){disableLock();render()}" style="font-size:11px">'+t('Disable Lock')+'</button></div>';
   } else {
-    h += '<div style="display:flex;gap:6px"><input type="password" id="lock-pin-new" placeholder="4-6 digit passcode" inputmode="numeric" maxlength="6" style="flex:1;padding:6px 10px;font-size:16px;text-align:center;letter-spacing:4px;font-weight:700"><button class="btn btn-sm btn-primary" onclick="var p=document.getElementById(\'lock-pin-new\');if(!p||!p.value.trim()||p.value.length<4||p.value.length>6){alert(\'Passcode must be 4-6 digits.\');return}enableLock(p.value.trim());alert(\'Passcode enabled! The app will lock when you switch tabs or after 5 min of inactivity.\');render()">Enable Lock</button></div>';
+    h += '<div style="display:flex;gap:6px"><input type="password" id="lock-pin-new" placeholder="'+t('4-6 digit passcode')+'" inputmode="numeric" maxlength="6" style="flex:1;padding:6px 10px;font-size:16px;text-align:center;letter-spacing:4px;font-weight:700"><button class="btn btn-sm btn-primary" onclick="var p=document.getElementById(\'lock-pin-new\');if(!p||!p.value.trim()||p.value.length<4||p.value.length>6){alert(\''+t('Passcode must be 4-6 digits.')+'\');return}enableLock(p.value.trim());alert(\''+t('Passcode enabled! The app will lock when you switch tabs or after 5 min of inactivity.')+'\');render()">'+t('Enable Lock')+'</button></div>';
   }
   h += '</div>';
   var notif = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00'};
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications</h3></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'+t('Notifications')+'</h3></div>';
   h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0">';
-  h += notifRowHTML('morning', '🌅', 'Morning', 'Set your intention');
-  h += notifRowHTML('evening', '🌙', 'Evening', 'Reflect on your day');
-  h += notifRowHTML('craving', '⚠️', 'Craving Check-In', 'Log & manage cravings');
-  h += notifRowHTML('journal', '📝', 'Journal Prompt', 'Write about your day');
-  h += notifRowHTML('breathe', '🫁', 'Breathing Exercise', 'Take a mindful moment');
+  h += notifRowHTML('morning', '🌅', t('Morning'), t('Set your intention'));
+  h += notifRowHTML('evening', '🌙', t('Evening'), t('Reflect on your day'));
+  h += notifRowHTML('craving', '⚠️', t('Craving Check-In'), t('Log & manage cravings'));
+  h += notifRowHTML('journal', '📝', t('Journal Prompt'), t('Write about your day'));
+  h += notifRowHTML('breathe', '🫁', t('Breathing Exercise'), t('Take a mindful moment'));
   h += reminderNotifRowHTML();
   h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">Export My Data</button>';
-  h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">Import Data</button>';
-  if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">Sign Out</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">'+t('Export My Data')+'</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">'+t('Import Data')+'</button>';
+  if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">'+t('Sign Out')+'</button>';
   h += '</div>';
-  h += '<div class="card"><h3>About Re.Claim</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">Re.Claim is your recovery & wellness companion. Track mood & habits, journal, practice self-care, reflect on journal entries with Arthur, monitor sobriety, take assessments, read articles, find music, view weekly reports, and connect with an accountability partner. Your journal, moods & habits stay on your device. Buddy features sync via Firebase Firestore.</p></div>';
+  h += '<div class="card"><h3>'+t('About Re.Claim')+'</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">'+t('Re.Claim is your recovery & wellness companion. Track mood & habits, journal, practice self-care, reflect on journal entries with Arthur, monitor sobriety, take assessments, read articles, find music, view weekly reports, and connect with an accountability partner. Your journal, moods & habits stay on your device. Buddy features sync via Firebase Firestore.')+'</p></div>';
   return h;
 }
 
@@ -4470,18 +4640,18 @@ function showShareCard() {
   var journalCount = D.journal.length;
   var cravingCount = D.cravings ? D.cravings.length : 0;
   var pledgeStreak = calcPledgeStreak();
-  var h = '<div class="overlay-content" style="max-width:380px;text-align:center"><div style="font-size:40px;margin-bottom:8px">&#127942;</div><h3 style="margin:0">My Recovery So Far</h3>';
+  var h = '<div class="overlay-content" style="max-width:380px;text-align:center"><div style="font-size:40px;margin-bottom:8px">&#127942;</div><h3 style="margin:0">'+t('My Recovery So Far')+'</h3>';
   h += '<div style="background:linear-gradient(135deg,var(--primary),#34d399);color:#fff;border-radius:16px;padding:20px;margin:12px 0" id="share-card">';
   h += '<div style="font-size:14px;margin-bottom:8px">' + (D.name || 'Re.Claim User') + '</div>';
-  h += '<div style="font-size:48px;font-weight:800;line-height:1">' + days + '</div><div style="font-size:14px;opacity:.9">days sober</div>';
+  h += '<div style="font-size:48px;font-weight:800;line-height:1">' + days + '</div><div style="font-size:14px;opacity:.9">'+t('days sober')+'</div>';
   h += '<div style="display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:12px">';
-  h += '<div><strong>' + journalCount + '</strong><br>journal entries</div>';
-  h += '<div><strong>' + streak + '</strong><br>day streak</div>';
-  h += '<div><strong>' + pledgeStreak + '</strong><br>pledge streak</div></div>';
+  h += '<div><strong>' + journalCount + '</strong><br>'+t('journal entries')+'</div>';
+  h += '<div><strong>' + streak + '</strong><br>'+t('day streak')+'</div>';
+  h += '<div><strong>' + pledgeStreak + '</strong><br>'+t('pledge streak')+'</div></div>';
   h += '<div style="margin-top:10px;font-size:10px;opacity:.6">reclaim00.github.io/reclaim-buddy</div></div>';
-  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">Screenshot this card to share your progress.</p>';
-  h += '<button class="btn btn-primary" onclick="shareCardImage()">&#128247; Share Image</button>';
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Close</button></div>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">'+t('Screenshot this card to share your progress.')+'</p>';
+  h += '<button class="btn btn-primary" onclick="shareCardImage()">&#128247; '+t('Share Image')+'</button>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
@@ -4525,6 +4695,15 @@ function applyTheme() {
     document.documentElement.style.setProperty('--border','#e5e7eb');
     document.documentElement.style.setProperty('--primary-light', c.light);
   }
+}
+
+function updateTabLabels() {
+  var labels = {home:'Home',reflect:'Reflect',care:'Care',track:'Track',more:'Tools'};
+  document.querySelectorAll('.tab').forEach(function(el){
+    var page = el.getAttribute('data-page');
+    var span = el.querySelector('.tab-label');
+    if (span && labels[page]) span.textContent = t(labels[page]);
+  });
 }
 
 function monthlyChallengeHTML() {
@@ -4725,7 +4904,7 @@ function homeHTML() {
 
   h += recoveryGoalsHTML();
 
-  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#127942; Share My Progress</button></div>';
+  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#127942; '+t('Share My Progress')+'</button></div>';
 
   // Famous recovery figure (matched to user's addictions)
   var userAddictions = D.targetAddictions || [];
@@ -4733,7 +4912,7 @@ function homeHTML() {
   if (!matchedFigs.length) matchedFigs = FAMOUS_RECOVERY;
   if (matchedFigs.length) {
     var pick = matchedFigs[Math.floor(Math.random() * matchedFigs.length)];
-    h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:20px">&#127942;</span><span style="font-weight:700;font-size:14px">They Recovered Too</span></div>';
+    h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:20px">&#127942;</span><span style="font-weight:700;font-size:14px">'+t('They Recovered Too')+'</span></div>';
     h += '<div style="font-weight:600;font-size:15px;margin-bottom:2px">' + pick.name + '</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">Overcame ' + pick.addiction + '</div>';
     h += '<div style="font-size:13px;line-height:1.5;margin-bottom:6px">' + pick.story + '</div>';
@@ -4882,6 +5061,7 @@ function render() {
   var tb = document.querySelector('.top-bar');
   if (tb) tb.style.display = 'flex';
   applyTheme();
+  updateTabLabels();
   if (pg === 'home') { setTimeout(function(){ checkMilestone(); }, 500); }
 }
 
