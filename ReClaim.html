@@ -660,7 +660,7 @@ function showLockScreen() {
     '<button class="si-btn" onclick="unlockApp()">Unlock</button>' +
     '<div id="lock-error" style="font-size:12px;color:var(--danger);margin-top:4px"></div>' +
     (bioAvailable ? '<button class="btn btn-outline btn-sm" onclick="unlockWithBiometric()" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Face ID</button>' : '<button class="btn btn-outline btn-sm" onclick="setupBiometric()" id="bio-setup-btn" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Set Up Face ID</button>') +
-    '<button class="btn btn-outline btn-sm" onclick="if(confirm(\'This will erase all local data and let you sign in again.\')){localStorage.removeItem(\'rc_lock_hash\');localStorage.removeItem(\'rc_lock_salt\');localStorage.removeItem(\'rc_user\');localStorage.removeItem(\'rc_email\');sessionStorage.clear();location.reload()}" style="margin-top:12px;width:auto;display:inline-flex">Reset &amp; Sign Out</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="if(confirm(\''+t('This will erase all local data and let you sign in again.')+'\')){localStorage.removeItem(\'rc_lock_hash\');localStorage.removeItem(\'rc_lock_salt\');localStorage.removeItem(\'rc_user\');localStorage.removeItem(\'rc_email\');sessionStorage.clear();location.reload()}" style="margin-top:12px;width:auto;display:inline-flex">Reset &amp; Sign Out</button>' +
     '</div></div>';
   document.getElementById('tabs').style.display = 'none';
   var tb = document.querySelector('.top-bar');
@@ -702,7 +702,7 @@ function handleLockBlur() {
 }
 
 async function setupBiometric() {
-  if (!window.PublicKeyCredential) { alert('Face ID is not supported on this browser. Try Safari on iPhone.'); return; }
+  if (!window.PublicKeyCredential) { alert(t('Face ID is not supported on this browser. Try Safari on iPhone.')); return; }
   try {
     var challenge = crypto.getRandomValues(new Uint8Array(32));
     var cred = await navigator.credentials.create({publicKey:{
@@ -716,12 +716,12 @@ async function setupBiometric() {
     localStorage.setItem('rc_bio_cred', btoa(String.fromCharCode.apply(null, new Uint8Array(cred.rawId))));
     var btn = document.getElementById('bio-setup-btn');
     if (btn) { btn.textContent = '&#128065; Face ID'; btn.onclick = function(){ unlockWithBiometric(); }; }
-    alert('Face ID set up successfully!');
-  } catch(e) { alert('Face ID setup failed: ' + e.message); }
+    alert(t('Face ID set up successfully!'));
+  } catch(e) { alert(t('Face ID setup failed:') + ' ' + e.message); }
 }
 
 async function unlockWithBiometric() {
-  if (!window.PublicKeyCredential) { alert('Face ID is not available on this browser.'); return; }
+  if (!window.PublicKeyCredential) { alert(t('Face ID is not available on this browser.')); return; }
   try {
     var credIdRaw = localStorage.getItem('rc_bio_cred');
     if (!credIdRaw) { setupBiometric(); return; }
@@ -886,8 +886,8 @@ function handleAuth() {
   var email = document.getElementById('si-email');
   var password = document.getElementById('si-password');
   var error = document.getElementById('si-error');
-  if (!email || !email.value || !email.value.includes('@')) { alert('Enter a valid email.'); return; }
-  if (!password || !password.value || password.value.length < 4) { alert('Password must be at least 4 characters.'); return; }
+  if (!email || !email.value || !email.value.includes('@')) { alert(t('Enter a valid email.')); return; }
+  if (!password || !password.value || password.value.length < 4) { alert(t('Password must be at least 4 characters.')); return; }
   if (error) error.textContent = '';
   var isSignUp = SIGN_IN_MODE === 'up';
   var id = normId(email.value);
@@ -1218,7 +1218,7 @@ function selectAddiction(type, btn) {
 }
 
 function recordRelapse() {
-  if (!confirm('This records a relapse date. Remember: recovery is not linear. Every day is a fresh start.')) return;
+  if (!confirm(t('This records a relapse date. Remember: recovery is not linear. Every day is a fresh start.'))) return;
   if (!D.sobriety.relapseDates) D.sobriety.relapseDates = [];
   D.sobriety.relapseDates.push(Date.now());
   D.sobriety.startDate = Date.now();
@@ -1255,7 +1255,7 @@ var END_SOBRIETY_ACTIVITIES = [
 ];
 
 function endSobriety() {
-  if (!confirm('End your sobriety tracker? Your plant and timer will reset, but your history stays.')) return;
+  if (!confirm(t('End your sobriety tracker? Your plant and timer will reset, but your history stays.'))) return;
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   var h = '<div class="overlay-content" style="text-align:center;max-width:420px">';
@@ -2831,7 +2831,7 @@ function filterJournals(query) {
 
 function saveQuickMood() {
   var active = document.querySelector('#ref-moods .mood-btn.active');
-  if (!active) { alert('Select a mood first.'); return; }
+    if (!active) { alert(t('Select a mood first.')); return; }
   var mood = parseInt(active.getAttribute('data-val'));
   var now = new Date();
   D.journal.push({text:'Quick mood check-in', date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'), mood:mood, type:'quick'});
@@ -2843,7 +2843,7 @@ function saveQuickMood() {
 
 function saveRefJournal() {
   var text = document.getElementById('ref-entry');
-  if (!text||!text.value.trim()) { alert('Write something first.'); return; }
+  if (!text||!text.value.trim()) { alert(t('Write something first.')); return; }
   var active = document.querySelector('#ref-moods .mood-btn.active');
   var mood = active ? parseInt(active.getAttribute('data-val')) : 0;
   var typeBtn = document.querySelector('#journal-types .btn-primary');
@@ -3629,7 +3629,7 @@ function generatePairingCode() {
 }
 function connectPairingCode() {
   var input = document.getElementById('pairing-code');
-  if (!input || !input.value.trim()) { alert('Enter a pairing code.'); return; }
+  if (!input || !input.value.trim()) { alert(t('Enter a pairing code.')); return; }
   var code = input.value.trim().toUpperCase();
   var list = getRegisteredBuddies();
   var allCodes = JSON.parse(localStorage.getItem('rc_pairing_codes') || '{}');
@@ -3696,12 +3696,12 @@ function connectToBuddy(email) {
   // Try Firestore
   DB.collection('users').doc(email).get().then(function(doc){
     if (doc.exists) { finishPairing(doc.data(), email); return; }
-    alert('Buddy not found. Make sure they have registered by visiting the Buddy page.');
-  }).catch(function(){alert('Could not reach global directory. Try again later.')});
+    alert(t('Buddy not found. Make sure they have registered by visiting the Buddy page.'));
+  }).catch(function(){alert(t('Could not reach global directory. Try again later.'))});
 }
 
 function findBuddyAuto() {
-  if (!firebase || !firebase.auth().currentUser) { alert('Sign in to find a buddy.'); return; }
+  if (!firebase || !firebase.auth().currentUser) { alert(t('Sign in to find a buddy.')); return; }
   var btn = event && event.target ? event.target : document.getElementById('find-buddy-btn');
   if (btn) { btn.textContent = 'Searching...'; btn.disabled = true; }
   var lang = D.language || 'English';
@@ -3843,7 +3843,7 @@ function buddyChallengesHTML() {
 }
 
 function newChallenge() {
-  var title = prompt('Challenge title (e.g. "7-day check-in streak"):');
+  var title = prompt(t('Challenge title (e.g. "7-day check-in streak"):'));
   if (!title || !title.trim()) return;
   D.buddyGoals.push({ id: Date.now(), title: title.trim(), description: '', completed: false, dateCreated: new Date().toDateString() });
   saveData();
@@ -3922,7 +3922,7 @@ function setupBuddyHTML() {
 
 function saveBuddy() {
   var name = document.getElementById('buddy-name');
-  if (!name || !name.value.trim()) { alert('Enter your buddy\'s name.'); return; }
+  if (!name || !name.value.trim()) { alert(t('Enter your buddy\'s name.')); return; }
   D.buddy = { name: name.value.trim(), contact: document.getElementById('buddy-contact') ? document.getElementById('buddy-contact').value.trim() : '', relationship: document.getElementById('buddy-relationship') ? document.getElementById('buddy-relationship').value.trim() : '', language: document.getElementById('buddy-language') ? document.getElementById('buddy-language').value : (D.language || 'English') };
   saveData();
 }
@@ -3956,7 +3956,7 @@ function addGoal() {
 
 function saveGoal(btn) {
   var title = document.getElementById('goal-title');
-  if (!title || !title.value.trim()) { alert('Enter a goal title.'); return; }
+  if (!title || !title.value.trim()) { alert(t('Enter a goal title.')); return; }
   D.buddyGoals.push({ id: Date.now(), title: title.value.trim(), description: document.getElementById('goal-desc') ? document.getElementById('goal-desc').value.trim() : '', completed: false, dateCreated: new Date().toDateString() });
   saveData();
   btn.closest('.overlay').remove();
@@ -3988,6 +3988,8 @@ function removeBuddy() {
   if (!confirm(t('Remove your accountability partner?'))) return;
   D.buddy = null;
   saveData();
+  alert(t('Buddy removed.'));
+  render();
 }
 
 // ====== PROGRESS SHARING ======
@@ -4010,9 +4012,9 @@ function shareProgressWithBuddy(quiet) {
   DB.collection('progress').doc(AUTH_EMAIL).set(progress).then(function(){
     var btn = document.getElementById('share-progress-btn');
     if (btn) { btn.textContent = '✅ Shared! (' + progress.updated + ')'; btn.style.background = 'var(--primary-light)'; btn.style.color = 'var(--primary-dark)'; }
-    if (!quiet) { alert('Your progress has been shared with ' + (D.buddy ? D.buddy.name : 'your buddy') + '!'); }
+    if (!quiet) { alert(t('Your progress has been shared with') + ' ' + (D.buddy ? D.buddy.name : t('your buddy')) + '!'); }
     fetchBuddyProgress();
-  }).catch(function(){ if (!quiet) alert('Could not share. Check your internet connection.'); });
+  }).catch(function(){ if (!quiet) alert(t('Could not share. Check your internet connection.')); });
 }
 
 function fetchBuddyProgress() {
@@ -4197,8 +4199,8 @@ function saveReminder(btn, editId) {
   var time = document.getElementById('rem-time');
   var repeat = document.getElementById('rem-repeat');
   var notes = document.getElementById('rem-notes');
-  if (!title||!title.value.trim()){alert('Please enter a title.');return}
-  if (!date||!date.value){alert('Please select a date.');return}
+  if (!title||!title.value.trim()){alert(t('Please enter a title.'));return}
+  if (!date||!date.value){alert(t('Please select a date.'));return}
   if (!D.reminders) D.reminders = [];
   var obj = {
     id: Date.now(), title: title.value.trim(), date: date.value,
@@ -4216,7 +4218,7 @@ function saveReminder(btn, editId) {
 }
 function deleteReminder(id) {
   if (!D.reminders||!D.reminders[id]) return;
-  if (!confirm('Delete this reminder?')) return;
+  if (!confirm(t('Delete this reminder?'))) return;
   D.reminders.splice(id,1);
   saveData();
   render();
@@ -4300,10 +4302,10 @@ function submitRecommendation() {
   if (!text || !text.value.trim()) { alert('Please write your recommendation first.'); return; }
   var rec = { text: text.value.trim(), email: AUTH_EMAIL || 'anonymous', date: new Date().toISOString() };
   DB.collection('recommendations').add(rec).then(function() {
-    alert('Thank you! Your recommendation has been submitted.');
+    alert(t('Thank you! Your recommendation has been submitted.'));
     text.closest('.overlay').remove();
   }).catch(function() {
-    alert('Thanks! We\'ve saved your feedback locally.');
+    alert(t("Thanks! We've saved your feedback locally."));
     text.closest('.overlay').remove(); 
   });
 }
@@ -4349,7 +4351,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Privacy Lock')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.')+'</p>';
   if (isLockSet()) {
     var bioReady = !!localStorage.getItem('rc_bio_cred');
-    h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="var p=prompt(\'Enter current passcode to change:\');if(p&&p.trim()){checkPin(p.trim()).then(function(v){if(v){var np=prompt(\'Enter new 4-6 digit passcode:\');if(np&&np.trim().length>=4&&np.trim().length<=6){enableLock(np.trim());alert(\'Passcode updated!\');render()}else{alert(\'Passcode must be 4-6 digits.\')}}else{alert(\'Incorrect current passcode.\')}})})" style="font-size:11px">'+t('Change Passcode')+'</button>';
+    h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="var p=prompt(\''+t('Enter current passcode to change:')+'\');if(p&&p.trim()){checkPin(p.trim()).then(function(v){if(v){var np=prompt(\''+t('Enter new 4-6 digit passcode:')+'\');if(np&&np.trim().length>=4&&np.trim().length<=6){enableLock(np.trim());alert(\''+t('Passcode updated!')+'\');render()}else{alert(\''+t('Passcode must be 4-6 digits.')+'\')}}else{alert(\''+t('Incorrect current passcode.')+'\')}})})" style="font-size:11px">'+t('Change Passcode')+'</button>';
     h += '<button class="btn btn-sm btn-outline" onclick="if(localStorage.getItem(\'rc_bio_cred\')){unlockWithBiometric();}else{setupBiometric();}" style="font-size:11px">' + (bioReady ? '&#9989; '+t('Face ID') : '&#128065; '+t('Set Up Face ID')) + '</button>';
     h += '<button class="btn btn-sm btn-danger" onclick="if(confirm(\''+t('Disable passcode lock?')+'\')){disableLock();render()}" style="font-size:11px">'+t('Disable Lock')+'</button></div>';
   } else {
@@ -4421,8 +4423,8 @@ function importData() {
         var data = JSON.parse(ev.target.result);
         for (var k in data) D[k] = data[k];
         saveData();
-        alert('Data imported successfully!');
-      } catch(err) { alert('Invalid file format.'); }
+        alert(t('Data imported successfully!'));
+      } catch(err) { alert(t('Invalid file format.')); }
     };
     reader.readAsText(file);
   };
@@ -5182,9 +5184,9 @@ function promptInstall() {
   if (_installPrompt) { _installPrompt.prompt(); _installPrompt.userChoice.then(function(){ _installPrompt = null; }); return; }
   var isSafari = /iphone|ipad|ipod/i.test(navigator.userAgent) && /safari/i.test(navigator.userAgent);
   if (isSafari) {
-    alert('On iPhone: Tap the Share button (square with arrow) at the bottom of Safari, then scroll down and tap "Add to Home Screen".\n\nName it "Re.Claim" and tap "Add" in the top right.');
+    alert(t('On iPhone: Tap the Share button (square with arrow) at the bottom of Safari, then scroll down and tap "Add to Home Screen".\n\nName it "Re.Claim" and tap "Add" in the top right.'));
   } else {
-    alert('Open this page in your browser menu and select "Add to Home Screen" or "Install App".');
+    alert(t('Open this page in your browser menu and select "Add to Home Screen" or "Install App".'));
   }
 }
 // ====== INIT ======
