@@ -1597,14 +1597,14 @@ function toggleHabit(idx) {
 }
 
 function addHabit() {
-  var name = prompt('What habit do you want to track?');
+  var name = prompt(t('What habit do you want to track?'));
   if (!name || !name.trim()) return;
   D.habits.push({ id: Date.now(), name: name.trim(), logs: [] });
   saveData();
 }
 
 function deleteHabit(idx) {
-  if (!confirm('Delete "'+D.habits[idx].name+'"?')) return;
+  if (!confirm(t('Delete "')+D.habits[idx].name+t('"?'))) return;
   D.habits.splice(idx,1);
   saveData();
 }
@@ -3046,35 +3046,35 @@ function addCopingCard() {
 
 // ====== CARE PAGE ======
 function careHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Care & Support</h2>';
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Care & Support')+'</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
-  h += '<div class="breath-circle" style="width:80px;height:80px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);border-radius:50%;font-size:13px;color:var(--primary);font-weight:600">Breathe</div>';
-  h += '<h3 style="font-size:16px;font-weight:700">Mindful Breathing</h3>';
-  h += '<p style="font-size:13px;color:var(--muted);margin:4px 0 12px">Follow the guided breathing exercise to calm your mind and center yourself.</p>';
-  h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="width:auto;display:inline-flex">Start Breathing</button></div>';
+  h += '<div class="breath-circle" style="width:80px;height:80px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);border-radius:50%;font-size:13px;color:var(--primary);font-weight:600">'+t('Breathe')+'</div>';
+  h += '<h3 style="font-size:16px;font-weight:700">'+t('Mindful Breathing')+'</h3>';
+  h += '<p style="font-size:13px;color:var(--muted);margin:4px 0 12px">'+t('Follow the guided breathing exercise to calm your mind and center yourself.')+'</p>';
+  h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="width:auto;display:inline-flex">'+t('Start Breathing')+'</button></div>';
 
   // Sub-grid for care tools
   h += '<div class="sub-grid">';
-  h += '<div class="sub-item" onclick="goTo(\'coping\')">Coping Cards</div>';
-  h += '<div class="sub-item" onclick="goTo(\'assessment\')">Assessment</div>';
-  h += '<div class="sub-item" onclick="startBreathe()">Breathe</div>';
-  h += '<div class="sub-item" onclick="showRelapsePlan()">Relapse Plan</div>';
-  h += '<div class="sub-item" onclick="showAffirmations()">Affirmations</div>';
-  h += '<div class="sub-item" onclick="goTo(\'safety\')">Safety Plans</div>';
+  h += '<div class="sub-item" onclick="goTo(\'coping\')">'+t('Coping Cards')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'assessment\')">'+t('Assessment')+'</div>';
+  h += '<div class="sub-item" onclick="startBreathe()">'+t('Breathe')+'</div>';
+  h += '<div class="sub-item" onclick="showRelapsePlan()">'+t('Relapse Plan')+'</div>';
+  h += '<div class="sub-item" onclick="showAffirmations()">'+t('Affirmations')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
   h += '</div>';
 
   // Journal-based insights
   h += journalInsightsHTML();
 
   // Daily check-in
-  h += '<div class="card"><h3>Daily Check-In</h3>';
+  h += '<div class="card"><h3>'+t('Daily Check-In')+'</h3>';
   var today = new Date().toDateString();
   var checkedIn = D.checkins.filter(function(c){return c.date===today}).length;
   if (checkedIn) {
-    h += '<p style="font-size:13px;color:var(--primary);font-weight:600">Checked in today</p>';
+    h += '<p style="font-size:13px;color:var(--primary);font-weight:600">'+t('Checked in today')+'</p>';
   } else {
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">How was your day?</p>';
-    h += '<button class="btn btn-primary btn-sm" onclick="doCheckin()">Check In</button>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('How was your day?')+'</p>';
+    h += '<button class="btn btn-primary btn-sm" onclick="doCheckin()">'+t('Check In')+'</button>';
   }
   h += '</div>';
 
@@ -3099,7 +3099,7 @@ function careHTML() {
     {name:'Warmline (Non-crisis)',num:'1-888-448-9777',desc:'Peer support for non-crisis moments'}
   ];
   var showCount = 4;
-  h += '<div class="card"><h3>Helplines <span style="font-size:12px;color:var(--muted);font-weight:400">(' + helplines.length + ' available)</span></h3>';
+  h += '<div class="card"><h3>'+t('Helplines')+' <span style="font-size:12px;color:var(--muted);font-weight:400">(' + helplines.length + ' '+t('available')+')</span></h3>';
   for (var i=0;i<Math.min(showCount, helplines.length);i++) {
     h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+helplines[i].name+'</div><div style="font-size:11px;color:var(--muted)">'+helplines[i].desc+'</div></div><a href="tel:'+helplines[i].num+'" style="font-size:16px;font-weight:700;color:var(--primary);text-decoration:none">'+helplines[i].num+'</a></div>';
   }
@@ -3108,10 +3108,10 @@ function careHTML() {
     h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:'+(i<helplines.length-1?'1px solid var(--border)':'none')+'"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+helplines[i].name+'</div><div style="font-size:11px;color:var(--muted)">'+helplines[i].desc+'</div></div><a href="tel:'+helplines[i].num+'" style="font-size:16px;font-weight:700;color:var(--primary);text-decoration:none">'+helplines[i].num+'</a></div>';
   }
   h += '</div>';
-  h += '<button class="btn btn-sm btn-outline" onclick="var el=document.getElementById(\'more-helplines\');var btn=this;if(el.style.display===\'none\'){el.style.display=\'block\';btn.textContent=\'Show Less\';}else{el.style.display=\'none\';btn.textContent=\'Show All ' + helplines.length + ' Helplines\';}" style="margin-top:6px;width:auto">Show All ' + helplines.length + ' Helplines</button>';
+  h += '<button class="btn btn-sm btn-outline" onclick="var el=document.getElementById(\'more-helplines\');var btn=this;if(el.style.display===\'none\'){el.style.display=\'block\';btn.textContent=\''+t('Show Less')+'\';}else{el.style.display=\'none\';btn.textContent=\''+t('Show All Helplines').replace(/'/g,"\\'")+' ' + helplines.length + '\';}" style="margin-top:6px;width:auto">'+t('Show All Helplines')+' '+helplines.length+'</button>';
   h += '</div>';
 
-  h += '<div class="card"><h3>Addiction Assessment</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Check in with yourself about your substance use.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'assessment\')">Take Assessment</button></div>';
+  h += '<div class="card"><h3>'+t('Addiction Assessment')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Check in with yourself about your substance use.')+'</p><button class="btn btn-outline btn-sm" onclick="goTo(\'assessment\')">'+t('Take Assessment')+'</button></div>';
 
   // Arthur's Safety Plan
   h += safetyPlanHTML();
@@ -3120,9 +3120,9 @@ function careHTML() {
 }
 
 function journalInsightsHTML() {
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#128202;</div><h3 style="margin:0">Your Journal Insights</h3></div>';
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#128202;</div><h3 style="margin:0">'+t('Your Journal Insights')+'</h3></div>';
   if (!D.journal.length && !D.moods.length) {
-    h += '<div class="empty-state">No data yet. Write in your journal and log moods to see insights here.</div>';
+    h += '<div class="empty-state">'+t('No data yet. Write in your journal and log moods to see insights here.')+'</div>';
     h += '</div>';
     return h;
   }
@@ -3227,7 +3227,7 @@ function doCheckin() {
 function startBreathe() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700">Breathe</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Follow the circle. Inhale, hold, exhale.</p><div class="breath-circle" id="breath-circle">Breathe</div><button class="btn btn-primary" onclick="startBreathing(this)" id="breathe-start">Start</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Close</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700">'+t('Breathe')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Follow the circle. Inhale, hold, exhale.')+'</p><div class="breath-circle" id="breath-circle">'+t('Breathe')+'</div><button class="btn btn-primary" onclick="startBreathing(this)" id="breathe-start">'+t('Start')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -3944,7 +3944,7 @@ function saveBuddyCheckin(btn) {
 function addGoal() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">New Shared Goal</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">Set a goal with ' + (D.buddy ? D.buddy.name : 'your buddy') + '</p><input type="text" id="goal-title" placeholder="Goal title"><textarea id="goal-desc" placeholder="Description" style="min-height:60px"></textarea><button class="btn btn-primary" onclick="saveGoal(this)">Save Goal</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('New Shared Goal')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">'+t('Set a goal with')+' ' + (D.buddy ? D.buddy.name : t('your buddy')) + '</p><input type="text" id="goal-title" placeholder="'+t('Goal title')+'"><textarea id="goal-desc" placeholder="'+t('Description')+'" style="min-height:60px"></textarea><button class="btn btn-primary" onclick="saveGoal(this)">'+t('Save Goal')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -4440,12 +4440,12 @@ function showShareQR() {
 function logCraving() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#128293;</div><h3 style="font-size:18px;font-weight:700;margin:0">Log a Craving</h3><p style="font-size:12px;color:var(--muted);margin-top:2px">Track when cravings hit so Arthur can spot patterns.</p></div>';
-  h += '<div style="font-size:13px;font-weight:600;margin-bottom:4px">Intensity (1-10): <span id="craving-val" style="color:var(--primary)">5</span></div>';
+  var h = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#128293;</div><h3 style="font-size:18px;font-weight:700;margin:0">'+t('Log a Craving')+'</h3><p style="font-size:12px;color:var(--muted);margin-top:2px">'+t('Track when cravings hit so Arthur can spot patterns.')+'</p></div>';
+  h += '<div style="font-size:13px;font-weight:600;margin-bottom:4px">'+t('Intensity (1-10):')+' <span id="craving-val" style="color:var(--primary)">5</span></div>';
   h += '<input type="range" min="1" max="10" value="5" oninput="document.getElementById(\'craving-val\').textContent=this.value" style="width:100%;margin-bottom:10px">';
-  h += '<input type="text" id="craving-trigger" placeholder="What triggered it? (e.g. stress, boredom, social pressure)" style="margin-bottom:8px">';
-  h += '<button class="btn btn-primary" onclick="saveCraving(this)">Log Craving</button>';
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  h += '<input type="text" id="craving-trigger" placeholder="'+t('What triggered it? (e.g. stress, boredom, social pressure)')+'" style="margin-bottom:8px">';
+  h += '<button class="btn btn-primary" onclick="saveCraving(this)">'+t('Log Craving')+'</button>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
@@ -4478,23 +4478,23 @@ function showCravingPatterns() {
   });
   var topTriggers = Object.keys(triggerCounts).sort(function(a,b){return triggerCounts[b]-triggerCounts[a]}).slice(0,5);
   var peakTime = Object.keys(timeSlots).reduce(function(a,b){return timeSlots[a]>timeSlots[b]?a:b});
-  var h = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:36px;margin-bottom:4px">&#128202;</div><h3 style="font-size:18px;font-weight:700;margin:0">Craving Patterns</h3><p style="font-size:12px;color:var(--muted);margin-top:2px">Based on ' + c.length + ' logged cravings</p></div><div class="stat-grid" style="margin-bottom:8px"><div class="stat-card"><div class="num">' + avgIntensity + '</div><div class="label">Avg Intensity</div></div><div class="stat-card"><div class="num" style="text-transform:capitalize">' + peakTime + '</div><div class="label">Peak Time</div></div><div class="stat-card"><div class="num">' + c.length + '</div><div class="label">Total Logged</div></div></div>';
-  if (topTriggers.length) h += '<div class="card" style="padding:10px"><h3>Common Triggers</h3><div style="font-size:13px">' + topTriggers.map(function(t){return '&bull; ' + t}).join('<br>') + '</div></div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="logCraving()" style="margin-right:4px">+ Log Another</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">Close</button></div>';
+  var h = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:36px;margin-bottom:4px">&#128202;</div><h3 style="font-size:18px;font-weight:700;margin:0">'+t('Craving Patterns')+'</h3><p style="font-size:12px;color:var(--muted);margin-top:2px">'+t('Based on')+' ' + c.length + ' '+t('logged cravings')+'</p></div><div class="stat-grid" style="margin-bottom:8px"><div class="stat-card"><div class="num">' + avgIntensity + '</div><div class="label">'+t('Avg Intensity')+'</div></div><div class="stat-card"><div class="num" style="text-transform:capitalize">' + peakTime + '</div><div class="label">'+t('Peak Time')+'</div></div><div class="stat-card"><div class="num">' + c.length + '</div><div class="label">'+t('Total Logged')+'</div></div></div>';
+  if (topTriggers.length) h += '<div class="card" style="padding:10px"><h3>'+t('Common Triggers')+'</h3><div style="font-size:13px">' + topTriggers.map(function(t){return '&bull; ' + t}).join('<br>') + '</div></div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="logCraving()" style="margin-right:4px">+ '+t('Log Another')+'</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
 
 function cravingCardHTML() {
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#128293;</div><h3 style="margin:0">Craving Log</h3></div>';
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#128293;</div><h3 style="margin:0">'+t('Craving Log')+'</h3></div>';
   if (!D.cravings || !D.cravings.length) {
-    h += '<div class="empty-state">Log your first craving to start seeing patterns. Arthur will analyze your triggers over time.</div>';
+    h += '<div class="empty-state">'+t('Log your first craving to start seeing patterns. Arthur will analyze your triggers over time.')+'</div>';
   } else {
-    h += '<p style="font-size:12px;color:var(--muted);margin-bottom:6px">' + D.cravings.length + ' cravings logged</p>';
+    h += '<p style="font-size:12px;color:var(--muted);margin-bottom:6px">' + D.cravings.length + ' '+t('cravings logged')+'</p>';
     var last = D.cravings[D.cravings.length-1];
-    h += '<div style="background:var(--primary-light);padding:10px;border-radius:10px;font-size:12px;line-height:1.5;margin-bottom:6px"><strong>Last craving:</strong> ' + last.date + ' at ' + last.time + ' &mdash; intensity ' + last.intensity + '/10' + (last.trigger ? ' (' + last.trigger + ')' : '') + '</div>';
-    h += '<button class="btn btn-sm btn-primary" onclick="logCraving()">Log Craving</button>';
-    h += '<button class="btn btn-sm btn-outline" onclick="showCravingPatterns()" style="margin-left:4px">View Patterns</button>';
+    h += '<div style="background:var(--primary-light);padding:10px;border-radius:10px;font-size:12px;line-height:1.5;margin-bottom:6px"><strong>'+t('Last craving:')+'</strong> ' + last.date + ' at ' + last.time + ' &mdash; '+t('intensity')+' ' + last.intensity + '/10' + (last.trigger ? ' (' + last.trigger + ')' : '') + '</div>';
+    h += '<button class="btn btn-sm btn-primary" onclick="logCraving()">'+t('Log Craving')+'</button>';
+    h += '<button class="btn btn-sm btn-outline" onclick="showCravingPatterns()" style="margin-left:4px">'+t('View Patterns')+'</button>';
   }
   h += '</div>';
   return h;
