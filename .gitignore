@@ -8,3 +8,4 @@
 !firestore.rules
 !firebase.json
 !.firebaserc
+!.github/**/*.yml
