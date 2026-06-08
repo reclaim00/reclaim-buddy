@@ -655,9 +655,9 @@ function showLockScreen() {
     '<div class="si-bg">' +
     '<div class="si-card">' +
     '<div class="si-title" style="font-size:28px">Re.<span>Claim</span></div>' +
-    '<div class="si-sub">Enter your passcode to unlock</div>' +
-    '<input class="si-input" type="password" id="lock-pin-input" placeholder="Enter passcode" inputmode="numeric" maxlength="6" style="text-align:center;font-size:24px;letter-spacing:8px;font-weight:700" onkeydown="if(event.key===\'Enter\')unlockApp()">' +
-    '<button class="si-btn" onclick="unlockApp()">Unlock</button>' +
+    '<div class="si-sub">'+t('Enter your passcode to unlock')+'</div>' +
+    '<input class="si-input" type="password" id="lock-pin-input" placeholder="'+t('Enter passcode')+'" inputmode="numeric" maxlength="6" style="text-align:center;font-size:24px;letter-spacing:8px;font-weight:700" onkeydown="if(event.key===\'Enter\')unlockApp()">' +
+    '<button class="si-btn" onclick="unlockApp()">'+t('Unlock')+'</button>' +
     '<div id="lock-error" style="font-size:12px;color:var(--danger);margin-top:4px"></div>' +
     (bioAvailable ? '<button class="btn btn-outline btn-sm" onclick="unlockWithBiometric()" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Face ID</button>' : '<button class="btn btn-outline btn-sm" onclick="setupBiometric()" id="bio-setup-btn" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Set Up Face ID</button>') +
     '<button class="btn btn-outline btn-sm" onclick="if(confirm(\''+t('This will erase all local data and let you sign in again.')+'\')){localStorage.removeItem(\'rc_lock_hash\');localStorage.removeItem(\'rc_lock_salt\');localStorage.removeItem(\'rc_user\');localStorage.removeItem(\'rc_email\');sessionStorage.clear();location.reload()}" style="margin-top:12px;width:auto;display:inline-flex">Reset &amp; Sign Out</button>' +
@@ -875,11 +875,12 @@ function safetyPlanHTML() {
 
 function normId(id) { return id.toLowerCase().trim(); }
 
-function localHash(pwd, email) {
-  var s = 'rc:' + email.toLowerCase() + ':' + pwd;
-  var h = 0;
-  for (var i = 0; i < s.length; i++) { h = ((h << 5) - h) + s.charCodeAt(i); h |= 0; }
-  return 'h' + Math.abs(h).toString(36);
+async function localHash(pwd, email, salt) {
+  if (!salt) { salt = Array.from(crypto.getRandomValues(new Uint8Array(16))); }
+  var enc = new TextEncoder();
+  var hash = await crypto.subtle.digest('SHA-256', enc.encode('rc:' + email.toLowerCase() + ':' + pwd + ':' + salt.join(',')));
+  var h = Array.from(new Uint8Array(hash)).map(function(b){return b.toString(16).padStart(2,'0')}).join('');
+  return { hash: h, salt: salt };
 }
 
 function handleAuth() {
@@ -893,15 +894,31 @@ function handleAuth() {
   var id = normId(email.value);
   var key = 'rc_auth_' + id;
   var stored = localStorage.getItem(key);
-  var hash = localHash(password.value, id);
   if (isSignUp) {
     if (stored) { if (error) error.textContent = t('Account already exists. Sign in instead.'); return; }
-    localStorage.setItem(key, hash);
-    onAuthReady(id, true);
+    localHash(password.value, id).then(function(r){
+      localStorage.setItem(key, JSON.stringify({hash:r.hash,salt:r.salt}));
+      onAuthReady(id, true);
+    });
   } else {
     if (!stored) { if (error) error.textContent = t('Account not found. Sign up first.'); return; }
-    if (stored !== hash) { if (error) error.textContent = t('Incorrect password.'); return; }
-    onAuthReady(id, false);
+    // Migrate old plain-hash accounts
+    var storedData;
+    try { storedData = JSON.parse(stored); } catch(e) { storedData = null; }
+    if (!storedData || !storedData.salt) {
+      // Old format — upgrade on successful login
+      var oldHash = 'h' + function(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return Math.abs(h).toString(36)}('rc:'+id+':'+password.value);
+      if (oldHash !== stored) { if (error) error.textContent = t('Incorrect password.'); return; }
+      localHash(password.value, id).then(function(r){
+        localStorage.setItem(key, JSON.stringify({hash:r.hash,salt:r.salt}));
+        onAuthReady(id, false);
+      });
+      return;
+    }
+    localHash(password.value, id, storedData.salt).then(function(r){
+      if (r.hash !== storedData.hash) { if (error) error.textContent = t('Incorrect password.'); return; }
+      onAuthReady(id, false);
+    });
   }
 }
 
@@ -4372,7 +4389,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">'+t('Import Data')+'</button>';
   if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">'+t('Sign Out')+'</button>';
   h += '</div>';
-  h += '<div class="card"><h3>'+t('About Re.Claim')+'</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">'+t('Re.Claim is your recovery & wellness companion. Track mood & habits, journal, practice self-care, reflect on journal entries with Arthur, monitor sobriety, take assessments, read articles, find music, view weekly reports, and connect with an accountability partner. Your journal, moods & habits stay on your device. Buddy features sync via Firebase Firestore.')+'</p></div>';
+  h += '<div class="card" style="border-left:3px solid #f59e0b"><h3>'+t('Privacy & Security')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">'+t('All your journal entries, moods, habits, cravings, goals, and pledges are stored only on this device (localStorage). Nothing is sent to any server. Your password is hashed with SHA-256 and a random salt. Buddy features (pairing, messaging) sync through Firebase Firestore with encrypted transmission.')+'</p></div>';
   return h;
 }
 
