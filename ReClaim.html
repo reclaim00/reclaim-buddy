@@ -895,12 +895,12 @@ function handleAuth() {
   var stored = localStorage.getItem(key);
   var hash = localHash(password.value, id);
   if (isSignUp) {
-    if (stored) { if (error) error.textContent = 'Account already exists. Sign in instead.'; return; }
+    if (stored) { if (error) error.textContent = t('Account already exists. Sign in instead.'); return; }
     localStorage.setItem(key, hash);
     onAuthReady(id, true);
   } else {
-    if (!stored) { if (error) error.textContent = 'Account not found. Sign up first.'; return; }
-    if (stored !== hash) { if (error) error.textContent = 'Incorrect password.'; return; }
+    if (!stored) { if (error) error.textContent = t('Account not found. Sign up first.'); return; }
+    if (stored !== hash) { if (error) error.textContent = t('Incorrect password.'); return; }
     onAuthReady(id, false);
   }
 }
@@ -926,20 +926,20 @@ function showSignIn() {
     '<div class="si-card">' +
     '<div style="font-size:48px;margin-bottom:4px">&#127793;</div>' +
     '<div class="si-title">Re.<span>Claim</span></div>' +
-    '<div class="si-sub">Your recovery &amp; wellness journey starts here.<br>Track moods, journal, build habits, and grow.</div>' +
+    '<div class="si-sub">'+t('Your recovery &amp; wellness journey starts here.')+'<br>'+t('Track moods, journal, build habits, and grow.')+'</div>' +
     '<div class="si-toggle" style="display:flex;gap:0;margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)">' +
-    '<button class="si-tab-btn active" id="si-tab-in" onclick="setSignInTab(\'in\')" style="flex:1;padding:10px;border:none;background:var(--primary);color:#fff;font-weight:600;font-size:14px;cursor:pointer">Sign In</button>' +
-    '<button class="si-tab-btn" id="si-tab-up" onclick="setSignInTab(\'up\')" style="flex:1;padding:10px;border:none;background:transparent;color:var(--text);font-weight:600;font-size:14px;cursor:pointer">Sign Up</button>' +
+    '<button class="si-tab-btn active" id="si-tab-in" onclick="setSignInTab(\'in\')" style="flex:1;padding:10px;border:none;background:var(--primary);color:#fff;font-weight:600;font-size:14px;cursor:pointer">'+t('Sign In')+'</button>' +
+    '<button class="si-tab-btn" id="si-tab-up" onclick="setSignInTab(\'up\')" style="flex:1;padding:10px;border:none;background:transparent;color:var(--text);font-weight:600;font-size:14px;cursor:pointer">'+t('Sign Up')+'</button>' +
     '</div>' +
     '<div id="si-auth-section">' +
     '<div id="si-email-mode">' +
-    '<input class="si-input" type="email" id="si-email" placeholder="your@email.com">' +
-    '<input class="si-input" type="password" id="si-password" placeholder="Password" onkeydown="if(event.key===\'Enter\')handleAuth()">' +
+    '<input class="si-input" type="email" id="si-email" placeholder="'+t('your@email.com')+'">' +
+    '<input class="si-input" type="password" id="si-password" placeholder="'+t('Password')+'" onkeydown="if(event.key===\'Enter\')handleAuth()">' +
     '<div id="si-error" style="font-size:12px;color:var(--danger);margin:4px 0;text-align:center"></div>' +
-    '<button class="si-btn" onclick="handleAuth()"><span id="si-btn-label">Sign In</span></button>' +
+    '<button class="si-btn" onclick="handleAuth()"><span id="si-btn-label">'+t('Sign In')+'</span></button>' +
     '</div>' +
     '</div>' +
-    '<div class="si-footer">Your journal, moods &amp; habits stay on your device. Buddy features sync via Firebase.</div>' +
+    '<div class="si-footer">'+t('Your journal, moods &amp; habits stay on your device. Buddy features sync via Firebase.')+'</div>' +
     '</div></div>';
   document.getElementById('tabs').style.display = 'none';
   var tb = document.querySelector('.top-bar');
@@ -955,11 +955,11 @@ function setSignInTab(mode) {
   if (mode === 'in') {
     if (btnIn) { btnIn.style.background = 'var(--primary)'; btnIn.style.color = '#fff'; }
     if (btnUp) { btnUp.style.background = 'transparent'; btnUp.style.color = 'var(--text)'; }
-    if (label) label.textContent = 'Sign In';
+    if (label) label.textContent = t('Sign In');
   } else {
     if (btnUp) { btnUp.style.background = 'var(--primary)'; btnUp.style.color = '#fff'; }
     if (btnIn) { btnIn.style.background = 'transparent'; btnIn.style.color = 'var(--text)'; }
-    if (label) label.textContent = 'Create Account';
+    if (label) label.textContent = t('Sign Up');
   }
 }
 
@@ -5192,15 +5192,16 @@ function promptInstall() {
 // ====== INIT ======
 applyTheme();
 setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
-// Show sign-in by default; onAuthStateChanged will auto-transition if a session exists
-showSignIn();
-// If local session exists, optimistically show the app while Firebase restores auth
 if (AUTH_USER && !isLockSet()) {
+  // Session exists — restore directly, no sign-in screen
   document.body.classList.add('logged-in');
   render();
   loadFromFirestore(function(cloudData) {
     if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
   });
+} else {
+  showSignIn();
+  // onAuthStateChanged will auto-transition if Firebase restores a session
 }
 // Register service worker
 if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(function(){}); }
