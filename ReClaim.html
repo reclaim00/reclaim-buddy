@@ -332,7 +332,8 @@ function defaultData() {
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
     chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: [],
-    pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green'
+    pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
+    encryption: { enabled: false, salt: null, keyCheck: null }
   };
 }
 
@@ -1840,9 +1841,10 @@ function journalHTML() {
     var shown = 0;
     for (var i=0;i<entries.length && shown<50;i++) {
       var idx = D.journal.length - 1 - i;
-      if (search && entries[i].text.toLowerCase().indexOf(search) === -1) continue;
+      var entryText = getEntryText(entries[i]);
+      if (search && entryText.toLowerCase().indexOf(search) === -1) continue;
       shown++;
-      h += '<div class="card"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + entries[i].date + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entries[i].text.replace(/\n/g,'<br>') + '</div></div></div>';
+      h += '<div class="card"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + entries[i].date + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryText.replace(/\n/g,'<br>') + '</div></div></div>';
     }
     if (search && shown === 0) h += '<div class="card"><div class="empty-state">'+t('No entries matching')+' "' + search + '"</div></div>';
   }
@@ -1871,16 +1873,28 @@ function saveJournal(btn) {
   var moodBtns = overlay.querySelectorAll('.mood-btn.active');
   var mood = moodBtns.length ? parseInt(moodBtns[0].getAttribute('onclick').match(/\d+/)[0]) : 0;
   var now = new Date();
+  var txt = text.value.trim();
   var entry = {
-    text: text.value.trim(),
+    text: txt,
     date: now.toDateString(),
     time: String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),
     mood: mood
   };
-  D.journal.push(entry);
-  saveData();
-  overlay.remove();
-  if (checkCrisis(text.value.trim())) { showCrisisAlert(text.value.trim()); }
+  var saveIt = function() {
+    D.journal.push(entry);
+    saveData();
+    overlay.remove();
+    if (checkCrisis(txt)) { showCrisisAlert(txt); }
+  };
+  if (isEncryptionEnabled() && ENC_KEY) {
+    encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+  } else if (isEncryptionEnabled() && !ENC_KEY) {
+    promptEncryptionPassphrase(function() {
+      encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+    });
+  } else {
+    saveIt();
+  }
 }
 
 var CRISIS_PATTERNS = [
@@ -2077,7 +2091,7 @@ function artDailyRoutineHTML() {
   for (var mi=0;mi<D.moods.length;mi++) { moodCounts[D.moods[mi].val-1]++; }
   var topMood = 0;
   for (var mi2=0;mi2<5;mi2++) { if (moodCounts[mi2] > moodCounts[topMood]) topMood = mi2; }
-  var recentText = D.journal.slice(-3).map(function(j){return j.text.toLowerCase()}).join(' ');
+  var recentText = D.journal.slice(-3).map(function(j){var t=getEntryText(j);return t?t.toLowerCase():''}).join(' ');
   var hasStress = recentText.indexOf('stress') !== -1 || recentText.indexOf('anxi') !== -1 || recentText.indexOf('overwhelm') !== -1;
   var hasCraving = recentText.indexOf('craving') !== -1 || recentText.indexOf('trigger') !== -1 || recentText.indexOf('urge') !== -1;
   var hasGratitude = recentText.indexOf('grateful') !== -1 || recentText.indexOf('thank') !== -1 || recentText.indexOf('bless') !== -1;
@@ -2694,10 +2708,11 @@ var TOPIC_SUGGESTIONS = {
 };
 
 function buildPersonalReflection(entry, mood, entries, idx) {
-  var topics = extractTopics(entry.text);
+  var txt = getEntryText(entry);
+  var topics = extractTopics(txt);
   var baseReflection = getReflection(mood);
   var parts = [];
-  var text = entry.text;
+  var text = txt;
 
   if (topics.length) {
     var topicLabels = {craving:'navigating cravings',work:'work',relationships:'your relationships',health:'your health',wellness:'your well-being',school:'your studies',finances:'finances',progress:'your progress',loneliness:'feeling alone'};
@@ -2720,7 +2735,7 @@ function buildPersonalReflection(entry, mood, entries, idx) {
 }
 
 function buildSuggestions(entry, mood, entries, idx) {
-  var topics = extractTopics(entry.text);
+  var topics = extractTopics(getEntryText(entry));
   var suggestions = [];
   var dayCount = soberDays();
 
@@ -2812,9 +2827,10 @@ function reflectHTML() {
     var entries = D.journal.slice().reverse();
     for (var i=0;i<entries.length;i++) {
       var idx = D.journal.length - 1 - i;
-      h += '<div class="card journal-entry" data-search="' + (entries[i].text.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
+      var entryTextRefl = getEntryText(entries[i]);
+      h += '<div class="card journal-entry" data-search="' + (entryTextRefl.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
       h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + entries[i].date + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
-      h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entries[i].text.replace(/\n/g,'<br>') + '</div></div>';
+      h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div></div>';
       h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect with Arthur</button>';
       h += '</div>';
     }
@@ -2851,11 +2867,24 @@ function saveQuickMood() {
     if (!active) { alert(t('Select a mood first.')); return; }
   var mood = parseInt(active.getAttribute('data-val'));
   var now = new Date();
-  D.journal.push({text:'Quick mood check-in', date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'), mood:mood, type:'quick'});
-  if (!D.moods) D.moods = [];
-  D.moods.push({val:mood, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
-  saveData();
-  render();
+  var txt = 'Quick mood check-in';
+  var entry = {text:txt, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'), mood:mood, type:'quick'};
+  var saveIt = function() {
+    D.journal.push(entry);
+    if (!D.moods) D.moods = [];
+    D.moods.push({val:mood, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
+    saveData();
+    render();
+  };
+  if (isEncryptionEnabled() && ENC_KEY) {
+    encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+  } else if (isEncryptionEnabled() && !ENC_KEY) {
+    promptEncryptionPassphrase(function() {
+      encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+    });
+  } else {
+    saveIt();
+  }
 }
 
 function saveRefJournal() {
@@ -2866,17 +2895,30 @@ function saveRefJournal() {
   var typeBtn = document.querySelector('#journal-types .btn-primary');
   var type = typeBtn ? typeBtn.getAttribute('data-type') : 'free';
   var now = new Date();
-  D.journal.push({
-    text: text.value.trim(),
+  var txt = text.value.trim();
+  var entry = {
+    text: txt,
     date: now.toDateString(),
     time: String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),
     mood: mood,
     type: type
-  });
-  text.value = '';
-  var idx = D.journal.length - 1;
-  saveData();
-  try { setTimeout(function() { showReflection(idx); }, 400); } catch(e) {}
+  };
+  var saveIt = function() {
+    D.journal.push(entry);
+    text.value = '';
+    var idx = D.journal.length - 1;
+    saveData();
+    try { setTimeout(function() { showReflection(idx); }, 400); } catch(e) {}
+  };
+  if (isEncryptionEnabled() && ENC_KEY) {
+    encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+  } else if (isEncryptionEnabled() && !ENC_KEY) {
+    promptEncryptionPassphrase(function() {
+      encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+    });
+  } else {
+    saveIt();
+  }
 }
 
 function confetti() {
@@ -2894,13 +2936,14 @@ function showReflection(idx) {
   try {
   var entry = D.journal[idx];
   if (!entry) return;
-  if (checkCrisis(entry.text)) { showCrisisAlert(entry.text); return; }
-  var result = detectMood(entry.text);
+  var entryText = getEntryText(entry);
+  if (checkCrisis(entryText)) { showCrisisAlert(entryText); return; }
+  var result = detectMood(entryText);
   var mood = result.primary;
   var scores = result.scores;
   var reflection = buildPersonalReflection(entry, mood, D.journal, idx);
   var suggestions = buildSuggestions(entry, mood, D.journal, idx);
-  var song = getSong(entry.text, mood);
+  var song = getSong(entryText, mood);
   var name = D.name || 'there';
   var dayCount = soberDays();
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
@@ -2970,7 +3013,7 @@ function showReflection(idx) {
 
   // Original entry
   h += '<details style="margin-bottom:8px"><summary style="font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);padding:4px 0">&#128196; Read your entry</summary>';
-  h += '<div class="card" style="padding:12px;margin-top:6px"><p style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap">' + entry.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p></div></details>';
+  h += '<div class="card" style="padding:12px;margin-top:6px"><p style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap">' + (entryText || getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p></div></details>';
 
   h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:4px">Close</button></div>';
   D.reflectionCount = (D.reflectionCount || 0) + 1;
@@ -3157,9 +3200,10 @@ function journalInsightsHTML() {
   // Journal stats
   var totalWords = 0, longestEntry = '';
   for (var ji=0;ji<D.journal.length;ji++) {
-    var words = D.journal[ji].text.split(/\s+/).length;
+    var jt = getEntryText(D.journal[ji]);
+    var words = jt ? jt.split(/\s+/).length : 0;
     totalWords += words;
-    if (D.journal[ji].text.length > longestEntry.length) longestEntry = D.journal[ji].text;
+    if (jt && jt.length > longestEntry.length) longestEntry = jt;
   }
   // Keyword frequency from journal entries
   var keywords = {};
@@ -3359,7 +3403,7 @@ var DAILY_PROMPTS = [
 function todayPrompt() {
   var entries = D.journal || [];
   if (entries.length > 0) {
-    var last = entries[entries.length-1].text.toLowerCase();
+    var last = (getEntryText(entries[entries.length-1]) || '').toLowerCase();
     if (last.match(/crav|urge|relaps|trigger|tempted|slip/)) return 'You mentioned a trigger recently. What strategies helped you get through it? How are you feeling about it now?';
     if (last.match(/proud|accomplish|achieved|milestone|win|success|progress|goal|completed|finished/)) return 'That progress you mentioned — how did it feel? What helped you get there? Take a moment to really sit with that win.';
     if (last.match(/sad|depres|lonel|alone|cry|grief|sorrow|despair|mourn/)) return 'You were feeling heavy last time. What do you need right now that you haven\'t given yourself? It\'s okay to not be okay.';
@@ -4385,6 +4429,30 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += notifRowHTML('breathe', '🫁', t('Breathing Exercise'), t('Take a mindful moment'));
   h += reminderNotifRowHTML();
   h += '</div>';
+  // Encryption settings
+  var enc = D.encryption || {};
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+t('Journal Encryption')+'</h3></div>';
+  h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0;font-size:13px;line-height:1.5">';
+  if (!enc.enabled) {
+    h += '<p style="color:var(--muted);margin-bottom:8px">'+t('Encrypt your journal entries with a passphrase. Your data is encrypted before being saved.')+'</p>';
+    h += '<input type="password" id="enc-setup-pass" placeholder="'+t('Create a passphrase (min 4 chars)')+'" style="font-size:16px;text-align:center;margin-bottom:6px;letter-spacing:2px">';
+    h += '<input type="password" id="enc-setup-confirm" placeholder="'+t('Confirm passphrase')+'" style="font-size:16px;text-align:center;margin-bottom:8px;letter-spacing:2px">';
+    h += '<button class="btn btn-sm btn-primary" onclick="var p=document.getElementById(\'enc-setup-pass\');var c=document.getElementById(\'enc-setup-confirm\');if(!p||!p.value.trim()||p.value.length<4){alert(\''+t('Passphrase must be at least 4 characters.')+'\');return}if(p.value!==c.value){alert(\''+t('Passphrases do not match.')+'\');return}this.disabled=true;setupEncryption(p.value).then(function(){p.value=\'\';c.value=\'\';render();alert(\''+t('Encryption enabled! All journal entries are now encrypted.')+'\');}).catch(function(){this.disabled=false})">'+t('Enable Encryption')+'</button>';
+  } else {
+    if (ENC_KEY) {
+      h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="color:var(--primary);font-weight:600">&#128274; '+t('Encryption active')+'</span><span class="badge badge-green">'+t('Unlocked')+'</span></div>';
+      h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">'+t('Journal entries are encrypted with AES-256-GCM before saving.')+'</p>';
+      h += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+      h += '<button class="btn btn-sm btn-outline" onclick="var np=prompt(\''+t('Enter new passphrase (min 4 chars):')+'\');if(!np||np.length<4){alert(\''+t('Passphrase must be at least 4 characters.')+'\');return}var cp=prompt(\''+t('Confirm new passphrase:')+'\');if(np!==cp){alert(\''+t('Passphrases do not match.')+'\');return}changeEncryptionPassphrase(\'\',np).then(function(){alert(\''+t('Passphrase changed!')+'\');}).catch(function(){alert(\''+t('Failed to change passphrase.')+'\')})">'+t('Change Passphrase')+'</button>';
+      h += '<button class="btn btn-sm btn-danger" onclick="if(!confirm(\''+t('This will decrypt all journal entries. Are you sure?')+'\'))return;disableEncryption().then(function(){render();alert(\''+t('Encryption disabled. All entries have been decrypted.')+'\');}).catch(function(){})">'+t('Disable Encryption')+'</button>';
+      h += '</div>';
+    } else {
+      h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="color:var(--primary);font-weight:600">&#128274; '+t('Encryption active')+'</span><span class="badge badge-gold">'+t('Locked')+'</span></div>';
+      h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">'+t('Enter your passphrase to unlock and access your journal entries.')+'</p>';
+      h += '<button class="btn btn-sm btn-primary" onclick="promptEncryptionPassphrase(function(){render()})">'+t('Unlock Now')+'</button>';
+    }
+  }
+  h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">'+t('Export My Data')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">'+t('Import Data')+'</button>';
   if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">'+t('Sign Out')+'</button>';
@@ -5117,6 +5185,127 @@ setInterval(checkNotifications, 60000);
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+
+// ====== CLIENT-SIDE ENCRYPTION (AES-256-GCM) ======
+var ENC_KEY = null;
+var ENC_CACHE = {};
+function isEncryptionEnabled() { return D.encryption && D.encryption.enabled && D.encryption.salt && D.encryption.keyCheck; }
+function deriveEncryptionKey(passphrase, salt) {
+  var enc = new TextEncoder();
+  return crypto.subtle.importKey('raw', enc.encode(passphrase), 'PBKDF2', false, ['deriveKey']).then(function(key) {
+    return crypto.subtle.deriveKey({name:'PBKDF2', salt:salt, iterations:600000, hash:'SHA-256'}, key, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+  });
+}
+function encryptText(plaintext, key) {
+  var iv = crypto.getRandomValues(new Uint8Array(12));
+  return crypto.subtle.encrypt({name:'AES-GCM', iv:iv}, key, new TextEncoder().encode(plaintext)).then(function(ciphertext) {
+    var ct = new Uint8Array(ciphertext);
+    var ivStr = '', ctStr = '';
+    for (var i=0;i<iv.length;i++) ivStr += String.fromCharCode(iv[i]);
+    for (var i=0;i<ct.length;i++) ctStr += String.fromCharCode(ct[i]);
+    return {enc:true, iv:btoa(ivStr), data:btoa(ctStr)};
+  });
+}
+function decryptText(encrypted, key) {
+  if (!encrypted || !encrypted.enc) return Promise.resolve(encrypted);
+  var iv = new Uint8Array(atob(encrypted.iv).split('').map(function(c){return c.charCodeAt(0)}));
+  var ct = new Uint8Array(atob(encrypted.data).split('').map(function(c){return c.charCodeAt(0)}));
+  return crypto.subtle.decrypt({name:'AES-GCM', iv:iv}, key, ct).then(function(plain) {
+    return new TextDecoder().decode(plain);
+  });
+}
+function encryptAllEntries(key) {
+  return Promise.all(D.journal.map(function(entry, i) {
+    if (entry.text && typeof entry.text === 'string') {
+      return encryptText(entry.text, key).then(function(enc) { D.journal[i].text = enc; });
+    }
+  }));
+}
+function decryptAllEntries() {
+  ENC_CACHE = {};
+  if (!ENC_KEY || !isEncryptionEnabled()) return Promise.resolve();
+  return Promise.all(D.journal.map(function(entry, i) {
+    if (entry.text && typeof entry.text === 'object' && entry.text.enc) {
+      return decryptText(entry.text, ENC_KEY).then(function(text) { ENC_CACHE[entry.text.data] = text; });
+    } else if (entry.text && typeof entry.text === 'string') {
+      ENC_CACHE[i+'s'] = entry.text;
+    }
+  }));
+}
+function getEntryText(entry) {
+  if (!entry || !entry.text) return '';
+  if (typeof entry.text === 'string') return entry.text;
+  if (entry.text && entry.text.enc && ENC_CACHE[entry.text.data]) return ENC_CACHE[entry.text.data];
+  if (entry.text && entry.text.enc) return '[Encrypted]';
+  return entry.text;
+}
+function setupEncryption(passphrase) {
+  if (!passphrase || passphrase.length < 4) { alert('Passphrase must be at least 4 characters.'); return Promise.reject(); }
+  var salt = crypto.getRandomValues(new Uint8Array(16));
+  return deriveEncryptionKey(passphrase, salt).then(function(key) {
+    return encryptText('ENCRYPTION_KEY_CHECK_v1', key).then(function(enc) {
+      D.encryption = { enabled: true, salt: btoa(String.fromCharCode.apply(null, salt)), keyCheck: enc };
+      ENC_KEY = key;
+      return encryptAllEntries(key);
+    });
+  }).then(function() { saveData(); return decryptAllEntries(); });
+}
+function verifyEncryptionPassphrase(passphrase) {
+  if (!isEncryptionEnabled()) return Promise.reject('Encryption not enabled');
+  var salt = new Uint8Array(atob(D.encryption.salt).split('').map(function(c){return c.charCodeAt(0)}));
+  return deriveEncryptionKey(passphrase, salt).then(function(key) {
+    return decryptText(D.encryption.keyCheck, key).then(function(text) {
+      if (text === 'ENCRYPTION_KEY_CHECK_v1') { ENC_KEY = key; return decryptAllEntries(); }
+      throw new Error('Wrong passphrase');
+    });
+  });
+}
+function unlockEncryption(passphrase) {
+  return verifyEncryptionPassphrase(passphrase);
+}
+function changeEncryptionPassphrase(oldPass, newPass) {
+  if (!isEncryptionEnabled() || !ENC_KEY) return Promise.reject('Not unlocked');
+  return setupEncryption(newPass);
+}
+function disableEncryption() {
+  if (!isEncryptionEnabled()) return Promise.resolve();
+  if (!ENC_KEY) { alert('Unlock encryption first.'); return Promise.reject(); }
+  return Promise.all(D.journal.map(function(entry, i) {
+    if (entry.text && typeof entry.text === 'object' && entry.text.enc) {
+      return decryptText(entry.text, ENC_KEY).then(function(text) { D.journal[i].text = text; });
+    }
+  })).then(function() {
+    D.encryption = { enabled: false, salt: null, keyCheck: null };
+    ENC_KEY = null; ENC_CACHE = {};
+    saveData();
+  });
+}
+
+var ENC_UNLOCK_CALLBACK = null;
+function promptEncryptionPassphrase(callback) {
+  ENC_UNLOCK_CALLBACK = callback || null;
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700;margin-bottom:12px">&#128274; '+t('Unlock Encryption')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:16px">'+t('Enter your encryption passphrase to access journal entries.')+'</p><input type="password" id="enc-unlock-input" placeholder="'+t('Encryption passphrase')+'" style="font-size:16px;text-align:center;margin-bottom:12px;letter-spacing:2px"><div style="color:var(--danger);font-size:12px;margin-bottom:8px;display:none" id="enc-unlock-error">'+t('Wrong passphrase. Try again.')+'</div><button class="btn btn-primary" id="enc-unlock-btn" onclick="doUnlockEncryption(this)">'+t('Unlock')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove();ENC_UNLOCK_CALLBACK=null" style="margin-top:6px">'+t('Cancel')+'</button></div>';
+  document.body.appendChild(overlay);
+  setTimeout(function(){var inp=document.getElementById('enc-unlock-input');if(inp)inp.focus()},100);
+}
+function doUnlockEncryption(btn) {
+  var p = document.getElementById('enc-unlock-input');
+  var e = document.getElementById('enc-unlock-error');
+  if (!p || !p.value.trim()) { alert('Enter your passphrase.'); return; }
+  p.disabled = true; btn.disabled = true;
+  unlockEncryption(p.value.trim()).then(function() {
+    p.disabled = false; btn.disabled = false;
+    var cb = ENC_UNLOCK_CALLBACK; ENC_UNLOCK_CALLBACK = null;
+    btn.closest('.overlay').remove();
+    render();
+    if (typeof cb === 'function') cb();
+  }).catch(function() {
+    p.disabled = false; btn.disabled = false;
+    e.style.display = 'block'; p.value = ''; p.focus();
   });
 }
 
