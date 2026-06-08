@@ -5,3 +5,6 @@
 !manifest.json
 !icon.svg
 !.gitignore
+!firestore.rules
+!firebase.json
+!.firebaserc
