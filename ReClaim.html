@@ -297,17 +297,19 @@ function onAuthReady(email, isNew) {
   localStorage.setItem('rc_user', email); localStorage.setItem('rc_email', email);
   D = loadData();
   document.body.classList.add('logged-in');
-   if (isNew) { D.joinDate = Date.now(); saveData(); }
+  if (isNew) { D.joinDate = Date.now(); saveData(); }
   if (Notification.permission === "granted") subscribePush();
   registerCurrentUser();
   if (firebase && firebase.auth().currentUser) {
     loadFromFirestore(function(cloudData) {
       if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
       render();
+      if (isNew) { setTimeout(function(){ showOnboarding(); }, 400); }
       if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
     });
   } else {
     render();
+    if (isNew) { setTimeout(function(){ showOnboarding(); }, 400); }
     if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
   }
   if (isLockSet()) { showLockScreen(); } else { resetLockTimer(); }
@@ -4429,6 +4431,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   var notif = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00'};
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'+t('Notifications')+'</h3></div>';
   h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0">';
+  h += pushToggleRowHTML();
   h += notifRowHTML('morning', '🌅', t('Morning'), t('Set your intention'));
   h += notifRowHTML('evening', '🌙', t('Evening'), t('Reflect on your day'));
   h += notifRowHTML('craving', '⚠️', t('Craving Check-In'), t('Log & manage cravings'));
@@ -5120,7 +5123,11 @@ function reminderNotifRowHTML() {
   var enabled = n.reminderNotif !== false;
   return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">&#9200;</span><div><div style="font-size:13px;font-weight:600">Reminders</div><div style="font-size:11px;color:var(--muted)">Get notified when a reminder is due</div></div></div><div style="display:flex;align-items:center;gap:8px"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.reminderNotif=this.checked;if(this.checked)requestNotif();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
 }
-function requestNotif() {
+function pushToggleRowHTML() {
+  var enabled = D.notifications && D.notifications.push;
+  return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;margin-bottom:4px;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🔔</span><div><div style="font-size:13px;font-weight:600">Push Notifications</div><div style="font-size:11px;color:var(--muted)">Receive alerts on this device</div></div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.push=this.checked;if(this.checked)requestNotif();else unsubscribePush();saveData()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div>';
+}
+  function requestNotif() {
   if (!("Notification" in window)) return;
   if (Notification.permission === "granted") { subscribePush(); return; }
   if (Notification.permission === "default") {
@@ -5365,7 +5372,45 @@ function safetyHTML() {
   h += '</div>';
   return h;
 }
-
+// ====== ONBOARDING TUTORIAL ======
+var ONBOARDING_STEPS = [
+  {icon:'🏠',title:'Home',desc:'Your dashboard — view your streak, mood, habits, and daily inspiration at a glance.'},
+  {icon:'💬',title:'Reflect',desc:'Journal your thoughts, log moods, track cravings, and practice mindful breathing.'},
+  {icon:'❤️',title:'Care',desc:'Build coping strategies, connect with a recovery buddy, and access crisis helplines.'},
+  {icon:'📊',title:'Track',desc:'Monitor your sobriety, habits, goals, and view progress reports.'},
+  {icon:'🔧',title:'Tools',desc:'Access your profile, settings, reminders, library, music, and more.'},
+];
+var ONBOARDING_STEP = 0;
+function showOnboarding() {
+  if (D._onboardingDone) return;
+  ONBOARDING_STEP = 0;
+  renderOnboardingStep();
+}
+function renderOnboardingStep() {
+  var s = ONBOARDING_STEPS[ONBOARDING_STEP];
+  if (!s) { D._onboardingDone = true; saveData(); return; }
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'onboarding-ov';
+  overlay.style.background = 'rgba(0,0,0,0.6)';
+  overlay.innerHTML =
+    '<div style="background:var(--card);max-width:360px;width:90%;margin:0 auto;border-radius:20px;padding:32px 24px 24px;text-align:center;animation:siFade .3s ease;position:relative">' +
+    '<div style="font-size:56px;margin-bottom:12px">' + s.icon + '</div>' +
+    '<div style="font-size:22px;font-weight:800;margin-bottom:6px;color:var(--primary)">' + s.title + '</div>' +
+    '<div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:20px;padding:0 8px">' + s.desc + '</div>' +
+    '<div style="display:flex;justify-content:center;gap:6px;margin-bottom:18px">' +
+      ONBOARDING_STEPS.map(function(_,i){ return '<div style="width:8px;height:8px;border-radius:4px;background:'+(i===ONBOARDING_STEP?'var(--primary)':'var(--border)')+';transition:.2s"></div>'; }).join('') +
+    '</div>' +
+    '<div style="display:flex;gap:8px">' +
+      (ONBOARDING_STEP > 0 ? '<button class="btn btn-sm btn-outline" onclick="ONBOARDING_STEP--;renderOnboardingStep()" style="flex:1">Back</button>' : '') +
+      '<button class="btn btn-sm btn-primary" onclick="ONBOARDING_STEP++;renderOnboardingStep()" style="flex:1">'+ (ONBOARDING_STEP < ONBOARDING_STEPS.length-1 ? 'Next' : 'Done') +'</button>' +
+    '</div>' +
+    '<button onclick="D._onboardingDone=true;saveData();document.getElementById(\'onboarding-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>' +
+    '</div>';
+  var existing = document.getElementById('onboarding-ov');
+  if (existing) existing.remove();
+  document.body.appendChild(overlay);
+}
 function render() {
   if (LOCK_ENABLED) return;
   var app = document.getElementById('app');
