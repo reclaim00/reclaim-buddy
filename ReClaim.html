@@ -297,7 +297,7 @@ function onAuthReady(email, isNew) {
   localStorage.setItem('rc_user', email); localStorage.setItem('rc_email', email);
   D = loadData();
   document.body.classList.add('logged-in');
-  if (isNew) { D.joinDate = Date.now(); saveData(); }
+   if (isNew) { D.joinDate = Date.now(); saveData(); }
   if (Notification.permission === "granted") subscribePush();
   registerCurrentUser();
   if (firebase && firebase.auth().currentUser) {
