@@ -9,6 +9,22 @@ self.addEventListener('message', function(e) {
     });
   }
 });
+self.addEventListener('push', function(e) {
+  var data = {};
+  if (e.data) {
+    try { data = e.data.json(); } catch(e) {}
+  }
+  var title = (data.notification && data.notification.title) || data.title || 'Re.Claim';
+  var body = (data.notification && data.notification.body) || data.body || '';
+  var opts = {
+    body: body,
+    icon: data.icon || 'icon-192.png',
+    tag: data.tag || 'reclaim-push',
+    badge: 'icon-192.png',
+    data: data.data || {}
+  };
+  e.waitUntil(self.registration.showNotification(title, opts));
+});
 self.addEventListener('notificationclick', function(e) {
   e.notification.close();
   e.waitUntil(clients.matchAll({type:'window'}).then(function(clientList) {

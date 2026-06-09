@@ -7,5 +7,12 @@ service cloud.firestore {
       allow create: if request.auth != null
         && request.auth.uid == request.resource.id;
     }
+    match /pushSubscriptions/{userId} {
+      allow read, delete: if request.auth != null
+        && request.auth.token.email == userId;
+      allow create, update: if request.auth != null
+        && request.auth.token.email == userId
+        && request.resource.data.token is string;
+    }
   }
 }

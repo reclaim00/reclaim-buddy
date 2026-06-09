@@ -225,6 +225,7 @@ body.dark .profile-btn-float{background:var(--card);color:var(--text);border-col
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script>
 // ====== FIREBASE ======
 var firebaseConfig = {
@@ -238,6 +239,27 @@ var firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 var DB = firebase.firestore();
+var MESSAGING = null;
+try { MESSAGING = firebase.messaging(); } catch(e) {}
+// Set your VAPID key below from Firebase Console > Cloud Messaging > Web Push certificates
+var VAPID_KEY = 'REPLACE_WITH_YOUR_VAPID_KEY';
+
+function subscribePush() {
+  if (!MESSAGING || !AUTH_EMAIL || VAPID_KEY === 'REPLACE_WITH_YOUR_VAPID_KEY') return;
+  MESSAGING.getToken({vapidKey: VAPID_KEY}).then(function(token) {
+    DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({token: token, updated: firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
+  }).catch(function(){});
+}
+
+function unsubscribePush() {
+  if (!MESSAGING || !AUTH_EMAIL) return;
+  MESSAGING.getToken({vapidKey: VAPID_KEY}).then(function(token) {
+    if (token) {
+      MESSAGING.deleteToken(token).catch(function(){});
+    }
+  }).catch(function(){});
+  DB.collection('pushSubscriptions').doc(AUTH_EMAIL).delete().catch(function(){});
+}
 
 // ====== CLOUD SYNC (Firestore cross-device) ======
 function syncToFirestore() {
@@ -928,6 +950,7 @@ function signOutCleanup() {
   if (SOBER_TIMER_ID) { clearInterval(SOBER_TIMER_ID); SOBER_TIMER_ID = null; }
   if (SOBER_TIMEOUT_ID) { clearTimeout(SOBER_TIMEOUT_ID); SOBER_TIMEOUT_ID = null; }
   localStorage.removeItem('rc_user'); localStorage.removeItem('rc_email');
+  unsubscribePush();
   D = defaultData(); document.body.classList.remove('logged-in'); showSignIn();
 }
 
@@ -5098,7 +5121,12 @@ function reminderNotifRowHTML() {
 }
 function requestNotif() {
   if (!("Notification" in window)) return;
-  if (Notification.permission === "default") Notification.requestPermission();
+  if (Notification.permission === "granted") { subscribePush(); return; }
+  if (Notification.permission === "default") {
+    Notification.requestPermission().then(function(perm) {
+      if (perm === "granted") subscribePush();
+    });
+  }
 }
 function swNotify(title, body, icon, tag) {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
