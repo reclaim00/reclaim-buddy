@@ -1387,7 +1387,7 @@ function saveQuizProgress(prefix) {
     var sel = document.querySelector('input[name="' + prefix + i + '"]:checked');
     if (sel) D.assessmentProgress[i] = parseInt(sel.value);
   }
-  saveData();
+  localStorage.setItem(dataKey(), JSON.stringify(D));
 }
 
 function restoreQuizVisuals(prefix) {
