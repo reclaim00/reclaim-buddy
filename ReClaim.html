@@ -2778,7 +2778,7 @@ function reflectHTML() {
   h += '<div style="display:flex;gap:6px;margin:8px 0" id="journal-types">';
   for (var ti=0;ti<types.length;ti++) {
     (function(tid, tdesc){
-      h += '<button class="btn btn-sm ' + (ti===0?'btn-primary':'btn-outline') + '" onclick="document.querySelectorAll(\'#journal-types .btn\').forEach(function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';document.getElementById(\'ref-entry\').placeholder=this.getAttribute(\'data-ph\');var q=document.getElementById(\'quick-mood-area\');if(\''+tid+'\'===\'quick\'){document.getElementById(\'ref-entry\').style.display=\'none\';document.getElementById(\'word-count-row\').style.display=\'none\';document.getElementById(\'save-entry-btn\').style.display=\'none\';if(q)q.style.display=\'block\'}else{document.getElementById(\'ref-entry\').style.display=\'block\';document.getElementById(\'word-count-row\').style.display=\'flex\';document.getElementById(\'save-entry-btn\').style.display=\'inline-block\';if(q)q.style.display=\'none\'}" data-type="' + tid + '" data-ph="' + tdesc + '" style="flex:1;font-size:11px">' + types[ti].icon + ' ' + types[ti].label + '</button>';
+      h += '<button class="btn btn-sm ' + (ti===0?'btn-primary':'btn-outline') + '" onclick="[].forEach.call(document.querySelectorAll(\'#journal-types .btn\'),function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';document.getElementById(\'ref-entry\').placeholder=this.getAttribute(\'data-ph\');var q=document.getElementById(\'quick-mood-area\');if(\''+tid+'\'===\'quick\'){document.getElementById(\'ref-entry\').style.display=\'none\';document.getElementById(\'word-count-row\').style.display=\'none\';document.getElementById(\'save-entry-btn\').style.display=\'none\';if(q)q.style.display=\'block\'}else{document.getElementById(\'ref-entry\').style.display=\'block\';document.getElementById(\'word-count-row\').style.display=\'flex\';document.getElementById(\'save-entry-btn\').style.display=\'inline-block\';if(q)q.style.display=\'none\'}" data-type="' + tid + '" data-ph="' + tdesc + '" style="flex:1;font-size:11px">' + types[ti].icon + ' ' + types[ti].label + '</button>';
     })(types[ti].id, types[ti].desc);
   }
   h += '</div>';
@@ -2786,7 +2786,7 @@ function reflectHTML() {
   var moodEmojis = ['&#128542;','&#128533;','&#128528;','&#128578;','&#128513;'];
   var labels = [t('Terrible'),t('Bad'),t('Okay'),t('Good'),t('Great')];
   for (var i=0;i<5;i++) {
-    h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="document.querySelectorAll(\'#ref-moods .mood-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')"><span style="font-size:18px;display:block">'+moodEmojis[i]+'</span>'+labels[i]+'</button>';
+    h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#ref-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')"><span style="font-size:18px;display:block">'+moodEmojis[i]+'</span>'+labels[i]+'</button>';
   }
   h += '</div>';
   h += '<div id="quick-mood-area" style="display:none;text-align:center;padding:16px 0"><div style="font-size:13px;color:var(--muted);margin-bottom:10px">'+t('Tap your mood above, then save:')+'</div><button class="btn btn-primary" onclick="saveQuickMood()" style="width:100%">&#9889; '+t('Log Quick Mood')+'</button></div>';
@@ -3976,7 +3976,7 @@ function buddyCheckin() {
   overlay.className = 'overlay';
   var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Check in with ' + (D.buddy ? D.buddy.name : 'Your Buddy') + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did your interaction go?</p><div class="mood-row" id="checkin-moods">';
   var labels = ['Tough','Hard','Okay','Good','Great'];
-  for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="document.querySelectorAll(\'#checkin-moods .mood-btn\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
+  for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#checkin-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
   h += '</div><textarea id="checkin-note" placeholder="What did you talk about? Any wins?" style="min-height:80px"></textarea><button class="btn btn-primary" onclick="saveBuddyCheckin(this)">Save Check-In</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
@@ -4860,7 +4860,7 @@ function applyTheme() {
 
 function updateTabLabels() {
   var labels = {home:'Home',reflect:'Reflect',care:'Care',track:'Track',more:'Tools'};
-  document.querySelectorAll('.tab').forEach(function(el){
+  [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
     if (span && labels[page]) span.textContent = t(labels[page]);
@@ -5165,7 +5165,7 @@ function checkNotifications() {
     }
   }
   // Re-arm repeating reminders at day boundary
-  if (hm === '00:01' && D.reminders) {
+  if (hmNum >= 1 && hmNum < 4 && D.reminders) {
     D.reminders.forEach(function(rr){if(rr.repeat&&rr.repeat!=='none')rr.notified=false});
   }
 }
@@ -5354,7 +5354,7 @@ function render() {
   else { pg = 'home'; app.innerHTML = homeHTML(); }
   if (pg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
 
-  document.querySelectorAll('.tab').forEach(function(t){
+  [].forEach.call(document.querySelectorAll('.tab'),function(t){
     var tp = t.getAttribute('data-page');
     t.classList.toggle('active', tp === pg || (tp === 'more' && MORE_SUB_PAGES.indexOf(pg) !== -1) || (tp === 'reflect' && REFLECT_SUB_PAGES.indexOf(pg) !== -1));
   });
@@ -5367,7 +5367,7 @@ function render() {
 }
 
 function goTo(p) {
-  document.querySelectorAll('[id$="-ov"],.overlay').forEach(function(el){el.remove()});
+  [].forEach.call(document.querySelectorAll('[id$="-ov"],.overlay'),function(el){el.remove()});
   pg = p;
   render();
 }
@@ -5375,7 +5375,7 @@ function goTo(p) {
 document.getElementById('tabs').addEventListener('click', function(e) {
   var tab = e.target.closest('.tab');
   if (tab) {
-    document.querySelectorAll('.overlay').forEach(function(el){el.remove()});
+    [].forEach.call(document.querySelectorAll('.overlay'),function(el){el.remove()});
     var tp = tab.getAttribute('data-page');
     subPg = '';
     if (tp === 'more' && MORE_SUB_PAGES.indexOf(pg) !== -1) { pg = 'more'; render(); return; }
