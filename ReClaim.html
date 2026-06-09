@@ -298,6 +298,7 @@ function onAuthReady(email, isNew) {
   D = loadData();
   document.body.classList.add('logged-in');
   if (isNew) { D.joinDate = Date.now(); saveData(); }
+  if (Notification.permission === "granted") subscribePush();
   registerCurrentUser();
   if (firebase && firebase.auth().currentUser) {
     loadFromFirestore(function(cloudData) {
