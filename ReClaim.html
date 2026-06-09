@@ -1379,40 +1379,6 @@ document.addEventListener('change', function(e){
   }
 });
 
-function saveQuizProgress(prefix) {
-  if (!D.assessmentProgress || D.assessmentProgress.length !== ASSESS_QUESTIONS.length) {
-    D.assessmentProgress = new Array(ASSESS_QUESTIONS.length).fill(null);
-  }
-  for (var i=0;i<ASSESS_QUESTIONS.length;i++) {
-    var sel = document.querySelector('input[name="' + prefix + i + '"]:checked');
-    if (sel) D.assessmentProgress[i] = parseInt(sel.value);
-  }
-  localStorage.setItem(dataKey(), JSON.stringify(D));
-}
-
-function restoreQuizVisuals(prefix) {
-  setTimeout(function(){
-    document.querySelectorAll('.quiz-opts').forEach(function(wrapper){
-      var checked = wrapper.querySelector('input[type=radio]:checked');
-      if (checked) {
-        var evt = document.createEvent('HTMLEvents');
-        evt.initEvent('change', true, false);
-        checked.dispatchEvent(evt);
-      }
-    });
-  }, 50);
-}
-
-function restoreQuizProgress(prefix) {
-  if (!D.assessmentProgress || D.assessmentProgress.length !== ASSESS_QUESTIONS.length) return;
-  for (var i=0;i<ASSESS_QUESTIONS.length;i++) {
-    if (D.assessmentProgress[i] !== null && D.assessmentProgress[i] !== undefined) {
-      var el = document.querySelector('input[name="' + prefix + i + '"][value="' + D.assessmentProgress[i] + '"]');
-      if (el) el.checked = true;
-    }
-  }
-}
-
 function assessmentHTML() {
   var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Addiction Assessment</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">This screening helps you understand your relationship with substances.</p>';
@@ -1431,68 +1397,66 @@ function assessmentHTML() {
   if (!D.assessmentProgress || D.assessmentProgress.length !== ASSESS_QUESTIONS.length) {
     D.assessmentProgress = new Array(ASSESS_QUESTIONS.length).fill(null);
   }
-  h += '<div class="card" id="quiz" data-prefix="q">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span id="quiz-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + ASSESS_TOTAL_STEPS + '</span><span id="quiz-progress-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
-  h += '<div class="progress-bar" style="margin-bottom:10px"><div class="fill" id="quiz-progress-bar" style="width:0%"></div></div>';
-  h += '<div id="quiz-question"></div>';
-  h += '<div style="display:flex;gap:8px;margin-top:10px" id="quiz-nav">';
-  h += '<button class="btn btn-outline btn-sm" id="quiz-prev" onclick="quizPrev()" style="flex:1;display:none">&#8592; Previous</button>';
-  h += '<button class="btn btn-primary btn-sm" id="quiz-next" onclick="quizNext()" style="flex:1">Next &#8594;</button>';
-  h += '<button class="btn btn-primary btn-sm" id="quiz-submit" onclick="saveQuizProgress(\'q\');submitAssessment()" style="flex:1;display:none">See Results</button>';
+  h += '<div class="card" id="quiz" data-idx="0">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="q-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + ASSESS_TOTAL_STEPS + '</span><span class="q-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
+  h += '<div class="progress-bar" style="margin-bottom:10px"><div class="fill q-bar" style="width:0%"></div></div>';
+  h += '<div class="q-body"></div>';
+  h += '<div style="display:flex;gap:8px;margin-top:10px">';
+  h += '<button class="btn btn-outline btn-sm q-prev" onclick="quizNav(-1)" style="flex:1;display:none">&#8592; Previous</button>';
+  h += '<button class="btn btn-primary btn-sm q-next" onclick="quizNav(1)" style="flex:1">Next &#8594;</button>';
+  h += '<button class="btn btn-primary btn-sm q-submit" onclick="quizSubmit()" style="flex:1;display:none">See Results</button>';
   h += '</div></div>';
-  setTimeout(function(){ quizGoTo(0, 'q'); }, 50);
   return h;
 }
 
-var QUIZ_CURRENT = 0;
-
-function quizGoTo(idx, prefix) {
-  QUIZ_CURRENT = idx;
-  var qEl = document.getElementById('quiz-question');
-  var stepEl = document.getElementById('quiz-step');
-  var barEl = document.getElementById('quiz-progress-bar');
-  var pctEl = document.getElementById('quiz-progress-pct');
-  var prevEl = document.getElementById('quiz-prev');
-  var nextEl = document.getElementById('quiz-next');
-  var submitEl = document.getElementById('quiz-submit');
-  if (!qEl) return;
-  var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
-  qEl.innerHTML = '<div><p style="font-weight:600;font-size:15px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML(prefix + idx, savedVal) + '</div>';
-  if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
-  var pct = Math.round(((idx+1) / ASSESS_TOTAL_STEPS) * 100);
-  if (barEl) barEl.style.width = pct + '%';
-  if (pctEl) pctEl.textContent = pct + '%';
-  if (prevEl) prevEl.style.display = idx === 0 ? 'none' : 'block';
-  if (nextEl) nextEl.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'none' : 'block';
-  if (submitEl) submitEl.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'block' : 'none';
-  setTimeout(function(){ restoreQuizVisuals(prefix); }, 50);
+function quizNav(dir) {
+  var quiz = document.getElementById('quiz');
+  if (!quiz) return;
+  var idx = parseInt(quiz.getAttribute('data-idx'));
+  var sel = document.querySelector('.q-body input[type=radio]:checked');
+  if (sel) D.assessmentProgress[idx] = parseInt(sel.value);
+  var next = idx + dir;
+  if (next < 0 || next >= ASSESS_TOTAL_STEPS) return;
+  quiz.setAttribute('data-idx', next);
+  renderQuizQuestion(next);
+  localStorage.setItem(dataKey(), JSON.stringify(D));
 }
 
-function quizNext() {
-  saveQuizProgress(document.getElementById('quiz').getAttribute('data-prefix'));
-  if (QUIZ_CURRENT < ASSESS_TOTAL_STEPS - 1) {
-    quizGoTo(QUIZ_CURRENT + 1, document.getElementById('quiz').getAttribute('data-prefix'));
-  }
-}
-
-function quizPrev() {
-  if (QUIZ_CURRENT > 0) {
-    quizGoTo(QUIZ_CURRENT - 1, document.getElementById('quiz').getAttribute('data-prefix'));
-  }
-}
-
-function submitAssessment() {
+function quizSubmit() {
+  var quiz = document.getElementById('quiz');
+  if (!quiz) return;
+  var idx = parseInt(quiz.getAttribute('data-idx'));
+  var sel = document.querySelector('.q-body input[type=radio]:checked');
+  if (sel) D.assessmentProgress[idx] = parseInt(sel.value);
   var score = 0, count = 0;
-  if (D.assessmentProgress) {
-    for (var i=0;i<D.assessmentProgress.length;i++) {
-      if (D.assessmentProgress[i] !== null) { score += D.assessmentProgress[i]; count++; }
-    }
+  for (var i=0;i<D.assessmentProgress.length;i++) {
+    if (D.assessmentProgress[i] !== null) { score += D.assessmentProgress[i]; count++; }
   }
   score = count > 0 ? Math.round(score / count) : 0;
   D.assessmentTaken = true;
-  D.assessmentResult = { score: score, date: Date.now(), answers: D.assessmentProgress ? D.assessmentProgress.slice() : [] };
+  D.assessmentResult = { score: score, date: Date.now(), answers: D.assessmentProgress.slice() };
   D.assessmentProgress = null;
   saveData();
+}
+
+function renderQuizQuestion(idx) {
+  var quiz = document.getElementById('quiz');
+  if (!quiz) return;
+  var savedVal = D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length ? D.assessmentProgress[idx] : null;
+  quiz.querySelector('.q-body').innerHTML = '<div><p style="font-weight:600;font-size:15px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML('q' + idx, savedVal) + '</div>';
+  var step = quiz.querySelector('.q-step');
+  var bar = quiz.querySelector('.q-bar');
+  var pct = quiz.querySelector('.q-pct');
+  var prev = quiz.querySelector('.q-prev');
+  var next = quiz.querySelector('.q-next');
+  var submit = quiz.querySelector('.q-submit');
+  if (step) step.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
+  var pp = Math.round(((idx+1) / ASSESS_TOTAL_STEPS) * 100);
+  if (bar) bar.style.width = pp + '%';
+  if (pct) pct.textContent = pp + '%';
+  if (prev) prev.style.display = idx === 0 ? 'none' : 'block';
+  if (next) next.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'none' : 'block';
+  if (submit) submit.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'inline-block' : 'none';
 }
 
 function showAssessmentAfterSignIn() {
@@ -1515,15 +1479,15 @@ function showAssessmentAfterSignIn() {
   h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:24px">🔍</div><div><h3 style="font-size:18px;font-weight:700;margin:0">Addiction Assessment</h3><p style="font-size:12px;color:var(--muted);margin:2px 0 0">Help us understand where you are on your journey</p></div></div>';
   h += sev;
   if (!D.assessmentTaken) {
-    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span id="osi-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + ASSESS_TOTAL_STEPS + '</span><span id="osi-progress-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
-    h += '<div class="progress-bar" style="margin-bottom:8px"><div class="fill" id="osi-progress-bar" style="width:0%"></div></div>';
-    h += '<div id="osi-question"></div>';
+    h += '<div class="osi-quiz" data-idx="0">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span class="osi-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + ASSESS_TOTAL_STEPS + '</span><span class="osi-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
+    h += '<div class="progress-bar" style="margin-bottom:8px"><div class="fill osi-bar" style="width:0%"></div></div>';
+    h += '<div class="osi-body"></div>';
     h += '<div style="display:flex;gap:8px;margin-top:10px">';
-    h += '<button class="btn btn-outline btn-sm" id="osi-prev" onclick="osiPrev()" style="flex:1;display:none">&#8592; Previous</button>';
-    h += '<button class="btn btn-primary btn-sm" id="osi-next" onclick="osiNext()" style="flex:1">Next &#8594;</button>';
-    h += '<button class="btn btn-primary btn-sm" id="osi-submit" onclick="saveQuizProgress(\'oq\');submitOverlayAssessment(this)" style="flex:1;display:none">See Results</button>';
-    h += '</div>';
-    setTimeout(function(){ osiGoTo(0); }, 50);
+    h += '<button class="btn btn-outline btn-sm osi-prev" onclick="osiNav(-1)" style="flex:1;display:none">&#8592; Previous</button>';
+    h += '<button class="btn btn-primary btn-sm osi-next" onclick="osiNav(1)" style="flex:1">Next &#8594;</button>';
+    h += '<button class="btn btn-primary btn-sm osi-submit" onclick="osiSubmit(this)" style="flex:1;display:none">See Results</button>';
+    h += '</div></div>';
   } else {
     h += '<p style="font-size:13px;color:var(--muted)">You\'ve already taken the assessment. You can retake it anytime from the More menu.</p>';
     h += '<button class="btn btn-outline" onclick="D.assessmentTaken=false;D.assessmentProgress=null;saveData();this.closest(\'.overlay\').remove();showAssessmentAfterSignIn()" style="margin-top:4px">Retake Assessment</button>';
@@ -1531,41 +1495,59 @@ function showAssessmentAfterSignIn() {
   h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
+  if (!D.assessmentTaken) {
+    var qq = overlay.querySelector('.osi-quiz');
+    if (qq) renderOsiQuestion(qq, 0);
+  }
 }
 
-var OSI_CURRENT = 0;
 var ASSESS_TOTAL_STEPS = ASSESS_QUESTIONS.length;
-function osiGoTo(idx) {
-  OSI_CURRENT = idx;
-  var qEl = document.getElementById('osi-question');
-  if (!qEl) return;
-  var stepEl = document.getElementById('osi-step');
-  var barEl = document.getElementById('osi-progress-bar');
-  var pctEl = document.getElementById('osi-progress-pct');
-  var savedVal = (D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length) ? D.assessmentProgress[idx] : null;
-  qEl.innerHTML = '<div><p style="font-weight:600;font-size:14px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML('oq' + idx, savedVal) + '</div>';
-  if (stepEl) stepEl.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
-  var pct = Math.round(((idx+1) / ASSESS_TOTAL_STEPS) * 100);
-  if (barEl) barEl.style.width = pct + '%';
-  if (pctEl) pctEl.textContent = pct + '%';
-  document.getElementById('osi-prev').style.display = idx === 0 ? 'none' : 'block';
-  document.getElementById('osi-next').style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'none' : 'block';
-  document.getElementById('osi-submit').style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'block' : 'none';
-  setTimeout(function(){ restoreQuizVisuals('oq'); }, 50);
-}
-function osiNext() { saveQuizProgress('oq'); if (OSI_CURRENT < ASSESS_TOTAL_STEPS - 1) osiGoTo(OSI_CURRENT + 1); }
-function osiPrev() { if (OSI_CURRENT > 0) osiGoTo(OSI_CURRENT - 1); }
 
-function submitOverlayAssessment(btn) {
+function osiNav(dir) {
+  var quiz = document.querySelector('.osi-quiz');
+  if (!quiz) return;
+  var idx = parseInt(quiz.getAttribute('data-idx'));
+  var sel = quiz.querySelector('.osi-body input[type=radio]:checked');
+  if (sel) D.assessmentProgress[idx] = parseInt(sel.value);
+  var next = idx + dir;
+  if (next < 0 || next >= ASSESS_TOTAL_STEPS) return;
+  quiz.setAttribute('data-idx', next);
+  renderOsiQuestion(quiz, next);
+  localStorage.setItem(dataKey(), JSON.stringify(D));
+}
+
+function renderOsiQuestion(quiz, idx) {
+  var savedVal = D.assessmentProgress && D.assessmentProgress.length === ASSESS_QUESTIONS.length ? D.assessmentProgress[idx] : null;
+  quiz.querySelector('.osi-body').innerHTML = '<div><p style="font-weight:600;font-size:14px;margin-bottom:8px">' + (idx+1) + '. ' + ASSESS_QUESTIONS[idx] + '</p>' + quizOptionsHTML('oq' + idx, savedVal) + '</div>';
+  var step = quiz.querySelector('.osi-step');
+  var bar = quiz.querySelector('.osi-bar');
+  var pct = quiz.querySelector('.osi-pct');
+  var prev = quiz.querySelector('.osi-prev');
+  var next = quiz.querySelector('.osi-next');
+  var submit = quiz.querySelector('.osi-submit');
+  if (step) step.textContent = 'Question ' + (idx+1) + ' of ' + ASSESS_TOTAL_STEPS;
+  var pp = Math.round(((idx+1) / ASSESS_TOTAL_STEPS) * 100);
+  if (bar) bar.style.width = pp + '%';
+  if (pct) pct.textContent = pp + '%';
+  if (prev) prev.style.display = idx === 0 ? 'none' : 'block';
+  if (next) next.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'none' : 'block';
+  if (submit) submit.style.display = idx >= ASSESS_TOTAL_STEPS - 1 ? 'inline-block' : 'none';
+}
+
+function osiSubmit(btn) {
+  var quiz = document.querySelector('.osi-quiz');
+  if (!quiz) return;
+  var idx = parseInt(quiz.getAttribute('data-idx'));
+  var sel = quiz.querySelector('.osi-body input[type=radio]:checked');
+  if (sel) D.assessmentProgress[idx] = parseInt(sel.value);
   var score = 0, count = 0;
-  if (D.assessmentProgress) {
-    for (var i=0;i<D.assessmentProgress.length;i++) {
-      if (D.assessmentProgress[i] !== null) { score += D.assessmentProgress[i]; count++; }
-    }
+  for (var i=0;i<D.assessmentProgress.length;i++) {
+    if (D.assessmentProgress[i] !== null) { score += D.assessmentProgress[i]; count++; }
   }
   score = count > 0 ? Math.round(score / count) : 0;
   D.assessmentTaken = true;
-  D.assessmentResult = { score: score, date: Date.now(), answers: D.assessmentProgress ? D.assessmentProgress.slice() : [] };
+  D.assessmentResult = { score: score, date: Date.now(), answers: D.assessmentProgress.slice() };
+  D.assessmentProgress = null;
   saveData();
   var overlay = btn.closest('.overlay');
   overlay.remove();
@@ -5370,6 +5352,7 @@ function render() {
   var fn = pages[pg];
   if (fn) app.innerHTML = fn();
   else { pg = 'home'; app.innerHTML = homeHTML(); }
+  if (pg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
 
   document.querySelectorAll('.tab').forEach(function(t){
     var tp = t.getAttribute('data-page');
