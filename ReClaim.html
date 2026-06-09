@@ -242,7 +242,7 @@ var DB = firebase.firestore();
 var MESSAGING = null;
 try { MESSAGING = firebase.messaging(); } catch(e) {}
 // Set your VAPID key below from Firebase Console > Cloud Messaging > Web Push certificates
-var VAPID_KEY = 'REPLACE_WITH_YOUR_VAPID_KEY';
+var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHOSCA7l4_ZUvy4RMvxDVaUFI84';
 
 function subscribePush() {
   if (!MESSAGING || !AUTH_EMAIL || VAPID_KEY === 'REPLACE_WITH_YOUR_VAPID_KEY') return;
