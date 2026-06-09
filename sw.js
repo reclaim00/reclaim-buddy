@@ -9,4 +9,13 @@ self.addEventListener('message', function(e) {
     });
   }
 });
+self.addEventListener('notificationclick', function(e) {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({type:'window'}).then(function(clientList) {
+    for (var i=0;i<clientList.length;i++) {
+      if (clientList[i].url && 'focus' in clientList[i]) { clientList[i].focus(); return; }
+    }
+    if (clients.openWindow) clients.openWindow('/');
+  }));
+});
 self.addEventListener('fetch', function(e) { e.respondWith(fetch(e.request).catch(function(){ return caches.match(e.request); })); });

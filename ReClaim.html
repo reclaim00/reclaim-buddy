@@ -5135,30 +5135,37 @@ function checkNotifications() {
   var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00'};
   var now = new Date();
   var hm = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  var hmNum = now.getHours() * 60 + now.getMinutes();
   var s = D.streak || 0;
-  // Reset notification flags when the date changes
   var todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
   if (D._notifiedDate !== todayStr) {
     D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false;
     D._notifiedDate = todayStr;
   }
-  if (n.morning && hm === n.morningTime && !D._notifiedMorning) {
+  function notifDue(key, timeStr) {
+    if (!n[key]) return false;
+    if (D['_notified'+key.charAt(0).toUpperCase()+key.slice(1)]) return false;
+    var parts = timeStr.split(':');
+    var targetMin = parseInt(parts[0])*60 + parseInt(parts[1]);
+    return hmNum >= targetMin && hmNum < targetMin + 3;
+  }
+  if (notifDue('morning', n.morningTime)) {
     swNotify('Re.Claim Morning', s > 0 ? 'Day ' + s + '! Log your mood and set your intention.' : 'Log your mood and set your intention for today.', 'icon-192.png', 'reclaim-morning');
     D._notifiedMorning = true; saveData();
   }
-  if (n.evening && hm === n.eveningTime && !D._notifiedEvening) {
+  if (notifDue('evening', n.eveningTime)) {
     swNotify('Re.Claim Evening', s > 0 ? 'Day ' + s + ' made it! Journal what happened today.' : 'Journal what happened and how you feel today.', 'icon-192.png', 'reclaim-evening');
     D._notifiedEvening = true; saveData();
   }
-  if (n.craving && hm === n.cravingTime && !D._notifiedCraving) {
+  if (notifDue('craving', n.cravingTime)) {
     swNotify('Craving Check-In', 'Pause and check in with yourself. Log any cravings or urges you\'re feeling.', 'icon-192.png', 'reclaim-craving');
     D._notifiedCraving = true; saveData();
   }
-  if (n.journal && hm === n.journalTime && !D._notifiedJournal) {
+  if (notifDue('journal', n.journalTime)) {
     swNotify('Journal Prompt', 'Take 5 minutes to write about what\'s on your mind. You\'ve got this.', 'icon-192.png', 'reclaim-journal');
     D._notifiedJournal = true; saveData();
   }
-  if (n.breathe && hm === n.breatheTime && !D._notifiedBreathe) {
+  if (notifDue('breathe', n.breatheTime)) {
     swNotify('Time to Breathe', 'Take a 2-minute breathing exercise. Inhale calm, exhale stress.', 'icon-192.png', 'reclaim-breathe');
     D._notifiedBreathe = true; saveData();
   }
@@ -5180,7 +5187,8 @@ function checkNotifications() {
     D.reminders.forEach(function(rr){if(rr.repeat&&rr.repeat!=='none')rr.notified=false});
   }
 }
-setInterval(checkNotifications, 60000);
+setInterval(checkNotifications, 30000);
+checkNotifications();
 
 // ====== SERVICE WORKER ======
 if ('serviceWorker' in navigator) {
