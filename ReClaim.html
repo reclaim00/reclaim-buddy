@@ -3762,7 +3762,7 @@ function connectToBuddy(email) {
 }
 
 function findBuddyAuto() {
-  if (!firebase || !firebase.auth().currentUser) { alert(t('Sign in to find a buddy.')); return; }
+  if (!AUTH_EMAIL) { alert(t('Sign in to find a buddy.')); return; }
   var btn = event && event.target ? event.target : document.getElementById('find-buddy-btn');
   if (btn) { btn.textContent = 'Searching...'; btn.disabled = true; }
   var lang = D.language || 'English';
