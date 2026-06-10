@@ -5344,9 +5344,9 @@ function findNearbyMeetings() {
   navigator.geolocation.getCurrentPosition(function(pos) {
     var lat = pos.coords.latitude.toFixed(4);
     var lon = pos.coords.longitude.toFixed(4);
-    window.open('https://www.google.com/maps/search/AA+meetings+near+me/@'+lat+','+lon+',12z', '_blank');
+    window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/@'+lat+','+lon+',12z';
   }, function() {
-    window.open('https://www.google.com/maps/search/AA+meetings+near+me/', '_blank');
+    window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/';
   });
 }
 
