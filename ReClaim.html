@@ -227,7 +227,6 @@ body.dark .profile-btn-float{background:var(--card);color:var(--text);border-col
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script>
-window.onerror = function(m, u, l) { var a = document.getElementById('app'); if (a) a.innerHTML = '<div style="padding:20px;color:var(--danger)"><h3>Error</h3><p style="font-size:13px">'+m+' (line '+l+')</p><button onclick="location.reload()" class="btn btn-primary" style="margin-top:12px">Reload</button></div>'; };
 // ====== FIREBASE ======
 var firebaseConfig = {
   apiKey: "AIzaSyDX0CdgdB8lmjRq8QmJAMkE3WgC_OB7zB0",
@@ -5630,10 +5629,9 @@ function logMoodWidget(val) {
 }
 
 // ====== INIT ======
-try {
 applyTheme();
 // Check for widget mode
-var wm = (window.URLSearchParams ? new URLSearchParams(window.location.search).get('widget') : null);
+var wm = new URLSearchParams(window.location.search).get('widget');
 if (wm) {
   setTimeout(function(){ renderWidget(wm); }, 100);
 } else {
@@ -5648,11 +5646,6 @@ if (wm) {
     showSignIn();
   }
   }
-} catch(e) {
-  var app = document.getElementById('app');
-  if (app) app.innerHTML = '<div style="padding:20px;color:var(--danger)"><h3>App Error</h3><p style="font-size:13px">'+e.message+'</p><button onclick="location.reload()" class="btn btn-primary" style="margin-top:12px">Reload</button></div>';
-  console.error(e);
-}
 </script>
 </body>
 </html>
