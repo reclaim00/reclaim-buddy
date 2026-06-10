@@ -930,42 +930,10 @@ function handleAuth() {
       });
   }
 }
-  } else {
-    if (!stored) { if (error) error.textContent = t('Account not found. Sign up first.'); return; }
-    // Migrate old plain-hash accounts
-    var storedData;
-    try { storedData = JSON.parse(stored); } catch(e) { storedData = null; }
-    if (!storedData || !storedData.salt) {
-      // Old format — upgrade on successful login
-      var oldHash = 'h' + function(s){var h=0;for(var i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0}return Math.abs(h).toString(36)}('rc:'+id+':'+password.value);
-      if (oldHash !== stored) { if (error) error.textContent = t('Incorrect password.'); return; }
-      localHash(password.value, id).then(function(r){
-        localStorage.setItem(key, JSON.stringify({hash:r.hash,salt:r.salt}));
-        onAuthReady(id, false);
-      });
-      return;
-    }
-    localHash(password.value, id, storedData.salt).then(function(r){
-      if (r.hash !== storedData.hash) { if (error) error.textContent = t('Incorrect password.'); return; }
-      onAuthReady(id, false);
-    });
-  }
-}
-
-function signOutCleanup() {
-  AUTH_USER = ''; AUTH_EMAIL = ''; LOCK_ENABLED = false; AUTH_RESTORED = false;
-  if (SOBER_TIMER_ID) { clearInterval(SOBER_TIMER_ID); SOBER_TIMER_ID = null; }
-  if (SOBER_TIMEOUT_ID) { clearTimeout(SOBER_TIMEOUT_ID); SOBER_TIMEOUT_ID = null; }
-  localStorage.removeItem('rc_user'); localStorage.removeItem('rc_email');
-  unsubscribePush();
-  D = defaultData(); document.body.classList.remove('logged-in'); showSignIn();
-}
-
 function signOut() {
   firebase.auth().signOut().catch(function(){});
   signOutCleanup();
 }
-
 // ====== UI ======
 function showSignIn() {
   SIGN_IN_MODE = 'in';
