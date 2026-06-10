@@ -5340,12 +5340,15 @@ function meetingsHTML() {
   return h;
 }
 function findNearbyMeetings() {
-  if (!navigator.geolocation) { alert('Geolocation is not supported on this device.'); return; }
+  if (!navigator.geolocation) { window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/'; return; }
+  var timeout = setTimeout(function(){ window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/'; }, 5000);
   navigator.geolocation.getCurrentPosition(function(pos) {
+    clearTimeout(timeout);
     var lat = pos.coords.latitude.toFixed(4);
     var lon = pos.coords.longitude.toFixed(4);
     window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/@'+lat+','+lon+',12z';
   }, function() {
+    clearTimeout(timeout);
     window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/';
   });
 }
