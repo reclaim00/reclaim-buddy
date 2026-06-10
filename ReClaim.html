@@ -5329,7 +5329,7 @@ function meetingsHTML() {
   h += '<a href="https://www.intherooms.com/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">In The Rooms</a>';
   h += '<a href="https://recoverydharma.online/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Dharma</a>';
   h += '</div>';
-  h += '<button class="btn btn-primary btn-sm" onclick="findNearbyMeetings()" style="margin-top:10px">Find Meetings Near Me</button>';
+  h += '<button class="btn btn-primary btn-sm" onclick="window.location.href=\'https://www.google.com/maps/search/AA+meetings+near+me/\'" style="margin-top:10px">Find Meetings Near Me</button>';
   h += '</div>';
   h += '<div class="card" style="border-left:3px solid var(--rose);padding:14px;text-align:center">';
   h += '<div style="font-size:24px;margin-bottom:4px">&#128663;</div>';
@@ -5339,20 +5339,6 @@ function meetingsHTML() {
   h += '</div>';
   return h;
 }
-function findNearbyMeetings() {
-  if (!navigator.geolocation) { window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/'; return; }
-  var timeout = setTimeout(function(){ window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/'; }, 5000);
-  navigator.geolocation.getCurrentPosition(function(pos) {
-    clearTimeout(timeout);
-    var lat = pos.coords.latitude.toFixed(4);
-    var lon = pos.coords.longitude.toFixed(4);
-    window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/@'+lat+','+lon+',12z';
-  }, function() {
-    clearTimeout(timeout);
-    window.location.href = 'https://www.google.com/maps/search/AA+meetings+near+me/';
-  });
-}
-
 function safetyHTML() {
   var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">My Addiction Targets</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. Arthur will create a personalized safety plan for each one.</p>';
