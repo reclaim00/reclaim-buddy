@@ -91,6 +91,11 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 .sub-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 12px;background:var(--card);border-radius:var(--radius);box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;border:2px solid transparent;font-size:13px;font-weight:600;color:var(--text);text-align:center}
 .sub-item:hover{border-color:var(--primary)}
+@keyframes paulieBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes paulieShield{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes paulieFadeUp{0%{transform:translateY(12px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes paulieGlow{0%,100%{box-shadow:0 0 8px rgba(5,150,105,.3)}50%{box-shadow:0 0 24px rgba(5,150,105,.7)}}
+@keyframes paulieCraftBar{0%{transform:scaleX(0)}60%{transform:scaleX(0.7)}100%{transform:scaleX(1)}}
 /* ====== PLANT ====== */
 .plant-container{text-align:center;padding:10px 0 0;position:relative;min-height:220px}
 .plant-pot{width:120px;height:50px;background:linear-gradient(135deg,#b45309,#78350f);border-radius:0 0 16px 16px;margin:0 auto;position:relative;z-index:1;border-top:3px solid #92400e}
@@ -4317,6 +4322,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Buddy')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Resources')+'</h3>';
   h += '<div class="sub-grid">';
@@ -5312,7 +5318,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -5350,6 +5356,191 @@ function meetingsHTML() {
   h += '<a href="https://maps.apple.com/?q=mental+health+services+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">Find Facilities Near Me</a>';
   h += '</div>';
   return h;
+}
+function relapsePlanHTML() {
+  var h = '';
+  var rp = D.relapsePlan;
+  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Relapse Plan</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Guided by Paulie — your relapse prevention coach.</p>';
+  if (rp && rp.triggers && rp.triggers.length) {
+    h += '<div class="card" style="border-left:3px solid var(--accent)">';
+    h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:20px">&#128170;</span><span style="font-weight:700;font-size:14px">Your Plan</span></div>';
+    h += '<div style="font-size:12px;margin-bottom:4px;color:var(--muted)">Triggers:</div><div style="font-size:13px;margin-bottom:8px">' + rp.triggers.join(', ') + '</div>';
+    if (rp.warningSigns) { h += '<div style="font-size:12px;margin-bottom:4px;color:var(--muted)">Warning Signs:</div><div style="font-size:13px;margin-bottom:8px">' + rp.warningSigns + '</div>'; }
+    if (rp.interruptActions && rp.interruptActions.length) { h += '<div style="font-size:12px;margin-bottom:4px;color:var(--muted)">Interrupt Actions:</div><div style="font-size:13px;margin-bottom:8px">' + rp.interruptActions.join(', ') + '</div>'; }
+    if (rp.contacts && rp.contacts.length) {
+      h += '<div style="font-size:12px;margin-bottom:4px;color:var(--muted)">Emergency Contacts:</div>';
+      for (var c=0;c<rp.contacts.length;c++) {
+        if (rp.contacts[c].name) h += '<div style="font-size:13px;margin-bottom:2px">' + rp.contacts[c].name + ' - ' + rp.contacts[c].phone + '</div>';
+      }
+    }
+    if (rp.commitment) { h += '<div style="font-size:12px;margin-bottom:4px;margin-top:6px;color:var(--muted)">My Commitment:</div><div class="quote" style="font-size:13px;margin:0">' + rp.commitment + '</div>'; }
+    h += '</div>';
+    h += '<button class="btn btn-outline btn-sm" onclick="startPaulieWizard()" style="margin-top:8px">Revise Plan with Paulie</button>';
+  } else {
+    h += '<div class="card" style="text-align:center;padding:24px">';
+    h += '<div style="font-size:48px;margin-bottom:8px">&#129518;</div>';
+    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Paulie</div>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your personal relapse prevention coach. Paulie will guide you through building a plan step by step.</p>';
+    h += '<button class="btn btn-primary" onclick="startPaulieWizard()">Start with Paulie</button>';
+    h += '</div>';
+  }
+  return h;
+}
+var PAULIE_STEP = 0;
+var PAULIE_DATA = {};
+var TRIGGER_OPTIONS = ['Stress','Loneliness','Boredom','Anger','Social pressure','Celebration','Financial trouble','Relationship conflict','Insomnia','Physical pain','Certain places','Certain people','Alcohol/drug cues','Anniversary dates','Holidays'];
+var INTERRUPT_OPTIONS = ['Call my sponsor','Go for a walk','Journal','Go to a meeting','Text a friend','Exercise','Meditate/Breathe','Read my commitment','Leave the situation','Listen to music','Take a nap','Drink water'];
+function startPaulieWizard() {
+  PAULIE_DATA = {};
+  var rp = D.relapsePlan;
+  if (rp) {
+    PAULIE_DATA.triggers = rp.triggers ? rp.triggers.slice() : [];
+    PAULIE_DATA.warningSigns = rp.warningSigns || '';
+    PAULIE_DATA.interruptActions = rp.interruptActions ? rp.interruptActions.slice() : [];
+    PAULIE_DATA.contacts = rp.contacts ? JSON.parse(JSON.stringify(rp.contacts)) : [{name:'',phone:''},{name:'',phone:''}];
+    PAULIE_DATA.commitment = rp.commitment || '';
+  } else {
+    PAULIE_DATA.triggers = [];
+    PAULIE_DATA.warningSigns = '';
+    PAULIE_DATA.interruptActions = [];
+    PAULIE_DATA.contacts = [{name:'',phone:''},{name:'',phone:''}];
+    PAULIE_DATA.commitment = '';
+  }
+  PAULIE_STEP = 0;
+  renderPaulieStep();
+}
+function renderPaulieStep() {
+  var steps = ['Triggers','Warning Signs','Interrupt Actions','Emergency Contacts','Commitment','Review'];
+  var step = PAULIE_STEP;
+  if (step >= steps.length) { PAULIE_STEP = 0; return; }
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'paulie-ov';
+  overlay.style.background = 'rgba(0,0,0,0.6)';
+  var body = '';
+  var icon = ['&#128064;','&#128533;','&#128299;','&#128222;','&#128221;','&#9989;'][step] || '&#129518;';
+  var paulieSays = ['Let\'s identify what might trigger a relapse. Check all that apply to you.','Good. Now what early warning signs do you usually feel before a craving hits?','Smart. What actions can you take to interrupt a craving when it starts?','Who can you call in an emergency? Add at least one person.','Write a short commitment statement. Read this when you need strength.','Here\'s your plan. Does everything look right?'][step] || '';
+  body += '<div style="font-size:40px;margin-bottom:4px">' + icon + '</div>';
+  body += '<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">Paulie says:</div>';
+  body += '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + paulieSays + '</div>';
+  if (step === 0) {
+    body += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">';
+    for (var i=0;i<TRIGGER_OPTIONS.length;i++) {
+      var sel = PAULIE_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]) !== -1;
+      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="togglePaulieTrigger('+i+')" style="font-size:11px">' + TRIGGER_OPTIONS[i] + '</button>';
+    }
+    body += '</div>';
+  } else if (step === 1) {
+    body += '<textarea id="paulie-warning" placeholder="e.g. racing thoughts, irritability, isolating myself..." style="min-height:80px">' + PAULIE_DATA.warningSigns + '</textarea>';
+  } else if (step === 2) {
+    body += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">';
+    for (var i=0;i<INTERRUPT_OPTIONS.length;i++) {
+      var sel = PAULIE_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]) !== -1;
+      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="togglePaulieInterrupt('+i+')" style="font-size:11px">' + INTERRUPT_OPTIONS[i] + '</button>';
+    }
+    body += '</div>';
+  } else if (step === 3) {
+    body += '<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted)">Contact 1</div>';
+    body += '<input id="paulie-contact1-name" placeholder="Name" value="' + (PAULIE_DATA.contacts[0]?PAULIE_DATA.contacts[0].name:'') + '" style="margin-bottom:4px">';
+    body += '<input id="paulie-contact1-phone" placeholder="Phone number" value="' + (PAULIE_DATA.contacts[0]?PAULIE_DATA.contacts[0].phone:'') + '" style="margin-bottom:10px">';
+    body += '<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted)">Contact 2</div>';
+    body += '<input id="paulie-contact2-name" placeholder="Name" value="' + (PAULIE_DATA.contacts[1]?PAULIE_DATA.contacts[1].name:'') + '" style="margin-bottom:4px">';
+    body += '<input id="paulie-contact2-phone" placeholder="Phone number" value="' + (PAULIE_DATA.contacts[1]?PAULIE_DATA.contacts[1].phone:'') + '">';
+  } else if (step === 4) {
+    body += '<textarea id="paulie-commitment" placeholder="e.g. I deserve a better life. I will pause, breathe, and reach out before using." style="min-height:80px">' + PAULIE_DATA.commitment + '</textarea>';
+  } else if (step === 5) {
+    var t = PAULIE_DATA.triggers || [];
+    var w = PAULIE_DATA.warningSigns || '';
+    var ia = PAULIE_DATA.interruptActions || [];
+    var co = PAULIE_DATA.contacts || [];
+    var cm = PAULIE_DATA.commitment || '';
+    body += '<div style="text-align:left;background:var(--primary-light);padding:12px;border-radius:10px;font-size:12px;line-height:1.6">';
+    body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">Triggers:</div><div style="margin-bottom:8px">' + (t.length ? t.join(', ') : 'None selected') + '</div>';
+    body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">Warning Signs:</div><div style="margin-bottom:8px">' + (w || 'None') + '</div>';
+    body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">Interrupt Actions:</div><div style="margin-bottom:8px">' + (ia.length ? ia.join(', ') : 'None selected') + '</div>';
+    body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">Contacts:</div><div style="margin-bottom:8px">';
+    for (var ci=0;ci<co.length;ci++) { if (co[ci].name) body += co[ci].name + ' - ' + co[ci].phone + '<br>'; }
+    body += '</div>';
+    body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">My Commitment:</div><div>' + (cm || 'None') + '</div>';
+    body += '</div>';
+  }
+  overlay.innerHTML =
+    '<div style="background:var(--card);max-width:380px;width:90%;margin:0 auto;border-radius:20px;padding:28px 20px 20px;text-align:center;animation:siFade .3s ease;position:relative;max-height:85vh;overflow-y:auto">' +
+    body +
+    '<div style="display:flex;gap:6px;justify-content:center;margin:14px 0 10px">' +
+    steps.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'var(--primary)':'var(--border)')+';transition:.2s"></div>'; }).join('') +
+    '</div>' +
+    '<div style="display:flex;gap:8px">' +
+    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="savePaulieStep();PAULIE_STEP--;renderPaulieStep()" style="flex:1">Back</button>' : '') +
+    '<button class="btn btn-sm btn-primary" onclick="savePaulieStep();PAULIE_STEP++;renderPaulieStep()" style="flex:1">' + (step < steps.length-1 ? 'Next' : 'Save Plan') + '</button>' +
+    '</div>' +
+    '<button onclick="document.getElementById(\'paulie-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>' +
+    '</div>';
+  var existing = document.getElementById('paulie-ov');
+  if (existing) existing.remove();
+  document.body.appendChild(overlay);
+}
+function togglePaulieTrigger(i) {
+  var idx = PAULIE_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]);
+  if (idx === -1) PAULIE_DATA.triggers.push(TRIGGER_OPTIONS[i]);
+  else PAULIE_DATA.triggers.splice(idx,1);
+  renderPaulieStep();
+}
+function togglePaulieInterrupt(i) {
+  var idx = PAULIE_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]);
+  if (idx === -1) PAULIE_DATA.interruptActions.push(INTERRUPT_OPTIONS[i]);
+  else PAULIE_DATA.interruptActions.splice(idx,1);
+  renderPaulieStep();
+}
+function savePaulieStep() {
+  var el;
+  el = document.getElementById('paulie-warning');
+  if (el) PAULIE_DATA.warningSigns = el.value;
+  el = document.getElementById('paulie-commitment');
+  if (el) PAULIE_DATA.commitment = el.value;
+  el = document.getElementById('paulie-contact1-name');
+  if (el && PAULIE_DATA.contacts[0]) PAULIE_DATA.contacts[0].name = el.value;
+  el = document.getElementById('paulie-contact1-phone');
+  if (el && PAULIE_DATA.contacts[0]) PAULIE_DATA.contacts[0].phone = el.value;
+  el = document.getElementById('paulie-contact2-name');
+  if (el && PAULIE_DATA.contacts[1]) PAULIE_DATA.contacts[1].name = el.value;
+  el = document.getElementById('paulie-contact2-phone');
+  if (el && PAULIE_DATA.contacts[1]) PAULIE_DATA.contacts[1].phone = el.value;
+  if (PAULIE_STEP === 5) {
+    PAULIE_DATA.contacts = PAULIE_DATA.contacts.filter(function(c){ return c.name || c.phone; });
+    D.relapsePlan = PAULIE_DATA;
+    saveData();
+    document.getElementById('paulie-ov').remove();
+    var anim = document.createElement('div');
+    anim.className = 'overlay';
+    anim.id = 'paulie-craft';
+    anim.style.background = 'rgba(0,0,0,0.6)';
+    anim.innerHTML =
+      '<div style="background:var(--card);max-width:320px;width:85%;margin:0 auto;border-radius:20px;padding:40px 24px 36px;text-align:center;animation:siFade .3s ease">' +
+      '<div style="font-size:48px;margin-bottom:2px;animation:paulieBounce .6s ease-in-out infinite">&#129518;</div>' +
+      '<div style="font-weight:700;font-size:16px;color:var(--text);margin-bottom:2px">Paulie is crafting your plan</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:18px">Building your relapse prevention blueprint...</div>' +
+      '<div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px">' +
+      '<span style="font-size:28px;animation:paulieFadeUp .5s ease forwards;opacity:0">&#9881;</span>' +
+      '<span style="font-size:44px;animation:paulieShield .7s ease forwards;animation-delay:.2s;opacity:0;display:inline-block;border-radius:50%;background:var(--primary-light);padding:10px;line-height:1">&#128737;</span>' +
+      '<span style="font-size:28px;animation:paulieFadeUp .5s ease forwards;animation-delay:.4s;opacity:0">&#9881;</span>' +
+      '</div>' +
+      '<div style="height:4px;background:var(--border);border-radius:4px;overflow:hidden;margin:0 16px">' +
+      '<div style="height:100%;width:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:4px;animation:paulieCraftBar 1.6s ease forwards;transform-origin:left"></div>' +
+      '</div>' +
+      '</div>';
+    document.body.appendChild(anim);
+    setTimeout(function(){
+      var el = document.getElementById('paulie-craft');
+      if (el) el.remove();
+      render();
+    }, 1800);
+    return;
+  }
+}
+function showRelapsePlan() {
+  startPaulieWizard();
 }
 function safetyHTML() {
   var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">My Addiction Targets</h2>';
@@ -5433,6 +5624,7 @@ function render() {
     assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
+    relapseplan: relapsePlanHTML,
   };
   var fn = pages[pg];
   if (fn) app.innerHTML = fn();
