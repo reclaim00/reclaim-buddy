@@ -5632,20 +5632,19 @@ function logMoodWidget(val) {
 applyTheme();
 // Check for widget mode
 var wm = new URLSearchParams(window.location.search).get('widget');
-if (wm) {
-  setTimeout(function(){ renderWidget(wm); }, 100);
+if (wm) { setTimeout(function(){ renderWidget(wm); }, 100); return; }
+setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
+if (AUTH_USER && !isLockSet()) {
+  // Session exists — restore directly, no sign-in screen
+  document.body.classList.add('logged-in');
+  render();
+  loadFromFirestore(function(cloudData) {
+    if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
+  });
 } else {
-  setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
-  if (AUTH_USER && !isLockSet()) {
-    document.body.classList.add('logged-in');
-    render();
-    loadFromFirestore(function(cloudData) {
-      if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
-    });
-  } else {
-    showSignIn();
-  }
-  }
+  showSignIn();
+  // onAuthStateChanged will auto-transition if Firebase restores a session
+}
 </script>
 </body>
 </html>
