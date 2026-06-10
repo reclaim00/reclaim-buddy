@@ -5388,7 +5388,7 @@ function relapsePlanHTML() {
     h += '<button class="btn btn-outline btn-sm" onclick="startPaulieWizard()" style="margin-top:8px">Revise Plan with Paulie</button>';
   } else {
     h += '<div class="card" style="text-align:center;padding:24px">';
-    h += '<div style="font-size:48px;margin-bottom:8px">&#129518;</div>';
+    h += '<div style="font-size:48px;margin-bottom:8px">&#129497;</div>';
     h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Paulie</div>';
     h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your personal relapse prevention coach. Paulie will guide you through building a plan step by step.</p>';
     h += '<button class="btn btn-primary" onclick="startPaulieWizard()">Start with Paulie</button>';
@@ -5428,7 +5428,7 @@ function renderPaulieStep() {
   overlay.id = 'paulie-ov';
   overlay.style.background = 'rgba(0,0,0,0.6)';
   var body = '';
-  var icon = ['&#128064;','&#128533;','&#128299;','&#128222;','&#128221;','&#9989;'][step] || '&#129518;';
+  var icon = ['&#128064;','&#128533;','&#128299;','&#128222;','&#128221;','&#9989;'][step] || '&#129497;';
   var paulieSays = ['Let\'s identify what might trigger a relapse. Check all that apply to you.','Good. Now what early warning signs do you usually feel before a craving hits?','Smart. What actions can you take to interrupt a craving when it starts?','Who can you call in an emergency? Add at least one person.','Write a short commitment statement. Read this when you need strength.','Here\'s your plan. Does everything look right?'][step] || '';
   body += '<div style="font-size:40px;margin-bottom:4px">' + icon + '</div>';
   body += '<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">Paulie says:</div>';
@@ -5536,7 +5536,7 @@ function savePaulieStep() {
       '<div style="position:absolute;top:8%;left:50%;font-size:7px;opacity:0.5" class="paulie-star">&#10022;</div>' +
       '<div style="position:absolute;top:20%;left:30%;font-size:4px;opacity:0.3" class="paulie-star">&#10022;</div>' +
       '<div style="position:absolute;top:5%;right:35%;font-size:5px;opacity:0.4" class="paulie-star">&#10022;</div>' +
-      '<div class="paulie-wizard" style="position:absolute;left:8%;bottom:16px;font-size:42px;animation:wizardFloat .8s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(147,51,234,0.6));z-index:2">&#129518;</div>' +
+      '<div class="paulie-wizard" style="position:absolute;left:8%;bottom:16px;font-size:42px;animation:wizardFloat .8s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(147,51,234,0.6));z-index:2">&#129497;</div>' +
       '<div class="paulie-dragon" style="position:absolute;right:10%;bottom:14px;font-size:46px;animation:dragonLunge 2.6s ease forwards;filter:drop-shadow(0 0 8px rgba(239,68,68,0.5));z-index:2">&#128009;</div>' +
       '<div style="position:absolute;bottom:34px;font-size:18px;animation:boltFly .65s ease forwards;animation-delay:.6s;animation-iteration-count:2;opacity:0;z-index:3;text-shadow:0 0 10px #fbbf24">&#9889;</div>' +
       '<div id="paulie-boom" style="position:absolute;right:10%;bottom:22px;font-size:42px;animation:explosion .6s ease forwards;animation-delay:1.9s;opacity:0;z-index:4;filter:drop-shadow(0 0 12px #f59e0b)">&#128165;</div>' +
