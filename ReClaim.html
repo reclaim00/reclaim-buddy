@@ -5337,6 +5337,18 @@ function meetingsHTML() {
   h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">988 - Suicide and Crisis Lifeline. Call or text 24/7.</p>';
   h += '<button class="btn btn-danger btn-sm" onclick="showSOS()" style="width:100%">Crisis Helplines</button>';
   h += '</div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px">';
+  h += '<div style="font-weight:700;font-size:14px;margin-bottom:8px">Mental Health Resources</div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+  h += '<a href="https://www.samhsa.gov/find-help/national-helpline" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">SAMHSA Helpline</a>';
+  h += '<a href="https://www.nami.org/help" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">NAMI Helpline</a>';
+  h += '<a href="https://mhanational.org/get-involved/find-help" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Mental Health America</a>';
+  h += '<a href="https://www.psychologytoday.com/us/therapists" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Therapist Finder</a>';
+  h += '<a href="https://openpathcollective.org/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Open Path (low-cost)</a>';
+  h += '<a href="https://www.7cups.com/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">7 Cups (free support)</a>';
+  h += '</div>';
+  h += '<a href="https://maps.apple.com/?q=mental+health+services+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">Find Facilities Near Me</a>';
+  h += '</div>';
   return h;
 }
 function safetyHTML() {
@@ -5470,86 +5482,17 @@ function promptInstall() {
     alert(t('Open this page in your browser menu and select "Add to Home Screen" or "Install App".'));
   }
 }
-// ====== WIDGET RENDERING ======
-function renderWidget(type) {
-  var app = document.getElementById('app');
-  if (!app) return;
-  document.getElementById('tabs').style.display = 'none';
-  var tb = document.querySelector('.top-bar');
-  if (tb) tb.style.display = 'none';
-  var days = D.streak || 0;
-  var h = '<div style="padding:0;margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;background:transparent;min-height:100vh">';
-  if (type === 'sobriety') {
-    h += '<div style="text-align:center;padding:8px">';
-    h += '<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:2px">Re.Claim</div>';
-    h += '<div style="font-size:36px;font-weight:900;color:var(--text);line-height:1">' + days + '</div>';
-    h += '<div style="font-size:11px;color:var(--muted)">' + (days === 1 ? 'day sober' : 'days sober') + '</div>';
-    h += '</div>';
-  } else if (type === 'pledge') {
-    var today = new Date().toDateString();
-    var pledged = D.pledges && D.pledges.indexOf(today) !== -1;
-    h += '<div style="text-align:center;padding:12px">';
-    h += '<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px">Today Pledge</div>';
-    if (pledged) {
-      h += '<div style="font-size:14px;color:var(--primary);font-weight:600">Committed</div>';
-    } else {
-      h += '<button onclick="pledgeToday();renderWidget(\'pledge\')" style="background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;width:100%">Commit Today</button>';
-    }
-    h += '</div>';
-  } else if (type === 'mood') {
-    var moods = ['&#128534;','&#128542;','&#128529;','&#128513;','&#128525;'];
-    h += '<div style="text-align:center;padding:8px">';
-    h += '<div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:6px">How are you?</div>';
-    h += '<div style="display:flex;justify-content:center;gap:4px">';
-    for (var i=0;i<moods.length;i++) {
-      h += '<button onclick="logMoodWidget('+i+')" style="font-size:20px;background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:8px">' + moods[i] + '</button>';
-    }
-    h += '</div></div>';
-  } else if (type === 'streak') {
-    var ps = 0;
-    if (typeof calcPledgeStreak === 'function') ps = calcPledgeStreak();
-    h += '<div style="text-align:center;padding:8px">';
-    h += '<div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:4px">This Week</div>';
-    var d = new Date();
-    var names = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    h += '<div style="display:flex;gap:2px;justify-content:center">';
-    for (var i=6;i>=0;i--) {
-      var date = new Date(d);
-      date.setDate(d.getDate()-i);
-      var key = date.toDateString();
-      var done = D.pledges && D.pledges.indexOf(key) !== -1;
-      h += '<div style="width:24px;height:24px;border-radius:6px;background:'+(done?'var(--primary)':'var(--border)')+';display:flex;align-items:center;justify-content:center;font-size:8px;color:'+(done?'#fff':'var(--muted)')+'">'+names[date.getDay()][0]+'</div>';
-    }
-    h += '</div>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + ps + ' day' + (ps!==1?'s':'') + ' streak</div>';
-    h += '</div>';
-  }
-  h += '</div>';
-  app.innerHTML = h;
-}
-function logMoodWidget(val) {
-  if (!D.moods) D.moods = [];
-  D.moods.unshift({mood:val,date:new Date().toISOString()});
-  saveData();
-  renderWidget('mood');
-}
-
 // ====== INIT ======
 applyTheme();
-var wm = (window.URLSearchParams ? new URLSearchParams(window.location.search).get('widget') : null);
-if (wm) {
-  setTimeout(function(){ renderWidget(wm); }, 100);
+setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
+if (AUTH_USER && !isLockSet()) {
+  document.body.classList.add('logged-in');
+  render();
+  loadFromFirestore(function(cloudData) {
+    if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
+  });
 } else {
-  setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
-  if (AUTH_USER && !isLockSet()) {
-    document.body.classList.add('logged-in');
-    render();
-    loadFromFirestore(function(cloudData) {
-      if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
-    });
-  } else {
-    showSignIn();
-  }
+  showSignIn();
 }
 </script>
 </body>
