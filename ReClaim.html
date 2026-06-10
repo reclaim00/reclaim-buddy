@@ -917,15 +917,19 @@ function handleAuth() {
   if (!password || !password.value || password.value.length < 4) { alert(t('Password must be at least 4 characters.')); return; }
   if (error) error.textContent = '';
   var isSignUp = SIGN_IN_MODE === 'up';
-  var id = normId(email.value);
-  var key = 'rc_auth_' + id;
-  var stored = localStorage.getItem(key);
+  var emailStr = email.value.trim();
   if (isSignUp) {
-    if (stored) { if (error) error.textContent = t('Account already exists. Sign in instead.'); return; }
-    localHash(password.value, id).then(function(r){
-      localStorage.setItem(key, JSON.stringify({hash:r.hash,salt:r.salt}));
-      onAuthReady(id, true);
-    });
+    firebase.auth().createUserWithEmailAndPassword(emailStr, password.value)
+      .catch(function(err) {
+        if (error) error.textContent = err.message;
+      });
+  } else {
+    firebase.auth().signInWithEmailAndPassword(emailStr, password.value)
+      .catch(function(err) {
+        if (error) error.textContent = err.message;
+      });
+  }
+}
   } else {
     if (!stored) { if (error) error.textContent = t('Account not found. Sign up first.'); return; }
     // Migrate old plain-hash accounts
@@ -958,6 +962,7 @@ function signOutCleanup() {
 }
 
 function signOut() {
+  firebase.auth().signOut().catch(function(){});
   signOutCleanup();
 }
 
