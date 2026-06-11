@@ -490,7 +490,7 @@ function defaultData() {
     lastReportDate: null,
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
-    chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: [],
+    chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: [], comfortKit: [],
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
     encryption: { enabled: false, salt: null, keyCheck: null }
   };
@@ -3248,6 +3248,9 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
   h += '</div>';
 
+  // Comfort Kit
+  h += comfortKitHTML();
+
   // Journal-based insights
   h += journalInsightsHTML();
 
@@ -3545,16 +3548,68 @@ function todayPrompt() {
   return DAILY_PROMPTS[dayOfYear % DAILY_PROMPTS.length];
 }
 
-function showAffirmations() {
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700">'+t('Daily Affirmations')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">'+t('Read these to yourself or out loud.')+'</p>';
-  for (var i=0;i<AFFIRMATIONS.length;i++) {
-    h += '<div class="card" style="padding:12px;cursor:pointer" onclick="this.style.background=\'var(--primary-light)\'"><p style="font-size:14px;line-height:1.5">' + AFFIRMATIONS[i] + '</p></div>';
+function comfortKitHTML() {
+  var kit = D.comfortKit || [];
+  var icons = {song:'&#127925;',movie:'&#127916;',person:'&#128100;',place:'&#128205;',activity:'&#127919;',quote:'&#128172;',scent:'&#127800;',memory:'&#128173;'};
+  var h = '<div class="card" id="comfort-kit-card">';
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:20px">&#129455;</span><h3 style="margin:0;flex:1;font-size:15px">'+t('Comfort Kit')+'</h3>';
+  h += '<button class="btn btn-sm btn-outline" onclick="showComfortKitEditor()" style="width:auto;padding:3px 10px;font-size:11px">'+t('Edit')+'</button></div>';
+  if (!kit.length) {
+    h += '<div class="empty-state" style="font-size:13px;padding:12px 0">'+t('Add things that comfort you to turn to when you need support.')+'</div>';
+    h += '<button class="btn btn-primary btn-sm" onclick="showComfortKitEditor()">'+t('Build Your Comfort Kit')+'</button>';
+  } else {
+    h += '<div style="display:flex;flex-wrap:wrap;gap:4px">';
+    for (var i=0;i<kit.length;i++) {
+      var icon = icons[kit[i].type] || '&#128155;';
+      h += '<div style="background:var(--primary-light);padding:5px 8px;border-radius:8px;font-size:12px;display:flex;align-items:center;gap:3px;cursor:default">'+icon+' '+kit[i].text.replace(/</g,'&lt;')+'</div>';
+    }
+    h += '</div>';
   }
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">'+t('Close')+'</button></div>';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
+  h += '</div>';
+  return h;
+}
+function showComfortKitEditor() {
+  var kit = D.comfortKit || [];
+  var types = [{id:'song',l:'Song',i:'&#127925;'},{id:'movie',l:'Movie/Show',i:'&#127916;'},{id:'person',l:'Person',i:'&#128100;'},{id:'place',l:'Place',i:'&#128205;},{id:'activity',l:'Activity',i:'&#127919;'},{id:'quote',l:'Quote',i:'&#128172;'},{id:'scent',l:'Scent',i:'&#127800;'},{id:'memory',l:'Memory',i:'&#128173;'}];
+  var icons = {song:'&#127925;',movie:'&#127916;',person:'&#128100;',place:'&#128205;',activity:'&#127919;',quote:'&#128172;',scent:'&#127800;',memory:'&#128173;'};
+  var ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.id = 'comfort-kit-editor';
+  ov.style.background = 'rgba(0,0,0,0.5)';
+  var h = '<div style="background:var(--card);max-width:360px;width:90%;margin:0 auto;border-radius:20px;padding:24px 16px;animation:siFade .3s ease;max-height:80vh;overflow-y:auto">';
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><span style="font-size:24px">&#129455;</span><h3 style="margin:0;flex:1;font-size:18px">'+t('Comfort Kit')+'</h3><button onclick="document.getElementById(\'comfort-kit-editor\').remove();render()" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted)">&#10005;</button></div>';
+  if (!kit.length) h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">'+t('Add things that bring you comfort.')+'</p>';
+  if (kit.length) {
+    h += '<div style="margin-bottom:10px">';
+    for (var i=0;i<kit.length;i++) {
+      var icon = icons[kit[i].type] || '&#128155;';
+      h += '<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--border)"><span>'+icon+' '+kit[i].text.replace(/</g,'&lt;')+'</span><span style="font-size:10px;color:var(--muted);margin-left:auto">'+kit[i].type+'</span><button onclick="D.comfortKit.splice('+i+',1);saveData();document.getElementById(\'comfort-kit-editor\').remove();showComfortKitEditor()" style="background:none;border:none;color:var(--danger);font-size:16px;cursor:pointer;padding:0 2px">&#10005;</button></div>';
+    }
+    h += '</div>';
+  }
+  h += '<div style="border-top:1px solid var(--border);padding-top:10px"><div style="font-weight:600;font-size:13px;margin-bottom:8px">'+t('Add something new')+'</div>';
+  h += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px" id="cksel">';
+  for (var t=0;t<types.length;t++) {
+    h += '<div class="sub-item" style="padding:4px 8px;font-size:11px;cursor:pointer" data-ck="'+types[t].id+'" onclick="document.querySelectorAll(\'#cksel .sub-item\').forEach(function(e){e.style.background=\'\';e.style.color=\'\'});this.style.background=\'var(--primary)\';this.style.color=\'#fff\';document.getElementById(\'cktype\').value=this.dataset.ck">'+types[t].i+' '+types[t].l+'</div>';
+  }
+  h += '</div>';
+  h += '<input type="hidden" id="cktype" value="song">';
+  h += '<input type="text" id="cktext" placeholder="e.g. Bohemian Rhapsody" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--card);color:var(--text);margin-bottom:8px;box-sizing:border-box">';
+  h += '<button class="btn btn-primary btn-sm" onclick="addComfortKitItem()" style="width:100%">'+t('Add to Comfort Kit')+'</button></div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="document.getElementById(\'comfort-kit-editor\').remove();render()" style="width:100%;margin-top:8px">'+t('Done')+'</button></div>';
+  ov.innerHTML = h;
+  document.body.appendChild(ov);
+}
+function addComfortKitItem() {
+  var type = document.getElementById('cktype').value;
+  var text = document.getElementById('cktext').value.trim();
+  if (!text) return;
+  if (!D.comfortKit) D.comfortKit = [];
+  D.comfortKit.push({type: type, text: text});
+  saveData();
+  document.getElementById('cktext').value = '';
+  document.getElementById('comfort-kit-editor').remove();
+  showComfortKitEditor();
 }
 
 // ====== LIBRARY ======
