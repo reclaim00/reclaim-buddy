@@ -934,9 +934,7 @@ function toggleTargetAddiction(type) {
   if (idx >= 0) D.targetAddictions.splice(idx, 1);
   else D.targetAddictions.push(type);
   saveData();
-  if (wasEmpty && D.targetAddictions.length > 0 && !D._erinDuelShown) {
-    D._erinDuelShown = true;
-    saveData();
+  if (wasEmpty && D.targetAddictions.length > 0) {
     setTimeout(showErinDuel, 300);
   }
 }
