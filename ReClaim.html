@@ -5709,12 +5709,72 @@ function showErinDuel() {
       '<div style="height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin:0 8px">' +
       '<div style="height:100%;width:100%;background:linear-gradient(90deg,#f59e0b,#ef4444,#ec4899);border-radius:3px;animation:paulieCraftBar 5s ease forwards;transform-origin:left"></div>' +
       '</div>' +
-      '<button onclick="document.getElementById(\'erin-duel\').remove()" style="margin-top:10px;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Continue</button>' +
+      '<button onclick="document.getElementById(\'erin-duel\').remove();render()" style="margin-top:10px;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Continue</button>' +
       '</div>';
   document.body.appendChild(anim);
 }
+var ERIN_QUESTIONS = [
+  {q:'What situations or environments make you feel most at risk?',pl:'e.g. parties, certain people, times of day, stress at work'},
+  {q:'Who is in your support network that you can reach out to?',pl:'e.g. sponsor, therapist, family member, close friend'},
+  {q:'What healthy activities or coping strategies work best for you?',pl:'e.g. exercise, meditation, journaling, calling a friend'},
+  {q:'What early warning signs tell you a relapse might be near?',pl:'e.g. irritability, isolation, cravings, sleep changes'},
+  {q:'What is your deepest motivation for staying in recovery?',pl:'e.g. family, health, self-respect, future goals'}
+];
+var ERIN_Q_STEP = 0;
+var ERIN_Q_ANSWERS = [];
+function startErinQuestions() {
+  ERIN_Q_STEP = 0;
+  ERIN_Q_ANSWERS = D.safetyAnswers || ['','','','',''];
+  renderErinQuestion();
+}
+function renderErinQuestion() {
+  var step = ERIN_Q_STEP;
+  if (step >= ERIN_QUESTIONS.length) {
+    D.safetyAnswers = ERIN_Q_ANSWERS;
+    D._safetyQuestionsDone = true;
+    saveData();
+    var ov = document.getElementById('erin-q-ov');
+    if (ov) ov.remove();
+    render();
+    return;
+  }
+  var q = ERIN_QUESTIONS[step];
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'erin-q-ov';
+  overlay.style.background = 'rgba(0,0,0,0.6)';
+  overlay.innerHTML =
+    '<div style="background:var(--card);max-width:380px;width:90%;margin:0 auto;border-radius:20px;padding:28px 20px 20px;text-align:center;animation:siFade .3s ease;position:relative;max-height:85vh;overflow-y:auto">' +
+    '<div style="font-size:40px;margin-bottom:4px">&#128105;</div>' +
+    '<div style="font-size:13px;font-weight:700;color:#ec4899;margin-bottom:2px">Erin asks:</div>' +
+    '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + q.q + '</div>' +
+    '<textarea id="erin-q-input" placeholder="' + q.pl + '" style="min-height:80px">' + (ERIN_Q_ANSWERS[step] || '') + '</textarea>' +
+    '<div style="display:flex;gap:6px;justify-content:center;margin:14px 0 10px">' +
+    ERIN_QUESTIONS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'#ec4899':'var(--border)')+';transition:.2s"></div>'; }).join('') +
+    '</div>' +
+    '<div style="display:flex;gap:8px">' +
+    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="ERIN_Q_ANSWERS[ERIN_Q_STEP]=document.getElementById(\'erin-q-input\').value;ERIN_Q_STEP--;renderErinQuestion()" style="flex:1">Back</button>' : '') +
+    '<button class="btn btn-sm btn-primary" onclick="ERIN_Q_ANSWERS[ERIN_Q_STEP]=document.getElementById(\'erin-q-input\').value;ERIN_Q_STEP++;renderErinQuestion()" style="flex:1">' + (step < ERIN_QUESTIONS.length-1 ? 'Next' : 'Done') + '</button>' +
+    '</div>' +
+    '<button onclick="document.getElementById(\'erin-q-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>' +
+    '</div>';
+  var existing = document.getElementById('erin-q-ov');
+  if (existing) existing.remove();
+  document.body.appendChild(overlay);
+}
 function safetyHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">My Addiction Targets</h2>';
+  var h = '';
+  if (!D._safetyQuestionsDone) {
+    h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Safety Plan</h2>';
+    h += '<div class="card" style="text-align:center;padding:24px">';
+    h += '<div style="font-size:48px;margin-bottom:8px">&#128105;</div>';
+    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Erin</div>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">Erin will guide you through building a personalized safety plan. First, let\'s start with a few questions.</p>';
+    h += '<button class="btn btn-primary" onclick="startErinQuestions()" style="margin-top:8px">Start with Erin</button>';
+    h += '</div>';
+    return h;
+  }
+  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">My Addiction Targets</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. Erin will create a personalized safety plan for each one.</p>';
   h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,#ec4899,#f43f5e);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">E</div><div><h3 style="margin:0;font-size:15px">Safety Plans</h3></div></div>';
   var addictions = D.targetAddictions || [];
