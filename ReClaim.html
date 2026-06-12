@@ -270,8 +270,8 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .ring-post.l{left:8px;top:10px}.ring-post.r{right:8px;top:10px}
 .boxer-pos{position:absolute;bottom:30px;transition:all .3s ease}
 .boxer-pos.arthur{left:15%}.boxer-pos.skeleton{right:12%}
-.arthur-svg{width:75px;height:100px;transform-origin:bottom center}
-.skeleton-emoji{font-size:72px;line-height:1;transform-origin:bottom center;display:block}
+.arthur-svg{width:75px;height:105px;transform-origin:bottom center}
+.skeleton-svg{width:75px;height:105px;transform-origin:bottom center}
 .referee-pos{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-size:40px;opacity:0;transition:opacity .3s}
 .referee-pos.active{opacity:1}
 .count-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:70px;font-weight:900;color:var(--danger);text-shadow:0 0 20px rgba(239,68,68,.5),0 2px 10px rgba(0,0,0,.3);opacity:0;z-index:10;pointer-events:none}
@@ -298,6 +298,48 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes skeletonWobble{0%{transform:translateX(0) rotate(0deg) scale(1)}15%{transform:translateX(15px) rotate(-15deg) scale(0.85)}30%{transform:translateX(-5px) rotate(5deg) scale(0.9)}45%{transform:translateX(10px) rotate(-10deg) scale(0.88)}60%{transform:translateX(-3px) rotate(3deg) scale(0.92)}80%{transform:translateX(5px) rotate(-5deg) scale(0.9)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
 @keyframes skeletonKnockdown{0%{transform:translateX(0) rotate(0deg) scale(1);opacity:1}30%{transform:translateX(30px) rotate(20deg) scale(1.2);opacity:1}60%{transform:translateX(25px) rotate(15deg) scale(1.1);opacity:.9}100%{transform:translateX(40px) translateY(60px) rotate(90deg) scale(0.8);opacity:.6}}
 @keyframes arthurCelebrate{0%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-15px) rotate(-5deg)}50%{transform:translateY(0) rotate(0deg)}75%{transform:translateY(-10px) rotate(5deg)}100%{transform:translateY(0) rotate(0deg)}}
+/* Limb animation keyframes */
+@keyframes aPunchArm{0%{transform:rotate(0deg)}25%{transform:rotate(-60deg)}60%{transform:rotate(-50deg)}100%{transform:rotate(0deg)}}
+@keyframes aPunchFist{0%{transform:rotate(0deg)}25%{transform:rotate(70deg)}60%{transform:rotate(60deg)}100%{transform:rotate(0deg)}}
+@keyframes aPunchBack{0%{transform:rotate(0deg)}25%{transform:rotate(35deg)}60%{transform:rotate(30deg)}100%{transform:rotate(0deg)}}
+@keyframes aRecoilArm{0%{transform:rotate(0deg)}25%{transform:rotate(35deg)}60%{transform:rotate(25deg)}100%{transform:rotate(0deg)}}
+@keyframes aRecoilBody{0%{transform:rotate(0deg)}25%{transform:rotate(12deg)}60%{transform:rotate(8deg)}100%{transform:rotate(0deg)}}
+@keyframes aGuardArm{0%{transform:rotate(0deg)}25%{transform:rotate(-50deg)}60%{transform:rotate(-45deg)}100%{transform:rotate(0deg)}}
+@keyframes aGuardFist{0%{transform:rotate(0deg)}25%{transform:rotate(45deg)}60%{transform:rotate(40deg)}100%{transform:rotate(0deg)}}
+@keyframes aCelebrateL{0%{transform:rotate(0deg)}25%{transform:rotate(-80deg)}50%{transform:rotate(-70deg)}75%{transform:rotate(-85deg)}100%{transform:rotate(-80deg)}}
+@keyframes aCelebrateR{0%{transform:rotate(0deg)}25%{transform:rotate(80deg)}50%{transform:rotate(70deg)}75%{transform:rotate(85deg)}100%{transform:rotate(80deg)}}
+@keyframes aCrouchLeg{0%{transform:rotate(0deg)}30%{transform:rotate(15deg)}70%{transform:rotate(12deg)}100%{transform:rotate(0deg)}}
+@keyframes aStepFwd{0%{transform:rotate(0deg)}25%{transform:rotate(-25deg)}60%{transform:rotate(-20deg)}100%{transform:rotate(0deg)}}
+@keyframes sPunchArm{0%{transform:rotate(0deg)}25%{transform:rotate(60deg)}60%{transform:rotate(50deg)}100%{transform:rotate(0deg)}}
+@keyframes sPunchFist{0%{transform:rotate(0deg)}25%{transform:rotate(-70deg)}60%{transform:rotate(-60deg)}100%{transform:rotate(0deg)}}
+@keyframes sPunchBack{0%{transform:rotate(0deg)}25%{transform:rotate(-35deg)}60%{transform:rotate(-30deg)}100%{transform:rotate(0deg)}}
+@keyframes sRecoilArm{0%{transform:rotate(0deg)}25%{transform:rotate(-35deg)}60%{transform:rotate(-25deg)}100%{transform:rotate(0deg)}}
+@keyframes sRecoilBody{0%{transform:rotate(0deg)}25%{transform:rotate(-12deg)}60%{transform:rotate(-8deg)}100%{transform:rotate(0deg)}}
+@keyframes sWobbleArm{0%{transform:rotate(0deg)}20%{transform:rotate(40deg)}40%{transform:rotate(-30deg)}60%{transform:rotate(25deg)}80%{transform:rotate(-20deg)}100%{transform:rotate(0deg)}}
+@keyframes sKDArm{0%{transform:rotate(0deg)}30%{transform:rotate(80deg)}60%{transform:rotate(70deg)}100%{transform:rotate(80deg)}}
+/* Phase-based limb animation triggers */
+.arthur.punch .a-rarm-g{animation:aPunchArm .5s ease forwards}
+.arthur.punch .a-rarm-fg{animation:aPunchFist .5s ease forwards}
+.arthur.punch .a-larm-g{animation:aPunchBack .5s ease forwards}
+.arthur.punch .a-lleg-g{animation:aStepFwd .5s ease forwards}
+.arthur.recoil .a-rarm-g,.arthur.recoil .a-larm-g{animation:aRecoilArm .5s ease forwards}
+.arthur.recoil .a-body{animation:aRecoilBody .5s ease forwards}
+.arthur.duck .a-larm-g{animation:aGuardArm .5s ease forwards}
+.arthur.duck .a-rarm-g{animation:aGuardArm .5s ease forwards}
+.arthur.duck .a-larm-fg,.arthur.duck .a-rarm-fg{animation:aGuardFist .5s ease forwards}
+.arthur.duck .a-lleg-g,.arthur.duck .a-rleg-g{animation:aCrouchLeg .5s ease forwards}
+.arthur.stagger .a-rarm-g,.arthur.stagger .a-larm-g{animation:aRecoilArm .7s ease forwards}
+.arthur.stagger .a-body{animation:aRecoilBody .7s ease forwards}
+.arthur.celebrate .a-larm-g{animation:aCelebrateL .3s ease 3 forwards}
+.arthur.celebrate .a-rarm-g{animation:aCelebrateR .3s ease 3 forwards}
+.skeleton.punch .s-larm-g{animation:sPunchArm .5s ease forwards}
+.skeleton.punch .s-larm-fg{animation:sPunchFist .5s ease forwards}
+.skeleton.punch .s-rarm-g{animation:sPunchBack .5s ease forwards}
+.skeleton.punch .s-rleg-g{animation:aStepFwd .5s ease forwards}
+.skeleton.recoil .s-rarm-g,.skeleton.recoil .s-larm-g{animation:sRecoilArm .5s ease forwards}
+.skeleton.recoil .s-body{animation:sRecoilBody .5s ease forwards}
+.skeleton.wobble .s-rarm-g,.skeleton.wobble .s-larm-g{animation:sWobbleArm .8s ease forwards}
+.skeleton.knockdown .s-rarm-g,.skeleton.knockdown .s-larm-g{animation:sKDArm 1s ease forwards}
 @keyframes fadeOutUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-20px)}}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
 .boxing-progress .fill{height:100%;background:var(--primary);border-radius:2px;width:0%;transition:width .5s linear}
@@ -5284,7 +5326,15 @@ function showBoxingMatch(onDone) {
   overlay.style.alignItems = 'flex-start';
   overlay.style.paddingTop = '20px';
 
-  var arthurSVG = '<svg class="arthur-svg" viewBox="0 0 30 50"><circle cx="15" cy="7" r="5" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="28" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" id="a-body"/><line x1="15" y1="16" x2="7" y2="21" stroke="#ffd700" stroke-width="2" stroke-linecap="round" id="a-larm"/><line x1="15" y1="16" x2="23" y2="21" stroke="#ffd700" stroke-width="2" stroke-linecap="round" id="a-rarm"/><line x1="15" y1="28" x2="9" y2="44" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="28" x2="21" y2="44" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><circle cx="6" cy="21" r="2.5" fill="#dc2626"/><circle cx="24" cy="21" r="2.5" fill="#dc2626"/></svg>';
+  var arthurSVG =
+    '<svg class="arthur-svg" viewBox="0 0 30 54">' +
+    '<circle cx="15" cy="7" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<line x1="15" y1="12" x2="15" y2="30" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" class="a-body"/>' +
+    '<g class="a-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="9" y2="22" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><g class="a-larm-fg" style="transform-origin:9px 22px"><line x1="9" y1="22" x2="5" y2="25" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><circle cx="4" cy="25" r="2.5" fill="#dc2626"/></g></g>' +
+    '<g class="a-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="22" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><g class="a-rarm-fg" style="transform-origin:21px 22px"><line x1="21" y1="22" x2="25" y2="25" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><circle cx="26" cy="25" r="2.5" fill="#dc2626"/></g></g>' +
+    '<g class="a-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="40" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:10px 40px"><line x1="10" y1="40" x2="8" y2="51" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/></g></g>' +
+    '<g class="a-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="20" y2="40" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:20px 40px"><line x1="20" y1="40" x2="22" y2="51" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/></g></g>' +
+    '</svg>';
 
   overlay.innerHTML =
     '<div class="overlay-content" style="background:transparent;padding:10px;overflow:hidden;text-align:center">' +
@@ -5298,7 +5348,17 @@ function showBoxingMatch(onDone) {
       '<div class="count-text" id="count-text"></div>' +
       '<div class="winner-text" id="winner-text"></div>' +
       '<div class="boxer-pos arthur" id="arthur-boxer">' + arthurSVG + '</div>' +
-      '<div class="boxer-pos skeleton" id="skeleton-boxer"><span class="skeleton-emoji">&#128128;</span></div>' +
+      '<div class="boxer-pos skeleton" id="skeleton-boxer">' +
+      '<svg class="skeleton-svg" viewBox="0 0 30 54">' +
+      '<circle cx="15" cy="7" r="5" fill="none" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round"/>' +
+      '<circle cx="12.5" cy="6" r="1.2" fill="#e2e8f0"/><circle cx="17.5" cy="6" r="1.2" fill="#e2e8f0"/>' +
+      '<line x1="12" y1="9.5" x2="18" y2="9.5" stroke="#e2e8f0" stroke-width="1" stroke-linecap="round"/>' +
+      '<line x1="15" y1="12" x2="15" y2="30" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" class="s-body"/>' +
+      '<g class="s-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="9" y2="22" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/><g class="s-larm-fg" style="transform-origin:9px 22px"><line x1="9" y1="22" x2="5" y2="25" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/><circle cx="4" cy="25" r="2.5" fill="#dc2626"/></g></g>' +
+      '<g class="s-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="22" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/><g class="s-rarm-fg" style="transform-origin:21px 22px"><line x1="21" y1="22" x2="25" y2="25" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/><circle cx="26" cy="25" r="2.5" fill="#dc2626"/></g></g>' +
+      '<g class="s-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="40" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:10px 40px"><line x1="10" y1="40" x2="8" y2="51" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/></g></g>' +
+      '<g class="s-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="20" y2="40" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:20px 40px"><line x1="20" y1="40" x2="22" y2="51" stroke="#e2e8f0" stroke-width="2" stroke-linecap="round"/></g></g>' +
+      '</svg></div>' +
       '<div class="referee-pos" id="referee-pos">&#129489;&#8205;&#9878;&#65039;</div>' +
     '</div>' +
     '<div class="boxing-progress"><div class="fill" id="boxing-progress-bar"></div></div>' +
@@ -5309,6 +5369,15 @@ function showBoxingMatch(onDone) {
 
   var A = document.getElementById('arthur-boxer');
   var S = document.getElementById('skeleton-boxer');
+  function animClass(el, cls, duration) {
+    if (!el) return;
+    el.classList.remove('punch','recoil','duck','stagger','celebrate','wobble','knockdown');
+    el.offsetHeight;
+    if (cls) { el.classList.add(cls); }
+    if (duration && cls) {
+      setTimeout(function(){ if (el) el.classList.remove(cls); }, duration);
+    }
+  }
   var HF = document.getElementById('hit-flash');
   var SB = document.getElementById('stars-burst');
   var GF = document.getElementById('glove-fly');
@@ -5339,8 +5408,9 @@ function showBoxingMatch(onDone) {
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurLunge .5s ease';
+    animClass(A, 'punch', 500);
     flyGlove('arthur'); flashHit();
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonRecoil .5s ease'; }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonRecoil .5s ease'; animClass(S, 'recoil', 500); }
     updateProgress(15);
   }, 1500));
 
@@ -5348,8 +5418,9 @@ function showBoxingMatch(onDone) {
   timers.push(setTimeout(function(){
     if (!S) return; S.style.animation = 'none'; S.offsetHeight;
     S.style.animation = 'skeletonLunge .5s ease';
+    animClass(S, 'punch', 500);
     flyGlove('skeleton'); flashHit();
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurRecoil .5s ease'; }
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurRecoil .5s ease'; animClass(A, 'recoil', 500); }
     updateProgress(25);
   }, 2500));
 
@@ -5357,8 +5428,9 @@ function showBoxingMatch(onDone) {
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurLunge .5s ease';
+    animClass(A, 'punch', 500);
     flyGlove('arthur'); flashHit();
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonRecoil .6s ease'; }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonRecoil .6s ease'; animClass(S, 'recoil', 600); }
     updateProgress(35);
   }, 3500));
 
@@ -5366,8 +5438,9 @@ function showBoxingMatch(onDone) {
   timers.push(setTimeout(function(){
     if (!S) return; S.style.animation = 'none'; S.offsetHeight;
     S.style.animation = 'skeletonLunge .5s ease';
+    animClass(S, 'punch', 500);
     flyGlove('skeleton'); flashHit();
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurStagger .7s ease'; }
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurStagger .7s ease'; animClass(A, 'stagger', 700); }
     updateProgress(45);
   }, 4500));
 
@@ -5375,8 +5448,9 @@ function showBoxingMatch(onDone) {
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurDuck .5s ease';
+    animClass(A, 'duck', 500);
     // Skeleton misses - no hit flash
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonLunge .4s ease'; }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonLunge .4s ease'; animClass(S, 'punch', 400); }
     updateProgress(55);
   }, 5500));
 
@@ -5384,8 +5458,9 @@ function showBoxingMatch(onDone) {
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurLunge .6s ease';
+    animClass(A, 'punch', 600);
     flyGlove('arthur'); flashHit();
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble 1s ease'; }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble 1s ease'; animClass(S, 'wobble', 1000); }
     updateProgress(65);
   }, 6500));
 
@@ -5393,8 +5468,9 @@ function showBoxingMatch(onDone) {
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurLunge .7s ease';
+    animClass(A, 'punch', 700);
     flyGlove('arthur'); flashHit(); starsBurst();
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonKnockdown 1.2s ease forwards'; }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonKnockdown 1.2s ease forwards'; animClass(S, 'knockdown', 1200); }
     updateProgress(78);
   }, 8000));
 
@@ -5421,7 +5497,7 @@ function showBoxingMatch(onDone) {
   timers.push(setTimeout(function(){
     if (CT) { CT.className = 'count-text'; }
     if (WT) { WT.innerHTML = '&#127942; ARTHUR WINS! &#127942;'; WT.className = 'winner-text show'; }
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurCelebrate 1s ease 3'; }
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurCelebrate 1s ease 3'; animClass(A, 'celebrate', 900); }
     if (RF) { RF.className = 'referee-pos active'; }
     updateProgress(100);
   }, 12900));
