@@ -98,6 +98,32 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 @keyframes paulieCraftBar{0%{transform:scaleX(0)}60%{transform:scaleX(0.7)}100%{transform:scaleX(1)}}
 @keyframes kingFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes doorShake{0%{transform:translateX(0) scale(1)}15%{transform:translateX(-4px) scale(1.02)}30%{transform:translateX(3px) scale(1.04)}45%{transform:translateX(-2px) scale(1.06)}55%{transform:translateX(0) scale(1.08)}70%{transform:translateX(0) scale(0.6);opacity:0.8}85%{transform:scale(0.3) rotate(15deg);opacity:0.4}100%{transform:scale(0) rotate(30deg);opacity:0}}
+@keyframes doorSplinter{0%{transform:scale(0);opacity:0}40%{transform:scale(1.5);opacity:1}70%{transform:scale(2);opacity:0.8}100%{transform:scale(2.5);opacity:0}}
+@keyframes kingThrough{0%{transform:translateY(12px) scale(0.3);opacity:0}30%{transform:translateY(-4px) scale(1.15);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
+@keyframes erinStand{
+0%{transform:translateX(0) translateY(0) scale(1)}
+18%{transform:translateX(0) translateY(-3px) scale(1)}
+28%{transform:translateX(10px) translateY(4px) scale(0.88) rotate(8deg)}
+34%{transform:translateX(-4px) translateY(-5px) scale(1.1)}
+40%{transform:translateX(0) translateY(0) scale(1)}
+62%{transform:translateX(0) translateY(0) scale(1)}
+68%{transform:translateX(0) translateY(0) scale(1);opacity:1}
+72%{opacity:0}
+100%{opacity:0}
+}
+@keyframes cowboyStand{
+0%{transform:translateX(0) translateY(0) scale(1)}
+18%{transform:translateX(0) translateY(-3px) scale(1)}
+26%{transform:translateX(-6px) translateY(-2px) scale(1.15)}
+32%{transform:translateX(-3px) translateY(0) scale(1.05)}
+38%{transform:translateX(6px) translateY(3px) scale(0.88) rotate(12deg);opacity:0.8}
+44%{opacity:0}
+100%{opacity:0}
+}
+@keyframes countFade{0%{transform:translateX(-50%) scale(0.5);opacity:0}25%{transform:translateX(-50%) scale(1.2);opacity:1}50%{transform:translateX(-50%) scale(1);opacity:1}100%{transform:translateX(-50%) scale(0.8);opacity:0}}
+@keyframes shotBlast{0%{transform:scale(0.3);opacity:0}30%{transform:scale(1.4);opacity:1}100%{transform:scale(0.5);opacity:0}}
+@keyframes fadeSlide{0%{transform:scale(0.3) translateY(10px);opacity:0}30%{transform:scale(1.1) translateY(0);opacity:1}100%{transform:scale(1) translateY(0);opacity:1}}
 
 @keyframes paulieDrama{
 0%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
@@ -2990,7 +3016,6 @@ function saveRefJournal() {
   } else {
     saveIt();
   }
-}
 }
 
 function showReflection(idx) {
