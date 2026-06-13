@@ -382,10 +382,14 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .erin-stage .e-lleg-g,.erin-stage .e-rleg-g{transition:transform .3s ease}
 .erin-stage.stand .e-larm-g,.erin-stage.stand .e-rarm-g{transform:rotate(0deg)}
 .erin-stage.stand .e-lleg-g,.erin-stage.stand .e-rleg-g{transform:rotate(0deg)}
-.erin-stage.ready .e-rarm-g{transform:rotate(45deg)}
-.erin-stage.ready .e-larm-g{transform:rotate(-10deg)}
+.erin-stage.ready .e-rarm-g{transform:rotate(0deg)}
+.erin-stage.ready .e-larm-g{transform:rotate(0deg)}
 .erin-stage.ready .e-lleg-g{transform:rotate(8deg)}
 .erin-stage.ready .e-rleg-g{transform:rotate(-8deg)}
+.erin-stage.reach .e-rarm-g{transform:rotate(-20deg)}
+.erin-stage.reach .e-larm-g{transform:rotate(-5deg)}
+.erin-stage.reach .e-lleg-g{transform:rotate(8deg)}
+.erin-stage.reach .e-rleg-g{transform:rotate(-8deg)}
 .erin-stage.draw .e-rarm-g{transform:rotate(35deg)}
 .erin-stage.draw .e-larm-g{transform:rotate(-15deg)}
 .erin-stage.hit .e-larm-g{transform:rotate(-25deg)}
@@ -400,16 +404,25 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .erin-stage.walk .e-rleg-g{transform:rotate(-10deg)}
 .erin-stage.walk .e-rarm-g{transform:rotate(5deg)}
 .erin-stage.walk .e-larm-g{transform:rotate(-15deg)}
+.erin-stage.kneel .e-lleg-g{transform:rotate(25deg)}
+.erin-stage.kneel .e-rleg-g{transform:rotate(-25deg)}
+.erin-stage.kneel .e-larm-g{transform:rotate(-20deg)}
+.erin-stage.kneel .e-rarm-g{transform:rotate(10deg)}
 @keyframes erinWalkToCowboy{0%{transform:translateX(0) translateY(0)}100%{transform:translateX(35px) translateY(0)}}
+@keyframes erinKneel{0%{transform:translateX(35px) translateY(0) rotate(0deg)}100%{transform:translateX(40px) translateY(18px) rotate(6deg)}}
 /* Cowboy state-based limb animations */
 .cowboy-stage .c-larm-g,.cowboy-stage .c-rarm-g{transition:transform .3s ease}
 .cowboy-stage .c-lleg-g,.cowboy-stage .c-rleg-g{transition:transform .3s ease}
 .cowboy-stage.stand .c-larm-g,.cowboy-stage.stand .c-rarm-g{transform:rotate(0deg)}
 .cowboy-stage.stand .c-lleg-g,.cowboy-stage.stand .c-rleg-g{transform:rotate(0deg)}
-.cowboy-stage.ready .c-rarm-g{transform:rotate(45deg)}
-.cowboy-stage.ready .c-larm-g{transform:rotate(-10deg)}
+.cowboy-stage.ready .c-rarm-g{transform:rotate(0deg)}
+.cowboy-stage.ready .c-larm-g{transform:rotate(0deg)}
 .cowboy-stage.ready .c-lleg-g{transform:rotate(-8deg)}
 .cowboy-stage.ready .c-rleg-g{transform:rotate(8deg)}
+.cowboy-stage.reach .c-rarm-g{transform:rotate(20deg)}
+.cowboy-stage.reach .c-larm-g{transform:rotate(5deg)}
+.cowboy-stage.reach .c-lleg-g{transform:rotate(-8deg)}
+.cowboy-stage.reach .c-rleg-g{transform:rotate(8deg)}
 .cowboy-stage.draw .c-rarm-g{transform:rotate(-35deg)}
 .cowboy-stage.draw .c-larm-g{transform:rotate(15deg)}
 .cowboy-stage.hit .c-rarm-g{transform:rotate(-40deg)}
@@ -6251,7 +6264,7 @@ function showErinDuel() {
     updateProgress(12);
   }, 3000));
 
-  // Phase 3: Ready stance - hand on hip + knees bent + Countdown 3 (4600ms)
+  // Phase 3: Ready stance - arms down, knees bent + Countdown 3 (4600ms)
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinReady .4s ease forwards'; }
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyReady .4s ease forwards'; }
@@ -6270,6 +6283,8 @@ function showErinDuel() {
   // Phase 5: Countdown 1 (6200ms)
   timers.push(setTimeout(function(){
     flashEl(C1, 'countFade .5s ease forwards', 500);
+    eAnim('reach', 800);
+    cAnim('reach', 800);
     updateProgress(36);
   }, 6200));
 
@@ -6300,20 +6315,22 @@ function showErinDuel() {
 
   // Phase 9: Erin realizes her mistake - walks toward wounded cowboy (10500ms)
   timers.push(setTimeout(function(){
-    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinWalkToCowboy 2s ease forwards'; }
-    eAnim('walk', 2000);
+    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinWalkToCowboy 1s ease forwards'; }
+    eAnim('walk', 1000);
     updateProgress(68);
   }, 10500));
 
-  // Phase 10: Erin reaches and helps (11500ms)
+  // Phase 10: Erin kneels to check on the wounded cowboy (11500ms)
   timers.push(setTimeout(function(){
-    eAnim('help', 1000);
-    cAnim('fall', 1000);
+    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinKneel .6s ease forwards'; }
+    eAnim('kneel', 1500);
+    cAnim('fall', 1500);
     updateProgress(74);
   }, 11500));
 
   // Phase 11: Cowboy recovers with the power of friendship (12500ms)
   timers.push(setTimeout(function(){
+    if (E) { E.style.animation = 'none'; E.offsetHeight; }
     eAnim('stand', 2000);
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyRecover 1s ease forwards'; }
     cAnim('recover', 1000);
