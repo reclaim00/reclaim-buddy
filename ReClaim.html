@@ -390,7 +390,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .erin-stage.reach .e-larm-g{transform:rotate(-5deg)}
 .erin-stage.reach .e-lleg-g{transform:rotate(8deg)}
 .erin-stage.reach .e-rleg-g{transform:rotate(-8deg)}
-.erin-stage.draw .e-rarm-g{transform:rotate(35deg)}
+.erin-stage.draw .e-rarm-g{transform:rotate(20deg)}
 .erin-stage.draw .e-larm-g{transform:rotate(-15deg)}
 .erin-stage.hit .e-larm-g{transform:rotate(-25deg)}
 .erin-stage.hit .e-rarm-g{transform:rotate(25deg)}
@@ -399,15 +399,19 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .erin-stage.celebrate .e-larm-g{transform:rotate(-85deg)}
 .erin-stage.celebrate .e-rarm-g{transform:rotate(85deg)}
 .erin-stage .e-gun,.cowboy-stage .c-gun{opacity:0;transition:opacity .2s}
-.erin-stage.draw .e-gun,.cowboy-stage.draw .c-gun{opacity:1}
-.erin-stage.walk .e-lleg-g{transform:rotate(15deg)}
-.erin-stage.walk .e-rleg-g{transform:rotate(-10deg)}
-.erin-stage.walk .e-rarm-g{transform:rotate(5deg)}
-.erin-stage.walk .e-larm-g{transform:rotate(-15deg)}
+.erin-stage.reach .e-gun,.erin-stage.draw .e-gun,.cowboy-stage.reach .c-gun,.cowboy-stage.draw .c-gun{opacity:1}
+.erin-stage.walk .e-lleg-g{animation:walkLegL .35s ease infinite}
+.erin-stage.walk .e-rleg-g{animation:walkLegR .35s ease infinite}
+.erin-stage.walk .e-rarm-g{animation:walkArmR .35s ease infinite}
+.erin-stage.walk .e-larm-g{animation:walkArmL .35s ease infinite}
 .erin-stage.kneel .e-lleg-g{transform:rotate(25deg)}
 .erin-stage.kneel .e-rleg-g{transform:rotate(-25deg)}
 .erin-stage.kneel .e-larm-g{transform:rotate(-20deg)}
 .erin-stage.kneel .e-rarm-g{transform:rotate(10deg)}
+@keyframes walkLegL{0%{transform:rotate(15deg)}50%{transform:rotate(-8deg)}100%{transform:rotate(15deg)}}
+@keyframes walkLegR{0%{transform:rotate(-10deg)}50%{transform:rotate(8deg)}100%{transform:rotate(-10deg)}}
+@keyframes walkArmR{0%{transform:rotate(5deg)}50%{transform:rotate(-8deg)}100%{transform:rotate(5deg)}}
+@keyframes walkArmL{0%{transform:rotate(-15deg)}50%{transform:rotate(8deg)}100%{transform:rotate(-15deg)}}
 @keyframes erinWalkToCowboy{0%{transform:translateX(0) translateY(0)}100%{transform:translateX(35px) translateY(0)}}
 @keyframes erinKneel{0%{transform:translateX(35px) translateY(0) rotate(0deg)}100%{transform:translateX(40px) translateY(18px) rotate(6deg)}}
 /* Cowboy state-based limb animations */
@@ -423,7 +427,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .cowboy-stage.reach .c-larm-g{transform:rotate(5deg)}
 .cowboy-stage.reach .c-lleg-g{transform:rotate(-8deg)}
 .cowboy-stage.reach .c-rleg-g{transform:rotate(8deg)}
-.cowboy-stage.draw .c-rarm-g{transform:rotate(-35deg)}
+.cowboy-stage.draw .c-rarm-g{transform:rotate(-20deg)}
 .cowboy-stage.draw .c-larm-g{transform:rotate(15deg)}
 .cowboy-stage.hit .c-rarm-g{transform:rotate(-40deg)}
 .cowboy-stage.hit .c-larm-g{transform:rotate(40deg)}
@@ -473,15 +477,15 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 100%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
 }
 @keyframes cowboyWounded{
-0%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
-30%{transform:translateX(-6px) translateY(10px) scale(0.85) rotate(8deg)}
-60%{transform:translateX(-8px) translateY(18px) scale(0.7) rotate(12deg)}
-100%{transform:translateX(-5px) translateY(22px) scale(0.6) rotate(15deg)}
+0%{transform:translateX(0) translateY(0) rotate(0deg)}
+30%{transform:translateX(-6px) translateY(10px) rotate(8deg)}
+60%{transform:translateX(-8px) translateY(18px) rotate(12deg)}
+100%{transform:translateX(-5px) translateY(22px) rotate(15deg)}
 }
 @keyframes cowboyRecover{
-0%{transform:translateX(-5px) translateY(22px) scale(0.6) rotate(15deg)}
-50%{transform:translateX(-2px) translateY(10px) scale(0.8) rotate(8deg)}
-100%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
+0%{transform:translateX(-5px) translateY(22px) rotate(15deg)}
+50%{transform:translateX(-2px) translateY(10px) rotate(8deg)}
+100%{transform:translateX(0) translateY(0) rotate(0deg)}
 }
 @keyframes cowboyReady{
 0%{transform:translateX(0) translateY(0) rotate(0deg)}
@@ -6283,8 +6287,8 @@ function showErinDuel() {
   // Phase 5: Countdown 1 (6200ms)
   timers.push(setTimeout(function(){
     flashEl(C1, 'countFade .5s ease forwards', 500);
-    eAnim('reach', 800);
-    cAnim('reach', 800);
+    eAnim('reach');
+    cAnim('reach');
     updateProgress(36);
   }, 6200));
 
