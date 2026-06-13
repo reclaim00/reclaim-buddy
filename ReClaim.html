@@ -398,12 +398,11 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .erin-stage.help .e-larm-g{transform:rotate(-15deg)}
 .erin-stage.celebrate .e-larm-g{transform:rotate(-85deg)}
 .erin-stage.celebrate .e-rarm-g{transform:rotate(85deg)}
-.erin-stage .e-gun,.cowboy-stage .c-gun{opacity:1;transition:opacity .3s}
+.erin-stage .e-gun,.cowboy-stage .c-gun{opacity:1}
 .erin-stage .e-muzzle,.cowboy-stage .c-muzzle{opacity:0}
 .erin-stage.hit .e-muzzle{animation:muzzleFlash .3s ease forwards}
 .cowboy-stage.hit .c-muzzle{animation:muzzleFlash .3s ease forwards}
 .erin-stage.hit .e-gun{animation:gunDrop .5s ease forwards}
-.erin-stage.walk .e-gun,.erin-stage.kneel .e-gun,.erin-stage.stand .e-gun{opacity:0}
 .erin-stage .e-bullet,.cowboy-stage .c-bullet{opacity:0}
 .erin-stage.hit .e-bullet{animation:bullet .35s ease forwards}
 .cowboy-stage.hit .c-bullet{animation:bullet .35s ease forwards}
@@ -424,6 +423,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes muzzleFlash{0%{opacity:0;transform:scale(0)}30%{opacity:1;transform:scale(1.5)}100%{opacity:0;transform:scale(0.3)}}
 @keyframes gunDrop{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(18px) rotate(60deg);opacity:0}}
 @keyframes bullet{0%{opacity:0;transform:translateX(0)}20%{opacity:1;transform:translateX(10px)}100%{opacity:1;transform:translateX(90px)}}
+@keyframes screenFlash{0%{opacity:0}12%{opacity:.75}25%{opacity:.3}50%{opacity:0}100%{opacity:0}}
 /* Cowboy state-based limb animations */
 .cowboy-stage .c-larm-g,.cowboy-stage .c-rarm-g{transition:transform .3s ease}
 .cowboy-stage .c-lleg-g,.cowboy-stage .c-rleg-g{transition:transform .3s ease}
@@ -6218,7 +6218,8 @@ function showErinDuel() {
     '<div id="count-3" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">3</div>' +
     '<div id="count-2" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">2</div>' +
     '<div id="count-1" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">1</div>' +
-        '</div>' +
+    '<div id="erin-flash" style="position:absolute;inset:0;background:#fff;opacity:0;z-index:10;pointer-events:none"></div>' +
+    '</div>' +
     '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">' +
     '<span id="erin-result" style="font-size:10px;color:var(--muted);opacity:0">The power of friendship wins!</span>' +
     '</div>' +
@@ -6273,8 +6274,8 @@ function showErinDuel() {
 
   // Phase 2: Stand still - arms at sides (3000ms)
   timers.push(setTimeout(function(){
-    eAnim('stand', 2000);
-    cAnim('stand', 2000);
+    eAnim('stand');
+    cAnim('stand');
     updateProgress(12);
   }, 3000));
 
@@ -6282,8 +6283,8 @@ function showErinDuel() {
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinReady .4s ease forwards'; }
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyReady .4s ease forwards'; }
-    eAnim('ready', 2400);
-    cAnim('ready', 2400);
+    eAnim('ready');
+    cAnim('ready');
     flashEl(C3, 'countFade .5s ease forwards', 500);
     updateProgress(20);
   }, 4600));
@@ -6306,29 +6307,33 @@ function showErinDuel() {
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinDraw .4s ease forwards'; }
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyDraw .4s ease forwards'; }
-    eAnim('draw', 800);
-    cAnim('draw', 800);
+    eAnim('draw');
+    cAnim('draw');
     updateProgress(44);
   }, 7000));
 
-  // Phase 7: Shots fired (7800ms)
+  // Phase 7: Shots fired - screen flash (7800ms)
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinRecoil .8s ease forwards'; }
     eAnim('hit');
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyHit .8s ease forwards'; }
     cAnim('hit', 800);
+    var flash = document.getElementById('erin-flash');
+    if (flash) { flash.style.animation = 'none'; flash.offsetHeight; flash.style.animation = 'screenFlash .5s ease forwards'; }
     updateProgress(52);
   }, 7800));
 
   // Phase 8: Cowboy wounded - drops to his knees (9000ms)
   timers.push(setTimeout(function(){
+    var eg = document.querySelector('#erin-char .e-gun'); if (eg) eg.style.opacity = '0';
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyWounded 1.2s ease forwards'; }
     cAnim('fall', 1200);
     updateProgress(60);
   }, 9000));
 
-  // Phase 9: Erin realizes her mistake - walks toward wounded cowboy (10500ms)
+  // Phase 9: Erin realizes her mistake - rushes toward wounded cowboy (10500ms)
   timers.push(setTimeout(function(){
+    var eg = document.querySelector('#erin-char .e-gun'); if (eg) eg.style.opacity = '0';
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinWalkToCowboy 1s ease forwards'; }
     eAnim('walk', 1000);
     updateProgress(68);
