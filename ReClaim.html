@@ -481,6 +481,12 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 0%{transform:translateX(-4px) translateY(2px)}
 100%{transform:translateX(-8px) translateY(0)}
 }
+@keyframes gunDraw{
+0%{transform:translateY(20px) scale(0.3);opacity:0}
+30%{transform:translateY(-3px) scale(1.3);opacity:1}
+60%{transform:translateY(1px) scale(0.95);opacity:1}
+100%{transform:translateY(0) scale(1);opacity:1}
+}
 @keyframes fadeOutUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-20px)}}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
 .boxing-progress .fill{height:100%;background:var(--primary);border-radius:2px;width:0%;transition:width .5s linear}
@@ -6199,7 +6205,8 @@ function showErinDuel() {
     '<div id="cowboy-cry" style="position:absolute;right:14%;bottom:6px;font-size:42px;opacity:0;z-index:3">&#128546;</div>' +
     '<div id="erin-gun" style="position:absolute;left:15%;bottom:30px;font-size:14px;opacity:0;z-index:3;filter:drop-shadow(0 0 4px #ec4899)">&#128299;</div>' +
     '<div id="cowboy-gun" style="position:absolute;right:15%;bottom:30px;font-size:14px;opacity:0;z-index:3;filter:drop-shadow(0 0 4px #ef4444)">&#128299;</div>' +
-    '<div id="handshake" style="position:absolute;left:36%;bottom:24px;font-size:48px;opacity:0;z-index:3">&#129309;</div>' +
+    '<div id="help-sparkle" style="position:absolute;left:35%;top:20%;font-size:22px;opacity:0;z-index:3">&#10024;</div>' +
+    '<div id="handshake" style="position:absolute;left:40%;bottom:55px;font-size:44px;opacity:0;z-index:3">&#129309;</div>' +
     '<div id="heart1" style="position:absolute;left:10%;top:10%;font-size:14px;opacity:0;z-index:3">&#10084;</div>' +
     '<div id="heart2" style="position:absolute;right:16%;top:8%;font-size:12px;opacity:0;z-index:3">&#10084;</div>' +
     '</div>' +
@@ -6224,6 +6231,7 @@ function showErinDuel() {
   var CCry = document.getElementById('cowboy-cry');
   var EG = document.getElementById('erin-gun');
   var CG = document.getElementById('cowboy-gun');
+  var HSk = document.getElementById('help-sparkle');
   var HS = document.getElementById('handshake');
   var H1 = document.getElementById('heart1');
   var H2 = document.getElementById('heart2');
@@ -6299,8 +6307,8 @@ function showErinDuel() {
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyDraw .4s ease forwards'; }
     eAnim('draw', 800);
     cAnim('draw', 800);
-    if (EG) { EG.style.animation = 'none'; EG.offsetHeight; EG.style.animation = 'fadeSlide .3s ease forwards'; EG.style.opacity = ''; }
-    if (CG) { CG.style.animation = 'none'; CG.offsetHeight; CG.style.animation = 'fadeSlide .3s ease forwards'; CG.style.opacity = ''; }
+    if (EG) { EG.style.animation = 'none'; EG.offsetHeight; EG.style.animation = 'gunDraw .4s ease forwards'; EG.style.opacity = ''; }
+    if (CG) { CG.style.animation = 'none'; CG.offsetHeight; CG.style.animation = 'gunDraw .4s ease forwards'; CG.style.opacity = ''; }
     updateProgress(44);
   }, 7000));
 
@@ -6333,27 +6341,28 @@ function showErinDuel() {
     updateProgress(68);
   }, 10500));
 
-  // Phase 10: Erin helps the wounded cowboy (11500ms)
+  // Phase 10: Erin helps the wounded cowboy + sparkle (11500ms)
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinHelp .5s ease forwards'; }
     eAnim('help', 1000);
     cAnim('fall', 1000);
     if (CCry) CCry.style.opacity = '0';
+    if (HSk) { HSk.style.animation = 'none'; HSk.offsetHeight; HSk.style.animation = 'fadeSlide .6s ease forwards'; HSk.style.opacity = ''; }
     updateProgress(74);
   }, 11500));
 
   // Phase 11: Cowboy recovers with the power of friendship (12500ms)
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinCelebrate .6s ease forwards'; }
-    eAnim('celebrate', 2000);
+    eAnim('stand', 2000);
+    if (HS) { HS.style.animation = 'none'; HS.offsetHeight; HS.style.animation = 'fadeSlide .5s ease forwards'; HS.style.opacity = ''; }
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyRecover 1s ease forwards'; }
     cAnim('recover', 1000);
     updateProgress(80);
   }, 12500));
 
-  // Phase 12: Handshake + hearts (13500ms)
+  // Phase 12: Hearts + win text (13500ms)
   timers.push(setTimeout(function(){
-    if (HS) { HS.style.animation = 'none'; HS.offsetHeight; HS.style.animation = 'fadeSlide .5s ease forwards'; HS.style.opacity = ''; }
     if (H1) { H1.style.animation = 'sparkle .5s ease infinite'; H1.style.opacity = '1'; }
     if (H2) { H2.style.animation = 'sparkle .6s ease infinite'; H2.style.opacity = '1'; }
     if (ER) ER.style.opacity = '1';
