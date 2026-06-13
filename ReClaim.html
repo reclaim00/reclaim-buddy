@@ -418,8 +418,8 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes walkLegR{0%{transform:rotate(-10deg)}50%{transform:rotate(8deg)}100%{transform:rotate(-10deg)}}
 @keyframes walkArmR{0%{transform:rotate(5deg)}50%{transform:rotate(-8deg)}100%{transform:rotate(5deg)}}
 @keyframes walkArmL{0%{transform:rotate(-15deg)}50%{transform:rotate(8deg)}100%{transform:rotate(-15deg)}}
-@keyframes erinWalkToCowboy{0%{transform:translateX(0) translateY(0)}100%{transform:translateX(35px) translateY(0)}}
-@keyframes erinKneel{0%{transform:translateX(35px) translateY(0) rotate(0deg)}100%{transform:translateX(40px) translateY(18px) rotate(6deg)}}
+@keyframes erinWalkToCowboy{0%{transform:translateX(0) translateY(0)}100%{transform:translateX(160px) translateY(0)}}
+@keyframes erinKneel{0%{transform:translateX(160px) translateY(0) rotate(0deg)}100%{transform:translateX(170px) translateY(18px) rotate(6deg)}}
 @keyframes muzzleFlash{0%{opacity:0;transform:scale(0)}30%{opacity:1;transform:scale(1.5)}100%{opacity:0;transform:scale(0.3)}}
 @keyframes gunDrop{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(18px) rotate(60deg);opacity:0}}
 @keyframes bullet{0%{opacity:0;transform:translateX(0)}20%{opacity:1;transform:translateX(10px)}100%{opacity:1;transform:translateX(90px)}}
@@ -6334,8 +6334,8 @@ function showErinDuel() {
   // Phase 9: Erin realizes her mistake - rushes toward wounded cowboy (10500ms)
   timers.push(setTimeout(function(){
     var eg = document.querySelector('#erin-char .e-gun'); if (eg) eg.style.opacity = '0';
-    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinWalkToCowboy 1s ease forwards'; }
-    eAnim('walk', 1000);
+    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinWalkToCowboy 1.2s ease forwards'; }
+    eAnim('walk', 1200);
     updateProgress(68);
   }, 10500));
 
