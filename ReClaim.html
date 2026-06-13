@@ -380,17 +380,31 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 100%{transform:translateX(8px) translateY(0) scale(1) rotate(0deg)}
 }
 /* Erin state-based limb animations */
-.erin-stage .e-larm-g,.erin-stage .e-rarm-g{transition:transform .35s ease}
-.erin-stage.stand .e-larm-g{transform:rotate(-15deg)}
-.erin-stage.stand .e-rarm-g{transform:rotate(15deg)}
+.erin-stage .e-larm-g,.erin-stage .e-rarm-g{transition:transform .3s ease}
+.erin-stage .e-lleg-g,.erin-stage .e-rleg-g{transition:transform .3s ease}
+.erin-stage.stand .e-larm-g,.erin-stage.stand .e-rarm-g{transform:rotate(0deg)}
+.erin-stage.stand .e-lleg-g,.erin-stage.stand .e-rleg-g{transform:rotate(0deg)}
+.erin-stage.ready .e-rarm-g{transform:rotate(-50deg)}
+.erin-stage.ready .e-larm-g{transform:rotate(10deg)}
+.erin-stage.ready .e-lleg-g{transform:rotate(8deg)}
+.erin-stage.ready .e-rleg-g{transform:rotate(-8deg)}
+.erin-stage.draw .e-rarm-g{transform:rotate(-80deg)}
+.erin-stage.draw .e-larm-g{transform:rotate(20deg)}
 .erin-stage.hit .e-larm-g{transform:rotate(25deg)}
 .erin-stage.hit .e-rarm-g{transform:rotate(-25deg)}
 .erin-stage.celebrate .e-larm-g{transform:rotate(-85deg)}
 .erin-stage.celebrate .e-rarm-g{transform:rotate(85deg)}
 /* Cowboy state-based limb animations */
-.cowboy-stage .c-larm-g,.cowboy-stage .c-rarm-g{transition:transform .35s ease}
-.cowboy-stage.stand .c-larm-g{transform:rotate(15deg)}
-.cowboy-stage.stand .c-rarm-g{transform:rotate(-15deg)}
+.cowboy-stage .c-larm-g,.cowboy-stage .c-rarm-g{transition:transform .3s ease}
+.cowboy-stage .c-lleg-g,.cowboy-stage .c-rleg-g{transition:transform .3s ease}
+.cowboy-stage.stand .c-larm-g,.cowboy-stage.stand .c-rarm-g{transform:rotate(0deg)}
+.cowboy-stage.stand .c-lleg-g,.cowboy-stage.stand .c-rleg-g{transform:rotate(0deg)}
+.cowboy-stage.ready .c-larm-g{transform:rotate(50deg)}
+.cowboy-stage.ready .c-rarm-g{transform:rotate(-10deg)}
+.cowboy-stage.ready .c-lleg-g{transform:rotate(-8deg)}
+.cowboy-stage.ready .c-rleg-g{transform:rotate(8deg)}
+.cowboy-stage.draw .c-larm-g{transform:rotate(80deg)}
+.cowboy-stage.draw .c-rarm-g{transform:rotate(-20deg)}
 .cowboy-stage.hit .c-larm-g{transform:rotate(40deg)}
 .cowboy-stage.hit .c-rarm-g{transform:rotate(-40deg)}
 .cowboy-stage.fall .c-larm-g{transform:rotate(75deg)}
@@ -433,6 +447,22 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 50%{transform:translateX(-12px) translateY(22px) scale(0.45) rotate(25deg);opacity:0.8}
 75%{transform:translateX(-10px) translateY(32px) scale(0.25) rotate(40deg);opacity:0.5}
 100%{transform:translateX(-8px) translateY(38px) scale(0.15) rotate(50deg);opacity:0}
+}
+@keyframes erinReady{
+  0%{transform:translateX(0) translateY(0)}
+  100%{transform:translateX(4px) translateY(2px)}
+}
+@keyframes erinDraw{
+  0%{transform:translateX(4px) translateY(2px)}
+  100%{transform:translateX(8px) translateY(0)}
+}
+@keyframes cowboyReady{
+  0%{transform:translateX(0) translateY(0)}
+  100%{transform:translateX(-4px) translateY(2px)}
+}
+@keyframes cowboyDraw{
+  0%{transform:translateX(-4px) translateY(2px)}
+  100%{transform:translateX(-8px) translateY(0)}
 }
 @keyframes fadeOutUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-20px)}}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
@@ -6142,7 +6172,7 @@ function showErinDuel() {
     '<div style="position:absolute;top:10%;right:15%;font-size:6px;opacity:0.3;color:#fbbf24">&#10022;</div>' +
     '<div style="position:absolute;top:5%;left:5%;font-size:22px;opacity:0.2;color:#f59e0b">&#9728;</div>' +
     '<div id="erin-char" class="erin-stage" style="position:absolute;left:6%;bottom:12px;filter:drop-shadow(0 0 8px rgba(236,72,153,0.7));z-index:2"><svg class="erin-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="3" x2="11" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="3" x2="19" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="e-body"/><g class="e-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="18" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g class="e-larm-fg" style="transform-origin:21px 18px"><line x1="21" y1="18" x2="22" y2="12" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><circle cx="23" cy="12" r="2" fill="#ec4899"/></g></g><g class="e-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g class="e-rarm-fg" style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="10" r="2" fill="#ec4899"/></g></g><g class="e-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/></g></g><g class="e-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/></g></g></svg></div>' +
-    '<div id="cowboy-char" class="cowboy-stage" style="position:absolute;right:10%;bottom:12px;filter:drop-shadow(0 0 8px rgba(239,68,68,0.6));z-index:2"><svg class="cowboy-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/><path d="M7 4 Q15 0 23 4" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" class="c-body"/><g class="c-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="18" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><g class="c-larm-fg" style="transform-origin:21px 18px"><line x1="21" y1="18" x2="22" y2="12" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><circle cx="23" cy="12" r="2" fill="#ef4444"/></g></g><g class="c-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><g class="c-rarm-fg" style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="10" r="2" fill="#ef4444"/></g></g><g class="c-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></g></g><g class="c-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></g></g></svg></div>' +
+    '<div id="cowboy-char" class="cowboy-stage" style="position:absolute;right:10%;bottom:12px;filter:drop-shadow(0 0 8px rgba(239,68,68,0.6));z-index:2;transform:scaleX(-1)"><svg class="cowboy-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/><path d="M7 4 Q15 0 23 4" fill="none" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round" class="c-body"/><g class="c-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="18" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><g class="c-larm-fg" style="transform-origin:21px 18px"><line x1="21" y1="18" x2="22" y2="12" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><circle cx="23" cy="12" r="2" fill="#ef4444"/></g></g><g class="c-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><g class="c-rarm-fg" style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><circle cx="21" cy="10" r="2" fill="#ef4444"/></g></g><g class="c-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></g></g><g class="c-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></g></g></svg></div>' +
     '<div id="count-3" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">3</div>' +
     '<div id="count-2" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">2</div>' +
     '<div id="count-1" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">1</div>' +
@@ -6212,87 +6242,106 @@ function showErinDuel() {
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinWalkIn 1.5s ease forwards'; }
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyWalkIn 1.5s ease forwards'; }
-    updateProgress(7);
+    updateProgress(5);
   }, 800));
 
-  // Phase 2: Standoff - hands near holsters (3000ms)
+  // Phase 2: Stand still - arms at sides (3000ms)
   timers.push(setTimeout(function(){
     eAnim('stand', 2000);
     cAnim('stand', 2000);
-    updateProgress(15);
+    updateProgress(12);
   }, 3000));
 
-  // Phase 3: Countdown 3 (5000ms)
+  // Phase 3: Ready stance - hand on hip + knees bent + Countdown 3 (4600ms)
   timers.push(setTimeout(function(){
+    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinReady .4s ease forwards'; }
+    if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyReady .4s ease forwards'; }
+    eAnim('ready', 2400);
+    cAnim('ready', 2400);
     flashEl(C3, 'countFade .5s ease forwards', 500);
-    updateProgress(22);
-  }, 5000));
+    updateProgress(20);
+  }, 4600));
 
-  // Phase 4: Countdown 2 (5700ms)
+  // Phase 4: Countdown 2 (5400ms)
   timers.push(setTimeout(function(){
     flashEl(C2, 'countFade .5s ease forwards', 500);
-    updateProgress(29);
-  }, 5700));
+    updateProgress(28);
+  }, 5400));
 
-  // Phase 5: Countdown 1 (6400ms)
+  // Phase 5: Countdown 1 (6200ms)
   timers.push(setTimeout(function(){
     flashEl(C1, 'countFade .5s ease forwards', 500);
     updateProgress(36);
-  }, 6400));
+  }, 6200));
 
-  // Phase 6: Draw! Shots fired (7200ms)
+  // Phase 6: Draw guns (7000ms)
+  timers.push(setTimeout(function(){
+    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinDraw .4s ease forwards'; }
+    if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyDraw .4s ease forwards'; }
+    eAnim('draw', 800);
+    cAnim('draw', 800);
+    updateProgress(44);
+  }, 7000));
+
+  // Phase 7: Shots fired (7800ms)
   timers.push(setTimeout(function(){
     flashEl(CS, 'shotBlast .35s ease forwards', 350);
     flashEl(ES, 'shotBlast .35s ease forwards', 350);
-    // Both hit
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinRecoil .8s ease forwards'; }
     eAnim('hit', 800);
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyHit .8s ease forwards'; }
     cAnim('hit', 800);
-    updateProgress(45);
-  }, 7200));
+    updateProgress(52);
+  }, 7800));
 
-  // Phase 7: Cowboy falls (8500ms)
+  // Phase 8: Cowboy falls (9000ms)
   timers.push(setTimeout(function(){
     if (C) { C.style.animation = 'none'; C.offsetHeight; C.style.animation = 'cowboyFall 1.2s ease forwards'; }
     cAnim('fall', 1200);
     flashEl(CShock, 'fadeSlide .4s ease forwards', 400);
-    updateProgress(55);
-  }, 8500));
+    updateProgress(60);
+  }, 9000));
 
-  // Phase 8: Erin recovers (10200ms)
+  // Phase 9: Erin recovers (10500ms)
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinCelebrate 1s ease forwards'; }
     eAnim('celebrate', 1000);
     flashEl(CCry, 'fadeSlide .5s ease forwards', 500);
-    updateProgress(65);
-  }, 10200));
+    updateProgress(68);
+  }, 10500));
 
-  // Phase 9: Friendly Erin slides in (11800ms)
+  // Phase 10: Hide main Erin before friendly appears (11500ms)
+  timers.push(setTimeout(function(){
+    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'fadeOutUp .4s ease forwards'; }
+    timers.push(setTimeout(function(){ if (E) E.style.display = 'none'; }, 400));
+    updateProgress(74);
+  }, 11500));
+
+  // Phase 11: Friendly Erin slides in (12000ms)
   timers.push(setTimeout(function(){
     if (EF) { EF.style.animation = 'none'; EF.offsetHeight; EF.style.animation = 'fadeSlide .5s ease forwards'; EF.style.opacity = ''; }
-    updateProgress(73);
-  }, 11800));
+    updateProgress(80);
+  }, 12000));
 
-  // Phase 10: Handshake appears (12800ms)
+  // Phase 12: Handshake appears (13000ms)
   timers.push(setTimeout(function(){
     if (HS) { HS.style.animation = 'none'; HS.offsetHeight; HS.style.animation = 'fadeSlide .5s ease forwards'; HS.style.opacity = ''; }
-    updateProgress(80);
-  }, 12800));
+    updateProgress(86);
+  }, 13000));
 
-  // Phase 11: Hearts + win text (14000ms)
+  // Phase 13: Hearts + win text (14200ms)
   timers.push(setTimeout(function(){
     if (H1) { H1.style.animation = 'sparkle .5s ease infinite'; H1.style.opacity = '1'; }
     if (H2) { H2.style.animation = 'sparkle .6s ease infinite'; H2.style.opacity = '1'; }
     if (ER) ER.style.opacity = '1';
-    updateProgress(88);
-  }, 14000));
+    updateProgress(93);
+  }, 14200));
 
-  // Phase 12: Show Continue button (15500ms)
+  // Phase 14: Show Continue button (15700ms)
   timers.push(setTimeout(function(){
     updateProgress(100);
     if (PCont) PCont.style.display = 'inline-block';
-  }, 15500));
+  }, 15700));
 
   if (PCont) PCont.onclick = function(){
     timers.forEach(function(t){clearTimeout(t)});
