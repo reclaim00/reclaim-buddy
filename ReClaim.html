@@ -3136,7 +3136,7 @@ function reflectHTML() {
     h += '<div class="card" style="text-align:center;cursor:pointer;padding:10px" onclick="var e=document.getElementById(\'past-journals\');if(e){var v=e.style.display!==\'none\';e.style.display=v?\'none\':\'block\';this.querySelector(\'.pj-toggle\').textContent=v?\'Show All (' + D.journal.length + ' entries)\':\'Hide Past Journals\'}">';
     h += '<span class="pj-toggle" style="font-weight:600;font-size:13px;color:var(--primary)">Show All (' + D.journal.length + ' entries)</span></div>';
     h += '<div id="past-journals" style="display:none">';
-    h += '<div style="position:relative;margin-bottom:8px"><input type="text" id="journal-search" placeholder="Search entries..." oninput="filterJournals(this.value)" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);box-sizing:border-box"><span style="position:absolute;right:10px;top:8px;font-size:14px;color:var(--muted)">&#128269;</span></div>';
+    h += '<div style="display:flex;gap:6px;margin-bottom:8px"><input type="text" id="journal-search" placeholder="Search entries..." oninput="filterJournals(this.value)" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);box-sizing:border-box"><button class="btn btn-sm btn-danger" onclick="deleteAllJournalEntries()" style="padding:4px 8px;font-size:10px;width:auto;white-space:nowrap">Delete All</button></div>';
     h += '<div id="journal-list">';
     var entries = D.journal.slice().reverse();
     for (var i=0;i<entries.length;i++) {
