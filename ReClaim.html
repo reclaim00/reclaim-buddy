@@ -2136,7 +2136,9 @@ function logMood(val) {
 function journalHTML() {
   var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0">';
   h += '<h2 style="font-size:20px;font-weight:700">'+t('Journal')+'</h2>';
-  h += '<button class="btn btn-sm btn-primary" onclick="showNewJournal()">+ '+t('New')+'</button></div>';
+  h += '<div style="display:flex;gap:4px">';
+  if (D.journal.length) h += '<button class="btn btn-sm btn-danger" onclick="deleteAllJournalEntries()" style="padding:4px 8px;font-size:10px;width:auto">'+t('Delete All')+'</button>';
+  h += '<button class="btn btn-sm btn-primary" onclick="showNewJournal()">+ '+t('New')+'</button></div></div>';
   h += '<input type="text" id="journal-search" placeholder="'+t('Search entries...')+'" oninput="render()" style="margin-bottom:8px">';
   if (!D.journal.length) {
     h += '<div class="card"><div class="empty-state">'+t('No journal entries yet. Start writing!')+'</div></div>';
@@ -2249,6 +2251,13 @@ function showCrisisAlert(text) {
 function deleteJournalEntry(idx) {
   if (!confirm(t('Delete this journal entry?'))) return;
   D.journal.splice(idx, 1);
+  saveData();
+}
+function deleteAllJournalEntries() {
+  if (!D.journal.length) return;
+  if (!confirm(t('Delete ALL journal entries? This cannot be undone.'))) return;
+  if (!confirm(t('Are you sure? All ' + D.journal.length + ' entries will be permanently removed.'))) return;
+  D.journal = [];
   saveData();
 }
 
