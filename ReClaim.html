@@ -228,6 +228,18 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 @keyframes capsuleGlow{0%{box-shadow:0 0 0 rgba(251,191,36,.3)}50%{box-shadow:0 0 16px rgba(251,191,36,.5)}100%{box-shadow:0 0 0 rgba(251,191,36,.3)}}
 @keyframes chestShake{0%{transform:rotate(0deg) scale(1)}15%{transform:rotate(-5deg) scale(1.05)}30%{transform:rotate(5deg) scale(1.1)}45%{transform:rotate(-3deg) scale(1.08)}60%{transform:rotate(3deg) scale(1.05)}80%{transform:rotate(-1deg) scale(1.02)}100%{transform:rotate(0deg) scale(1)}}
 @keyframes letterReveal{0%{transform:translateY(40px) scale(.5) rotate(-10deg);opacity:0}60%{transform:translateY(-8px) scale(1.05) rotate(2deg);opacity:1}100%{transform:translateY(0) scale(1) rotate(0deg);opacity:1}}
+.mind-game{position:relative;min-height:320px;display:flex;flex-direction:column;align-items:center}
+.mg-speech{position:relative;padding:14px 16px;border-radius:16px;font-size:14px;line-height:1.6;max-width:320px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+.mg-speech.sk{background:#f0f0f0;color:#333;border-bottom-left-radius:4px;margin-left:8px}
+.mg-speech.arthur{background:linear-gradient(135deg,#fef3c7,#fde68a);color:#78350f;border-bottom-right-radius:4px;margin-right:8px}
+.mg-speech.arthur::after{content:'';position:absolute;bottom:-6px;right:12px;border:6px solid transparent;border-top-color:#fde68a;border-bottom:0}
+.mg-speech.sk::after{content:'';position:absolute;bottom:-6px;left:12px;border:6px solid transparent;border-top-color:#f0f0f0;border-bottom:0}
+.mg-opt{display:block;width:100%;padding:12px 14px;margin:4px 0;border:2px solid var(--border);border-radius:12px;background:var(--card);color:var(--text);font-size:13px;text-align:left;cursor:pointer;transition:all .2s}
+.mg-opt:hover{border-color:var(--primary);background:var(--primary-light)}
+.mg-opt.chosen{border-color:var(--primary)}
+.mg-opt.correct{background:#d1fae5;border-color:#34d399;color:#065f46}
+.mg-opt.wrong{background:#fee2e2;border-color:#ef4444;color:#991b1b}
+.mg-streak{font-size:13px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px}
 .top-bar{max-width:480px;width:100%;display:flex;justify-content:space-between;align-items:center;padding:8px 16px;pointer-events:none;margin:0 auto}
 .top-bar > *{pointer-events:auto}
 .sos-btn-float{width:44px;height:44px;border-radius:22px;background:var(--danger);color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(239,68,68,.5)}
@@ -689,7 +701,8 @@ function defaultData() {
     chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: [],
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
     encryption: { enabled: false, salt: null, keyCheck: null },
-    timeCapsules: []
+    timeCapsules: [],
+    mindGame: { streak: 0, bestStreak: 0, totalWins: 0, totalPlayed: 0 }
   };
 }
 
@@ -1590,7 +1603,7 @@ function showRelapseRecovery() {
   h += '<div class="card" style="border-left:4px solid var(--accent);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128204; Next 24 Hours</div><div style="font-size:13px;color:var(--text);line-height:1.5">Identify the trigger — what happened right before? Log it in your journal. Restore your environment (remove triggers). Re-commit to your sobriety timer. Reach out to your buddy or a support group. Read your safety plan from Arthur. Be kind to yourself — shame fuels the cycle, honesty breaks it.</div></div>';
   // Next week
   h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128198; Next 1 Week</div><div style="font-size:13px;color:var(--text);line-height:1.5">Review what led to the relapse and update your trigger list. Strengthen your daily routine — add one extra check-in or coping practice. Forgive yourself fully. Relapse is part of recovery for many people. What matters is what you do next. You are still on the path.</div></div>';
-  h += '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()">I\'ve Got This</button></div>';
+  h += '<button class="btn btn-primary" onclick="var o=this.closest(\'.overlay\');o.remove();setTimeout(function(){showSkeletonGame()},300)">I\'ve Got This</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
@@ -4857,6 +4870,7 @@ function saveCraving(btn) {
   D.cravings.push({ intensity: val, trigger: trigger, date: new Date().toDateString(), time: String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0'), timestamp: Date.now() });
   saveData();
   btn.closest('.overlay').remove();
+  if (val >= 7) { setTimeout(function(){ showSkeletonGame(); }, 600); }
   showCravingPatterns();
 }
 
@@ -5396,6 +5410,16 @@ function homeHTML() {
       h += '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#fef3c7,var(--card))" onclick="goTo(\'timecapsule\')">';
       h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">🎁</div><div><div style="font-weight:700;font-size:15px">Time Capsule'+(tcReady.length>1?'s':'')+' Ready!</div><div style="font-size:12px;color:var(--muted)">Arthur has '+tcReady.length+' message'+(tcReady.length>1?'s':'')+' for you. Tap to open.</div></div></div></div>';
     }
+  }
+
+  // Mind game streak
+  if (D.mindGame && D.mindGame.totalPlayed > 0) {
+    var pct = D.mindGame.totalPlayed > 0 ? Math.round(D.mindGame.totalWins / D.mindGame.totalPlayed * 100) : 0;
+    h += '<div class="card" style="padding:10px 14px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
+    h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px">🥊</div><div style="flex:1"><div style="font-weight:600;font-size:14px">Arthur vs The Voice</div><div style="display:flex;gap:12px;font-size:12px;color:var(--muted);margin-top:2px"><span>🔥 ' + D.mindGame.streak + ' win streak</span><span>🏆 Best: ' + D.mindGame.bestStreak + '</span><span>🎯 ' + pct + '% win rate</span></div></div><button class="btn btn-sm btn-primary" onclick="showSkeletonGame()" style="width:auto;padding:6px 10px;font-size:11px">Play</button></div></div>';
+  } else {
+    h += '<div class="card" style="padding:10px 14px;cursor:pointer;background:linear-gradient(135deg,var(--primary-light),var(--card))" onclick="showSkeletonGame()">';
+    h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px">🥊</div><div><div style="font-weight:600;font-size:14px">Arthur vs The Voice</div><div style="font-size:12px;color:var(--muted)">The addiction voice talks back. Shut it down. Tap to play.</div></div></div></div>';
   }
 
   h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#127942; '+t('Share My Progress')+'</button></div>';
@@ -6402,6 +6426,142 @@ function openCapsuleAnimation(idx) {
   overlay.className = 'overlay';
   overlay.innerHTML = '<div class="overlay-content" style="max-width:440px;text-align:center;padding:24px"><div style="font-size:60px;animation:chestShake 1.5s ease forwards">📦</div><div style="font-size:16px;font-weight:700;color:var(--accent);margin:6px 0">Your Time Capsule Has Arrived!</div><div style="font-size:13px;color:var(--muted);margin-bottom:10px">Arthur kept this safe for you. Here\'s a message from your past.</div><div style="font-size:40px;animation:letterReveal .8s ease .6s both">📜</div><div style="font-weight:700;font-size:18px;margin:6px 0;animation:letterReveal .8s ease .8s both">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div><div class="card" style="text-align:left;font-size:14px;line-height:1.7;white-space:pre-wrap;animation:letterReveal .8s ease 1s both">' + c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</div><div style="display:flex;gap:6px;margin-top:12px;animation:letterReveal .6s ease 1.4s both"><div style="flex:1;font-size:12px;color:var(--muted)">Sealed ' + new Date(c.createdAt).toLocaleDateString() + '</div><button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();render()" style="width:auto">&#10003; Received</button></div></div>';
   document.body.appendChild(overlay);
+}
+
+// ====== SKELETON MIND GAME ======
+var SKELETON_TAUNTS = [
+  {taunt:"Just this once won't hurt. You've earned it.",
+   correct:"That's the trap I always fall for. One is never just one.",
+   okay:"I've earned something better than something that hurts me.",
+   wrong:"Maybe you're right... just this once."},
+  {taunt:"Nobody will know. It'll be our little secret.",
+   correct:"I'll know. And that's the voice that matters most.",
+   okay:"Secrets keep me sick. I'd rather stay honest.",
+   wrong:"That's true... nobody has to find out."},
+  {taunt:"You're stressed. This is how you cope. It works.",
+   correct:"It works until it doesn't. I need real coping, not escapes.",
+   okay:"There are healthier ways to deal with stress.",
+   wrong:"I am stressed. Maybe just this one time."},
+  {taunt:"You're bored. What else is there to do? Come on.",
+   correct:"Boredom is uncomfortable, not dangerous. I can sit with it.",
+   okay:"I could go for a walk or call someone instead.",
+   wrong:"You're right, I've got nothing better going on."},
+  {taunt:"You're sad. Don't you deserve to feel better?",
+   correct:"Feeling better now means feeling worse later. I'll sit with the sad.",
+   okay:"Sad passes. Acting on it makes it last longer.",
+   wrong:"I do deserve to feel better. Let's do this."},
+  {taunt:"Everyone else can handle it. Why can't you?",
+   correct:"Other people's relationships with this aren't my business. Mine is what matters.",
+   okay:"I'm not everyone else. I'm me, and I know my limits.",
+   wrong:"Maybe I'm overreacting. Other people do it fine."},
+  {taunt:"You've already ruined your streak. Might as well keep going.",
+   correct:"One slip doesn't erase all my progress. I stop here.",
+   okay:"The streak is gone, but I can start a new one right now.",
+   wrong:"The streak is already broken anyway..."},
+  {taunt:"It's a special occasion! Celebrations don't count.",
+   correct:"Every occasion used to be a 'special occasion.' That's how it starts.",
+   okay:"I can celebrate without this. Music, people, dancing — that's real celebration.",
+   wrong:"It IS a special occasion. I'll just do it this once."},
+  {taunt:"You're angry. Show them. You deserve to blow off steam.",
+   correct:"Blowing off steam this way just leaves me burned. I'll take a walk instead.",
+   okay:"Anger passes. I'll count to ten and breathe.",
+   wrong:"I AM angry. I need to let it out somehow."},
+  {taunt:"You're lonely. This is here for you. It never judges.",
+   correct:"It's a poor substitute for real connection. I'll reach out to someone.",
+   okay:"Loneliness hurts, but this won't fill the real need.",
+   wrong:"At least it doesn't judge me. Fine."},
+  {taunt:"Tomorrow you'll quit for real. Today's a freebie.",
+   correct:"There's always a 'tomorrow.' Today is the only day I have.",
+   okay:"I've told myself that before. How did that work out?",
+   wrong:"Yeah, I'll start fresh tomorrow."},
+  {taunt:"You're not as strong as you think. Give up.",
+   correct:"I'm still here, still trying. That's stronger than giving in.",
+   okay:"I don't have to be strong. I just have to not pick up right now.",
+   wrong:"Maybe I'm not strong enough for this."},
+  {taunt:"One drink/puff/click won't undo everything. Relax.",
+   correct:"It's never one. And I'm not relaxed — I'm negotiating with myself.",
+   okay:"It might not undo the past, but it derails the future.",
+   wrong:"You're right, I'm overthinking it."},
+  {taunt:"You're doing so well! Reward yourself. You deserve a treat.",
+   correct:"My recovery IS the reward. I don't need to undo it to celebrate it.",
+   okay:"I deserve a real treat — good food, a movie, time outdoors.",
+   wrong:"I have been doing well. Maybe a little treat..."},
+  {taunt:"You're not really addicted. You can stop anytime.",
+   correct:"If I can stop anytime, I can stop right now. So I will.",
+   okay:"I wouldn't be here if it wasn't a problem. Stop lying to myself.",
+   wrong:"Maybe I'm not that bad. I can handle it."}
+];
+function showSkeletonGame() {
+  if (document.querySelector('.mind-game-overlay')) return;
+  if (!D.mindGame) D.mindGame = { streak: 0, bestStreak: 0, totalWins: 0, totalPlayed: 0 };
+  var taunt = SKELETON_TAUNTS[Math.floor(Math.random() * SKELETON_TAUNTS.length)];
+  var opts = [
+    {text:taunt.correct, val:'correct'},
+    {text:taunt.okay, val:'okay'},
+    {text:taunt.wrong, val:'wrong'}
+  ];
+  for (var i=opts.length-1;i>0;i--) { var j=Math.floor(Math.random()*(i+1)); var t=opts[i]; opts[i]=opts[j]; opts[j]=t; }
+  var skSVG = '<svg style="width:44px;height:62px" viewBox="0 0 30 54"><path d="M11.5 2 Q13 -0.5 15 -0.5 Q17 -0.5 18.5 2 L18.5 7 Q18 10 16.5 10.5 L15 11 L13.5 10.5 Q12 10 11.5 7 Z" fill="#f0f0f0" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round"/><circle cx="12.5" cy="5" r="2" fill="#333"/><circle cx="17.5" cy="5" r="2" fill="#333"/><path d="M14 7.5 L15 8.5 L16 7.5" fill="none" stroke="#333" stroke-width="1" stroke-linecap="round"/><line x1="15" y1="11" x2="15" y2="12" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round"/><path d="M12 12.5 L11 14 L11 18 L11.5 23 Q11 27 11.5 30 L18.5 30 Q19 27 18.5 23 L19 18 L19 14 L18 12.5 Z" fill="none" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><path d="M12.5 15 Q15 17 17.5 15" fill="none" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/><path d="M12 18 Q15 20 18 18" fill="none" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/><path d="M12.5 21 Q15 23 17.5 21" fill="none" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/></svg>';
+  var arSVG = '<svg style="width:44px;height:62px" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="#ffd700" stroke="#b8860b" stroke-width="1.5"/><path d="M8 5 L15 0 L22 5" fill="none" stroke="#b8860b" stroke-width="1.5"/><line x1="7" y1="5" x2="23" y2="5" stroke="#b8860b" stroke-width="1"/><line x1="15" y1="12" x2="15" y2="28" stroke="#ffd700" stroke-width="2"/><line x1="15" y1="16" x2="8" y2="24" stroke="#ffd700" stroke-width="2"/><line x1="15" y1="16" x2="22" y2="24" stroke="#ffd700" stroke-width="2"/><line x1="15" y1="28" x2="10" y2="38" stroke="#ffd700" stroke-width="2"/><line x1="15" y1="28" x2="20" y2="38" stroke="#ffd700" stroke-width="2"/></svg>';
+  var h = '';
+  h += '<div class="mind-game">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;width:100%;margin-bottom:6px"><div style="font-weight:700;font-size:15px">The Voice vs Arthur</div><div class="mg-streak">' + (D.mindGame.streak > 0 ? '🔥 Streak: ' + D.mindGame.streak : '') + '</div></div>';
+  h += '<div style="display:flex;align-items:flex-end;gap:8px;margin:8px 0">';
+  h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px">' + skSVG + '<span class="mg-speech sk" id="sk-speech">' + taunt.taunt + '</span></div>';
+  h += '<div style="flex:1"></div>';
+  h += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><span class="mg-speech arthur" id="ar-speech">That's the addiction voice. What do you say back?</span>' + arSVG + '</div>';
+  h += '</div>';
+  h += '<div id="mg-opts" style="width:100%;margin-top:6px">';
+  for (var i=0;i<opts.length;i++) {
+    h += '<button class="mg-opt" data-val="' + opts[i].val + '" onclick="pickMGAnswer(this,\'' + opts[i].val + '\')">' + opts[i].text + '</button>';
+  }
+  h += '</div>';
+  h += '<div id="mg-result" style="display:none;width:100%;text-align:center;margin-top:8px"></div>';
+  h += '</div>';
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay mind-game-overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px">' + h + '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:4px">Close</button></div>';
+  document.body.appendChild(overlay);
+}
+function pickMGAnswer(btn, val) {
+  var allOpts = document.querySelectorAll('.mg-opt');
+  for (var i=0;i<allOpts.length;i++) allOpts[i].disabled = true;
+  btn.className = 'mg-opt chosen';
+  if (!D.mindGame) D.mindGame = { streak: 0, bestStreak: 0, totalWins: 0, totalPlayed: 0 };
+  D.mindGame.totalPlayed++;
+  var skSpeech = document.getElementById('sk-speech');
+  var arSpeech = document.getElementById('ar-speech');
+  var resultDiv = document.getElementById('mg-result');
+  var mgOpts = document.getElementById('mg-opts');
+  resultDiv.style.display = 'block';
+  if (val === 'correct') {
+    btn.className += ' correct';
+    D.mindGame.streak++;
+    D.mindGame.totalWins++;
+    if (D.mindGame.streak > D.mindGame.bestStreak) D.mindGame.bestStreak = D.mindGame.streak;
+    resultDiv.innerHTML = '<div style="background:#d1fae5;color:#065f46;padding:10px;border-radius:10px;font-weight:600">&#10004; That\'s the recovery voice! You shut it down. 🔥 ' + D.mindGame.streak + (D.mindGame.streak===1?' win':' wins') + ' in a row</div>';
+    if (skSpeech) skSpeech.innerHTML = '...grrr...';
+    if (arSpeech) arSpeech.innerHTML = 'That\'s my champion! That voice loses every time you talk back.';
+  } else if (val === 'okay') {
+    btn.className += ' correct';
+    D.mindGame.streak = 0;
+    resultDiv.innerHTML = '<div style="background:#fef3c7;color:#92400e;padding:10px;border-radius:10px;font-weight:600">&#9888; Close — but the addiction voice wants action, not compromise. Next time, be stronger.</div>';
+    if (skSpeech) skSpeech.innerHTML = 'Heh. Almost had you.';
+    if (arSpeech) arSpeech.innerHTML = 'Good instincts, but that voice doesn\'t negotiate. Let\'s try again — you can be fiercer.';
+  } else {
+    btn.className += ' wrong';
+    D.mindGame.streak = 0;
+    resultDiv.innerHTML = '<div style="background:#fee2e2;color:#991b1b;padding:10px;border-radius:10px;font-weight:600">&#10008; That\'s what it wants you to think. Don\'t let it win. You\'re better than that.</div>';
+    if (skSpeech) skSpeech.innerHTML = 'That\'s right. Listen to me...';
+    if (arSpeech) arSpeech.innerHTML = 'Hey. That voice is a liar. You don\'t have to believe it. Take a breath, and try again.';
+  }
+  saveData();
+  if (mgOpts) mgOpts.style.display = 'none';
+  setTimeout(function(){
+    var ov = document.querySelector('.mind-game-overlay');
+    if (ov) ov.remove();
+    render();
+  }, 4000);
 }
 
 function showErinDuel() {
