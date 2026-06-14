@@ -231,7 +231,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .ring-post{position:absolute;width:8px;height:80px;background:linear-gradient(#fff,#ccc);border-radius:4px;box-shadow:0 0 4px rgba(0,0,0,.2)}
 .ring-post.l{left:8px;top:10px}.ring-post.r{right:8px;top:10px}
 .boxer-pos{position:absolute;bottom:30px;transition:all .3s ease}
-.boxer-pos.arthur{left:22%}.boxer-pos.skeleton{right:22%}
+.boxer-pos.arthur{left:22%;filter:drop-shadow(0 0 10px rgba(255,215,0,.8))}.boxer-pos.skeleton{right:22%}
 .arthur-svg{width:75px;height:105px;transform-origin:bottom center}
 .skeleton-svg{width:75px;height:105px;transform-origin:bottom center}
 .paulie-svg{width:75px;height:105px;transform-origin:bottom center}
@@ -5503,28 +5503,13 @@ function showBoxingMatch(onDone) {
 
   var arthurSVG =
     '<svg class="arthur-svg" viewBox="0 0 30 54">' +
-    '<path d="M7 3 L8 1 L10 2 L12.5 0 L15 0.5 L17.5 0 L20 2 L22 1 L23 3 L24 5 L24.5 7 L22 9 L19 10 L15 11 L11 10 L8 9 L5.5 7 L6 5 Z" fill="#b8860b" stroke="none"/>' +
-    '<path d="M8 3.5 L9 2 L11 2.5 L13 1 L15 1.5 L17 1 L19 2.5 L21 2 L22 3.5 L22.5 5 L23 6.5 L21 8.5 L18 9.5 L15 10 L12 9.5 L9 8.5 L7 6.5 L7.5 5 Z" fill="#d4a017" stroke="none"/>' +
-    '<circle cx="15" cy="6" r="4.5" fill="#e8b87a" stroke="#c09040" stroke-width="2" stroke-linecap="round"/>' +
-    '<path d="M10 2.5 L11 1 L13 2.5" fill="#e8b87a" stroke="#c09040" stroke-width="1" stroke-linecap="round"/>' +
-    '<path d="M20 2.5 L19 1 L17 2.5" fill="#e8b87a" stroke="#c09040" stroke-width="1" stroke-linecap="round"/>' +
-    '<path d="M11 5 L12.5 6 L14 5" fill="none" stroke="#333" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<path d="M16 5 L17.5 6 L19 5" fill="none" stroke="#333" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<line x1="11" y1="4" x2="14" y2="4.5" stroke="#8B6914" stroke-width="1" stroke-linecap="round"/>' +
-    '<line x1="19" y1="4" x2="16" y2="4.5" stroke="#8B6914" stroke-width="1" stroke-linecap="round"/>' +
-    '<path d="M14 7 L15 8 L16 7 Z" fill="#8B6914" stroke="none"/>' +
-    '<path d="M13 8.5 Q15 10 17 8.5" fill="none" stroke="#333" stroke-width="1" stroke-linecap="round"/>' +
-    '<line x1="11" y1="7.5" x2="8.5" y2="7.5" stroke="#333" stroke-width="0.6" stroke-linecap="round"/>' +
-    '<line x1="11" y1="8.5" x2="8.5" y2="9" stroke="#333" stroke-width="0.6" stroke-linecap="round"/>' +
-    '<line x1="19" y1="7.5" x2="21.5" y2="7.5" stroke="#333" stroke-width="0.6" stroke-linecap="round"/>' +
-    '<line x1="19" y1="8.5" x2="21.5" y2="9" stroke="#333" stroke-width="0.6" stroke-linecap="round"/>' +
-    '<line x1="15" y1="10" x2="15" y2="12" stroke="#c09040" stroke-width="2" stroke-linecap="round"/>' +
-    '<path d="M10 12 L9 14 L9 18 L9.5 24 Q10 28 11.5 30 L18.5 30 Q20 28 20.5 24 L21 18 L21 14 L20 12 Z" fill="#e8b87a" stroke="#c09040" stroke-width="2" stroke-linecap="round" class="a-body"/>' +
-    '<path d="M12 15 Q15 14 18 15 L17 25 Q15 27 13 25 Z" fill="#fdf0df" stroke="none"/>' +
-    '<g class="a-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="18" stroke="#c09040" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="18" r="1.5" fill="#c09040"/><g class="a-larm-fg" style="transform-origin:21px 18px"><line x1="21" y1="18" x2="22" y2="12" stroke="#c09040" stroke-width="3" stroke-linecap="round"/><circle cx="23" cy="12" r="2.5" fill="#dc2626"/></g></g>' +
-    '<g class="a-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#c09040" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#c09040"/><g class="a-rarm-fg" style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#c09040" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="10" r="2.5" fill="#dc2626"/></g></g>' +
-    '<g class="a-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#c09040" stroke-width="3" stroke-linecap="round"/><circle cx="10" cy="39" r="1.5" fill="#c09040"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#c09040" stroke-width="2.5" stroke-linecap="round"/><line x1="7" y1="51" x2="4" y2="51" stroke="#c09040" stroke-width="2" stroke-linecap="round"/></g></g>' +
-    '<g class="a-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#c09040" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="38" r="1.5" fill="#c09040"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#c09040" stroke-width="2.5" stroke-linecap="round"/><line x1="24" y1="51" x2="27" y2="51" stroke="#c09040" stroke-width="2" stroke-linecap="round"/></g></g>' +
+    '<path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8" stroke-linecap="round"/>' +
+    '<circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round" class="a-body"/>' +
+    '<g class="a-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="18" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="18" r="1.5" fill="#ffd700"/><g class="a-larm-fg" style="transform-origin:21px 18px"><line x1="21" y1="18" x2="22" y2="12" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="23" cy="12" r="2.5" fill="#dc2626"/></g></g>' +
+    '<g class="a-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g class="a-rarm-fg" style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="10" r="2.5" fill="#dc2626"/></g></g>' +
+    '<g class="a-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="10" cy="39" r="1.5" fill="#ffd700"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></g></g>' +
+    '<g class="a-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="38" r="1.5" fill="#ffd700"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></g></g>' +
     '</svg>';
 
   overlay.innerHTML =
