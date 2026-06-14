@@ -53,7 +53,7 @@ body.logged-in .app{padding-top:0}
 .btn-danger{background:var(--danger-bg);color:var(--danger)}
 .btn-sm{padding:8px 16px;font-size:12px;width:auto;border-radius:8px}
 .tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;background:var(--card);display:flex;border-top:1px solid var(--border);padding:6px 0;padding-bottom:20px;z-index:100}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border:none;background:none;font-size:10px;color:var(--muted);cursor:pointer;font-weight:500}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0;border:none;background:none;font-size:10px;color:var(--muted);cursor:pointer;font-weight:500;position:relative}
 .tab.active{color:var(--primary)}
 .tab svg{width:22px;height:22px}
 input,textarea,select{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;background:var(--card);color:var(--text);margin:6px 0;outline:none}
@@ -222,6 +222,12 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .badge-gold{background:#fef3c7;color:#92400e}
 .progress-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:6px 0}
 .progress-bar .fill{height:100%;background:var(--primary);border-radius:3px;transition:width .3s}
+.capsule-card{cursor:pointer;transition:transform .2s,border-color .2s;border-left:4px solid var(--primary)}
+.capsule-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.capsule-card.ready{animation:capsuleGlow 2s ease-in-out infinite}
+@keyframes capsuleGlow{0%{box-shadow:0 0 0 rgba(251,191,36,.3)}50%{box-shadow:0 0 16px rgba(251,191,36,.5)}100%{box-shadow:0 0 0 rgba(251,191,36,.3)}}
+@keyframes chestShake{0%{transform:rotate(0deg) scale(1)}15%{transform:rotate(-5deg) scale(1.05)}30%{transform:rotate(5deg) scale(1.1)}45%{transform:rotate(-3deg) scale(1.08)}60%{transform:rotate(3deg) scale(1.05)}80%{transform:rotate(-1deg) scale(1.02)}100%{transform:rotate(0deg) scale(1)}}
+@keyframes letterReveal{0%{transform:translateY(40px) scale(.5) rotate(-10deg);opacity:0}60%{transform:translateY(-8px) scale(1.05) rotate(2deg);opacity:1}100%{transform:translateY(0) scale(1) rotate(0deg);opacity:1}}
 .top-bar{max-width:480px;width:100%;display:flex;justify-content:space-between;align-items:center;padding:8px 16px;pointer-events:none;margin:0 auto}
 .top-bar > *{pointer-events:auto}
 .sos-btn-float{width:44px;height:44px;border-radius:22px;background:var(--danger);color:#fff;border:none;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(239,68,68,.5)}
@@ -542,7 +548,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span class="tab-label">Track</span>
     </button>
     <button class="tab" data-page="more">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg><span class="tab-label">Tools</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg><span class="tab-label">Tools</span><span id="tools-badge" style="display:none;position:absolute;top:2px;right:50%;margin-right:-22px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;min-width:8px;text-align:center;line-height:1.4">1</span>
     </button>
 </div>
 
@@ -682,7 +688,8 @@ function defaultData() {
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
     chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: [],
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
-    encryption: { enabled: false, salt: null, keyCheck: null }
+    encryption: { enabled: false, salt: null, keyCheck: null },
+    timeCapsules: []
   };
 }
 
@@ -4631,6 +4638,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Buddy')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
+  h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Resources')+'</h3>';
   h += '<div class="sub-grid">';
@@ -5381,6 +5389,15 @@ function homeHTML() {
 
   h += recoveryGoalsHTML();
 
+  // Time capsule ready notification
+  if (D.timeCapsules) {
+    var tcReady = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked});
+    if (tcReady.length) {
+      h += '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#fef3c7,var(--card))" onclick="goTo(\'timecapsule\')">';
+      h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">🎁</div><div><div style="font-weight:700;font-size:15px">Time Capsule'+(tcReady.length>1?'s':'')+' Ready!</div><div style="font-size:12px;color:var(--muted)">Arthur has '+tcReady.length+' message'+(tcReady.length>1?'s':'')+' for you. Tap to open.</div></div></div></div>';
+    }
+  }
+
   h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#127942; '+t('Share My Progress')+'</button></div>';
 
   // Famous recovery figure (matched to user's addictions)
@@ -5853,7 +5870,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','timecapsule'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -6273,6 +6290,120 @@ function savePaulieStep() {
 function showRelapsePlan() {
   startPaulieWizard();
 }
+
+// ====== TIME CAPSULE ======
+function timeCapsuleHTML() {
+  if (!D.timeCapsules) D.timeCapsules = [];
+  var readyCount = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked}).length;
+  var h = '';
+  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128230; Time Capsule</h2>';
+  h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
+  h += '<div style="font-size:36px;margin-bottom:6px">&#128230;</div>';
+  h += '<p style="font-size:14px;line-height:1.6;color:var(--text)">Write a letter to your <strong>future self</strong>. Arthur will seal it away and remind you when it\'s time to open it. A message from your past — exactly when you need it most.</p>';
+  if (readyCount > 0) {
+    h += '<div style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:10px 14px;border-radius:10px;margin:10px 0;font-weight:700;font-size:16px">🎁 ' + readyCount + ' capsule' + (readyCount>1?'s are':' is') + ' ready to open!</div>';
+  }
+  h += '<button class="btn btn-primary" onclick="showNewCapsule()" style="margin-top:6px">&#128230; Seal a New Letter</button></div>';
+  if (!D.timeCapsules.length) {
+    h += '<div class="card"><div class="empty-state">No time capsules yet. Write a letter to your future self — you\'ll thank yourself later.</div></div>';
+  } else {
+    var sealed = D.timeCapsules.filter(function(c){return Date.now() < c.unlockAt || !c.unlocked});
+    var opened = D.timeCapsules.filter(function(c){return c.unlocked});
+    if (sealed.length) {
+      h += '<h3 style="font-size:14px;font-weight:700;color:var(--muted);margin:12px 0 4px">🔒 Sealed (' + sealed.length + ')</h3>';
+      for (var i=0;i<D.timeCapsules.length;i++) {
+        var c = D.timeCapsules[i];
+        var isReady = Date.now() >= c.unlockAt && !c.unlocked;
+        var isSealed = !c.unlocked;
+        if (!isSealed) continue;
+        var daysLeft = Math.ceil((c.unlockAt - Date.now()) / 86400000);
+        h += '<div class="card capsule-card' + (isReady?' ready':'') + '" onclick="' + (isReady ? 'openCapsuleAnimation('+i+')' : '') + '">';
+        h += '<div style="display:flex;align-items:center;gap:10px">';
+        h += '<div style="font-size:28px">' + (isReady ? '🎁' : '🔒') + '</div>';
+        h += '<div style="flex:1"><div style="font-weight:600;font-size:14px">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+        h += '<div style="font-size:11px;color:var(--muted)">' + (isReady ? '<span style="color:var(--accent);font-weight:600">Ready to open!</span>' : 'Opens ' + new Date(c.unlockAt).toLocaleDateString() + ' (' + daysLeft + ' days)') + '</div></div>';
+        h += '<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();if(confirm(\'Delete this capsule?\')){D.timeCapsules.splice('+i+',1);saveData()}" style="padding:2px 6px;font-size:10px;width:auto">&#10005;</button>';
+        h += '</div></div>';
+      }
+    }
+    if (opened.length) {
+      h += '<h3 style="font-size:14px;font-weight:700;color:var(--muted);margin:12px 0 4px">📖 Opened (' + opened.length + ')</h3>';
+      for (var i=0;i<D.timeCapsules.length;i++) {
+        var c = D.timeCapsules[i];
+        if (!c.unlocked) continue;
+        h += '<div class="card capsule-card" onclick="showOpenedCapsule('+i+')">';
+        h += '<div style="display:flex;align-items:center;gap:10px">';
+        h += '<div style="font-size:28px">📜</div>';
+        h += '<div style="flex:1"><div style="font-weight:600;font-size:14px">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+        h += '<div style="font-size:11px;color:var(--muted)">Opened ' + (c.openedAt ? new Date(c.openedAt).toLocaleDateString() : '') + ' &middot; Sealed ' + new Date(c.createdAt).toLocaleDateString() + '</div></div></div></div>';
+      }
+    }
+  }
+  return h;
+}
+function showNewCapsule() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var now = new Date();
+  var durations = [
+    {label:'1 Month', val:1},
+    {label:'3 Months', val:3},
+    {label:'6 Months', val:6},
+    {label:'1 Year', val:12}
+  ];
+  var durOpts = '';
+  for (var i=0;i<durations.length;i++) {
+    durOpts += '<button class="btn btn-sm btn-outline" data-months="'+durations[i].val+'" onclick="[].forEach.call(this.parentNode.children,function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';document.getElementById(\'capsule-dur\').value='+durations[i].val+'" style="flex:1;font-size:11px">'+durations[i].label+'</button>';
+  }
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:10px"><div style="font-size:40px">&#128230;</div><h3 style="font-size:18px;font-weight:700;margin:4px 0">Seal a Letter to Your Future Self</h3><p style="font-size:12px;color:var(--muted)">Arthur will lock this away until the time is right.</p></div><input type="text" id="capsule-title" placeholder="Give your letter a title..." style="margin-bottom:6px"><textarea id="capsule-message" placeholder="Write your message..." style="min-height:100px;margin-bottom:6px"></textarea><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px">When should Arthur return this?</div><div style="display:flex;gap:4px;margin-bottom:10px" id="dur-options">'+durOpts+'</div><input type="hidden" id="capsule-dur" value="1"><button class="btn btn-primary" onclick="saveNewCapsule()" style="width:100%">&#128230; Seal It</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;width:100%">Cancel</button></div>';
+  document.body.appendChild(overlay);
+  setTimeout(function(){
+    var first = overlay.querySelector('#dur-options .btn');
+    if (first) first.className = 'btn btn-sm btn-primary';
+  }, 50);
+}
+function saveNewCapsule() {
+  var title = document.getElementById('capsule-title');
+  var msg = document.getElementById('capsule-message');
+  var dur = document.getElementById('capsule-dur');
+  if (!title || !title.value.trim()) { alert('Give your letter a title.'); return; }
+  if (!msg || !msg.value.trim()) { alert('Write something to your future self.'); return; }
+  var months = parseInt(dur ? dur.value : 1);
+  var unlock = new Date();
+  unlock.setMonth(unlock.getMonth() + months);
+  D.timeCapsules.push({
+    id: Date.now(),
+    title: title.value.trim(),
+    message: msg.value.trim(),
+    createdAt: Date.now(),
+    unlockAt: unlock.getTime(),
+    unlocked: false,
+    openedAt: null
+  });
+  saveData();
+  var overlay = title.closest('.overlay');
+  if (overlay) overlay.remove();
+}
+function showOpenedCapsule(idx) {
+  var c = D.timeCapsules[idx];
+  if (!c) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:36px">📜</div><h3 style="font-size:18px;font-weight:700;margin:4px 0">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</h3><div style="font-size:11px;color:var(--muted);margin-bottom:8px">Sealed ' + new Date(c.createdAt).toLocaleDateString() + ' &middot; Opened ' + (c.openedAt ? new Date(c.openedAt).toLocaleDateString() : '') + '</div><div class="card" style="text-align:left;font-size:14px;line-height:1.7;white-space:pre-wrap">' + c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:10px">Close</button></div>';
+  document.body.appendChild(overlay);
+}
+function openCapsuleAnimation(idx) {
+  var c = D.timeCapsules[idx];
+  if (!c) return;
+  c.unlocked = true;
+  c.openedAt = Date.now();
+  saveData();
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:440px;text-align:center;padding:24px"><div style="font-size:60px;animation:chestShake 1.5s ease forwards">📦</div><div style="font-size:16px;font-weight:700;color:var(--accent);margin:6px 0">Your Time Capsule Has Arrived!</div><div style="font-size:13px;color:var(--muted);margin-bottom:10px">Arthur kept this safe for you. Here\'s a message from your past.</div><div style="font-size:40px;animation:letterReveal .8s ease .6s both">📜</div><div style="font-weight:700;font-size:18px;margin:6px 0;animation:letterReveal .8s ease .8s both">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div><div class="card" style="text-align:left;font-size:14px;line-height:1.7;white-space:pre-wrap;animation:letterReveal .8s ease 1s both">' + c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</div><div style="display:flex;gap:6px;margin-top:12px;animation:letterReveal .6s ease 1.4s both"><div style="flex:1;font-size:12px;color:var(--muted)">Sealed ' + new Date(c.createdAt).toLocaleDateString() + '</div><button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();render()" style="width:auto">&#10003; Received</button></div></div>';
+  document.body.appendChild(overlay);
+}
+
 function showErinDuel() {
   if (document.getElementById('erin-duel')) return;
   var anim = document.createElement('div');
@@ -6597,7 +6728,7 @@ function render() {
     assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    relapseplan: relapsePlanHTML,
+    relapseplan: relapsePlanHTML, timecapsule: timeCapsuleHTML,
   };
   var fn = pages[pg];
   if (fn) app.innerHTML = fn();
@@ -6613,6 +6744,13 @@ function render() {
   if (tb) tb.style.display = 'flex';
   applyTheme();
   updateTabLabels();
+  // Time capsule badge
+  var tbEl = document.getElementById('tools-badge');
+  if (tbEl && D.timeCapsules) {
+    var ready = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked}).length;
+    tbEl.textContent = ready;
+    tbEl.style.display = ready ? 'block' : 'none';
+  }
   if (pg === 'home') { setTimeout(function(){ checkMilestone(); }, 500); }
 }
 
