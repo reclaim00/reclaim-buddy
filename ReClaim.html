@@ -6086,7 +6086,7 @@ function savePaulieStep() {
     document.body.appendChild(anim);
 
     var P = document.getElementById('paulie-char');
-    var D = document.getElementById('dragon-char');
+    var DR = document.getElementById('dragon-char');
     var G = document.getElementById('paulie-glow');
     var DF1 = document.getElementById('dragon-fire1');
     var DF2 = document.getElementById('dragon-fire2');
@@ -6115,7 +6115,7 @@ function savePaulieStep() {
       el.style.animation = cssAnim; el.style.opacity = '';
       if (dur) timers.push(setTimeout(function(){ if (el) el.style.opacity = '0'; }, dur));
     }
-    var DW = D && D.querySelector('.d-wing-g');
+    var DW = DR && DR.querySelector('.d-wing-g');
     function dWing(anim, dur) {
       if (!DW) return;
       DW.style.animation = 'none'; DW.offsetHeight;
@@ -6123,10 +6123,10 @@ function savePaulieStep() {
       if (dur) timers.push(setTimeout(function(){ if (DW) { DW.style.animation = 'none'; DW.style.transform = ''; } }, dur));
     }
     function dBody(anim, dur) {
-      if (!D) return;
-      D.style.animation = 'none'; D.offsetHeight;
-      D.style.animation = anim + ' ' + dur + 'ms ease forwards';
-      timers.push(setTimeout(function(){ if (D) D.style.animation = 'dragonDrama 15s ease forwards'; }, dur));
+      if (!DR) return;
+      DR.style.animation = 'none'; DR.offsetHeight;
+      DR.style.animation = anim + ' ' + dur + 'ms ease forwards';
+      timers.push(setTimeout(function(){ if (DR) DR.style.animation = 'dragonDrama 15s ease forwards'; }, dur));
     }
     function showEl(el) { if (el) el.style.opacity = '1'; }
 
