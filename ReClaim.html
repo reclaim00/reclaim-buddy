@@ -1715,16 +1715,26 @@ function endSobrietyReset(overlay) {
 
 // ====== ASSESSMENT QUIZ ======
 var ASSESS_QUESTIONS = [
-  'Have you used substances more than you intended?',
-  'Have you tried to cut down but couldn\'t?',
-  'Do you spend a lot of time getting, using, or recovering from substances?',
-  'Do you have cravings or strong urges to use?',
-  'Does your substance use interfere with work, school, or home?',
-  'Do you continue using despite relationship problems caused by it?',
-  'Have you given up activities because of substance use?',
-  'Do you use in situations where it\'s physically dangerous?',
-  'Do you continue using despite knowing it makes a health problem worse?',
-  'Do you need more of the substance to get the same effect?'
+  'I have used one or more drugs other than those required for medical reasons.',
+  'I have used more than one substance at a time.',
+  'I have used a substance in larger amounts or for longer than I intended.',
+  'I sometimes wonder whether I am dependent on a drug or substance.',
+  'I am always able to stop using drugs or substances when I want.',
+  'I have experienced one or more blackouts as a result of substance use.',
+  'I have experienced medical problems as a result of substance use.',
+  'I sometimes feel bad about my substance use.',
+  'I devote a good deal of time to getting and or using the drug.',
+  'I have never engaged in illicit activities to get drugs.',
+  'I have used a substance in a situation in which it is physically hazardous.',
+  'It takes a good deal of time to recover from the effects of my substance use.',
+  'I experience cravings or a strong desire to use a substance.',
+  'Family members and or friends have asked me whether I am involved with drugs.',
+  'I have tried stopping the use of a substance one or more times but resumed use.',
+  'I experienced unpleasant effects when I stopped using a substance.',
+  'I have used a substance to relieve the unpleasant effects I experience when not taking it.',
+  'I have sometimes neglected work or school because of the use of a substance.',
+  'I have sometimes neglected family obligations because of the use of a substance.',
+  'I find myself needing more of a substance to achieve the desired effect.'
 ];
 
 function quizOptionsHTML(name, savedVal) {
@@ -1826,7 +1836,11 @@ function quizSubmit() {
   if (sel) D.assessmentProgress[idx] = parseInt(sel.value);
   var score = 0, count = 0;
   for (var i=0;i<D.assessmentProgress.length;i++) {
-    if (D.assessmentProgress[i] !== null) { score += D.assessmentProgress[i]; count++; }
+    if (D.assessmentProgress[i] !== null) {
+      var val = D.assessmentProgress[i];
+      if (i === 4 || i === 9) val = 100 - val;
+      score += val; count++;
+    }
   }
   score = count > 0 ? Math.round(score / count) : 0;
   D.assessmentTaken = true;
@@ -1938,7 +1952,11 @@ function osiSubmit(btn) {
   if (sel) D.assessmentProgress[idx] = parseInt(sel.value);
   var score = 0, count = 0;
   for (var i=0;i<D.assessmentProgress.length;i++) {
-    if (D.assessmentProgress[i] !== null) { score += D.assessmentProgress[i]; count++; }
+    if (D.assessmentProgress[i] !== null) {
+      var val = D.assessmentProgress[i];
+      if (i === 4 || i === 9) val = 100 - val;
+      score += val; count++;
+    }
   }
   score = count > 0 ? Math.round(score / count) : 0;
   D.assessmentTaken = true;
