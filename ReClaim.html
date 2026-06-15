@@ -266,42 +266,73 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes flashPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}40%{opacity:0;transform:translate(-50%,-50%) scale(0.8)}60%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}}
 @keyframes burstPop{0%{opacity:0;transform:translate(-50%,-35%) scale(0.3) rotate(-20deg)}30%{opacity:1;transform:translate(-50%,-35%) scale(1.2) rotate(10deg)}60%{opacity:1;transform:translate(-50%,-35%) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-45%) scale(1.5) rotate(30deg)}}
 @keyframes gloveFly{0%{opacity:0;transform:translateX(0) scale(0.5)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateX(var(--fly-dist)) scale(0.3)}}
-@keyframes arthurLunge{0%{transform:translateX(0) rotate(0deg)}10%{transform:translateX(-3px) rotate(3deg)}25%{transform:translateX(25px) rotate(-6deg)}40%{transform:translateX(50px) rotate(-14deg)}55%{transform:translateX(45px) rotate(-10deg)}70%{transform:translateX(25px) rotate(-5deg)}85%{transform:translateX(10px) rotate(-2deg)}100%{transform:translateX(0) rotate(0deg)}}
-@keyframes arthurRecoil{0%{transform:translateX(0) rotate(0deg)}8%{transform:translateX(-12px) rotate(6deg)}22%{transform:translateX(-38px) rotate(16deg)}40%{transform:translateX(-33px) rotate(12deg)}60%{transform:translateX(-20px) rotate(7deg)}80%{transform:translateX(-8px) rotate(2deg)}100%{transform:translateX(0) rotate(0deg)}}
-@keyframes arthurDuck{0%{transform:translateY(0) scaleY(1)}15%{transform:translateY(5px) scaleY(0.95)}35%{transform:translateY(14px) scaleY(0.82)}60%{transform:translateY(12px) scaleY(0.85)}85%{transform:translateY(4px) scaleY(0.97)}100%{transform:translateY(0) scaleY(1)}}
-@keyframes arthurStagger{0%{transform:translateX(0) rotate(0deg)}8%{transform:translateX(-14px) rotate(8deg)}25%{transform:translateX(-45px) rotate(20deg) scale(0.9)}45%{transform:translateX(-36px) rotate(14deg) scale(0.93)}65%{transform:translateX(-20px) rotate(7deg) scale(0.97)}85%{transform:translateX(-6px) rotate(2deg) scale(0.99)}100%{transform:translateX(0) rotate(0deg)}}
-@keyframes arthurKnee{0%{transform:translateX(0) rotate(0deg)}15%{transform:translateX(-18px) rotate(5deg)}35%{transform:translateX(-30px) translateY(10px) rotate(15deg) scaleY(0.8)}55%{transform:translateX(-25px) translateY(28px) rotate(25deg) scaleY(0.65)}75%{transform:translateX(-22px) translateY(35px) rotate(30deg) scaleY(0.55)}100%{transform:translateX(-22px) translateY(35px) rotate(30deg) scaleY(0.55)}}
-@keyframes arthurShakeOff{0%{transform:translateX(-22px) translateY(35px) rotate(30deg) scaleY(0.55)}15%{transform:translateX(-16px) translateY(22px) rotate(20deg) scaleY(0.65)}30%{transform:translateX(-10px) translateY(10px) rotate(10deg) scaleY(0.8)}45%{transform:translateX(-4px) translateY(3px) rotate(5deg) scaleY(0.95)}55%{transform:translateX(0) rotate(-2deg)}70%{transform:translateX(0) rotate(2deg)}85%{transform:translateX(0) rotate(-1deg)}100%{transform:translateX(0) rotate(0deg)}}
-@keyframes arthurCombo{0%{transform:translateX(0) rotate(0deg)}8%{transform:translateX(25px) rotate(-8deg)}16%{transform:translateX(35px) rotate(-12deg)}24%{transform:translateX(20px) rotate(-5deg)}30%{transform:translateX(42px) rotate(-14deg)}40%{transform:translateX(36px) rotate(-10deg)}50%{transform:translateX(12px) rotate(-3deg)}60%{transform:translateX(0) rotate(0deg)}100%{transform:translateX(0) rotate(0deg)}}
-@keyframes skeletonLunge{0%{transform:translateX(0) rotate(0deg) scale(1)}10%{transform:translateX(4px) rotate(-3deg) scale(1)}25%{transform:translateX(-22px) rotate(5deg) scale(1.05)}40%{transform:translateX(-48px) rotate(12deg) scale(1.18)}55%{transform:translateX(-42px) rotate(9deg) scale(1.12)}70%{transform:translateX(-22px) rotate(4deg) scale(1.04)}85%{transform:translateX(-8px) rotate(1deg) scale(1.01)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
-@keyframes skeletonRecoil{0%{transform:translateX(0) rotate(0deg) scale(1)}8%{transform:translateX(12px) rotate(-5deg) scale(0.95)}22%{transform:translateX(42px) rotate(-16deg) scale(0.85)}40%{transform:translateX(36px) rotate(-12deg) scale(0.88)}60%{transform:translateX(22px) rotate(-7deg) scale(0.94)}80%{transform:translateX(8px) rotate(-2deg) scale(0.98)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
-@keyframes skeletonWobble{0%{transform:translateX(0) rotate(0deg) scale(1)}10%{transform:translateX(32px) rotate(-20deg) scale(0.8)}25%{transform:translateX(-16px) rotate(10deg) scale(0.85)}40%{transform:translateX(26px) rotate(-16deg) scale(0.82)}55%{transform:translateX(-12px) rotate(6deg) scale(0.88)}70%{transform:translateX(14px) rotate(-10deg) scale(0.86)}85%{transform:translateX(6px) rotate(-3deg) scale(0.95)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
-@keyframes skeletonKnockdown{0%{transform:translateX(0) rotate(0deg) scale(1);opacity:1}10%{transform:translateX(18px) rotate(8deg) scale(1.15);opacity:1}30%{transform:translateX(65px) rotate(28deg) scale(1.3);opacity:1}55%{transform:translateX(55px) rotate(22deg) scale(1.1);opacity:.85}75%{transform:translateX(70px) translateY(60px) rotate(100deg) scale(0.6);opacity:.4}100%{transform:translateX(80px) translateY(100px) rotate(130deg) scale(0.3);opacity:.1}}
+@keyframes arthurLunge{0%{transform:translateX(0) rotate(0deg)}10%{transform:translateX(0) rotate(2deg)}20%{transform:translateX(12px) rotate(-4deg)}35%{transform:translateX(28px) rotate(-10deg)}50%{transform:translateX(22px) rotate(-7deg)}65%{transform:translateX(12px) rotate(-3deg)}80%{transform:translateX(4px) rotate(-1deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes arthurHook{0%{transform:translateX(0) rotate(0deg)}15%{transform:translateX(-4px) rotate(4deg)}30%{transform:translateX(14px) rotate(-14deg)}45%{transform:translateX(24px) rotate(-22deg)}60%{transform:translateX(16px) rotate(-12deg)}80%{transform:translateX(6px) rotate(-4deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes arthurCross{0%{transform:translateX(0) rotate(0deg)}10%{transform:translateX(2px) rotate(3deg)}25%{transform:translateX(20px) rotate(-12deg)}40%{transform:translateX(34px) rotate(-18deg)}55%{transform:translateX(26px) rotate(-10deg)}70%{transform:translateX(14px) rotate(-4deg)}85%{transform:translateX(4px) rotate(-1deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes arthurWeave{0%{transform:translateX(0) translateY(0)}20%{transform:translateX(-10px) translateY(3px)}40%{transform:translateX(8px) translateY(2px)}60%{transform:translateX(-4px) translateY(5px)}80%{transform:translateX(2px) translateY(1px)}100%{transform:translateX(0) translateY(0)}}
+@keyframes arthurBody{0%{transform:translateX(0) rotate(0deg)}15%{transform:translateX(4px) rotate(2deg)}30%{transform:translateX(16px) rotate(-5deg)}45%{transform:translateX(22px) translateY(4px) rotate(-8deg)}60%{transform:translateX(14px) translateY(2px) rotate(-4deg)}80%{transform:translateX(6px) rotate(-1deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes arthurRecoil{0%{transform:translateX(0) rotate(0deg)}8%{transform:translateX(-8px) rotate(4deg)}22%{transform:translateX(-22px) rotate(10deg)}40%{transform:translateX(-18px) rotate(7deg)}60%{transform:translateX(-10px) rotate(3deg)}80%{transform:translateX(-4px) rotate(1deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes arthurDuck{0%{transform:translateY(0) scaleY(1)}15%{transform:translateY(4px) scaleY(0.92)}35%{transform:translateY(12px) scaleY(0.78)}60%{transform:translateY(10px) scaleY(0.82)}85%{transform:translateY(3px) scaleY(0.95)}100%{transform:translateY(0) scaleY(1)}}
+@keyframes arthurStagger{0%{transform:translateX(0) rotate(0deg)}8%{transform:translateX(-10px) rotate(6deg)}25%{transform:translateX(-28px) rotate(14deg) scale(0.92)}45%{transform:translateX(-22px) rotate(9deg) scale(0.95)}65%{transform:translateX(-12px) rotate(4deg) scale(0.98)}85%{transform:translateX(-4px) rotate(1deg) scale(0.99)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes arthurKnee{0%{transform:translateX(0) rotate(0deg)}12%{transform:translateX(-12px) rotate(4deg)}30%{transform:translateX(-24px) translateY(8px) rotate(12deg) scaleY(0.82)}50%{transform:translateX(-20px) translateY(22px) rotate(20deg) scaleY(0.68)}68%{transform:translateX(-18px) translateY(32px) rotate(28deg) scaleY(0.58)}85%{transform:translateX(-18px) translateY(36px) rotate(30deg) scaleY(0.55)}100%{transform:translateX(-18px) translateY(36px) rotate(30deg) scaleY(0.55)}}
+@keyframes arthurShakeOff{0%{transform:translateX(-18px) translateY(36px) rotate(30deg) scaleY(0.55)}15%{transform:translateX(-12px) translateY(22px) rotate(18deg) scaleY(0.68)}30%{transform:translateX(-6px) translateY(10px) rotate(8deg) scaleY(0.84)}45%{transform:translateX(-2px) translateY(3px) rotate(3deg) scaleY(0.96)}55%{transform:translateX(0) rotate(-2deg)}70%{transform:translateX(0) rotate(2deg)}85%{transform:translateX(0) rotate(-1deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes arthurCombo{0%{transform:translateX(0) rotate(0deg)}6%{transform:translateX(2px) rotate(2deg)}14%{transform:translateX(14px) rotate(-6deg)}22%{transform:translateX(22px) rotate(-12deg)}30%{transform:translateX(8px) rotate(4deg)}38%{transform:translateX(28px) rotate(-16deg)}48%{transform:translateX(18px) rotate(-8deg)}58%{transform:translateX(6px) rotate(-2deg)}70%{transform:translateX(14px) rotate(4deg)}80%{transform:translateX(0) rotate(0deg)}100%{transform:translateX(0) rotate(0deg)}}
+@keyframes skeletonLunge{0%{transform:translateX(0) rotate(0deg) scale(1)}10%{transform:translateX(2px) rotate(-2deg) scale(1)}25%{transform:translateX(-14px) rotate(5deg) scale(1.04)}40%{transform:translateX(-30px) rotate(10deg) scale(1.12)}55%{transform:translateX(-24px) rotate(7deg) scale(1.06)}70%{transform:translateX(-12px) rotate(3deg) scale(1.02)}85%{transform:translateX(-4px) rotate(1deg) scale(1)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
+@keyframes skeletonHook{0%{transform:translateX(0) rotate(0deg) scale(1)}12%{transform:translateX(4px) rotate(-3deg) scale(1)}28%{transform:translateX(-12px) rotate(8deg) scale(1.06)}42%{transform:translateX(-28px) rotate(16deg) scale(1.15)}56%{transform:translateX(-20px) rotate(10deg) scale(1.08)}72%{transform:translateX(-10px) rotate(4deg) scale(1.02)}88%{transform:translateX(-3px) rotate(1deg) scale(1)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
+@keyframes skeletonCross{0%{transform:translateX(0) rotate(0deg) scale(1)}8%{transform:translateX(0) rotate(-2deg) scale(1)}22%{transform:translateX(-18px) rotate(8deg) scale(1.08)}36%{transform:translateX(-36px) rotate(16deg) scale(1.22)}50%{transform:translateX(-28px) rotate(10deg) scale(1.1)}64%{transform:translateX(-14px) rotate(4deg) scale(1.03)}80%{transform:translateX(-4px) rotate(1deg) scale(1)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
+@keyframes skeletonWeave{0%{transform:translateX(0) translateY(0) scale(1)}20%{transform:translateX(10px) translateY(3px) scale(0.97)}40%{transform:translateX(-8px) translateY(2px) scale(0.98)}60%{transform:translateX(6px) translateY(4px) scale(0.96)}80%{transform:translateX(-3px) translateY(1px) scale(0.99)}100%{transform:translateX(0) translateY(0) scale(1)}}
+@keyframes skeletonRecoil{0%{transform:translateX(0) rotate(0deg) scale(1)}8%{transform:translateX(8px) rotate(-4deg) scale(0.96)}22%{transform:translateX(26px) rotate(-12deg) scale(0.88)}40%{transform:translateX(20px) rotate(-8deg) scale(0.92)}60%{transform:translateX(12px) rotate(-4deg) scale(0.96)}80%{transform:translateX(4px) rotate(-1deg) scale(0.99)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
+@keyframes skeletonWobble{0%{transform:translateX(0) rotate(0deg) scale(1)}10%{transform:translateX(20px) rotate(-14deg) scale(0.86)}25%{transform:translateX(-12px) rotate(8deg) scale(0.9)}40%{transform:translateX(18px) rotate(-12deg) scale(0.88)}55%{transform:translateX(-8px) rotate(5deg) scale(0.93)}70%{transform:translateX(10px) rotate(-6deg) scale(0.91)}85%{transform:translateX(4px) rotate(-2deg) scale(0.97)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
+@keyframes skeletonKnockdown{0%{transform:translateX(0) rotate(0deg) scale(1);opacity:1}8%{transform:translateX(12px) rotate(6deg) scale(1.1);opacity:1}22%{transform:translateX(45px) rotate(20deg) scale(1.25);opacity:1}38%{transform:translateX(38px) rotate(14deg) scale(1.05);opacity:.9}55%{transform:translateX(50px) translateY(40px) rotate(60deg) scale(0.6);opacity:.5}72%{transform:translateX(60px) translateY(80px) rotate(100deg) scale(0.35);opacity:.2}100%{transform:translateX(70px) translateY(110px) rotate(130deg) scale(0.2);opacity:0}}
+@keyframes skeletonBodyHit{0%{transform:translateX(0) rotate(0deg) scale(1)}15%{transform:translateX(14px) rotate(-8deg) scale(0.9) translateY(6px)}30%{transform:translateX(8px) rotate(-4deg) scale(0.94) translateY(3px)}50%{transform:translateX(0) rotate(0deg) scale(1)}100%{transform:translateX(0) rotate(0deg) scale(1)}}
 /* Limb animation keyframes */
-@keyframes aPunchArm{0%{transform:rotate(0deg)}20%{transform:rotate(20deg)}50%{transform:rotate(14deg)}100%{transform:rotate(0deg)}}
-@keyframes aPunchFist{0%{transform:rotate(0deg)}20%{transform:rotate(110deg)}50%{transform:rotate(100deg)}100%{transform:rotate(0deg)}}
-@keyframes aRecoilArm{0%{transform:rotate(0deg)}25%{transform:rotate(35deg)}60%{transform:rotate(25deg)}100%{transform:rotate(0deg)}}
-@keyframes aRecoilBody{0%{transform:rotate(0deg)}25%{transform:rotate(12deg)}60%{transform:rotate(8deg)}100%{transform:rotate(0deg)}}
-@keyframes aArmDrop{0%{transform:rotate(0deg)}50%{transform:rotate(90deg)}100%{transform:rotate(85deg)}}
-@keyframes aFistDrop{0%{transform:rotate(0deg)}50%{transform:rotate(65deg)}100%{transform:rotate(60deg)}}
-@keyframes aArmRaise{0%{transform:rotate(85deg)}100%{transform:rotate(0deg)}}
-@keyframes aFistRaise{0%{transform:rotate(60deg)}100%{transform:rotate(0deg)}}
-@keyframes aGuardArm{0%{transform:rotate(0deg)}25%{transform:rotate(-50deg)}60%{transform:rotate(-45deg)}100%{transform:rotate(0deg)}}
-@keyframes aGuardFist{0%{transform:rotate(0deg)}25%{transform:rotate(45deg)}60%{transform:rotate(40deg)}100%{transform:rotate(0deg)}}
+@keyframes aPunchArm{0%{transform:rotate(0deg)}15%{transform:rotate(18deg)}40%{transform:rotate(12deg)}100%{transform:rotate(0deg)}}
+@keyframes aPunchFist{0%{transform:rotate(0deg)}15%{transform:rotate(100deg)}40%{transform:rotate(90deg)}100%{transform:rotate(0deg)}}
+@keyframes aHookArm{0%{transform:rotate(0deg)}20%{transform:rotate(-35deg)}45%{transform:rotate(-25deg)}100%{transform:rotate(0deg)}}
+@keyframes aHookFist{0%{transform:rotate(0deg)}20%{transform:rotate(70deg)}45%{transform:rotate(60deg)}100%{transform:rotate(0deg)}}
+@keyframes aCrossArm{0%{transform:rotate(0deg)}15%{transform:rotate(25deg)}40%{transform:rotate(18deg)}100%{transform:rotate(0deg)}}
+@keyframes aCrossFist{0%{transform:rotate(0deg)}15%{transform:rotate(120deg)}40%{transform:rotate(105deg)}100%{transform:rotate(0deg)}}
+@keyframes aBodyArm{0%{transform:rotate(0deg)}15%{transform:rotate(-20deg)}35%{transform:rotate(-14deg)}100%{transform:rotate(0deg)}}
+@keyframes aBodyFist{0%{transform:rotate(0deg)}15%{transform:rotate(55deg)}35%{transform:rotate(45deg)}100%{transform:rotate(0deg)}}
+@keyframes aRecoilArm{0%{transform:rotate(0deg)}25%{transform:rotate(30deg)}60%{transform:rotate(20deg)}100%{transform:rotate(0deg)}}
+@keyframes aRecoilBody{0%{transform:rotate(0deg)}25%{transform:rotate(10deg)}60%{transform:rotate(6deg)}100%{transform:rotate(0deg)}}
+@keyframes aArmDrop{0%{transform:rotate(0deg)}50%{transform:rotate(85deg)}100%{transform:rotate(80deg)}}
+@keyframes aFistDrop{0%{transform:rotate(0deg)}50%{transform:rotate(60deg)}100%{transform:rotate(55deg)}}
+@keyframes aArmRaise{0%{transform:rotate(80deg)}100%{transform:rotate(0deg)}}
+@keyframes aFistRaise{0%{transform:rotate(55deg)}100%{transform:rotate(0deg)}}
+@keyframes aGuardArm{0%{transform:rotate(0deg)}25%{transform:rotate(-45deg)}60%{transform:rotate(-40deg)}100%{transform:rotate(0deg)}}
+@keyframes aGuardFist{0%{transform:rotate(0deg)}25%{transform:rotate(40deg)}60%{transform:rotate(35deg)}100%{transform:rotate(0deg)}}
+@keyframes aWeaveArm{0%{transform:rotate(0deg)}20%{transform:rotate(-25deg)}40%{transform:rotate(5deg)}60%{transform:rotate(-10deg)}80%{transform:rotate(3deg)}100%{transform:rotate(0deg)}}
+@keyframes aCrouchLeg{0%{transform:rotate(0deg)}30%{transform:rotate(15deg)}70%{transform:rotate(12deg)}100%{transform:rotate(0deg)}}
+@keyframes aStepLeg{0%{transform:rotate(0deg)}25%{transform:rotate(-20deg)}55%{transform:rotate(-15deg)}100%{transform:rotate(0deg)}}
 @keyframes aCelebrateL{0%{transform:rotate(0deg)}25%{transform:rotate(-80deg)}50%{transform:rotate(-70deg)}75%{transform:rotate(-85deg)}100%{transform:rotate(-80deg)}}
 @keyframes aCelebrateR{0%{transform:rotate(0deg)}25%{transform:rotate(80deg)}50%{transform:rotate(70deg)}75%{transform:rotate(85deg)}100%{transform:rotate(80deg)}}
-@keyframes aCrouchLeg{0%{transform:rotate(0deg)}30%{transform:rotate(15deg)}70%{transform:rotate(12deg)}100%{transform:rotate(0deg)}}
-@keyframes aStepFwd{0%{transform:rotate(0deg)}25%{transform:rotate(-25deg)}60%{transform:rotate(-20deg)}100%{transform:rotate(0deg)}}
-@keyframes sPunchArm{0%{transform:rotate(0deg)}20%{transform:rotate(-15deg)}50%{transform:rotate(-10deg)}100%{transform:rotate(0deg)}}
-@keyframes sPunchFist{0%{transform:rotate(0deg)}20%{transform:rotate(-110deg)}50%{transform:rotate(-100deg)}100%{transform:rotate(0deg)}}
-@keyframes sPunchBack{0%{transform:rotate(0deg)}25%{transform:rotate(-35deg)}60%{transform:rotate(-30deg)}100%{transform:rotate(0deg)}}
-@keyframes sRecoilArm{0%{transform:rotate(0deg)}25%{transform:rotate(-35deg)}60%{transform:rotate(-25deg)}100%{transform:rotate(0deg)}}
-@keyframes sRecoilBody{0%{transform:rotate(0deg)}25%{transform:rotate(-12deg)}60%{transform:rotate(-8deg)}100%{transform:rotate(0deg)}}
-@keyframes sWobbleArm{0%{transform:rotate(0deg)}20%{transform:rotate(40deg)}40%{transform:rotate(-30deg)}60%{transform:rotate(25deg)}80%{transform:rotate(-20deg)}100%{transform:rotate(0deg)}}
-@keyframes sKDArm{0%{transform:rotate(0deg)}30%{transform:rotate(80deg)}60%{transform:rotate(70deg)}100%{transform:rotate(80deg)}}
+@keyframes sPunchArm{0%{transform:rotate(0deg)}20%{transform:rotate(-12deg)}50%{transform:rotate(-8deg)}100%{transform:rotate(0deg)}}
+@keyframes sPunchFist{0%{transform:rotate(0deg)}20%{transform:rotate(-100deg)}50%{transform:rotate(-90deg)}100%{transform:rotate(0deg)}}
+@keyframes sHookArm{0%{transform:rotate(0deg)}20%{transform:rotate(35deg)}45%{transform:rotate(25deg)}100%{transform:rotate(0deg)}}
+@keyframes sHookFist{0%{transform:rotate(0deg)}20%{transform:rotate(-65deg)}45%{transform:rotate(-55deg)}100%{transform:rotate(0deg)}}
+@keyframes sCrossArm{0%{transform:rotate(0deg)}15%{transform:rotate(-22deg)}40%{transform:rotate(-16deg)}100%{transform:rotate(0deg)}}
+@keyframes sCrossFist{0%{transform:rotate(0deg)}15%{transform:rotate(-110deg)}40%{transform:rotate(-95deg)}100%{transform:rotate(0deg)}}
+@keyframes sRecoilArm{0%{transform:rotate(0deg)}25%{transform:rotate(-30deg)}60%{transform:rotate(-20deg)}100%{transform:rotate(0deg)}}
+@keyframes sRecoilBody{0%{transform:rotate(0deg)}25%{transform:rotate(-10deg)}60%{transform:rotate(-6deg)}100%{transform:rotate(0deg)}}
+@keyframes sWobbleArm{0%{transform:rotate(0deg)}20%{transform:rotate(35deg)}40%{transform:rotate(-25deg)}60%{transform:rotate(20deg)}80%{transform:rotate(-15deg)}100%{transform:rotate(0deg)}}
+@keyframes sKDArm{0%{transform:rotate(0deg)}30%{transform:rotate(75deg)}60%{transform:rotate(65deg)}100%{transform:rotate(75deg)}}
+@keyframes sWeaveArm{0%{transform:rotate(0deg)}20%{transform:rotate(25deg)}40%{transform:rotate(-5deg)}60%{transform:rotate(12deg)}80%{transform:rotate(-3deg)}100%{transform:rotate(0deg)}}
+@keyframes sBodyArm{0%{transform:rotate(0deg)}20%{transform:rotate(20deg)}45%{transform:rotate(14deg)}100%{transform:rotate(0deg)}}
+@keyframes sBodyFist{0%{transform:rotate(0deg)}20%{transform:rotate(-55deg)}45%{transform:rotate(-45deg)}100%{transform:rotate(0deg)}}
+@keyframes sStepLeg{0%{transform:rotate(0deg)}25%{transform:rotate(20deg)}55%{transform:rotate(15deg)}100%{transform:rotate(0deg)}}
 /* Phase-based limb animation triggers */
 .arthur.punch .a-rarm-g{animation:aPunchArm .5s ease forwards}
 .arthur.punch .a-rarm-fg{animation:aPunchFist .5s ease forwards}
+.arthur.punch .a-lleg-g{animation:aStepLeg .5s ease forwards}
+.arthur.hook .a-larm-g{animation:aHookArm .5s ease forwards}
+.arthur.hook .a-larm-fg{animation:aHookFist .5s ease forwards}
+.arthur.hook .a-rleg-g{animation:aStepLeg .5s ease forwards}
+.arthur.cross .a-rarm-g{animation:aCrossArm .5s ease forwards}
+.arthur.cross .a-rarm-fg{animation:aCrossFist .5s ease forwards}
+.arthur.body .a-rarm-g{animation:aBodyArm .5s ease forwards}
+.arthur.body .a-rarm-fg{animation:aBodyFist .5s ease forwards}
+.arthur.weave .a-larm-g,.arthur.weave .a-rarm-g{animation:aWeaveArm .6s ease forwards}
 .arthur.recoil .a-rarm-g,.arthur.recoil .a-larm-g{animation:aRecoilArm .5s ease forwards}
 .arthur.recoil .a-body{animation:aRecoilBody .5s ease forwards}
 .arthur.duck .a-larm-g{animation:aGuardArm .5s ease forwards}
@@ -316,12 +347,21 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .arthur.dizzy .a-larm-fg,.arthur.dizzy .a-rarm-fg{animation:aFistDrop .6s ease forwards}
 .arthur.shakeoff .a-larm-g,.arthur.shakeoff .a-rarm-g{animation:aArmRaise .8s ease forwards}
 .arthur.shakeoff .a-larm-fg,.arthur.shakeoff .a-rarm-fg{animation:aFistRaise .8s ease forwards}
-.arthur.combo .a-rarm-g{animation:aPunchArm .35s ease 2 forwards}
-.arthur.combo .a-rarm-fg{animation:aPunchFist .35s ease 2 forwards}
+.arthur.combo .a-rarm-g{animation:aPunchArm .3s ease 2 forwards}
+.arthur.combo .a-rarm-fg{animation:aPunchFist .3s ease 2 forwards}
+.arthur.combo .a-larm-g{animation:aHookArm .3s ease 2 forwards}
+.arthur.combo .a-larm-fg{animation:aHookFist .3s ease 2 forwards}
 .arthur.celebrate .a-larm-g{animation:aCelebrateL .3s ease 3 forwards}
 .arthur.celebrate .a-rarm-g{animation:aCelebrateR .3s ease 3 forwards}
 .skeleton.punch .s-larm-g{animation:sPunchArm .5s ease forwards}
 .skeleton.punch .s-larm-fg{animation:sPunchFist .5s ease forwards}
+.skeleton.hook .s-rarm-g{animation:sHookArm .5s ease forwards}
+.skeleton.hook .s-rarm-fg{animation:sHookFist .5s ease forwards}
+.skeleton.cross .s-larm-g{animation:sCrossArm .5s ease forwards}
+.skeleton.cross .s-larm-fg{animation:sCrossFist .5s ease forwards}
+.skeleton.body .s-rarm-g{animation:sBodyArm .5s ease forwards}
+.skeleton.body .s-rarm-fg{animation:sBodyFist .5s ease forwards}
+.skeleton.weave .s-larm-g,.skeleton.weave .s-rarm-g{animation:sWeaveArm .6s ease forwards}
 .skeleton.recoil .s-rarm-g,.skeleton.recoil .s-larm-g{animation:sRecoilArm .5s ease forwards}
 .skeleton.recoil .s-body{animation:sRecoilBody .5s ease forwards}
 .skeleton.wobble .s-rarm-g,.skeleton.wobble .s-larm-g{animation:sWobbleArm .8s ease forwards}
@@ -2453,25 +2493,25 @@ var REFLECT_SONGS = {};
 var SONG_POOL_GENERATED = false;
 var SONGS_BY_MOOD = {
   sad: [
-    {t:'Fix You',a:'Coldplay'},{t:'Hurt',a:'Johnny Cash'},{t:'Someone Like You',a:'Adele'},{t:'Creep',a:'Radiohead'},{t:'When the Party\'s Over',a:'Billie Eilish'},{t:'The Sound of Silence',a:'Simon & Garfunkel'},{t:'Everybody Hurts',a:'R.E.M.'},{t:'Nothing Compares 2 U',a:'Sinead O\'Connor'},{t:'Tears in Heaven',a:'Eric Clapton'},{t:'Yesterday',a:'The Beatles'},{t:'Boulevard of Broken Dreams',a:'Green Day'},{t:'Skinny Love',a:'Bon Iver'},{t:'Hallelujah',a:'Jeff Buckley'},{t:'Mad World',a:'Gary Jules'},{t:'Liability',a:'Lorde'},{t:'Cancer',a:'My Chemical Romance'},{t:'Snuff',a:'Slipknot'},{t:'Black',a:'Pearl Jam'},{t:'Nutshell',a:'Alice In Chains'},{t:'Tears Don\'t Fall',a:'Bullet for My Valentine'},{t:'The Drugs Don\'t Work',a:'The Verve'},{t:'Shallow',a:'Lady Gaga & Bradley Cooper'},{t:'Grenade',a:'Bruno Mars'},{t:'No Ordinary Love',a:'Sade'},{t:'Alone',a:'Masayoshi Takanaka'},{t:'Gold Dust Woman',a:'Fleetwood Mac'},{t:'Something About Us',a:'Daft Punk'},{t:'Bohemian Rhapsody',a:'Queen'},{t:'Smooth Operator',a:'Sade'},{t:'Flashing Lights',a:'Kanye West'},{t:'I Wonder',a:'Kanye West'},{t:'Everything I Am',a:'Kanye West'}
+    {t:'Fix You',a:'Coldplay'},{t:'Hurt',a:'Johnny Cash'},{t:'Someone Like You',a:'Adele'},{t:'Creep',a:'Radiohead'},{t:'When the Party\'s Over',a:'Billie Eilish'},{t:'The Sound of Silence',a:'Simon & Garfunkel'},{t:'Everybody Hurts',a:'R.E.M.'},{t:'Nothing Compares 2 U',a:'Sinead O\'Connor'},{t:'Tears in Heaven',a:'Eric Clapton'},{t:'Yesterday',a:'The Beatles'},{t:'Boulevard of Broken Dreams',a:'Green Day'},{t:'Skinny Love',a:'Bon Iver'},{t:'Hallelujah',a:'Jeff Buckley'},{t:'Mad World',a:'Gary Jules'},{t:'Liability',a:'Lorde'},{t:'Cancer',a:'My Chemical Romance'},{t:'Snuff',a:'Slipknot'},{t:'Black',a:'Pearl Jam'},{t:'Nutshell',a:'Alice In Chains'},{t:'Tears Don\'t Fall',a:'Bullet for My Valentine'},{t:'The Drugs Don\'t Work',a:'The Verve'},{t:'Shallow',a:'Lady Gaga & Bradley Cooper'},{t:'Grenade',a:'Bruno Mars'},{t:'No Ordinary Love',a:'Sade'},{t:'Alone',a:'Masayoshi Takanaka'},{t:'Gold Dust Woman',a:'Fleetwood Mac'},{t:'Something About Us',a:'Daft Punk'},{t:'Bohemian Rhapsody',a:'Queen'},{t:'Smooth Operator',a:'Sade'},{t:'Flashing Lights',a:'Kanye West'},{t:'I Wonder',a:'Kanye West'},{t:'Everything I Am',a:'Kanye West'},{t:'The Scientist',a:'Coldplay'},{t:'She Will Be Loved',a:'Maroon 5'},{t:'Won\'t Go Home Without You',a:'Maroon 5'},{t:'Badfish',a:'Sublime'},{t:'Operator',a:'Jim Croce'},{t:'Photographs and Memories',a:'Jim Croce'},{t:'Lonesome Loser',a:'Little River Band'},{t:'Take It Easy on Me',a:'Little River Band'},    {t:'While My Guitar Gently Weeps',a:'The Beatles'},{t:'Time in a Bottle',a:'Jim Croce'},{t:'Let Her Cry',a:'Hootie & the Blowfish'},{t:'Anti-Hero',a:'Taylor Swift'},{t:'All Too Well',a:'Taylor Swift'},{t:'Cardigan',a:'Taylor Swift'},{t:'Just Give Me a Reason',a:'P!nk'},{t:'I Will Always Love You',a:'Whitney Houston'},{t:'Saving All My Love for You',a:'Whitney Houston'},{t:'Everything I Wanted',a:'Billie Eilish'},{t:'Ocean Eyes',a:'Billie Eilish'},{t:'Lovely',a:'Billie Eilish'},{t:'Leaving on a Jet Plane',a:'John Denver'}
   ],
   angry: [
-    {t:'Killing in the Name',a:'Rage Against The Machine'},{t:'Break Stuff',a:'Limp Bizkit'},{t:'Enter Sandman',a:'Metallica'},{t:'Smells Like Teen Spirit',a:'Nirvana'},{t:'Du Hast',a:'Rammstein'},{t:'Chop Suey!',a:'System of a Down'},{t:'Freak on a Leash',a:'Korn'},{t:'Down with the Sickness',a:'Disturbed'},{t:'Bodies',a:'Drowning Pool'},{t:'The Pretender',a:'Foo Fighters'},{t:'Given Up',a:'Linkin Park'},{t:'Numb',a:'Linkin Park'},{t:'Last Resort',a:'Papa Roach'},{t:'Walk',a:'Pantera'},{t:'One Step Closer',a:'Linkin Park'},{t:'Beat It',a:'Michael Jackson'},{t:'We Will Rock You',a:'Queen'},{t:'Go Your Own Way',a:'Fleetwood Mac'},{t:'The Chain',a:'Fleetwood Mac'},{t:'Deeper Underground',a:'Jamiroquai'},{t:'Can\'t Tell Me Nothing',a:'Kanye West'},{t:'Harder Better Faster Stronger',a:'Daft Punk'}
+    {t:'Killing in the Name',a:'Rage Against The Machine'},{t:'Break Stuff',a:'Limp Bizkit'},{t:'Enter Sandman',a:'Metallica'},{t:'Smells Like Teen Spirit',a:'Nirvana'},{t:'Du Hast',a:'Rammstein'},{t:'Chop Suey!',a:'System of a Down'},{t:'Freak on a Leash',a:'Korn'},{t:'Down with the Sickness',a:'Disturbed'},{t:'Bodies',a:'Drowning Pool'},{t:'The Pretender',a:'Foo Fighters'},{t:'Given Up',a:'Linkin Park'},{t:'Numb',a:'Linkin Park'},{t:'Last Resort',a:'Papa Roach'},{t:'Walk',a:'Pantera'},{t:'One Step Closer',a:'Linkin Park'},{t:'Beat It',a:'Michael Jackson'},{t:'We Will Rock You',a:'Queen'},{t:'Go Your Own Way',a:'Fleetwood Mac'},{t:'The Chain',a:'Fleetwood Mac'},{t:'Deeper Underground',a:'Jamiroquai'},{t:'Can\'t Tell Me Nothing',a:'Kanye West'},{t:'Harder Better Faster Stronger',a:'Daft Punk'},    {t:'Come Together',a:'The Beatles'},{t:'China Grove',a:'Doobie Brothers'},{t:'You Don\'t Mess Around with Jim',a:'Jim Croce'},{t:'Bad Blood',a:'Taylor Swift'},{t:'Irreplaceable',a:'Beyoncé'},{t:'Formation',a:'Beyoncé'},{t:'So What',a:'P!nk'},{t:'Bad Guy',a:'Billie Eilish'},{t:'Happier Than Ever',a:'Billie Eilish'},{t:'Therefore I Am',a:'Billie Eilish'}
   ],
   anxious: [
-    {t:'Breathe Me',a:'Sia'},{t:'Teardrop',a:'Massive Attack'},{t:'Comfortably Numb',a:'Pink Floyd'},{t:'Let It Be',a:'The Beatles'},{t:'Weightless',a:'Marconi Union'},{t:'Intro',a:'The xx'},{t:'Holocene',a:'Bon Iver'},{t:'Svefn-g-englar',a:'Sigur Rós'},{t:'An Ending (Ascent)',a:'Brian Eno'},{t:'Clair de Lune',a:'Claude Debussy'},{t:'On the Nature of Daylight',a:'Max Richter'},{t:'Experience',a:'Ludovico Einaudi'},{t:'Avril 14th',a:'Aphex Twin'},{t:'Roygbiv',a:'Boards of Canada'},{t:'Porcelain',a:'Moby'},{t:'Hide and Seek',a:'Imogen Heap'},{t:'Daydreaming',a:'Radiohead'},{t:'In the Air Tonight',a:'Phil Collins'}
+    {t:'Breathe Me',a:'Sia'},{t:'Teardrop',a:'Massive Attack'},{t:'Comfortably Numb',a:'Pink Floyd'},{t:'Let It Be',a:'The Beatles'},{t:'Weightless',a:'Marconi Union'},{t:'Intro',a:'The xx'},{t:'Holocene',a:'Bon Iver'},{t:'Svefn-g-englar',a:'Sigur Rós'},{t:'An Ending (Ascent)',a:'Brian Eno'},{t:'Clair de Lune',a:'Claude Debussy'},{t:'On the Nature of Daylight',a:'Max Richter'},{t:'Experience',a:'Ludovico Einaudi'},{t:'Avril 14th',a:'Aphex Twin'},{t:'Roygbiv',a:'Boards of Canada'},{t:'Porcelain',a:'Moby'},{t:'Hide and Seek',a:'Imogen Heap'},    {t:'Daydreaming',a:'Radiohead'},{t:'In the Air Tonight',a:'Phil Collins'},{t:'Clocks',a:'Coldplay'},{t:'Cruel Summer',a:'Taylor Swift'}
   ],
   happy: [
-    {t:'Don\'t Stop Believin\'',a:'Journey'},{t:'Happy',a:'Pharrell Williams'},{t:'Uptown Funk',a:'Mark Ronson ft. Bruno Mars'},{t:'I Wanna Dance with Somebody',a:'Whitney Houston'},{t:'Walking on Sunshine',a:'Katrina & The Waves'},{t:'Here Comes the Sun',a:'The Beatles'},{t:'Good Vibrations',a:'The Beach Boys'},{t:'Shake It Off',a:'Taylor Swift'},{t:'Can\'t Stop the Feeling!',a:'Justin Timberlake'},{t:'Blinding Lights',a:'The Weeknd'},{t:'Levitating',a:'Dua Lipa'},{t:'Feeling Good',a:'Nina Simone'},{t:'September',a:'Earth, Wind & Fire'},{t:'Treasure',a:'Bruno Mars'},{t:'Shut Up and Dance',a:'Walk the Moon'},{t:'Mr. Blue Sky',a:'Electric Light Orchestra'},{t:'Lovely Day',a:'Bill Withers'},{t:'Billie Jean',a:'Michael Jackson'},{t:'Don\'t Stop \'Til You Get Enough',a:'Michael Jackson'},{t:'The Way You Make Me Feel',a:'Michael Jackson'},{t:'Thriller',a:'Michael Jackson'},{t:'Bad Romance',a:'Lady Gaga'},{t:'Poker Face',a:'Lady Gaga'},{t:'Just Dance',a:'Lady Gaga'},{t:'One More Time',a:'Daft Punk'},{t:'Get Lucky',a:'Daft Punk'},{t:'Around the World',a:'Daft Punk'},{t:'Teenage Dream',a:'Katy Perry'},{t:'California Gurls',a:'Katy Perry'},{t:'Virtual Insanity',a:'Jamiroquai'},{t:'Canned Heat',a:'Jamiroquai'},{t:'Cosmic Girl',a:'Jamiroquai'},{t:'Love Foolosophy',a:'Jamiroquai'},{t:'Bamboo Vendor',a:'Masayoshi Takanaka'},{t:'SEXY DANCE',a:'Masayoshi Takanaka'},{t:'OH! TENGOKU',a:'Masayoshi Takanaka'},{t:'Kiss of Life',a:'Sade'},{t:'Paradise',a:'Sade'},{t:'Locked Out of Heaven',a:'Bruno Mars'},{t:'24K Magic',a:'Bruno Mars'},{t:'That\'s What I Like',a:'Bruno Mars'},{t:'Good Morning',a:'Kanye West'},{t:'Good Life',a:'Kanye West'},{t:'Drunk and Hot Girls',a:'Kanye West'},{t:'Dreams',a:'Fleetwood Mac'},{t:'The Sweetest Taboo',a:'Sade'},{t:'Dark Horse',a:'Katy Perry'}
+    {t:'Don\'t Stop Believin\'',a:'Journey'},{t:'Happy',a:'Pharrell Williams'},{t:'Uptown Funk',a:'Mark Ronson ft. Bruno Mars'},{t:'I Wanna Dance with Somebody',a:'Whitney Houston'},{t:'Walking on Sunshine',a:'Katrina & The Waves'},{t:'Here Comes the Sun',a:'The Beatles'},{t:'Good Vibrations',a:'The Beach Boys'},{t:'Shake It Off',a:'Taylor Swift'},{t:'Can\'t Stop the Feeling!',a:'Justin Timberlake'},{t:'Blinding Lights',a:'The Weeknd'},{t:'Levitating',a:'Dua Lipa'},{t:'Feeling Good',a:'Nina Simone'},{t:'September',a:'Earth, Wind & Fire'},{t:'Treasure',a:'Bruno Mars'},{t:'Shut Up and Dance',a:'Walk the Moon'},{t:'Mr. Blue Sky',a:'Electric Light Orchestra'},{t:'Lovely Day',a:'Bill Withers'},{t:'Billie Jean',a:'Michael Jackson'},{t:'Don\'t Stop \'Til You Get Enough',a:'Michael Jackson'},{t:'The Way You Make Me Feel',a:'Michael Jackson'},{t:'Thriller',a:'Michael Jackson'},{t:'Bad Romance',a:'Lady Gaga'},{t:'Poker Face',a:'Lady Gaga'},{t:'Just Dance',a:'Lady Gaga'},{t:'One More Time',a:'Daft Punk'},{t:'Get Lucky',a:'Daft Punk'},{t:'Around the World',a:'Daft Punk'},{t:'Teenage Dream',a:'Katy Perry'},{t:'California Gurls',a:'Katy Perry'},{t:'Virtual Insanity',a:'Jamiroquai'},{t:'Canned Heat',a:'Jamiroquai'},{t:'Cosmic Girl',a:'Jamiroquai'},{t:'Love Foolosophy',a:'Jamiroquai'},{t:'Bamboo Vendor',a:'Masayoshi Takanaka'},{t:'SEXY DANCE',a:'Masayoshi Takanaka'},{t:'OH! TENGOKU',a:'Masayoshi Takanaka'},{t:'Kiss of Life',a:'Sade'},{t:'Paradise',a:'Sade'},{t:'Locked Out of Heaven',a:'Bruno Mars'},{t:'24K Magic',a:'Bruno Mars'},{t:'That\'s What I Like',a:'Bruno Mars'},{t:'Good Morning',a:'Kanye West'},{t:'Good Life',a:'Kanye West'},{t:'Drunk and Hot Girls',a:'Kanye West'},{t:'Dreams',a:'Fleetwood Mac'},{t:'The Sweetest Taboo',a:'Sade'},{t:'Dark Horse',a:'Katy Perry'},{t:'Listen to the Music',a:'Doobie Brothers'},{t:'What a Fool Believes',a:'Doobie Brothers'},{t:'Long Train Runnin\'',a:'Doobie Brothers'},{t:'China Grove',a:'Doobie Brothers'},{t:'The Night Owls',a:'Little River Band'},{t:'Bad Bad Leroy Brown',a:'Jim Croce'},{t:'You Don\'t Mess Around with Jim',a:'Jim Croce'},{t:'What I Got',a:'Sublime'},{t:'Santeria',a:'Sublime'},{t:'Doin\' Time',a:'Sublime'},{t:'Summertime',a:'Sublime'},{t:'Scarlet Begonias',a:'Sublime'},{t:'A Sky Full of Stars',a:'Coldplay'},{t:'Adventure of a Lifetime',a:'Coldplay'},{t:'This Love',a:'Maroon 5'},{t:'Sunday Morning',a:'Maroon 5'},{t:'Sugar',a:'Maroon 5'},{t:'From Me to You',a:'The Beatles'},{t:'Come Together',a:'The Beatles'},{t:'Cherish the Day',a:'Sade'},    {t:'Payphone',a:'Maroon 5'},{t:'Makes Me Wonder',a:'Maroon 5'},{t:'Hold My Hand',a:'Hootie & the Blowfish'},{t:'Only Wanna Be with You',a:'Hootie & the Blowfish'},{t:'I Go Blind',a:'Hootie & the Blowfish'},{t:'Love Story',a:'Taylor Swift'},{t:'You Belong with Me',a:'Taylor Swift'},{t:'Blank Space',a:'Taylor Swift'},{t:'Cruel Summer',a:'Taylor Swift'},{t:'Single Ladies',a:'Beyoncé'},{t:'Crazy in Love',a:'Beyoncé'},{t:'Love on Top',a:'Beyoncé'},{t:'Formation',a:'Beyoncé'},{t:'Break My Soul',a:'Beyoncé'},{t:'Sunshine on My Shoulders',a:'John Denver'},{t:'Thank God I\'m a Country Boy',a:'John Denver'},{t:'So What',a:'P!nk'},{t:'Raise Your Glass',a:'P!nk'},{t:'Get the Party Started',a:'P!nk'},{t:'How Will I Know',a:'Whitney Houston'},{t:'So Emotional',a:'Whitney Houston'},{t:'I\'m Every Woman',a:'Whitney Houston'},{t:'Like a Virgin',a:'Madonna'},{t:'Material Girl',a:'Madonna'},{t:'Vogue',a:'Madonna'},{t:'Into the Groove',a:'Madonna'},{t:'Ray of Light',a:'Madonna'},{t:'Hung Up',a:'Madonna'},{t:'Holiday',a:'Madonna'},{t:'Bad Guy',a:'Billie Eilish'},{t:'Therefore I Am',a:'Billie Eilish'},{t:'Birds of a Feather',a:'Billie Eilish'}
   ],
   grateful: [
-    {t:'What a Wonderful World',a:'Louis Armstrong'},{t:'Lean on Me',a:'Bill Withers'},{t:'Three Little Birds',a:'Bob Marley'},{t:'Stand By Me',a:'Ben E. King'},{t:'Over the Rainbow',a:'Israel Kamakawiwo\'ole'},{t:'Count on Me',a:'Bruno Mars'},{t:'Thank You',a:'Dido'},{t:'Unwritten',a:'Natasha Bedingfield'},{t:'Best Day of My Life',a:'American Authors'},{t:'I\'m Yours',a:'Jason Mraz'},{t:'Better Together',a:'Jack Johnson'},{t:'Put Your Records On',a:'Corinne Bailey Rae'},{t:'One Love',a:'Bob Marley'},{t:'Redemption Song',a:'Bob Marley'},{t:'Man in the Mirror',a:'Michael Jackson'},{t:'Somebody to Love',a:'Queen'},{t:'Just the Way You Are',a:'Bruno Mars'},{t:'Brasilian Skies',a:'Masayoshi Takanaka'},{t:'Homecoming',a:'Kanye West'},{t:'By Your Side',a:'Sade'}
+    {t:'What a Wonderful World',a:'Louis Armstrong'},{t:'Lean on Me',a:'Bill Withers'},{t:'Three Little Birds',a:'Bob Marley'},{t:'Stand By Me',a:'Ben E. King'},{t:'Over the Rainbow',a:'Israel Kamakawiwo\'ole'},{t:'Count on Me',a:'Bruno Mars'},{t:'Thank You',a:'Dido'},{t:'Unwritten',a:'Natasha Bedingfield'},{t:'Best Day of My Life',a:'American Authors'},{t:'I\'m Yours',a:'Jason Mraz'},{t:'Better Together',a:'Jack Johnson'},{t:'Put Your Records On',a:'Corinne Bailey Rae'},{t:'One Love',a:'Bob Marley'},{t:'Redemption Song',a:'Bob Marley'},{t:'Man in the Mirror',a:'Michael Jackson'},{t:'Somebody to Love',a:'Queen'},{t:'Just the Way You Are',a:'Bruno Mars'},{t:'Brasilian Skies',a:'Masayoshi Takanaka'},{t:'Homecoming',a:'Kanye West'},{t:'By Your Side',a:'Sade'},{t:'Listen to the Music',a:'Doobie Brothers'},{t:'Black Water',a:'Doobie Brothers'},{t:'Reminiscing',a:'Little River Band'},{t:'Cool Change',a:'Little River Band'},{t:'I\'ll Have to Say I Love You in a Song',a:'Jim Croce'},{t:'Hey Jude',a:'The Beatles'},{t:'Something',a:'The Beatles'},{t:'What I Got',a:'Sublime'},{t:'Yellow',a:'Coldplay'},{t:'Sunday Morning',a:'Maroon 5'},    {t:'Cherish the Day',a:'Sade'},{t:'In My Life',a:'The Beatles'},{t:'Hold My Hand',a:'Hootie & the Blowfish'},{t:'Only Wanna Be with You',a:'Hootie & the Blowfish'},{t:'Love Story',a:'Taylor Swift'},{t:'Halo',a:'Beyoncé'},{t:'Love on Top',a:'Beyoncé'},{t:'Annie\'s Song',a:'John Denver'},{t:'Sunshine on My Shoulders',a:'John Denver'},{t:'Take Me Home Country Roads',a:'John Denver'},{t:'Fuckin\' Perfect',a:'P!nk'},{t:'Greatest Love of All',a:'Whitney Houston'},{t:'Like a Prayer',a:'Madonna'},{t:'Birds of a Feather',a:'Billie Eilish'}
   ],
   reflective: [
-    {t:'Landslide',a:'Fleetwood Mac'},{t:'Fast Car',a:'Tracy Chapman'},{t:'Imagine',a:'John Lennon'},{t:'Under the Bridge',a:'Red Hot Chili Peppers'},{t:'Wish You Were Here',a:'Pink Floyd'},{t:'Time',a:'Pink Floyd'},{t:'Vienna',a:'Billy Joel'},{t:'The Boxer',a:'Simon & Garfunkel'},{t:'Hallelujah',a:'Leonard Cohen'},{t:'River',a:'Joni Mitchell'},{t:'The Only Exception',a:'Paramore'},{t:'Chasing Cars',a:'Snow Patrol'},{t:'Come Away with Me',a:'Norah Jones'},{t:'Rivers and Roads',a:'The Head and the Heart'},{t:'Wake Up',a:'Arcade Fire'},{t:'Man in the Mirror',a:'Michael Jackson'},{t:'Bohemian Rhapsody',a:'Queen'},{t:'Under Pressure',a:'Queen'},{t:'Rhiannon',a:'Fleetwood Mac'},{t:'Dreams',a:'Fleetwood Mac'},{t:'Alejandro',a:'Lady Gaga'},{t:'Smooth Operator',a:'Sade'},{t:'Heritage',a:'Masayoshi Takanaka'},{t:'I Wonder',a:'Kanye West'},{t:'Everything I Am',a:'Kanye West'},{t:'Flashing Lights',a:'Kanye West'}
+    {t:'Landslide',a:'Fleetwood Mac'},{t:'Fast Car',a:'Tracy Chapman'},{t:'Imagine',a:'John Lennon'},{t:'Under the Bridge',a:'Red Hot Chili Peppers'},{t:'Wish You Were Here',a:'Pink Floyd'},{t:'Time',a:'Pink Floyd'},{t:'Vienna',a:'Billy Joel'},{t:'The Boxer',a:'Simon & Garfunkel'},{t:'Hallelujah',a:'Leonard Cohen'},{t:'River',a:'Joni Mitchell'},{t:'The Only Exception',a:'Paramore'},{t:'Chasing Cars',a:'Snow Patrol'},{t:'Come Away with Me',a:'Norah Jones'},{t:'Rivers and Roads',a:'The Head and the Heart'},{t:'Wake Up',a:'Arcade Fire'},{t:'Man in the Mirror',a:'Michael Jackson'},{t:'Bohemian Rhapsody',a:'Queen'},{t:'Under Pressure',a:'Queen'},{t:'Rhiannon',a:'Fleetwood Mac'},{t:'Dreams',a:'Fleetwood Mac'},{t:'Alejandro',a:'Lady Gaga'},{t:'Smooth Operator',a:'Sade'},{t:'Heritage',a:'Masayoshi Takanaka'},{t:'I Wonder',a:'Kanye West'},{t:'Everything I Am',a:'Kanye West'},{t:'Flashing Lights',a:'Kanye West'},{t:'What a Fool Believes',a:'Doobie Brothers'},{t:'Black Water',a:'Doobie Brothers'},{t:'Reminiscing',a:'Little River Band'},{t:'Cool Change',a:'Little River Band'},{t:'Time in a Bottle',a:'Jim Croce'},{t:'Operator',a:'Jim Croce'},{t:'Photographs and Memories',a:'Jim Croce'},{t:'Never as Good as First Time',a:'Sade'},{t:'Hey Jude',a:'The Beatles'},{t:'Something',a:'The Beatles'},{t:'In My Life',a:'The Beatles'},{t:'Across the Universe',a:'The Beatles'},{t:'A Day in the Life',a:'The Beatles'},{t:'Santeria',a:'Sublime'},{t:'Badfish',a:'Sublime'},{t:'Yellow',a:'Coldplay'},{t:'The Scientist',a:'Coldplay'},{t:'Clocks',a:'Coldplay'},    {t:'She Will Be Loved',a:'Maroon 5'},{t:'Makes Me Wonder',a:'Maroon 5'},{t:'Payphone',a:'Maroon 5'},{t:'Let Her Cry',a:'Hootie & the Blowfish'},{t:'Time',a:'Hootie & the Blowfish'},{t:'You Belong with Me',a:'Taylor Swift'},{t:'Blank Space',a:'Taylor Swift'},{t:'Anti-Hero',a:'Taylor Swift'},{t:'All Too Well',a:'Taylor Swift'},{t:'Cardigan',a:'Taylor Swift'},{t:'Willow',a:'Taylor Swift'},{t:'Irreplaceable',a:'Beyoncé'},{t:'Take Me Home Country Roads',a:'John Denver'},{t:'Rocky Mountain High',a:'John Denver'},{t:'Leaving on a Jet Plane',a:'John Denver'},{t:'Just Give Me a Reason',a:'P!nk'},{t:'Try',a:'P!nk'},{t:'What About Us',a:'P!nk'},{t:'I Will Always Love You',a:'Whitney Houston'},{t:'Saving All My Love for You',a:'Whitney Houston'},{t:'Material Girl',a:'Madonna'},{t:'Everything I Wanted',a:'Billie Eilish'},{t:'Ocean Eyes',a:'Billie Eilish'},{t:'Happier Than Ever',a:'Billie Eilish'}
   ],
   hopeful: [
-    {t:'Rise Up',a:'Andra Day'},{t:'Brave',a:'Sara Bareilles'},{t:'Fight Song',a:'Rachel Platten'},{t:'Roar',a:'Katy Perry'},{t:'Stronger (What Doesn\'t Kill You)',a:'Kelly Clarkson'},{t:'Eye of the Tiger',a:'Survivor'},{t:'Lose Yourself',a:'Eminem'},{t:'Not Afraid',a:'Eminem'},{t:'Beautiful Day',a:'U2'},{t:'Viva la Vida',a:'Coldplay'},{t:'Titanium',a:'David Guetta ft. Sia'},{t:'Counting Stars',a:'OneRepublic'},{t:'Whatever It Takes',a:'Imagine Dragons'},{t:'Centuries',a:'Fall Out Boy'},{t:'Don\'t Stop Me Now',a:'Queen'},{t:'Firework',a:'Katy Perry'},{t:'Born This Way',a:'Lady Gaga'},{t:'We Are the Champions',a:'Queen'},{t:'Go Your Own Way',a:'Fleetwood Mac'},{t:'Ready to Fly',a:'Masayoshi Takanaka'},{t:'By Your Side',a:'Sade'},{t:'Champion',a:'Kanye West'},{t:'Can\'t Tell Me Nothing',a:'Kanye West'}
+    {t:'Rise Up',a:'Andra Day'},{t:'Brave',a:'Sara Bareilles'},{t:'Fight Song',a:'Rachel Platten'},{t:'Roar',a:'Katy Perry'},{t:'Stronger (What Doesn\'t Kill You)',a:'Kelly Clarkson'},{t:'Eye of the Tiger',a:'Survivor'},{t:'Lose Yourself',a:'Eminem'},{t:'Not Afraid',a:'Eminem'},{t:'Beautiful Day',a:'U2'},{t:'Viva la Vida',a:'Coldplay'},{t:'Titanium',a:'David Guetta ft. Sia'},{t:'Counting Stars',a:'OneRepublic'},{t:'Whatever It Takes',a:'Imagine Dragons'},{t:'Centuries',a:'Fall Out Boy'},{t:'Don\'t Stop Me Now',a:'Queen'},{t:'Firework',a:'Katy Perry'},{t:'Born This Way',a:'Lady Gaga'},{t:'We Are the Champions',a:'Queen'},{t:'Go Your Own Way',a:'Fleetwood Mac'},{t:'Ready to Fly',a:'Masayoshi Takanaka'},{t:'By Your Side',a:'Sade'},{t:'Champion',a:'Kanye West'},{t:'Can\'t Tell Me Nothing',a:'Kanye West'},{t:'Takin\' It to the Streets',a:'Doobie Brothers'},{t:'Help Is on Its Way',a:'Little River Band'},{t:'Hey Jude',a:'The Beatles'},{t:'Paradise',a:'Coldplay'},{t:'A Sky Full of Stars',a:'Coldplay'},    {t:'Love Is Stronger Than Pride',a:'Sade'},{t:'Willow',a:'Taylor Swift'},{t:'Halo',a:'Beyoncé'},{t:'Break My Soul',a:'Beyoncé'},{t:'Rocky Mountain High',a:'John Denver'},{t:'Try',a:'P!nk'},{t:'Fuckin\' Perfect',a:'P!nk'},{t:'Greatest Love of All',a:'Whitney Houston'},{t:'Like a Prayer',a:'Madonna'},{t:'Ray of Light',a:'Madonna'}
   ]
 };
 
@@ -5583,7 +5623,7 @@ function showBoxingMatch(onDone) {
   var S = document.getElementById('skeleton-boxer');
   function animClass(el, cls, duration) {
     if (!el) return;
-    el.classList.remove('punch','recoil','duck','stagger','knee','dizzy','shakeoff','combo','celebrate','wobble','knockdown');
+    el.classList.remove('punch','recoil','duck','stagger','knee','dizzy','shakeoff','combo','celebrate','wobble','knockdown','hook','cross','body','weave');
     el.offsetHeight;
     if (cls) { el.classList.add(cls); }
     if (duration && cls) {
@@ -5610,130 +5650,134 @@ function showBoxingMatch(onDone) {
 
   function clearTimers() { timers.forEach(function(t){clearTimeout(t)}); timers = []; }
 
-  // Sequence: walk in (0-1.5s), then trade punches, then KO and count
+  // Sequence: walk in, trade punches with footwork, then KO and count
   updateProgress(0);
 
   // Phase 1: Walk in (0ms)
   timers.push(setTimeout(function(){ updateProgress(3); }, 0));
 
-  // Phase 2: Arthur left jab - he starts strong (1500ms)
-  timers.push(setTimeout(function(){
-    if (!A) return; A.style.animation = 'none'; A.offsetHeight;
-    A.style.animation = 'arthurLunge .5s ease';
-    animClass(A, 'punch', 500);
-    flyGlove('arthur'); flashHit();
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonRecoil .5s ease'; animClass(S, 'recoil', 500); }
-    updateProgress(12);
-  }, 1500));
-
-  // Phase 3: Skeleton counters HARD - Arthur staggered (2500ms)
-  timers.push(setTimeout(function(){
-    if (!S) return; S.style.animation = 'none'; S.offsetHeight;
-    S.style.animation = 'skeletonLunge .6s ease';
-    animClass(S, 'punch', 600);
-    flyGlove('skeleton'); flashHit();
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurStagger 1s ease'; animClass(A, 'stagger', 1000); }
-    updateProgress(22);
-  }, 2500));
-
-  // Phase 4: Skeleton follows up with body blow - Arthur reeling (3600ms)
-  timers.push(setTimeout(function(){
-    if (!S) return; S.style.animation = 'none'; S.offsetHeight;
-    S.style.animation = 'skeletonLunge .5s ease';
-    animClass(S, 'punch', 500);
-    flyGlove('skeleton'); flashHit();
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurRecoil .7s ease'; animClass(A, 'recoil', 700); }
-    updateProgress(32);
-  }, 3600));
-
-  // Phase 5: Arthur tries to jab - Skeleton ducks and lands on Arthur (4700ms)
+  // Phase 2: Arthur pokes with a jab - Skeleton parries, steps back (1500ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurLunge .4s ease';
     animClass(A, 'punch', 400);
-    // No glove fly - Arthur misses, Skeleton ducks
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonLunge .5s ease'; animClass(S, 'punch', 500); }
-    // Skeleton hits Arthur mid-miss
-    setTimeout(function(){ flyGlove('skeleton'); flashHit();
-      if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurStagger .8s ease'; animClass(A, 'stagger', 800); }
-    }, 200);
-    updateProgress(40);
-  }, 4700));
+    flyGlove('arthur');
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWeave .4s ease'; animClass(S, 'weave', 400); }
+    updateProgress(10);
+  }, 1500));
 
-  // Phase 6: Skeleton lands massive hook - Arthur goes DOWN TO ONE KNEE (5900ms)
+  // Phase 3: Skeleton steps in with a hook - Arthur weaves under (2700ms)
   timers.push(setTimeout(function(){
     if (!S) return; S.style.animation = 'none'; S.offsetHeight;
-    S.style.animation = 'skeletonLunge .6s ease';
-    animClass(S, 'punch', 600);
-    flyGlove('skeleton'); flashHit(); starsBurst();
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurKnee 1.2s ease forwards'; animClass(A, 'knee', 1200); setTimeout(function(){ if(A) animClass(A, 'dizzy'); }, 200); }
-    updateProgress(50);
-  }, 5900));
+    S.style.animation = 'skeletonHook .5s ease';
+    animClass(S, 'hook', 500);
+    // Arthur weaves under
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurWeave .5s ease'; animClass(A, 'weave', 500); }
+    updateProgress(20);
+  }, 2700));
 
-  // Phase 7: Arthur shakes it off - gets back up (7400ms)
+  // Phase 4: Arthur digs a body shot - Skeleton takes it, drops guard (3800ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
-    A.style.animation = 'arthurShakeOff 1.2s ease forwards';
-    animClass(A, 'shakeoff', 1200);
-    if (S) S.style.animation = 'skeletonRecoil .4s ease';
-    updateProgress(62);
-  }, 7400));
+    A.style.animation = 'arthurBody .5s ease';
+    animClass(A, 'body', 500);
+    flyGlove('arthur'); flashHit();
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonBodyHit .6s ease'; animClass(S, 'recoil', 600); }
+    updateProgress(32);
+  }, 3800));
 
-  // Phase 8: Arthur roars back with 2-punch combo! (8800ms)
+  // Phase 5: Skeleton fires a cross - Arthur eats it, staggers (5000ms)
+  timers.push(setTimeout(function(){
+    if (!S) return; S.style.animation = 'none'; S.offsetHeight;
+    S.style.animation = 'skeletonCross .5s ease';
+    animClass(S, 'cross', 500);
+    flyGlove('skeleton'); flashHit();
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurStagger .8s ease'; animClass(A, 'stagger', 800); }
+    updateProgress(44);
+  }, 5000));
+
+  // Phase 6: Skeleton winds up a hook - Arthur ducks under, counters (6200ms)
+  timers.push(setTimeout(function(){
+    if (!S) return; S.style.animation = 'none'; S.offsetHeight;
+    S.style.animation = 'skeletonHook .6s ease';
+    animClass(S, 'hook', 600);
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurDuck .5s ease'; animClass(A, 'duck', 500); }
+    // Arthur ducks the hook and counters
+    setTimeout(function(){
+      if (!A) return; A.style.animation = 'none'; A.offsetHeight;
+      A.style.animation = 'arthurCross .4s ease';
+      animClass(A, 'cross', 400);
+      flyGlove('arthur'); flashHit();
+      if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble .7s ease'; animClass(S, 'wobble', 700); }
+    }, 300);
+    updateProgress(55);
+  }, 6200));
+
+  // Phase 7: Arthur presses forward with a hook - Skeleton hurt, reeling (7500ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
-    A.style.animation = 'arthurCombo .8s ease';
-    animClass(A, 'combo', 800);
+    A.style.animation = 'arthurHook .5s ease';
+    animClass(A, 'hook', 500);
+    flyGlove('arthur'); flashHit();
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble 1s ease'; animClass(S, 'wobble', 1000); }
+    updateProgress(65);
+  }, 7500));
+
+  // Phase 8: Arthur unloads a 2-punch combo - Skeleton backs up (8800ms)
+  timers.push(setTimeout(function(){
+    if (!A) return; A.style.animation = 'none'; A.offsetHeight;
+    A.style.animation = 'arthurCombo .7s ease';
+    animClass(A, 'combo', 700);
     flyGlove('arthur');
     setTimeout(function(){ flyGlove('arthur'); flashHit(); }, 300);
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble 1.2s ease'; animClass(S, 'wobble', 1200); }
-    updateProgress(72);
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonRecoil .8s ease'; animClass(S, 'recoil', 800); }
+    updateProgress(75);
   }, 8800));
 
-  // Phase 9: Arthur final KO punch (10100ms)
+  // Phase 9: Arthur final cross - Skeleton knocked out cold! (10000ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
-    A.style.animation = 'arthurLunge .7s ease';
-    animClass(A, 'punch', 700);
+    A.style.animation = 'arthurCross .6s ease';
+    animClass(A, 'cross', 600);
     flyGlove('arthur'); flashHit(); starsBurst();
     if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonKnockdown 1.5s ease forwards'; animClass(S, 'knockdown', 1500); }
-    updateProgress(80);
-  }, 10100));
+    updateProgress(84);
+  }, 10000));
 
   // Phase 10: Referee appears + Count 1 (11900ms)
   timers.push(setTimeout(function(){
     if (RF) RF.className = 'referee-pos active';
     if (CT) { CT.textContent = 'ONE!'; CT.className = 'count-text show'; }
-    updateProgress(86);
+    updateProgress(90);
   }, 11900));
 
-  // Phase 11: Count 2 (13000ms)
+  // Phase 11: Count 2 (13100ms)
   timers.push(setTimeout(function(){
     if (CT) { CT.className = 'count-text'; CT.offsetHeight; CT.textContent = 'TWO!'; CT.className = 'count-text show'; }
-    updateProgress(91);
-  }, 13000));
+    updateProgress(94);
+  }, 13100));
 
-  // Phase 12: Count 3 (14100ms)
+  // Phase 12: Count 3 (14300ms)
   timers.push(setTimeout(function(){
     if (CT) { CT.className = 'count-text'; CT.offsetHeight; CT.textContent = 'THREE!'; CT.className = 'count-text show'; }
-    updateProgress(96);
-  }, 14100));
+    updateProgress(97);
+  }, 14300));
 
-  // Phase 13: Winner! (15300ms)
+  // Phase 13: Winner! (15500ms)
   timers.push(setTimeout(function(){
     if (CT) { CT.className = 'count-text'; }
     if (WT) { WT.innerHTML = '&#127942; ARTHUR WINS! &#127942;'; WT.className = 'winner-text show'; }
     if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurCelebrate 1s ease 3'; animClass(A, 'celebrate', 900); }
     if (RF) { RF.className = 'referee-pos active'; }
     updateProgress(100);
-  }, 15300));
+  }, 15500));
 
-  // Phase 14: Auto-redirect to journal reflection (17000ms)
+  // Phase 14: Auto-redirect to journal reflection (17500ms)
   timers.push(setTimeout(function(){
     clearTimers();
     overlay.remove();
     if (onDone) onDone();
-  }, 17000));
+  }, 17500));
 
   // Cleanup if overlay is removed manually
   overlay.addEventListener('click', function(e) {
