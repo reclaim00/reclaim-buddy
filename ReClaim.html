@@ -559,6 +559,27 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 }
 
 @keyframes fadeOutUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-20px)}}
+/* Team battle keyframes */
+@keyframes monsterApproach{0%{transform:translateX(200px) scale(0.5);opacity:0}15%{opacity:1}40%{transform:translateX(0) scale(1);opacity:1}100%{transform:translateX(-60px) scale(0.8);opacity:0}}
+@keyframes monsterHit{0%{transform:translateX(0) scale(1);opacity:1}20%{transform:translateX(20px) scale(1.2) rotate(10deg);opacity:1}50%{transform:translateX(-30px) scale(0.6) rotate(-20deg);opacity:.6}100%{transform:translateX(-80px) scale(0.2) rotate(-45deg);opacity:0}}
+@keyframes battleArthur{0%{transform:translateX(0) translateY(0)}20%{transform:translateX(20px) translateY(-2px) rotate(-8deg)}40%{transform:translateX(35px) translateY(0) rotate(-12deg)}55%{transform:translateX(20px) translateY(2px) rotate(-4deg)}70%{transform:translateX(0) translateY(0) rotate(0deg)}100%{transform:translateX(0) translateY(0) rotate(0deg)}}
+@keyframes battlePaulie{0%{transform:translateX(0) translateY(0)}15%{transform:translateX(0) translateY(-6px) rotate(0deg)}30%{transform:translateX(10px) translateY(0) rotate(-6deg)}50%{transform:translateX(0) translateY(0) rotate(0deg)}70%{transform:translateX(0) translateY(-4px)}100%{transform:translateX(0) translateY(0)}}
+@keyframes battleErin{0%{transform:translateX(0) translateY(0)}20%{transform:translateX(0) translateY(-3px) rotate(3deg)}40%{transform:translateX(0) translateY(0) rotate(-2deg)}60%{transform:translateX(0) translateY(-2px)}80%{transform:translateX(0) translateY(0)}100%{transform:translateX(0) translateY(0)}}
+@keyframes battleVictory{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-6px) scale(1.08) rotate(-2deg)}60%{transform:translateY(-2px) scale(1.04) rotate(0deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
+@keyframes battleFlash{0%{opacity:0}10%{opacity:.8}25%{opacity:.3}40%{opacity:0}100%{opacity:0}}
+@keyframes monsterSpawn{0%{transform:translateX(250px) scale(0.3);opacity:0}20%{opacity:1}50%{transform:translateX(80px) scale(1);opacity:1}80%{transform:translateX(20px) scale(0.9);opacity:.8}100%{transform:translateX(-40px) scale(0.4);opacity:0}}
+@keyframes gunBlast{0%{opacity:0;transform:translateX(0) scale(0.5)}20%{opacity:1;transform:translateX(30px) scale(1.3)}100%{opacity:0;transform:translateX(80px) scale(0.5)}}
+@keyframes guitarSmash{0%{transform:rotate(0deg) translateX(0)}25%{transform:rotate(-45deg) translateX(8px)}50%{transform:rotate(-60deg) translateX(12px)}75%{transform:rotate(-30deg) translateX(4px)}100%{transform:rotate(0deg) translateX(0)}}
+@keyframes fistPound{0%{transform:rotate(0deg) translateY(0)}30%{transform:rotate(-25deg) translateY(-5px)}60%{transform:rotate(-40deg) translateY(10px)}100%{transform:rotate(0deg) translateY(0)}}
+.tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
+#ta-arthur.fight .tb-arm-g{animation:fistPound .6s ease forwards}
+#ta-arthur.victory .tb-arm-g{transform:rotate(-40deg)}
+#ta-paulie.fight .tb-arm-g{animation:guitarSmash .5s ease forwards}
+#ta-paulie.fight .tb-weapon{animation:guitarSmash .5s ease forwards}
+#ta-paulie.victory .tb-arm-g{transform:rotate(-60deg)}
+#ta-paulie.victory .tb-weapon{transform:rotate(-30deg)}
+#ta-erin.fight .tb-arm-g{animation:fistPound .4s ease forwards}
+#ta-erin.victory .tb-arm-g{transform:rotate(-30deg)}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
 .boxing-progress .fill{height:100%;background:var(--primary);border-radius:2px;width:0%;transition:width .5s linear}
 </style>
@@ -3491,7 +3512,14 @@ function careHTML() {
   var today = new Date().toDateString();
   var checkedIn = D.checkins.filter(function(c){return c.date===today}).length;
   if (checkedIn) {
-    h += '<p style="font-size:13px;color:var(--primary);font-weight:600">'+t('Checked in today')+'</p>';
+    var lastCheckin = D.checkins.filter(function(c){return c.date===today});
+    var ciData = lastCheckin.length ? lastCheckin[lastCheckin.length-1] : null;
+    var moodEmojis = ['&#128545;','&#128544;','&#128529;','&#128578;','&#128513;'];
+    var moodStr = ciData && ciData.mood ? moodEmojis[ciData.mood-1] : '&#9989;';
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--primary-light);border-radius:10px;margin-bottom:6px"><span style="font-size:22px">'+moodStr+'</span><div style="flex:1"><div style="font-weight:600;font-size:13px;color:var(--primary)">'+t('Checked in today')+'</div>' +
+      (ciData && ciData.win ? '<div style="font-size:11px;color:var(--text);margin-top:2px">&#127775; "'+ciData.win.substring(0,60)+(ciData.win.length>60?'...':'')+'"</div>' : '') +
+      '</div></div>';
+    h += '<button class="btn btn-sm btn-outline" onclick="replayBattle()" style="font-size:11px">&#127918; Replay battle</button>';
   } else {
     h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('How was your day?')+'</p>';
     h += '<button class="btn btn-primary btn-sm" onclick="doCheckin()">'+t('Check In')+'</button>';
@@ -3639,9 +3667,86 @@ function showSOS() {
 
 function doCheckin() {
   var today = new Date().toDateString();
-  D.checkins.push({date:today,time:new Date().toLocaleTimeString()});
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var h = '<div class="overlay-content" style="max-width:460px"><h3 style="font-size:17px;font-weight:700;margin-bottom:4px;text-align:center">&#128198; Daily Check-In</h3><p style="font-size:12px;color:var(--muted);margin-bottom:12px;text-align:center">Answer a few questions, then your team fights off the darkness.</p>';
+  h += '<div id="checkin-steps">';
+  // Step 1: Mood
+  h += '<div class="checkin-step" data-step="0">';
+  h += '<div style="font-size:13px;font-weight:600;margin-bottom:8px">1. How are you feeling right now?</div>';
+  h += '<div class="mood-row">';
+  var moodLabels = ['&#128545;','&#128544;','&#128529;','&#128578;','&#128513;'];
+  for (var mi=0;mi<5;mi++) h += '<button class="mood-btn checkin-mood" data-val="'+(mi+1)+'" onclick="document.querySelectorAll(\'.checkin-mood\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+moodLabels[mi]+'</button>';
+  h += '</div></div>';
+  // Step 2: Challenges
+  h += '<div class="checkin-step" data-step="1" style="display:none">';
+  h += '<div style="font-size:13px;font-weight:600;margin-bottom:8px">2. What challenges did you face today?</div>';
+  var challenges = ['Craving','Stress / anxiety','Sadness / depression','Anger / frustration','Fatigue / low energy','Social pressure','None today'];
+  for (var ci=0;ci<challenges.length;ci++) h += '<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer"><input type="checkbox" class="checkin-challenge" value="'+challenges[ci]+'" style="width:auto;margin:0"><span>'+challenges[ci]+'</span></label>';
+  h += '<textarea id="checkin-challenge-other" placeholder="Other challenge (optional)" style="min-height:50px;margin-top:6px"></textarea></div>';
+  // Step 3: Coping
+  h += '<div class="checkin-step" data-step="2" style="display:none">';
+  h += '<div style="font-size:13px;font-weight:600;margin-bottom:8px">3. Which coping tools helped?</div>';
+  var tools = ['Deep breathing','Journaling','Exercise / walk','Called a friend','Meditation','Read / listened to music','AA/NA meeting','Other'];
+  for (var ti=0;ti<tools.length;ti++) h += '<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer"><input type="checkbox" class="checkin-tool" value="'+tools[ti]+'" style="width:auto;margin:0"><span>'+tools[ti]+'</span></label>';
+  h += '</div>';
+  // Step 4: Win + Tomorrow
+  h += '<div class="checkin-step" data-step="3" style="display:none">';
+  h += '<div style="font-size:13px;font-weight:600;margin-bottom:6px">4. What\'s one win today (no matter how small)?</div>';
+  h += '<textarea id="checkin-win" placeholder="e.g. I took a walk, I reached out, I stayed sober..." style="min-height:50px"></textarea>';
+  h += '<div style="font-size:13px;font-weight:600;margin:10px 0 6px">5. What\'s your intention for tomorrow?</div>';
+  h += '<textarea id="checkin-intent" placeholder="e.g. Call my sponsor, go to a meeting, practice gratitude..." style="min-height:50px"></textarea>';
+  h += '</div>';
+  h += '</div>';
+  // Navigation buttons
+  h += '<div style="display:flex;gap:8px;margin-top:12px;justify-content:space-between">';
+  h += '<button class="btn btn-outline btn-sm" id="checkin-prev" onclick="prevCheckinStep()" style="display:none">&#8592; Back</button>';
+  h += '<button class="btn btn-primary btn-sm" id="checkin-next" onclick="nextCheckinStep()" style="margin-left:auto">Next &#8594;</button>';
+  h += '<button class="btn btn-primary btn-sm" id="checkin-submit" onclick="submitCheckin()" style="display:none">&#9889; Fight!</button>';
+  h += '</div>';
+  h += '</div></div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+  window._checkinStep = 0;
+  window._checkinOverlay = overlay;
+}
+
+var CHECKIN_STEPS = 4;
+function nextCheckinStep() {
+  window._checkinStep++;
+  if (window._checkinStep >= CHECKIN_STEPS) {
+    document.getElementById('checkin-next').style.display = 'none';
+    document.getElementById('checkin-submit').style.display = '';
+  } else {
+    document.getElementById('checkin-next').style.display = '';
+  }
+  document.getElementById('checkin-prev').style.display = window._checkinStep > 0 ? '' : 'none';
+  document.querySelectorAll('.checkin-step').forEach(function(el,i){el.style.display = i === window._checkinStep ? '' : 'none';});
+}
+function prevCheckinStep() {
+  window._checkinStep--;
+  document.getElementById('checkin-next').style.display = '';
+  document.getElementById('checkin-submit').style.display = 'none';
+  document.getElementById('checkin-prev').style.display = window._checkinStep > 0 ? '' : 'none';
+  document.querySelectorAll('.checkin-step').forEach(function(el,i){el.style.display = i === window._checkinStep ? '' : 'none';});
+}
+function submitCheckin() {
+  var today = new Date().toDateString();
+  var moodEl = document.querySelector('.checkin-mood.active');
+  var mood = moodEl ? parseInt(moodEl.getAttribute('data-val')) : 3;
+  var challenges = [];
+  document.querySelectorAll('.checkin-challenge:checked').forEach(function(el){challenges.push(el.value);});
+  var otherChallenge = document.getElementById('checkin-challenge-other').value.trim();
+  if (otherChallenge) challenges.push(otherChallenge);
+  var tools = [];
+  document.querySelectorAll('.checkin-tool:checked').forEach(function(el){tools.push(el.value);});
+  var win = document.getElementById('checkin-win').value.trim();
+  var intent = document.getElementById('checkin-intent').value.trim();
+  D.checkins.push({date:today,time:new Date().toLocaleTimeString(),mood:mood,challenges:challenges,tools:tools,win:win,intent:intent});
   D.streak = (D.streak || 0) + 1;
   saveData();
+  window._checkinOverlay.remove();
+  showTeamBattle({mood:mood,win:win});
 }
 
 // ====== BREATHING ======
@@ -5785,6 +5890,142 @@ function showBoxingMatch(onDone) {
   });
 }
 
+function replayBattle() {
+  var last = D.checkins.length ? D.checkins[D.checkins.length-1] : null;
+  showTeamBattle({mood: last && last.mood ? last.mood : 3, win: last && last.win ? last.win : ''});
+}
+
+function showTeamBattle(data) {
+  var existing = document.querySelector('.overlay');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.style.background = 'rgba(0,0,0,.6)';
+  overlay.style.alignItems = 'flex-start';
+  overlay.style.paddingTop = '30px';
+
+  var mood = data && data.mood ? data.mood : 3;
+  var win = data && data.win ? data.win : '';
+
+  var teamMembers = [
+    {id:'ta-arthur',color:'#ffd700',label:'Arthur',svg:
+      '<svg class="arthur-svg" viewBox="0 0 30 54"><path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8" stroke-linecap="round"/><circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="10" r="2.5" fill="#dc2626"/></g></g><line x1="15" y1="30" x2="11" y2="39" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="30" x2="20" y2="38" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></svg>'
+    },
+    {id:'ta-paulie',color:'#a78bfa',label:'Paulie',svg:
+      '<svg class="paulie-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/><path d="M8 5 L15 0 L22 5" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="7" y1="5" x2="23" y2="5" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="20" y2="21" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:20px 21px"><line x1="20" y1="21" x2="23" y2="24" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="23" y1="24" x2="28" y2="19" stroke="#8B4513" stroke-width="2" stroke-linecap="round" class="tb-weapon"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/></svg>'
+    },
+    {id:'ta-erin',color:'#ec4899',label:'Erin',svg:
+      '<svg class="erin-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="3" x2="11" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="3" x2="19" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="19" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 19px"><line x1="21" y1="19" x2="23" y2="13" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="13" r="2" fill="#ec4899"/><line x1="24" y1="13" x2="30" y2="13" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><circle cx="30" cy="13" r="4" fill="#fbbf24" class="tb-muzzle" style="transform-origin:0 0"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/></svg>'
+    }
+  ];
+
+  var monsterEmojis = ['&#128128;','&#9762;&#65039;','&#128123;','&#9760;&#65039;','&#128169;'];
+
+  overlay.innerHTML =
+    '<div class="overlay-content" style="background:linear-gradient(135deg,#0f0f1a 0%,#1a0a2e 100%);border:2px solid rgba(255,255,255,.1);padding:10px;overflow:hidden;text-align:center;max-width:520px">' +
+    '<div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#9889; TEAM RECLAIM VS THE DARKNESS</div>' +
+    '<div style="font-size:10px;color:rgba(255,255,255,.4);margin-bottom:6px">Each check-in powers the fight</div>' +
+    '<div class="tb-ring" style="position:relative;height:140px;background:radial-gradient(ellipse at center,rgba(30,20,60,.8) 0%,rgba(10,5,20,.9) 100%);border-radius:14px;overflow:hidden;margin:0 auto 6px">' +
+      // Team on left
+      '<div id="tb-team" style="position:absolute;left:6%;bottom:10px;display:flex;gap:4px;align-items:flex-end;z-index:3">';
+  for (var ti=0;ti<teamMembers.length;ti++) {
+    var tm = teamMembers[ti];
+    overlay.innerHTML += '<div id="'+tm.id+'" style="display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 0 6px '+tm.color.replace('#','')+'88)">' +
+      tm.svg +
+      '</div>';
+  }
+  overlay.innerHTML +=
+      '</div>' +
+      // Enemy area
+      '<div id="tb-enemies" style="position:absolute;right:5%;top:20px;z-index:2">' +
+        '<div class="tb-monster" id="tb-monster-0" style="font-size:38px;position:absolute;top:10px;right:20px;opacity:0">'+monsterEmojis[0]+'</div>' +
+        '<div class="tb-monster" id="tb-monster-1" style="font-size:32px;position:absolute;top:40px;right:60px;opacity:0">'+monsterEmojis[1]+'</div>' +
+        '<div class="tb-monster" id="tb-monster-2" style="font-size:36px;position:absolute;top:0;right:80px;opacity:0">'+monsterEmojis[2]+'</div>' +
+      '</div>' +
+      // Flash overlay
+      '<div id="tb-flash" style="position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:5"></div>' +
+      // Gun blast
+      '<div id="tb-blast" style="position:absolute;top:52px;left:125px;font-size:24px;opacity:0;z-index:4;pointer-events:none">&#9889;</div>' +
+      // Status text
+      '<div id="tb-status" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:13px;font-weight:700;color:#fff;text-shadow:0 0 20px rgba(255,215,0,.5);opacity:0;z-index:6;pointer-events:none;text-align:center"></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:6px;justify-content:center;margin-top:2px">' +
+    '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="font-size:11px;color:#fff;border-color:rgba(255,255,255,.3)">Close</button>' +
+    '</div>' +
+    '</div>';
+
+  document.body.appendChild(overlay);
+
+  var timers = [];
+  function ct() { timers.forEach(function(t){clearTimeout(t)}); timers = []; }
+
+  // Get elements
+  var A = document.getElementById('ta-arthur');
+  var P = document.getElementById('ta-paulie');
+  var E = document.getElementById('ta-erin');
+  var m0 = document.getElementById('tb-monster-0');
+  var m1 = document.getElementById('tb-monster-1');
+  var m2 = document.getElementById('tb-monster-2');
+  var flash = document.getElementById('tb-flash');
+  var blast = document.getElementById('tb-blast');
+  var status = document.getElementById('tb-status');
+
+  // Phase 1 (500ms): Monsters appear
+  timers.push(setTimeout(function(){
+    if (m0) { m0.style.animation = 'monsterApproach 2.5s ease forwards'; m0.style.opacity = '1'; }
+    if (m1) { m1.style.animation = 'monsterApproach 2.8s ease forwards 0.3s'; m1.style.opacity = '1'; }
+    if (m2) { m2.style.animation = 'monsterApproach 3s ease forwards 0.6s'; m2.style.opacity = '1'; }
+    if (status) { status.textContent = '&#9760;&#65039; The darkness approaches...'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1800); }
+  }, 500));
+
+  // Phase 2 (2500ms): Arthur steps forward and punches
+  timers.push(setTimeout(function(){
+    if (A) { A.style.animation = 'battleArthur .7s ease'; A.classList.add('fight'); setTimeout(function(){if(A)A.classList.remove('fight');},600); }
+    if (m0) { m0.style.animation = 'monsterHit .6s ease forwards'; }
+    if (flash) { flash.style.animation = 'battleFlash .4s ease'; }
+    if (status) { status.textContent = '&#128170; ARTHUR PUNCHES!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
+  }, 2500));
+
+  // Phase 3 (3800ms): Erin shoots
+  timers.push(setTimeout(function(){
+    if (E) { E.style.animation = 'battleErin .5s ease'; E.classList.add('fight'); setTimeout(function(){if(E)E.classList.remove('fight');},400); }
+    if (blast) { blast.style.animation = 'gunBlast .4s ease forwards'; blast.style.opacity = '1'; setTimeout(function(){ if(blast) { blast.style.animation = 'none'; blast.style.opacity = '0'; } }, 400); }
+    if (m1) { m1.style.animation = 'monsterHit .5s ease forwards'; }
+    if (flash) { flash.style.animation = 'battleFlash .3s ease'; }
+    if (status) { status.textContent = '&#127919; ERIN SHOOTS!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
+  }, 3800));
+
+  // Phase 4 (5000ms): Paulie smashes with guitar
+  timers.push(setTimeout(function(){
+    if (P) { P.style.animation = 'battlePaulie .6s ease'; P.classList.add('fight'); setTimeout(function(){if(P)P.classList.remove('fight');},500); }
+    if (m2) { m2.style.animation = 'monsterHit .5s ease forwards'; }
+    if (flash) { flash.style.animation = 'battleFlash .4s ease'; }
+    if (status) { status.textContent = '&#127928; PAULIE CRUSHES!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
+  }, 5000));
+
+  // Phase 5 (6500ms): Victory
+  timers.push(setTimeout(function(){
+    if (status) {
+      var winText = win ? '&#127775; "' + win.substring(0,50) + (win.length > 50 ? '...' : '') + '"' : '';
+      status.innerHTML = '&#127942; VICTORY! Darkness defeated. ' + winText;
+      status.style.opacity = '1';
+      status.style.fontSize = '14px';
+    }
+    if (A) { A.style.animation = 'battleVictory .6s ease 3'; A.classList.add('victory'); }
+    if (P) { P.style.animation = 'battleVictory .6s ease 3'; P.classList.add('victory'); }
+    if (E) { E.style.animation = 'battleVictory .6s ease 3'; E.classList.add('victory'); }
+  }, 6500));
+
+  // Cleanup after 10 seconds
+  timers.push(setTimeout(function(){
+    if (status) { status.style.opacity = '0'; }
+  }, 10000));
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) { ct(); overlay.remove(); }
+  });
+}
+
 // ====== SERVICE WORKER ======
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
@@ -5939,6 +6180,18 @@ function meetingsHTML() {
   h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">988 - Suicide and Crisis Lifeline. Call or text 24/7.</p>';
   h += '<button class="btn btn-danger btn-sm" onclick="showSOS()" style="width:100%">Crisis Helplines</button>';
   h += '</div>';
+  h += '<div class="card" style="border-left:3px solid var(--accent);padding:14px;background:var(--primary-light)">';
+  h += '<div style="font-weight:700;font-size:14px;margin-bottom:6px">&#128104;&#8205;&#127979; Licensed Therapist Near Me</div>';
+  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">Find a licensed therapist who specializes in addiction and mental health.</p>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
+  h += '<a href="https://www.psychologytoday.com/us/therapists/addiction" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Psychology Today</a>';
+  h += '<a href="https://www.goodtherapy.org/find-therapists" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">GoodTherapy</a>';
+  h += '<a href="https://www.therapyden.com/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">TherapyDen</a>';
+  h += '<a href="https://www.zocdoc.com/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">ZocDoc</a>';
+  h += '</div>';
+  h += '<button class="btn btn-primary btn-sm" onclick="findNearbyTherapists()" style="margin-top:8px;width:100%">&#128205; Use My Location</button>';
+  h += '<div id="nearby-ther-result" style="font-size:12px;color:var(--muted);margin-top:6px;text-align:center"></div>';
+  h += '</div>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px">';
   h += '<div style="font-weight:700;font-size:14px;margin-bottom:8px">Mental Health Resources</div>';
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
@@ -5952,6 +6205,21 @@ function meetingsHTML() {
   h += '<a href="https://maps.apple.com/?q=mental+health+services+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">Find Facilities Near Me</a>';
   h += '</div>';
   return h;
+}
+function findNearbyTherapists() {
+  var result = document.getElementById('nearby-ther-result');
+  if (!result) return;
+  result.innerHTML = '&#128270; Locating...';
+  if (!navigator.geolocation) { result.innerHTML = '&#9888; Geolocation not supported. Use the directories above.'; return; }
+  navigator.geolocation.getCurrentPosition(function(pos) {
+    var lat = pos.coords.latitude.toFixed(4);
+    var lon = pos.coords.longitude.toFixed(4);
+    result.innerHTML = '<div style="color:var(--primary);font-weight:600;margin-bottom:4px">&#128205; Found your location!</div>' +
+      '<a href="https://www.google.com/maps/search/licensed+therapist+addiction+counselor/@' + lat + ',' + lon + ',12z" target="_blank" class="btn btn-sm btn-primary" style="text-decoration:none">&#128269; Search Therapists Near You</a>' +
+      '<div style="font-size:11px;color:var(--muted);margin-top:4px">Opens Google Maps with nearby therapists</div>';
+  }, function() {
+    result.innerHTML = '&#9888; Could not get location. Try the directories above.';
+  });
 }
 function relapsePlanHTML() {
   var h = '';
