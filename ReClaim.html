@@ -567,11 +567,19 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes battleErin{0%{transform:translateX(0) translateY(0)}20%{transform:translateX(0) translateY(-3px) rotate(3deg)}40%{transform:translateX(0) translateY(0) rotate(-2deg)}60%{transform:translateX(0) translateY(-2px)}80%{transform:translateX(0) translateY(0)}100%{transform:translateX(0) translateY(0)}}
 @keyframes battleVictory{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-6px) scale(1.08) rotate(-2deg)}60%{transform:translateY(-2px) scale(1.04) rotate(0deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
 @keyframes battleFlash{0%{opacity:0}10%{opacity:.8}25%{opacity:.3}40%{opacity:0}100%{opacity:0}}
+/* Party celebration keyframes */
+@keyframes partyArthur{0%{transform:translateY(0) scale(1)}20%{transform:translateY(-12px) scale(1.1) rotate(-5deg)}40%{transform:translateY(-4px) scale(1.05) rotate(-2deg)}60%{transform:translateY(-10px) scale(1.08) rotate(3deg)}80%{transform:translateY(-2px) scale(1.02) rotate(1deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
+@keyframes partyPaulie{0%{transform:translateY(0) scale(1)}25%{transform:translateY(-10px) scale(1.1) rotate(4deg)}50%{transform:translateY(-3px) scale(1.05) rotate(1deg)}75%{transform:translateY(-14px) scale(1.12) rotate(-3deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
+@keyframes partyErin{0%{transform:translateY(0) scale(1)}15%{transform:translateY(-8px) scale(1.08) rotate(2deg)}35%{transform:translateY(-14px) scale(1.12) rotate(-4deg)}55%{transform:translateY(-4px) scale(1.04) rotate(1deg)}75%{transform:translateY(-10px) scale(1.1) rotate(-2deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
+@keyframes partyFloat{0%{opacity:0;transform:translateY(60px) scale(0)}30%{opacity:1;transform:translateY(-10px) scale(1)}60%{opacity:1;transform:translateY(-20px) scale(0.9)}100%{opacity:0;transform:translateY(-50px) scale(0.3)}}
+@keyframes partyBounce{0%{transform:translateY(0)}30%{transform:translateY(-8px)}50%{transform:translateY(0)}70%{transform:translateY(-4px)}100%{transform:translateY(0)}}
+@keyframes partyPulse{0%{transform:scale(1);opacity:.6}50%{transform:scale(1.3);opacity:1}100%{transform:scale(1);opacity:.6}}
 @keyframes monsterSpawn{0%{transform:translateX(250px) scale(0.3);opacity:0}20%{opacity:1}50%{transform:translateX(80px) scale(1);opacity:1}80%{transform:translateX(20px) scale(0.9);opacity:.8}100%{transform:translateX(-40px) scale(0.4);opacity:0}}
 @keyframes gunBlast{0%{opacity:0;transform:translateX(0) scale(0.5)}20%{opacity:1;transform:translateX(30px) scale(1.3)}100%{opacity:0;transform:translateX(80px) scale(0.5)}}
 @keyframes guitarSmash{0%{transform:rotate(0deg) translateX(0)}25%{transform:rotate(-45deg) translateX(8px)}50%{transform:rotate(-60deg) translateX(12px)}75%{transform:rotate(-30deg) translateX(4px)}100%{transform:rotate(0deg) translateX(0)}}
 @keyframes fistPound{0%{transform:rotate(0deg) translateY(0)}30%{transform:rotate(-25deg) translateY(-5px)}60%{transform:rotate(-40deg) translateY(10px)}100%{transform:rotate(0deg) translateY(0)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
+#mp-arthur.celebrate .tb-arm-g{transform:rotate(-50deg)}#mp-paulie.celebrate .tb-arm-g{transform:rotate(-70deg) scaleX(-1)}#mp-erin.celebrate .tb-arm-g{transform:rotate(-60deg)}
 #ta-arthur.fight .tb-arm-g{animation:fistPound .6s ease forwards}
 #ta-arthur.victory .tb-arm-g{transform:rotate(-40deg)}
 #ta-paulie.fight .tb-arm-g{animation:guitarSmash .5s ease forwards}
@@ -5220,9 +5228,9 @@ function startConfetti() {
 
 function checkMilestone() {
   var days = soberDays();
-  var milestones = [7,14,21,30,60,90,180,365,730,1000];
+  var milestones = [1,3,7,14,21,30,60,90,180,365,730,1000];
   for (var i=0;i<milestones.length;i++) {
-    if (days === milestones[i] && D.lastMilestoneShown < days) { showMilestoneCelebration(days); break; }
+    if (days === milestones[i] && D.lastMilestoneShown < days) { showMilestoneParty(days); break; }
   }
 }
 
@@ -6042,6 +6050,105 @@ function showTeamBattle(data) {
   overlay.addEventListener('click', function(e) {
     if (e.target === overlay) { ct(); overlay.remove(); }
   });
+}
+
+function partyConfetti() {
+  var overlay = document.querySelector('.overlay-content');
+  if (!overlay) return;
+  var canvas = document.createElement('div');
+  canvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden';
+  overlay.style.position = 'relative';
+  overlay.appendChild(canvas);
+  var colors = ['#ff6b35','#f7931e','#34d399','#60a5fa','#a78bfa','#f472b6','#fbbf24','#ffd700'];
+  for (var i=0;i<50;i++) {
+    (function(){
+      var c = document.createElement('div');
+      c.style.cssText = 'position:absolute;width:'+(5+Math.random()*6)+'px;height:'+(5+Math.random()*6)+'px;background:'+colors[Math.floor(Math.random()*colors.length)]+';border-radius:'+(Math.random()>.5?'50%':'2px')+';left:'+(Math.random()*100)+'%;top:-10px;opacity:'+(.7+Math.random()*.3);
+      canvas.appendChild(c);
+      var x = parseFloat(c.style.left);
+      var rot = Math.random()*720;
+      var dur = 1200+Math.random()*1800;
+      var start = Date.now();
+      function anim() {
+        var p = Math.min(1,(Date.now()-start)/dur);
+        c.style.top = (p*120-10)+'px';
+        c.style.left = (x + Math.sin(p*8)*12)+'px';
+        c.style.transform = 'rotate('+(rot*p)+'deg)';
+        c.style.opacity = Math.max(0,1-p*1.2);
+        if (p<1) requestAnimationFrame(anim); else c.remove();
+      }
+      requestAnimationFrame(anim);
+    })();
+  }
+}
+
+function showMilestoneParty(days) {
+  if (D.lastMilestoneShown === days) return;
+  D.lastMilestoneShown = days;
+  saveData();
+  var existing = document.querySelector('.overlay');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.style.background = 'rgba(0,0,0,.65)';
+  var teamMembers = [
+    {id:'mp-arthur',color:'#ffd700',svg:'<svg viewBox="0 0 30 54"><path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8" stroke-linecap="round"/><circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="22" cy="10" r="2.5" fill="#dc2626"/></g></g><line x1="15" y1="30" x2="11" y2="39" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="30" x2="20" y2="38" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></svg>'},
+    {id:'mp-paulie',color:'#a78bfa',svg:'<svg viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/><path d="M8 5 L15 0 L22 5" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="7" y1="5" x2="23" y2="5" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="20" y2="21" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:20px 21px"><line x1="20" y1="21" x2="23" y2="24" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="23" y1="24" x2="28" y2="19" stroke="#8B4513" stroke-width="2" stroke-linecap="round" class="tb-weapon"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/></svg>'},
+    {id:'mp-erin',color:'#ec4899',svg:'<svg viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="3" x2="11" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="3" x2="19" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="19" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 19px"><line x1="21" y1="19" x2="23" y2="13" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="13" r="2" fill="#ec4899"/><line x1="24" y1="13" x2="30" y2="13" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><circle cx="30" cy="13" r="4" fill="#fbbf24" class="tb-muzzle" style="transform-origin:0 0"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/></svg>'}
+  ];
+  var label = days + ' Day' + (days !== 1 ? 's' : '') + ' Sober';
+  var subtitle = days >= 365 ? 'ONE YEAR! Incredible!' : days >= 90 ? 'Quarter of a year - massive!' : days >= 30 ? 'One month strong!' : days >= 7 ? 'One week down!' : 'Amazing start!';
+  var emojis = ['🎈','🎉','🎊','✨','🌟','💫','🎶','🎵','🎺','🥳'];
+  overlay.innerHTML =
+    '<div class="overlay-content" style="background:linear-gradient(135deg,#0f0f1a 0%,#1a0a2e 100%);border:2px solid rgba(255,215,0,.3);padding:14px;overflow:hidden;text-align:center;max-width:460px">' +
+    '<div style="font-size:13px;font-weight:700;color:#ffd700;margin-bottom:2px;text-shadow:0 0 20px rgba(255,215,0,.4)">🎉 ' + label + '! 🎉</div>' +
+    '<div style="font-size:11px;color:rgba(255,255,255,.5);margin-bottom:6px">' + subtitle + '</div>' +
+    '<div class="mp-stage" style="position:relative;height:140px;background:radial-gradient(ellipse at center,rgba(30,20,60,.8) 0%,rgba(10,5,20,.9) 100%);border-radius:14px;overflow:hidden;margin:0 auto 6px">' +
+      // Party emoji decorations
+      '<div id="mp-decor" style="position:absolute;inset:0;z-index:1;pointer-events:none">';
+  for (var ei=0;ei<12;ei++) {
+    var em = emojis[ei % emojis.length];
+    var xPos = 4 + Math.random() * 92;
+    var delay = Math.random() * 3;
+    overlay.innerHTML += '<div style="position:absolute;top:-20px;left:' + xPos + '%;font-size:' + (14 + Math.floor(Math.random() * 14)) + 'px;opacity:0;animation:partyFloat 3s ease ' + delay + 's infinite">' + em + '</div>';
+  }
+  overlay.innerHTML +=
+      '</div>' +
+      // Characters
+      '<div id="mp-team" style="position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:10px;align-items:flex-end;z-index:3">';
+  for (var ti=0;ti<teamMembers.length;ti++) {
+    var tm = teamMembers[ti];
+    var bounceDelay = (ti * 0.15).toFixed(2);
+    overlay.innerHTML += '<div id="'+tm.id+'" style="display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 0 8px '+tm.color.replace('#','')+'88);animation:partyBounce .5s ease ' + bounceDelay + 's infinite">' +
+      tm.svg +
+      '</div>';
+  }
+  overlay.innerHTML +=
+      '</div>' +
+      // Pulsing glow
+      '<div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:180px;height:40px;background:radial-gradient(ellipse,rgba(255,215,0,.15) 0%,transparent 70%);z-index:1;pointer-events:none;animation:partyPulse 2s ease infinite"></div>' +
+    '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:4px;align-items:center;margin-top:2px">' +
+    '<div id="mp-quote" style="font-size:11px;color:rgba(255,255,255,.6);font-style:italic;max-width:360px;line-height:1.4">You are doing something incredibly hard, and you are doing it beautifully.</div>' +
+    '<div style="display:flex;gap:6px;margin-top:2px">' +
+    '<button class="btn btn-primary btn-sm" onclick="partyConfetti();this.style.display=\'none\'" style="font-size:11px">&#127881; Confetti</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="font-size:11px;color:#fff;border-color:rgba(255,255,255,.3)">Close</button>' +
+    '</div></div></div>';
+  document.body.appendChild(overlay);
+  // Play celebrations
+  setTimeout(function(){
+    var A = document.getElementById('mp-arthur');
+    var P = document.getElementById('mp-paulie');
+    var E = document.getElementById('mp-erin');
+    if (A) { A.style.animation = 'partyArthur .6s ease 3'; A.classList.add('celebrate'); setTimeout(function(){if(A)A.classList.remove('celebrate');},1800); }
+    if (P) { P.style.animation = 'partyPaulie .6s ease 3'; P.classList.add('celebrate'); setTimeout(function(){if(P)P.classList.remove('celebrate');},1800); }
+    if (E) { E.style.animation = 'partyErin .6s ease 3'; E.classList.add('celebrate'); setTimeout(function(){if(E)E.classList.remove('celebrate');},1800); }
+  }, 300);
+  setTimeout(function(){
+    if (A) { A.style.animation = 'partyArthur .5s ease infinite'; }
+    if (P) { P.style.animation = 'partyPaulie .55s ease infinite'; }
+    if (E) { E.style.animation = 'partyErin .5s ease infinite'; }
+  }, 2400);
 }
 
 // ====== SERVICE WORKER ======
