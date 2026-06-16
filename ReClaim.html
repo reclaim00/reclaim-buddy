@@ -3188,6 +3188,85 @@ function buildSuggestions(entry, mood, entries, idx) {
   return suggestions;
 }
 
+var RECOVERY_VIGNETTES = {
+  sad:[
+    "I remember a man who came to his first meeting in the rain, soaked through, sat in the back and didn't speak. Someone handed him a towel and said 'You're at the right place.' He cried harder than the rain. That was 14 years ago. He sponsors six men now.",
+    "A woman I know spent her first 90 days sleeping on her friend's couch, crying every night. She said the tears felt endless. One night she noticed the tears were a little lighter. A week later, she smiled at a joke. It took time, but the weight started lifting.",
+    "I sat with a young man who kept saying 'I don't know why I'm so sad, nothing bad happened.' I told him sadness doesn't need a reason. It's allowed to exist. We sat in silence for a full minute. When he looked up, he said 'Thank you for not trying to fix me.'"
+  ],
+  angry:[
+    "A former boxer I sponsor told me his anger was the only thing that felt powerful. I said 'Power untamed is a fire. Power directed is a forge.' He started channeling his rage into woodworking. His first piece was a rocking chair. He gave it to his mother.",
+    "I knew a woman who'd scream into a pillow every night after work. She was afraid of her own anger. I told her the pillow could take it. Eventually she stopped screaming and started expressing. She's a social worker now — helps others find their voice.",
+    "A man once told me he broke four phones in a month from rage. I asked him what he was really fighting. He sat quiet for a long time. 'Myself,' he said. That was the beginning."
+  ],
+  anxious:[
+    "A young woman once told me her anxiety felt like a radio station playing static in every room she entered. I asked 'What happens if you sit with the static instead of trying to tune it out?' She tried it. She said the static was still there, but it had a rhythm. She learned to breathe to that rhythm.",
+    "I remember a man who couldn't sit through a full meeting. He'd pace, sweat, leave early. We worked on just 3 minutes of stillness. Then 5. A year later, he gave a speech at his daughter's wedding. He told me afterwards: 'I was still scared, but I did it anyway.'",
+    "A woman I sponsor used to check her locks seven times before bed. I asked her to say out loud: 'The door is locked. I am safe.' Three times, not seven. Her brain fought it at first. After a month, she believed it."
+  ],
+  happy:[
+    "A man came to me after 6 months sober, grinning ear to ear. He said 'Arthur, I laughed today. Really laughed. I forgot what that felt like.' I told him: 'Joy doesn't betray your past. It honors your recovery.'",
+    "I watched a woman buy her first non-addicted birthday gift with her own money — a necklace for her sister. She put it on her sister herself. They both cried. She told me later: 'I didn't know I could feel this way and not want to ruin it.'",
+    "A young man called me just to say he'd cooked a full meal for the first time in years. 'It's just pasta,' he said. 'No, it's not,' I told him. 'That's a feast of reclamation.'"
+  ],
+  grateful:[
+    "A man once told me he was grateful for his empty pockets. I asked him why. He said 'Now I have room to hold what matters.' I think about that every time I count what I have instead of what I lost.",
+    "A woman wrote me a letter listing 1,000 things she was grateful for — from oxygen to her sponsor. It took her 3 months. She said 'I ran out of paper before I ran out of gratitude.'",
+    "An old-timer told me he says 'thank you' before he falls asleep every night. Some nights he's thanking God. Some nights he's thanking the lock on the door. 'Doesn't matter who you thank,' he said. 'The act itself is the prayer.'"
+  ],
+  reflective:[
+    "A poet in recovery told me: 'Sobriety gave me a pen. Reflection taught me how to write.' She goes to a coffee shop every Saturday morning and just writes. She's filled 17 journals. She can look back at her own becoming.",
+    "I once asked an elder with 40 years of sobriety what the most important thing he learned was. He said 'I stopped asking why I was this way and started asking what I'm going to do about it.' I use that question every day."
+  ],
+  hopeful:[
+    "A man who was homeless and addicted for years now runs a shelter. He told me: 'I spent so long on the floor I know exactly where the door is.' Hope is not blind optimism. It's knowing the way out because you've been in the dark.",
+    "A woman came to her first meeting drunk and high, in handcuffs from a court order. She was furious. 10 years later, she's a judge. She told me: 'I didn't believe it was possible. But I did it anyway.' That's the definition of hope in action.",
+    "I remember a young man who said 'I don't think I can do this.' I said 'You don't have to believe it yet. Just show up tomorrow.' He did. And the day after. Now he tells newcomers the same thing."
+  ],
+  mixed:[
+    "A musician once told me he felt like two different people. One wanted to heal, the other wanted to burn everything down. I told him both voices can stay — just let the healers voice drive. The other one can ride shotgun.",
+    "A woman said 'I'm happy about some things and devastated about others. Which one is real?' I said 'Both. Your heart is a house with many rooms. You're allowed to be in more than one at a time.'"
+  ]
+};
+function buildSummary(txt, mood, topics, dayCount, streak, entryHour) {
+  var lines = [];
+  var words = txt.trim().split(/\s+/).length;
+  var mins = Math.ceil(words / 15);
+  lines.push('You wrote ' + words + ' words' + (mins > 1 ? ' — about ' + mins + ' minutes of honest reflection' : ' — a short check-in, but it counts') + '.');
+
+  if (dayCount > 0) lines.push('You\'re ' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober.');
+  if (streak > 3) lines.push('This is day ' + streak + ' of journaling — building real momentum.');
+
+  var timeOfDay = '';
+  if (entryHour >= 5 && entryHour < 12) timeOfDay = 'morning entry sets a strong tone for the day ahead.';
+  else if (entryHour >= 12 && entryHour < 17) timeOfDay = 'checking in mid-day shows you\'re staying present through the ups and downs.';
+  else if (entryHour >= 17 && entryHour < 21) timeOfDay = 'evening reflection is a powerful way to process and release the day.';
+  else timeOfDay = 'late-night thoughts often carry the most honesty. The quiet hours bring clarity.';
+
+  if (timeOfDay) lines.push('A ' + timeOfDay);
+
+  if (topics && topics.length) {
+    var topicPhrases = [];
+    if (topics.indexOf('craving') !== -1) topicPhrases.push('you acknowledged a craving — awareness is the first defense');
+    if (topics.indexOf('work') !== -1) topicPhrases.push('your work life is on your mind');
+    if (topics.indexOf('relationships') !== -1) topicPhrases.push('your relationships are weighing on your heart');
+    if (topics.indexOf('health') !== -1) topicPhrases.push('you touched on your health');
+    if (topics.indexOf('wellness') !== -1) topicPhrases.push('wellness and self-care came up');
+    if (topics.indexOf('school') !== -1) topicPhrases.push('your studies are present in your thoughts');
+    if (topics.indexOf('finances') !== -1) topicPhrases.push('financial stress is real and heavy');
+    if (topics.indexOf('progress') !== -1) topicPhrases.push('you spoke about your progress — that takes courage');
+    if (topics.indexOf('loneliness') !== -1) topicPhrases.push('you opened up about feeling alone — thank you for trusting the page');
+    if (topicPhrases.length) lines.push('In your entry, ' + topicPhrases.join(', ') + '.');
+    else lines.push('You wrote about what matters to you today.');
+  }
+
+  return lines.join('<br>');
+}
+function getVignette(mood) {
+  var pool = RECOVERY_VIGNETTES[mood] || RECOVERY_VIGNETTES.reflective;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 function updateWordCount(el) {
   var count = el.value.trim() ? el.value.trim().split(/\s+/).length : 0;
   var display = document.getElementById('word-count');
@@ -3390,14 +3469,19 @@ function showReflection(idx) {
   // Mood bar
   h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">'+t('Mood analysis')+'</div>' + moodBar + '</div>';
 
+  // Summary
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#128221; '+t('Your Entry Summary')+'</div><div style="font-size:13px;line-height:1.7">' + buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour) + '</div></div>';
+
   // Reflection
   h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💭 '+t("Arthur's insight")+'</div><div style="font-size:14px;line-height:1.6">' + reflection + '</div></div>';
 
-  // Suggestions
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 '+t("Arthur's suggestions for you")+'</div>';
+  // Story
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;background:linear-gradient(135deg,var(--primary-light),var(--card));border-left:3px solid var(--accent)"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">&#128214; '+t("A Story for You")+'</div><div style="font-size:13px;line-height:1.7;font-style:italic">"' + getVignette(mood) + '"</div><div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right">— Arthur</div></div>';
+
+  // Suggestions / Advice
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 '+t("Arthur's advice")+'</div>';
   for (var si = 0; si < Math.min(suggestions.length, 3); si++) {
-    var icon = ['►', '→', '▪'][si] || '•';
-    h += '<div style="font-size:13px;line-height:1.5;padding:4px 0;border-bottom:' + (si < Math.min(suggestions.length, 3) - 1 ? '1px solid var(--border)' : 'none') + '">' + icon + ' ' + suggestions[si] + '</div>';
+    h += '<div style="font-size:13px;line-height:1.6;padding:5px 0;border-bottom:' + (si < Math.min(suggestions.length, 3) - 1 ? '1px solid var(--border)' : 'none') + '">' + '&#9654; ' + suggestions[si] + '</div>';
   }
   h += '</div>';
 
