@@ -3701,136 +3701,130 @@ function showSOS() {
 function doCheckin() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var cm = [
-    {id:'cm-arthur',color:'#ffd700',name:'ARTHUR',enemy:'\u{1F480}',enemyName:'SKELETON',attack:'punch',
-      svg:'<svg viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><path d="M8 5 L15 0 L22 5" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><line x1="7" y1="5" x2="23" y2="5" stroke="#ffd700" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="20" y2="21" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><circle cx="22" cy="22" r="4" fill="#dc2626" stroke="#ffd700" stroke-width="1"/></g><line x1="15" y1="30" x2="10" y2="39" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/></svg>'},
-    {id:'cm-erin',color:'#ec4899',name:'ERIN',enemy:'\u{1F920}',enemyName:'COWBOY',attack:'shoot',
-      svg:'<svg viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="3" x2="11" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="3" x2="19" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="19" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 19px"><line x1="21" y1="19" x2="23" y2="13" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="13" r="2" fill="#ec4899"/><line x1="24" y1="13" x2="30" y2="13" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><circle cx="30" cy="13" r="4" fill="#fbbf24" class="tb-muzzle" style="transform-origin:0 0"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/></svg>'},
-    {id:'cm-paulie',color:'#a78bfa',name:'PAULIE',enemy:'\u{1F409}',enemyName:'DRAGON',attack:'smash',
-      svg:'<svg viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/><path d="M8 5 L15 0 L22 5" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="7" y1="5" x2="23" y2="5" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="20" y2="21" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:20px 21px"><line x1="20" y1="21" x2="23" y2="24" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="23" y1="24" x2="28" y2="19" stroke="#8B4513" stroke-width="2" stroke-linecap="round" class="tb-weapon"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/></svg>'}
-  ];
-  var h = '<div class="overlay-content" style="background:linear-gradient(135deg,#0f0f1a 0%,#1a0a2e 100%);border:2px solid rgba(255,255,255,.1);padding:10px;overflow:hidden;text-align:center;max-width:440px">';
-  h += '<div id="cm-title" style="font-size:13px;font-weight:700;color:#fff;opacity:0;text-shadow:0 0 15px rgba(255,215,0,.3)">&#127916; MONTAGE: TEAM RECLAIM</div>';
-  h += '<div id="cm-sub" style="font-size:9px;color:rgba(255,255,255,.3);margin-bottom:4px;opacity:0">One enemy at a time</div>';
-  h += '<div style="position:relative;height:170px;background:radial-gradient(ellipse at center,rgba(30,20,60,.8) 0%,rgba(10,5,20,.9) 100%);border-radius:12px;overflow:hidden;margin:0 auto">';
-  h += '<div id="cm-flash" style="position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:10"></div>';
-  h += '<div id="cm-ring" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;pointer-events:none">';
-  h += '<div id="cm-fighter" style="filter:drop-shadow(0 0 12px rgba(255,215,0,.4));transition:all .3s ease"></div>';
-  h += '<div id="cm-foe" style="position:absolute;right:22%;font-size:44px;opacity:0;transition:all .3s ease"></div>';
-  h += '<div id="cm-impact" style="position:absolute;font-size:50px;opacity:0;pointer-events:none">&#128165;</div>';
-  h += '<div id="cm-badge" style="position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;color:rgba(255,255,255,.6);background:rgba(0,0,0,.5);padding:2px 10px;border-radius:4px;letter-spacing:2px;opacity:0"></div>';
-  h += '<div id="cm-name" style="position:absolute;bottom:6px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:700;color:#fff;text-shadow:0 0 10px rgba(255,215,0,.3);opacity:0;letter-spacing:1px"></div>';
+  // Real character SVGs with limb groups (matching existing battles)
+  var aSvg = '<svg class="arthur-svg" viewBox="0 0 30 54"><path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8"/><circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5"/><line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" class="a-body"/><g class="a-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="18" stroke="#ffd700" stroke-width="3"/><circle cx="21" cy="18" r="1.5" fill="#ffd700"/><g class="a-larm-fg" style="transform-origin:21px 18px"><line x1="21" y1="18" x2="22" y2="12" stroke="#ffd700" stroke-width="3"/><circle cx="23" cy="12" r="2.5" fill="#dc2626"/></g></g><g class="a-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g class="a-rarm-fg" style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ffd700" stroke-width="3"/><circle cx="21" cy="10" r="2.5" fill="#dc2626"/></g></g><g class="a-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#ffd700" stroke-width="3"/><circle cx="10" cy="39" r="1.5" fill="#ffd700"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#ffd700" stroke-width="2.5"/></g></g><g class="a-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#ffd700" stroke-width="3"/><circle cx="21" cy="38" r="1.5" fill="#ffd700"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#ffd700" stroke-width="2.5"/></g></g></svg>';
+  var sSvg = '<svg class="skeleton-svg" viewBox="0 0 30 54"><path d="M11.5 2 Q13 -0.5 15 -0.5 Q17 -0.5 18.5 2 L18.5 7 Q18 10 16.5 10.5 L15 11 L13.5 10.5 Q12 10 11.5 7 Z" fill="#f0f0f0" stroke="#c0c0c0" stroke-width="1.5"/><circle cx="12.5" cy="5" r="1.8" fill="#333"/><circle cx="17.5" cy="5" r="1.8" fill="#333"/><path d="M14 7.5 L15 8.5 L16 7.5" fill="none" stroke="#333" stroke-width="1"/><line x1="11.5" y1="2.5" x2="13.5" y2="3" stroke="#c0c0c0" stroke-width="1"/><line x1="18.5" y1="2.5" x2="16.5" y2="3" stroke="#c0c0c0" stroke-width="1"/><line x1="12.5" y1="9.5" x2="17.5" y2="9.5" stroke="#c0c0c0" stroke-width="1"/><line x1="15" y1="11" x2="15" y2="12" stroke="#c0c0c0" stroke-width="1.5"/><path d="M12 12.5 L11 14 L11 18 L11.5 23 Q11 27 11.5 30 L18.5 30 Q19 27 18.5 23 L19 18 L19 14 L18 12.5 Z" fill="none" stroke="#c0c0c0" stroke-width="2" class="s-body"/><path d="M12.5 15 Q15 17 17.5 15" fill="none" stroke="#c0c0c0" stroke-width="0.8"/><path d="M12 18 Q15 20 18 18" fill="none" stroke="#c0c0c0" stroke-width="0.8"/><path d="M12.5 21 Q15 23 17.5 21" fill="none" stroke="#c0c0c0" stroke-width="0.8"/><g class="s-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="9" y2="18" stroke="#c0c0c0" stroke-width="2"/><circle cx="9" cy="18" r="1.2" fill="#c0c0c0"/><g class="s-rarm-fg" style="transform-origin:9px 18px"><line x1="9" y1="18" x2="8" y2="12" stroke="#c0c0c0" stroke-width="2"/><circle cx="7" cy="12" r="2.5" fill="#dc2626"/></g></g><g class="s-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="11" y2="14" stroke="#c0c0c0" stroke-width="2"/><circle cx="11" cy="14" r="1.2" fill="#c0c0c0"/><g class="s-larm-fg" style="transform-origin:11px 14px"><line x1="11" y1="14" x2="10" y2="10" stroke="#c0c0c0" stroke-width="2"/><circle cx="9" cy="10" r="2.5" fill="#dc2626"/></g></g><g class="s-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="11" y2="39" stroke="#c0c0c0" stroke-width="2"/><circle cx="11" cy="39" r="1.2" fill="#c0c0c0"/><g style="transform-origin:11px 39px"><line x1="11" y1="39" x2="8" y2="51" stroke="#c0c0c0" stroke-width="2"/><line x1="8" y1="51" x2="5" y2="51" stroke="#c0c0c0" stroke-width="1.5"/></g></g><g class="s-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="19" y2="38" stroke="#c0c0c0" stroke-width="2"/><circle cx="19" cy="38" r="1.2" fill="#c0c0c0"/><g style="transform-origin:19px 38px"><line x1="19" y1="38" x2="22" y2="51" stroke="#c0c0c0" stroke-width="2"/><line x1="22" y1="51" x2="25" y2="51" stroke="#c0c0c0" stroke-width="1.5"/></g></g></svg>';
+  var eSvg = '<svg class="erin-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ec4899" stroke-width="2.5"/><line x1="12" y1="3" x2="11" y2="7" stroke="#ec4899" stroke-width="2"/><line x1="18" y1="3" x2="19" y2="7" stroke="#ec4899" stroke-width="2"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ec4899" stroke-width="2.5" class="e-body"/><g class="e-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="9" y2="19" stroke="#ec4899" stroke-width="2"/><g class="e-larm-fg" style="transform-origin:9px 19px"><line x1="9" y1="19" x2="7" y2="13" stroke="#ec4899" stroke-width="2"/><circle cx="6" cy="13" r="2" fill="#ec4899"/></g></g><g class="e-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="19" stroke="#ec4899" stroke-width="2"/><g class="e-rarm-fg" style="transform-origin:21px 19px"><line x1="21" y1="19" x2="23" y2="13" stroke="#ec4899" stroke-width="2"/><circle cx="24" cy="13" r="2" fill="#ec4899"/><line x1="24" y1="13" x2="34" y2="13" stroke="#ec4899" stroke-width="2.5" class="e-gun"/><circle cx="34" cy="13" r="5" fill="#fbbf24" class="e-muzzle" style="transform-origin:34px 13px"/><circle cx="34" cy="13" r="2.5" fill="#fff" class="e-bullet" style="transform-origin:34px 13px"/></g></g><g class="e-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#ec4899" stroke-width="2"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#ec4899" stroke-width="2"/></g></g><g class="e-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#ec4899" stroke-width="2"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#ec4899" stroke-width="2"/></g></g></svg>';
+  var cSvg = '<svg class="cowboy-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ef4444" stroke-width="2.5"/><path d="M7 4 Q15 0 23 4" fill="none" stroke="#ef4444" stroke-width="2.5"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ef4444" stroke-width="2.5" class="c-body"/><g class="c-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="9" y2="19" stroke="#ef4444" stroke-width="2"/><g class="c-larm-fg" style="transform-origin:9px 19px"><line x1="9" y1="19" x2="7" y2="13" stroke="#ef4444" stroke-width="2"/><circle cx="6" cy="13" r="2" fill="#ef4444"/></g></g><g class="c-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="19" stroke="#ef4444" stroke-width="2"/><g class="c-rarm-fg" style="transform-origin:21px 19px"><line x1="21" y1="19" x2="23" y2="13" stroke="#ef4444" stroke-width="2"/><circle cx="24" cy="13" r="2" fill="#ef4444"/><line x1="24" y1="13" x2="34" y2="13" stroke="#ef4444" stroke-width="2.5" class="c-gun"/><circle cx="34" cy="13" r="5" fill="#fbbf24" class="c-muzzle" style="transform-origin:34px 13px"/><circle cx="34" cy="13" r="2.5" fill="#fff" class="c-bullet" style="transform-origin:34px 13px"/></g></g><g class="c-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#ef4444" stroke-width="2"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#ef4444" stroke-width="2"/></g></g><g class="c-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#ef4444" stroke-width="2"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#ef4444" stroke-width="2"/></g></g></svg>';
+  var pSvg = '<svg class="paulie-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#a78bfa" stroke-width="2.5"/><path d="M8 5 L15 0 L22 5" fill="none" stroke="#a78bfa" stroke-width="2"/><line x1="7" y1="5" x2="23" y2="5" stroke="#a78bfa" stroke-width="1.5"/><line x1="15" y1="12" x2="15" y2="30" stroke="#a78bfa" stroke-width="2.5" class="p-body"/><g class="p-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="11" y2="21" stroke="#a78bfa" stroke-width="2"/></g><g class="p-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="20" y2="21" stroke="#a78bfa" stroke-width="2"/><g style="transform-origin:20px 21px"><line x1="20" y1="21" x2="23" y2="24" stroke="#a78bfa" stroke-width="2"/><line x1="23" y1="24" x2="28" y2="19" stroke="#8B4513" stroke-width="2" class="p-weapon"/></g></g><g class="p-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#a78bfa" stroke-width="2"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="8" y2="51" stroke="#a78bfa" stroke-width="2"/></g></g><g class="p-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#a78bfa" stroke-width="2"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="23" y2="51" stroke="#a78bfa" stroke-width="2"/></g></g></svg>';
+  // Build overlay
+  var h = '<div class="overlay-content" style="background:transparent;padding:8px;overflow:hidden;text-align:center;max-width:480px">';
+  h += '<div style="font-size:12px;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#127916; RECLAIM MONTAGE</div>';
+  h += '<div style="position:relative;height:220px;border-radius:14px;overflow:hidden;margin:0 auto 4px" id="cm-stage">';
+  h += '<div id="cm-bg-box" style="position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(30,20,60,.8) 0%,rgba(10,5,20,.9) 100%);transition:background .6s"></div>';
+  h += '<div id="cm-flash" style="position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:7"></div>';
+  h += '<div id="cm-hit" style="position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);font-size:48px;opacity:0;pointer-events:none;z-index:6">&#10024;</div>';
+  h += '<div id="cm-label" style="position:absolute;top:5px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(0,0,0,.5);padding:2px 10px;border-radius:4px;letter-spacing:2px;z-index:5;opacity:0"></div>';
+  h += '<div id="cm-char-box" style="position:absolute;left:12%;bottom:8px;z-index:3;transition:all .3s;filter:drop-shadow(0 0 10px rgba(255,215,0,.6))"></div>';
+  h += '<div id="cm-enemy-box" style="position:absolute;right:10%;bottom:8px;z-index:2;transition:all .3s;filter:drop-shadow(0 0 8px rgba(239,68,68,.5))"></div>';
+  h += '<div id="cm-count" style="position:absolute;top:35%;left:50%;transform:translateX(-50%);font-size:48px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5"></div>';
+  h += '<div id="cm-team" style="position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:6px;align-items:flex-end;z-index:4;opacity:0"></div>';
+  h += '<div id="cm-victory" style="position:absolute;top:35%;left:50%;transform:translate(-50%,-50%);font-size:28px;font-weight:900;color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,.5);opacity:0;z-index:6;pointer-events:none"></div>';
   h += '</div>';
-  h += '<div id="cm-assemble" style="position:absolute;left:50%;bottom:6px;transform:translateX(-50%);display:flex;gap:5px;align-items:flex-end;z-index:8;opacity:0;pointer-events:none"></div>';
-  h += '<div id="cm-final" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:15px;font-weight:900;color:#ffd700;text-shadow:0 0 40px rgba(255,215,0,.5);opacity:0;z-index:9;pointer-events:none;text-align:center"></div>';
-  h += '</div>';
-  h += '<div id="cm-dots" style="display:flex;gap:5px;justify-content:center;margin:4px 0;opacity:0">';
-  for (var di=0;di<4;di++) h += '<div id="cm-dot-'+di+'" style="width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);transition:all .3s ease"></div>';
-  h += '</div>';
-  h += '<div id="cm-status" style="font-size:9px;color:rgba(255,255,255,.4);margin-bottom:2px;opacity:0"></div>';
-  // Form (shown after montage)
-  h += '<div id="cm-form" style="display:none;margin-top:4px;text-align:left">';
-  h += '<div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:4px">&#128221; QUICK CHECK-IN</div>';
-  h += '<div style="font-size:11px;margin-bottom:4px">Mood:</div><div class="mood-row" style="gap:2px;margin-bottom:6px">';
+  h += '<div class="progress-bar" style="height:3px;margin:0 0 3px"><div id="cm-progress" class="fill" style="width:0%"></div></div>';
+  h += '<div id="cm-status" style="font-size:9px;color:var(--muted);opacity:0;margin-bottom:2px"></div>';
+  h += '<div id="cm-form" style="display:none;margin-top:3px;text-align:left">';
+  h += '<div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:3px">&#128221; QUICK CHECK-IN</div>';
+  h += '<div style="font-size:10px;margin-bottom:3px">Mood:</div><div class="mood-row" style="gap:2px;margin-bottom:4px">';
   var moodLabels = ['\u{1F621}','\u{1F620}','\u{1F611}','\u{1F642}','\u{1F60A}'];
   for (var mi=0;mi<5;mi++) h += '<button class="mood-btn cm-mood" data-val="'+(mi+1)+'" onclick="document.querySelectorAll(\'.cm-mood\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+moodLabels[mi]+'</button>';
   h += '</div>';
-  h += '<div style="display:flex;gap:6px;margin-bottom:4px"><div style="flex:1"><div style="font-size:10px;font-weight:600;color:var(--muted)">Win today</div><input id="cm-win" class="input" style="width:100%;font-size:11px;padding:4px 6px" placeholder="One win..."></div><div style="flex:1"><div style="font-size:10px;font-weight:600;color:var(--muted)">Intention</div><input id="cm-intent" class="input" style="width:100%;font-size:11px;padding:4px 6px" placeholder="Tomorrow..."></div></div>';
-  h += '<button class="btn btn-primary btn-sm" onclick="submitCheckin()" style="width:100%;font-size:11px;margin-top:2px">&#9889; SAVE CHECK-IN</button>';
+  h += '<div style="display:flex;gap:6px;margin-bottom:3px"><div style="flex:1"><div style="font-size:9px;font-weight:600;color:var(--muted)">Win today</div><input id="cm-win" class="input" style="width:100%;font-size:10px;padding:3px 5px" placeholder="One win..."></div><div style="flex:1"><div style="font-size:9px;font-weight:600;color:var(--muted)">Intention</div><input id="cm-intent" class="input" style="width:100%;font-size:10px;padding:3px 5px" placeholder="Tomorrow..."></div></div>';
+  h += '<button class="btn btn-primary btn-sm" onclick="submitCheckin()" style="width:100%;font-size:10px;padding:6px">&#9889; SAVE CHECK-IN</button>';
   h += '</div></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
   window._cmOverlay = overlay;
-  setTimeout(function(){ runCheckinMontage(overlay, cm); }, 400);
+  var scenes = [
+    {char:aSvg,enemy:sSvg,label:'ARTHUR VS SKELETON',bg:'radial-gradient(ellipse at center,#fff 0%,#f0f0f0 50%,#ddd 100%)',cCls:'arthur',eCls:'skeleton',cColor:'#ffd700',eColor:'#ef4444',desc:'&#129354; Boxing Match'},
+    {char:eSvg,enemy:cSvg,label:'ERIN VS THE COWBOY',bg:'linear-gradient(180deg,#f59e0b,#92400e,#451a03)',cCls:'erin-stage',eCls:'cowboy-stage',cColor:'#ec4899',eColor:'#ef4444',desc:'&#128200; Duel at Dawn'},
+    {char:pSvg,enemy:'<svg class="dragon-svg" viewBox="0 0 60 45"><g class="d-tail-g" style="transform-origin:52px 22px"><path d="M52 18 Q56 16 59 12 Q61 8 57 6" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/><line x1="57" y1="10" x2="61" y2="8" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/><line x1="59" y1="14" x2="63" y2="13" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/></g><ellipse cx="33" cy="22" rx="16" ry="9" fill="none" stroke="#22c55e" stroke-width="3.5" class="d-body"/><line x1="46" y1="14" x2="48" y2="7" stroke="#16a34a" stroke-width="2"/><line x1="40" y1="13" x2="41" y2="6" stroke="#16a34a" stroke-width="2"/><line x1="34" y1="13" x2="34" y2="6" stroke="#16a34a" stroke-width="2"/><line x1="28" y1="14" x2="27" y2="7" stroke="#16a34a" stroke-width="2"/><line x1="22" y1="16" x2="20" y2="9" stroke="#16a34a" stroke-width="2"/><g class="d-head-g" style="transform-origin:14px 18px"><path d="M22 18 Q14 14 10 12" fill="none" stroke="#22c55e" stroke-width="3.5"/><path d="M10 12 Q5 10 2 12 L0 15 L5 17 L9 16 Z" fill="none" stroke="#22c55e" stroke-width="2.5"/><path d="M3 15 L2 16.5 L5 17" fill="none" stroke="#22c55e" stroke-width="2"/><circle cx="6.5" cy="13" r="1.5" fill="#ef4444"/><line x1="9" y1="10" x2="10" y2="5" stroke="#16a34a" stroke-width="2"/><line x1="6" y1="9" x2="4" y2="4" stroke="#16a34a" stroke-width="2"/><line x1="2" y1="15" x2="-3" y2="14" stroke="#f59e0b" stroke-width="2"/><line x1="1" y1="16" x2="-3" y2="17" stroke="#ef4444" stroke-width="2"/></g><g class="d-wing-g" style="transform-origin:40px 12px"><path d="M40 10 Q48 3 56 6 Q52 2 46 1 Q42 2 40 10" fill="none" stroke="#22c55e" stroke-width="2"/><line x1="46" y1="6" x2="48" y2="3" stroke="#16a34a" stroke-width="1.5"/><line x1="44" y1="5" x2="46" y2="1" stroke="#16a34a" stroke-width="1.5"/></g></svg>',label:'PAULIE VS DRAGON',bg:'radial-gradient(ellipse at center,rgba(30,20,60,.8) 0%,rgba(10,5,20,.9) 100%)',cCls:'paulie-stage',eCls:'dragon-stage',cColor:'#a78bfa',eColor:'#22c55e',desc:'&#128302; Wizard\'s Duel'}
+  ];
+  setTimeout(function(){ runCheckinMontage(overlay, scenes); }, 300);
 }
-function runCheckinMontage(overlay, members) {
+function runCheckinMontage(overlay, scenes) {
   var flash = document.getElementById('cm-flash');
-  var fighter = document.getElementById('cm-fighter');
-  var foe = document.getElementById('cm-foe');
-  var impact = document.getElementById('cm-impact');
-  var badge = document.getElementById('cm-badge');
-  var nameEl = document.getElementById('cm-name');
-  var assemble = document.getElementById('cm-assemble');
-  var finalEl = document.getElementById('cm-final');
-  var dots = document.getElementById('cm-dots');
+  var hit = document.getElementById('cm-hit');
+  var label = document.getElementById('cm-label');
+  var charBox = document.getElementById('cm-char-box');
+  var enemyBox = document.getElementById('cm-enemy-box');
+  var count = document.getElementById('cm-count');
+  var team = document.getElementById('cm-team');
+  var victory = document.getElementById('cm-victory');
+  var progress = document.getElementById('cm-progress');
   var status = document.getElementById('cm-status');
-  var title = document.getElementById('cm-title');
-  var sub = document.getElementById('cm-sub');
-  function q(s){return document.querySelector(s);}
-  function setDot(i,on){var d=document.getElementById('cm-dot-'+i);if(d)d.style.background=on?'var(--primary)':'rgba(255,255,255,.15)';}
-  function flashOn(cb){if(!flash)return cb();flash.style.animation='none';flash.offsetHeight;flash.style.opacity='.35';flash.style.transition='opacity .2s';setTimeout(function(){if(flash)flash.style.opacity='0';if(cb)setTimeout(cb,100);},250);}
-  // Title in
-  setTimeout(function(){
-    title.style.animation='cmSlideUp .5s ease forwards';sub.style.animation='cmSlideUp .4s ease .15s forwards';
-    if(status)status.style.opacity='1';
-  },100);
-  // Scene 1: Arthur vs Skeleton
-  setTimeout(function(){showScene(0);},1400);
+  var bgBox = document.getElementById('cm-bg-box');
+  var timers = [];
+  function cls(){timers.forEach(function(t){clearTimeout(t)});timers=[];}
+  function animClass(el,cls2,dur){if(!el||!cls2)return;var parts=cls2.split(' ');el.className=parts[0];el.offsetHeight;for(var i=1;i<parts.length;i++)el.classList.add(parts[i]);if(dur)setTimeout(function(){if(el)el.className=parts[0];},dur);}
+  function flashEl(el,anim,dur){if(!el)return;el.style.animation='none';el.offsetHeight;el.style.animation=anim;el.style.opacity='';if(dur)setTimeout(function(){if(el)el.style.opacity='0';},dur);}
+  function showEl(el){if(el)el.style.opacity='1';}
+  function updateProgress(p){if(progress)progress.style.width=p+'%';}
+  function flashScene(cb){if(!flash)return cb();flash.style.animation='none';flash.offsetHeight;flash.style.transition='opacity .15s';flash.style.opacity='.45';setTimeout(function(){if(flash)flash.style.opacity='0';if(cb)setTimeout(cb,80);},200);}
+  if(status)status.style.opacity='1';
+  // Scene 0: Arthur vs Skeleton
+  timers.push(setTimeout(function(){showScene(0);},600));
   function showScene(idx){
-    if(idx>=members.length){
-      showTeamAssemble();return;
-    }
-    var m=members[idx];
-    badge.textContent=m.name+' VS '+m.enemyName;
-    badge.style.animation='cmSlideUp .4s ease forwards';
-    foe.textContent=m.enemy;
-    foe.style.opacity='0';foe.style.right='22%';foe.style.transform='scale(1)';
-    fighter.innerHTML=m.svg;
-    fighter.style.opacity='0';fighter.style.transform='translateX(-30px) scale(0.9)';
-    fighter.style.animation='none';fighter.offsetHeight;
-    fighter.style.animation='cmSlideLeft .45s ease forwards';
-    nameEl.textContent=m.name;nameEl.style.animation='cmSlideUp .4s ease .2s forwards';
-    foe.style.animation='cmSlideLeft .4s ease .1s forwards';
-    // Attack after character enters
-    setTimeout(function(){
-      performAttack(idx,m);
-    },600);
-  }
-  function performAttack(idx,m){
-    // Lunge and impact
-    fighter.style.animation='cmLunge .4s ease';
-    foe.style.transition='all .3s ease';
-    foe.style.transform='scale(1.2) rotate(10deg)';
-    foe.style.opacity='1';
-    setTimeout(function(){
-      impact.style.opacity='1';impact.style.animation='cmSpotlight .5s ease';
-      foe.style.animation='cmExplode .5s ease forwards';
-      setDot(idx,true);
-      if(status)status.innerHTML='<span style="color:'+m.color+'">&#10003; '+m.name+' DEFEATED '+m.enemyName+'!</span>';
-    },300);
-    // Flash at end
-    setTimeout(function(){
-      flashOn(function(){
-        badge.style.opacity='0';nameEl.style.opacity='0';impact.style.opacity='0';
-        fighter.innerHTML='';foe.textContent='';foe.style.opacity='0';
+    if(idx>=scenes.length){showAssemble();return;}
+    var s=scenes[idx];
+    if(bgBox)bgBox.style.background=s.bg;
+    charBox.innerHTML=s.char;enemyBox.innerHTML=s.enemy;
+    charBox.style.filter='drop-shadow(0 0 10px '+s.cColor+'88)';enemyBox.style.filter='drop-shadow(0 0 8px '+s.eColor+'88)';
+    label.textContent=s.label;label.style.opacity='1';label.style.animation='paulieFadeUp .35s ease forwards';
+    charBox.style.animation='none';charBox.offsetHeight;charBox.style.animation='erinWalkIn .6s ease forwards';
+    enemyBox.style.animation='none';enemyBox.offsetHeight;enemyBox.style.animation='cowboyWalkIn .6s ease forwards';
+    animClass(charBox, s.cCls+' stand',0);
+    animClass(enemyBox, s.eCls+' stand',0);
+    if(status)status.innerHTML='<span style="color:'+s.cColor+'">&#9654; '+s.desc+'</span>';
+    updateProgress(idx*33);
+    // Attack
+    timers.push(setTimeout(function(){
+      animClass(charBox, s.cCls+' punch',600);
+      animClass(enemyBox, s.eCls+' recoil',600);
+      flashEl(hit,'screenFlash .5s ease',500);
+      flashEl(count,'countFade .4s ease',400);
+      if(idx===1){
+        // Erin special: gun effects
+        var em=charBox.querySelector('.e-muzzle');if(em)em.style.animation='muzzleFlash .3s ease forwards';
+        var eb=charBox.querySelector('.e-bullet');if(eb)eb.style.animation='bullet .35s ease forwards';
+      }
+      if(idx===2){
+        // Paulie special: power up
+        animClass(charBox, s.cCls+' powerup',800);
+      }
+      updateProgress(idx*33+15);
+    },900));
+    // Enemy defeated
+    timers.push(setTimeout(function(){
+      if(idx===0){animClass(enemyBox, s.eCls+' knockdown',1200);animClass(charBox, s.cCls+' celebrate',1200);}
+      if(idx===1){animClass(enemyBox, s.eCls+' hit',800);animClass(enemyBox, s.eCls+' fall',800);animClass(charBox, s.cCls+' celebrate',1200);}
+      if(idx===2){animClass(enemyBox, s.eCls+' knockdown',1000);animClass(charBox, s.cCls+' celebrate',1200);}
+      flashEl(hit,'screenFlash .6s ease',600);
+      if(status)status.innerHTML='<span style="color:'+s.cColor+';font-weight:700">&#10003; '+s.desc.split(' ')[0]+' WINS!</span>';
+      updateProgress(idx*33+30);
+    },1600));
+    // Transition
+    timers.push(setTimeout(function(){
+      flashScene(function(){
+        label.style.opacity='0';count.style.opacity='0';hit.style.opacity='0';
+        charBox.style.animation='erinWalkIn .1s ease reverse forwards';enemyBox.style.animation='cowboyWalkIn .1s ease reverse forwards';
         showScene(idx+1);
       });
-    },1000);
+    },2500));
   }
-  function showTeamAssemble(){
-    setDot(3,true);
-    assemble.style.animation='cmAssemble .6s ease forwards';
-    for(var ai=0;ai<members.length;ai++){
-      var div=document.createElement('div');
-      div.style.cssText='filter:drop-shadow(0 0 8px '+members[ai].color.replace('#','')+'88)';
-      div.innerHTML=members[ai].svg;
-      assemble.appendChild(div);
-    }
+  function showAssemble(){
+    updateProgress(100);
+    team.style.animation='paulieShield .6s ease forwards';
+    team.innerHTML=scenes.map(function(s,i){
+      return '<div style="filter:drop-shadow(0 0 8px '+(i===0?'#ffd700':i===1?'#ec4899':'#a78bfa')+'88)">'+s.char+'</div>';
+    }).join('');
     if(status)status.innerHTML='<span style="color:#ffd700;font-weight:700">&#9889; TEAM RECLAIM ASSEMBLED!</span>';
-    // Victory text
-    setTimeout(function(){
-      finalEl.innerHTML='&#127942; VICTORY!';
-      finalEl.style.animation='cmAssemble .5s ease forwards';
-    },600);
-    // Show form after victory
-    setTimeout(function(){
-      flashOn(function(){
-        if(status)status.style.opacity='0';
-        var form=document.getElementById('cm-form');
-        if(form)form.style.display='';
-        dots.style.opacity='0';
-      });
-    },2000);
+    timers.push(setTimeout(function(){
+      victory.innerHTML='&#127942; VICTORY!';victory.style.animation='paulieShield .5s ease forwards';
+    },700));
+    timers.push(setTimeout(function(){
+      document.getElementById('cm-form').style.display='';
+    },2200));
   }
 }
 function submitCheckin() {
