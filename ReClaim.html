@@ -590,6 +590,16 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 #ta-erin.victory .tb-arm-g{transform:rotate(-30deg)}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
 .boxing-progress .fill{height:100%;background:var(--primary);border-radius:2px;width:0%;transition:width .5s linear}
+@keyframes ciSlideIn{0%{transform:translateX(50px) scale(0.92);opacity:0}60%{transform:translateX(-4px) scale(1.01);opacity:1}100%{transform:translateX(0) scale(1);opacity:1}}
+@keyframes ciSlideOut{0%{transform:translateX(0) scale(1);opacity:1}100%{transform:translateX(-40px) scale(0.92);opacity:0}}
+@keyframes ciFlash{0%{opacity:0}15%{opacity:.5}30%{opacity:0}100%{opacity:0}}
+@keyframes ciStamp{0%{transform:scale(0.3) rotate(-15deg);opacity:0}50%{transform:scale(1.15) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes ciPop{0%{transform:scale(0);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes ciProgress{0%{width:0%}100%{width:var(--ci-pct)}}
+@keyframes ciCharReact{0%{transform:translateY(0) scale(1)}25%{transform:translateY(-8px) scale(1.1)}50%{transform:translateY(-2px) scale(1.04)}100%{transform:translateY(0) scale(1)}}
+@keyframes ciHeartbeat{0%{transform:scale(1)}14%{transform:scale(1.12)}28%{transform:scale(1)}42%{transform:scale(1.12)}70%{transform:scale(1)}100%{transform:scale(1)}}
+@keyframes ciBgPulse{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes ciReveal{0%{clip-path:inset(0 100% 0 0);opacity:0}60%{clip-path:inset(0 0% 0 0);opacity:1}100%{opacity:1}}
 </style>
 </head>
 <body>
@@ -3695,66 +3705,153 @@ function doCheckin() {
   var today = new Date().toDateString();
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="max-width:460px"><h3 style="font-size:17px;font-weight:700;margin-bottom:4px;text-align:center">&#128198; Daily Check-In</h3><p style="font-size:12px;color:var(--muted);margin-bottom:12px;text-align:center">Answer a few questions, then your team fights off the darkness.</p>';
+  var ciChars = [
+    {id:'ci-arthur',color:'#ffd700',svg:'<svg viewBox="0 0 28 46"><path d="M10 1.5 L11.5 0 L14 1.5 L16.5 0 L18 1.5 L18.5 3 L9.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.6"/><circle cx="14" cy="6.5" r="4" fill="none" stroke="#ffd700" stroke-width="2"/><line x1="14" y1="10.5" x2="14" y2="26" stroke="#ffd700" stroke-width="3"/><g style="transform-origin:14px 15px"><line x1="14" y1="15" x2="18" y2="13" stroke="#ffd700" stroke-width="2.5"/><circle cx="18" cy="13" r="1.2" fill="#ffd700"/><line x1="18" y1="13" x2="19.5" y2="10" stroke="#ffd700" stroke-width="2.5"/><circle cx="20.5" cy="10" r="2" fill="#dc2626"/></g><line x1="14" y1="26" x2="10" y2="34" stroke="#ffd700" stroke-width="2.5"/><line x1="10" y1="34" x2="8" y2="45" stroke="#ffd700" stroke-width="2"/><line x1="14" y1="26" x2="19" y2="33" stroke="#ffd700" stroke-width="2.5"/><line x1="19" y1="33" x2="21" y2="45" stroke="#ffd700" stroke-width="2"/></svg>'},
+    {id:'ci-paulie',color:'#a78bfa',svg:'<svg viewBox="0 0 28 46"><circle cx="14" cy="6" r="4" fill="none" stroke="#a78bfa" stroke-width="2"/><path d="M8 4.5 L14 0 L20 4.5" fill="none" stroke="#a78bfa" stroke-width="1.5"/><line x1="7" y1="4.5" x2="21" y2="4.5" stroke="#a78bfa" stroke-width="1.2"/><line x1="14" y1="10" x2="14" y2="26" stroke="#a78bfa" stroke-width="2"/><g style="transform-origin:14px 15px"><line x1="14" y1="15" x2="19" y2="18" stroke="#a78bfa" stroke-width="1.5"/><line x1="19" y1="18" x2="22" y2="21" stroke="#a78bfa" stroke-width="1.5"/><line x1="22" y1="21" x2="26" y2="17" stroke="#8B4513" stroke-width="1.5"/></g><line x1="14" y1="26" x2="10" y2="34" stroke="#a78bfa" stroke-width="1.5"/><line x1="10" y1="34" x2="8" y2="45" stroke="#a78bfa" stroke-width="1.5"/><line x1="14" y1="26" x2="19" y2="33" stroke="#a78bfa" stroke-width="1.5"/><line x1="19" y1="33" x2="21" y2="45" stroke="#a78bfa" stroke-width="1.5"/></svg>'}
+  ];
+  var h = '<div class="overlay-content" style="max-width:460px;padding:12px;background:linear-gradient(135deg,var(--card) 0%,var(--bg) 100%)">';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">';
+  h += '<span style="font-size:18px">&#127916;</span>';
+  h += '<div style="flex:1"><div style="font-size:15px;font-weight:700">Daily Check-In</div><div style="font-size:10px;color:var(--muted)">Each check-in powers the team</div></div>';
+  h += '<div id="ci-step-indicator" style="font-size:11px;font-weight:700;color:var(--primary)">1 / 4</div>';
+  h += '</div>';
+  h += '<div class="progress-bar" style="margin:4px 0 8px;height:3px"><div id="ci-progress" class="fill" style="width:0%"></div></div>';
+  // Montage stage
+  h += '<div style="display:flex;gap:8px;min-height:200px">';
+  // Character cameos
+  h += '<div style="display:flex;flex-direction:column;gap:4px;justify-content:flex-end;padding-bottom:4px;opacity:.6" id="ci-chars">';
+  for (var ci=0;ci<ciChars.length;ci++) {
+    h += '<div id="'+ciChars[ci].id+'" style="display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 0 4px '+ciChars[ci].color.replace('#','')+'66);width:32px">'+ciChars[ci].svg+'</div>';
+  }
+  h += '</div>';
+  // Status + steps area
+  h += '<div style="flex:1;position:relative;overflow:hidden">';
+  h += '<div id="ci-flash" style="position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:5;border-radius:8px"></div>';
+  h += '<div id="ci-status" style="position:absolute;top:0;left:0;right:0;font-size:10px;font-weight:700;color:var(--muted);opacity:0;z-index:4;pointer-events:none;text-align:center;padding:2px 0"></div>';
   h += '<div id="checkin-steps">';
-  // Step 1: Mood
-  h += '<div class="checkin-step" data-step="0">';
-  h += '<div style="font-size:13px;font-weight:600;margin-bottom:8px">1. How are you feeling right now?</div>';
-  h += '<div class="mood-row">';
+  // Step 0: Mood
+  h += '<div class="checkin-step" data-step="0" style="animation:ciSlideIn .45s ease">';
+  h += '<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:2px">STEP 1: MOOD CHECK</div>';
+  h += '<div style="font-size:13px;margin-bottom:8px">How are you feeling right now?</div>';
+  h += '<div class="mood-row" style="gap:2px">';
   var moodLabels = ['&#128545;','&#128544;','&#128529;','&#128578;','&#128513;'];
-  for (var mi=0;mi<5;mi++) h += '<button class="mood-btn checkin-mood" data-val="'+(mi+1)+'" onclick="document.querySelectorAll(\'.checkin-mood\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+moodLabels[mi]+'</button>';
+  for (var mi=0;mi<5;mi++) h += '<button class="mood-btn checkin-mood" data-val="'+(mi+1)+'" onclick="document.querySelectorAll(\'.checkin-mood\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\');ciCharReact('+mi+')">'+moodLabels[mi]+'</button>';
   h += '</div></div>';
-  // Step 2: Challenges
+  // Step 1: Challenges
   h += '<div class="checkin-step" data-step="1" style="display:none">';
-  h += '<div style="font-size:13px;font-weight:600;margin-bottom:8px">2. What challenges did you face today?</div>';
+  h += '<div style="font-size:12px;font-weight:700;color:var(--danger);margin-bottom:2px">STEP 2: FACE THE DARKNESS</div>';
+  h += '<div style="font-size:13px;margin-bottom:6px">What challenges did you face today?</div>';
   var challenges = ['Craving','Stress / anxiety','Sadness / depression','Anger / frustration','Fatigue / low energy','Social pressure','None today'];
-  for (var ci=0;ci<challenges.length;ci++) h += '<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer"><input type="checkbox" class="checkin-challenge" value="'+challenges[ci]+'" style="width:auto;margin:0"><span>'+challenges[ci]+'</span></label>';
-  h += '<textarea id="checkin-challenge-other" placeholder="Other challenge (optional)" style="min-height:50px;margin-top:6px"></textarea></div>';
-  // Step 3: Coping
+  for (var ci=0;ci<challenges.length;ci++) h += '<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;cursor:pointer"><input type="checkbox" class="checkin-challenge" value="'+challenges[ci]+'" style="width:auto;margin:0"><span>'+challenges[ci]+'</span></label>';
+  h += '<textarea id="checkin-challenge-other" placeholder="Other challenge (optional)" style="min-height:38px;margin-top:4px;font-size:12px"></textarea></div>';
+  // Step 2: Coping
   h += '<div class="checkin-step" data-step="2" style="display:none">';
-  h += '<div style="font-size:13px;font-weight:600;margin-bottom:8px">3. Which coping tools helped?</div>';
+  h += '<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:2px">STEP 3: ARM YOURSELF</div>';
+  h += '<div style="font-size:13px;margin-bottom:6px">Which coping tools helped?</div>';
   var tools = ['Deep breathing','Journaling','Exercise / walk','Called a friend','Meditation','Read / listened to music','AA/NA meeting','Other'];
-  for (var ti=0;ti<tools.length;ti++) h += '<label style="display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;cursor:pointer"><input type="checkbox" class="checkin-tool" value="'+tools[ti]+'" style="width:auto;margin:0"><span>'+tools[ti]+'</span></label>';
+  for (var ti=0;ti<tools.length;ti++) h += '<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;cursor:pointer"><input type="checkbox" class="checkin-tool" value="'+tools[ti]+'" style="width:auto;margin:0"><span>'+tools[ti]+'</span></label>';
   h += '</div>';
-  // Step 4: Win + Tomorrow
+  // Step 3: Win + Tomorrow
   h += '<div class="checkin-step" data-step="3" style="display:none">';
-  h += '<div style="font-size:13px;font-weight:600;margin-bottom:6px">4. What\'s one win today (no matter how small)?</div>';
-  h += '<textarea id="checkin-win" placeholder="e.g. I took a walk, I reached out, I stayed sober..." style="min-height:50px"></textarea>';
-  h += '<div style="font-size:13px;font-weight:600;margin:10px 0 6px">5. What\'s your intention for tomorrow?</div>';
-  h += '<textarea id="checkin-intent" placeholder="e.g. Call my sponsor, go to a meeting, practice gratitude..." style="min-height:50px"></textarea>';
+  h += '<div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:2px">STEP 4: CLAIM YOUR WIN</div>';
+  h += '<div style="font-size:13px;margin-bottom:4px">What\'s one win today?</div>';
+  h += '<textarea id="checkin-win" placeholder="e.g. I took a walk, I reached out, I stayed sober..." style="min-height:44px;font-size:12px"></textarea>';
+  h += '<div style="font-size:13px;margin:8px 0 4px">What\'s your intention for tomorrow?</div>';
+  h += '<textarea id="checkin-intent" placeholder="e.g. Call my sponsor, go to a meeting, practice gratitude..." style="min-height:44px;font-size:12px"></textarea>';
   h += '</div>';
   h += '</div>';
-  // Navigation buttons
-  h += '<div style="display:flex;gap:8px;margin-top:12px;justify-content:space-between">';
-  h += '<button class="btn btn-outline btn-sm" id="checkin-prev" onclick="prevCheckinStep()" style="display:none">&#8592; Back</button>';
-  h += '<button class="btn btn-primary btn-sm" id="checkin-next" onclick="nextCheckinStep()" style="margin-left:auto">Next &#8594;</button>';
-  h += '<button class="btn btn-primary btn-sm" id="checkin-submit" onclick="submitCheckin()" style="display:none">&#9889; Fight!</button>';
+  // Flash overlay for transitions
   h += '</div>';
-  h += '</div></div>';
+  h += '</div>';
+  // Navigation
+  h += '<div style="display:flex;gap:6px;margin-top:8px;justify-content:space-between">';
+  h += '<button class="btn btn-outline btn-sm" id="checkin-prev" onclick="prevCheckinStep()" style="display:none;font-size:11px">&#8592; Back</button>';
+  h += '<button class="btn btn-primary btn-sm" id="checkin-next" onclick="nextCheckinStep()" style="margin-left:auto;font-size:11px">Next &#8594;</button>';
+  h += '<button class="btn btn-primary btn-sm" id="checkin-submit" onclick="submitCheckin()" style="display:none;font-size:11px">&#9889; Fight!</button>';
+  h += '</div>';
+  h += '</div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
   window._checkinStep = 0;
   window._checkinOverlay = overlay;
+  // Animate characters on mount
+  setTimeout(function(){
+    var chars = document.querySelectorAll('#ci-chars > div');
+    chars.forEach(function(el,i){
+      el.style.animation = 'ciCharReact .5s ease '+(i*0.15)+'s forwards';
+      el.style.opacity = '0';
+    });
+  }, 100);
 }
 
 var CHECKIN_STEPS = 4;
-function nextCheckinStep() {
-  window._checkinStep++;
-  if (window._checkinStep >= CHECKIN_STEPS) {
-    document.getElementById('checkin-next').style.display = 'none';
-    document.getElementById('checkin-submit').style.display = '';
-  } else {
-    document.getElementById('checkin-next').style.display = '';
+var CI_STATUS_TEXTS = ['&#128164; Mood captured!','&#128299; Challenges identified!','&#128737; Tools locked!','&#127775; Win claimed!'];
+var CI_CHARGE_TEXTS = ['&#127800; Checking in with yourself takes courage.','&#128170; Every honest moment is a victory.','&#127926; You\'re building the playlist of your recovery.','&#128081; You are the king of your own story.'];
+function ciFlash(text, cb) {
+  var flash = document.getElementById('ci-flash');
+  var status = document.getElementById('ci-status');
+  if (flash) { flash.style.animation = 'ciFlash .5s ease'; flash.style.opacity = '.4'; setTimeout(function(){if(flash){flash.style.animation='none';flash.style.opacity='0';}},500); }
+  if (status && text) { status.textContent = text; status.style.opacity = '1'; setTimeout(function(){if(status)status.style.opacity='0';},1800); }
+  if (cb) setTimeout(cb, 350);
+}
+function ciCharReact(idx) {
+  var chars = document.querySelectorAll('#ci-chars > div');
+  if (chars.length) {
+    var target = idx !== undefined ? Math.min(idx, chars.length-1) : Math.floor(Math.random()*chars.length);
+    if (chars[target]) { chars[target].style.animation = 'ciCharReact .45s ease'; setTimeout(function(){if(chars[target])chars[target].style.animation='';},450); }
   }
-  document.getElementById('checkin-prev').style.display = window._checkinStep > 0 ? '' : 'none';
-  document.querySelectorAll('.checkin-step').forEach(function(el,i){el.style.display = i === window._checkinStep ? '' : 'none';});
+}
+function nextCheckinStep() {
+  if (window._checkinStep >= CHECKIN_STEPS - 1) return;
+  var oldStep = window._checkinStep;
+  var oldEl = document.querySelector('.checkin-step[data-step="'+oldStep+'"]');
+  if (oldEl) { oldEl.style.animation = 'ciSlideOut .35s ease forwards'; }
+  ciCharReact();
+  ciFlash(CI_STATUS_TEXTS[oldStep], function(){
+    window._checkinStep++;
+    var prog = document.getElementById('ci-progress');
+    if (prog) { prog.style.setProperty('--ci-pct', ((window._checkinStep / (CHECKIN_STEPS-1)) * 100) + '%'); prog.style.animation = 'ciProgress .4s ease forwards'; }
+    var ind = document.getElementById('ci-step-indicator');
+    if (ind) ind.textContent = (window._checkinStep + 1) + ' / ' + CHECKIN_STEPS;
+    document.getElementById('checkin-prev').style.display = '';
+    document.querySelectorAll('.checkin-step').forEach(function(el,i){
+      if (i === window._checkinStep) {
+        el.style.display = '';
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = 'ciSlideIn .45s ease';
+      } else if (i < window._checkinStep) {
+        el.style.display = 'none';
+      }
+    });
+    if (window._checkinStep >= CHECKIN_STEPS - 1) {
+      document.getElementById('checkin-next').style.display = 'none';
+      document.getElementById('checkin-submit').style.display = '';
+    }
+  });
 }
 function prevCheckinStep() {
-  window._checkinStep--;
-  document.getElementById('checkin-next').style.display = '';
-  document.getElementById('checkin-submit').style.display = 'none';
-  document.getElementById('checkin-prev').style.display = window._checkinStep > 0 ? '' : 'none';
-  document.querySelectorAll('.checkin-step').forEach(function(el,i){el.style.display = i === window._checkinStep ? '' : 'none';});
+  if (window._checkinStep <= 0) return;
+  var oldEl = document.querySelector('.checkin-step[data-step="'+window._checkinStep+'"]');
+  if (oldEl) { oldEl.style.animation = 'ciSlideOut .3s ease forwards'; }
+  ciFlash(null, function(){
+    window._checkinStep--;
+    var prog = document.getElementById('ci-progress');
+    if (prog) { prog.style.setProperty('--ci-pct', ((window._checkinStep / (CHECKIN_STEPS-1)) * 100) + '%'); prog.style.animation = 'ciProgress .3s ease forwards'; }
+    var ind = document.getElementById('ci-step-indicator');
+    if (ind) ind.textContent = (window._checkinStep + 1) + ' / ' + CHECKIN_STEPS;
+    document.getElementById('checkin-next').style.display = '';
+    document.getElementById('checkin-submit').style.display = 'none';
+    document.getElementById('checkin-prev').style.display = window._checkinStep > 0 ? '' : 'none';
+    document.querySelectorAll('.checkin-step').forEach(function(el,i){
+      el.style.display = i === window._checkinStep ? '' : 'none';
+      if (i === window._checkinStep) {
+        el.style.animation = 'none';
+        el.offsetHeight;
+        el.style.animation = 'ciSlideIn .4s ease';
+      }
+    });
+  });
 }
 function submitCheckin() {
   var today = new Date().toDateString();
@@ -3771,8 +3868,35 @@ function submitCheckin() {
   D.checkins.push({date:today,time:new Date().toLocaleTimeString(),mood:mood,challenges:challenges,tools:tools,win:win,intent:intent});
   D.streak = (D.streak || 0) + 1;
   saveData();
-  window._checkinOverlay.remove();
-  showTeamBattle({mood:mood,win:win});
+  // Recap montage
+  var stepsArea = document.getElementById('checkin-steps');
+  var navArea = document.getElementById('checkin-next').parentNode;
+  var chars = document.getElementById('ci-chars');
+  var status = document.getElementById('ci-status');
+  var flash = document.getElementById('ci-flash');
+  if (chars) { chars.style.transition = 'opacity .5s'; chars.style.opacity = '0'; }
+  if (navArea) navArea.style.display = 'none';
+  var moodEmojis = ['&#128545;','&#128544;','&#128529;','&#128578;','&#128513;'];
+  var recapHTML = '<div style="text-align:center;padding:4px 0">';
+  recapHTML += '<div style="font-size:10px;font-weight:700;color:var(--muted);margin-bottom:6px">&#127916; MONTAGE RECAP</div>';
+  recapHTML += '<div style="animation:ciStamp .6s ease"><span style="font-size:28px">' + moodEmojis[mood-1] + '</span></div>';
+  recapHTML += '<div style="font-size:11px;color:var(--muted);margin:4px 0">Challenges: ' + (challenges.length || 'None listed') + '</div>';
+  recapHTML += '<div style="font-size:11px;color:var(--muted);margin:2px 0">Tools: ' + (tools.length || 'None listed') + '</div>';
+  if (win) recapHTML += '<div style="font-size:11px;font-style:italic;color:var(--primary);margin:4px 0;animation:ciReveal .8s ease .4s forwards">&#127775; "' + win.substring(0,60) + (win.length>60?'...':'') + '"</div>';
+  recapHTML += '<div style="font-size:10px;color:var(--accent);margin-top:4px;font-weight:600;animation:ciPop .5s ease .8s forwards;opacity:0">&#9889; TEAM RECLAIM RALLIES!</div>';
+  recapHTML += '</div>';
+  if (stepsArea) {
+    stepsArea.style.display = 'flex';
+    stepsArea.style.alignItems = 'center';
+    stepsArea.style.justifyContent = 'center';
+    stepsArea.innerHTML = recapHTML;
+    if (flash) { flash.style.animation = 'ciFlash .6s ease .2s'; flash.style.opacity = '.3'; setTimeout(function(){if(flash){flash.style.animation='none';flash.style.opacity='0';}},800); }
+  }
+  if (status) { status.textContent = '&#127942; VICTORY MONTAGE!'; status.style.opacity = '1'; }
+  setTimeout(function(){
+    window._checkinOverlay.remove();
+    showTeamBattle({mood:mood,win:win});
+  }, 1800);
 }
 
 // ====== BREATHING ======
