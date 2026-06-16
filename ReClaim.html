@@ -3698,7 +3698,7 @@ function showSOS() {
   saveData();
 }
 
-function doCheckin() {
+function doCheckin(replay) {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   // Real character SVGs with limb groups (matching existing battles)
@@ -3740,9 +3740,9 @@ function doCheckin() {
     {char:eSvg,enemy:cSvg,label:'ERIN VS THE COWBOY',bg:'linear-gradient(180deg,#f59e0b,#92400e,#451a03)',cCls:'erin-stage',eCls:'cowboy-stage',cColor:'#ec4899',eColor:'#ef4444',desc:'&#128200; Duel at Dawn'},
     {char:pSvg,enemy:'<svg class="dragon-svg" viewBox="0 0 60 45"><g class="d-tail-g" style="transform-origin:52px 22px"><path d="M52 18 Q56 16 59 12 Q61 8 57 6" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round"/><line x1="57" y1="10" x2="61" y2="8" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/><line x1="59" y1="14" x2="63" y2="13" stroke="#16a34a" stroke-width="2" stroke-linecap="round"/></g><ellipse cx="33" cy="22" rx="16" ry="9" fill="none" stroke="#22c55e" stroke-width="3.5" class="d-body"/><line x1="46" y1="14" x2="48" y2="7" stroke="#16a34a" stroke-width="2"/><line x1="40" y1="13" x2="41" y2="6" stroke="#16a34a" stroke-width="2"/><line x1="34" y1="13" x2="34" y2="6" stroke="#16a34a" stroke-width="2"/><line x1="28" y1="14" x2="27" y2="7" stroke="#16a34a" stroke-width="2"/><line x1="22" y1="16" x2="20" y2="9" stroke="#16a34a" stroke-width="2"/><g class="d-head-g" style="transform-origin:14px 18px"><path d="M22 18 Q14 14 10 12" fill="none" stroke="#22c55e" stroke-width="3.5"/><path d="M10 12 Q5 10 2 12 L0 15 L5 17 L9 16 Z" fill="none" stroke="#22c55e" stroke-width="2.5"/><path d="M3 15 L2 16.5 L5 17" fill="none" stroke="#22c55e" stroke-width="2"/><circle cx="6.5" cy="13" r="1.5" fill="#ef4444"/><line x1="9" y1="10" x2="10" y2="5" stroke="#16a34a" stroke-width="2"/><line x1="6" y1="9" x2="4" y2="4" stroke="#16a34a" stroke-width="2"/><line x1="2" y1="15" x2="-3" y2="14" stroke="#f59e0b" stroke-width="2"/><line x1="1" y1="16" x2="-3" y2="17" stroke="#ef4444" stroke-width="2"/></g><g class="d-wing-g" style="transform-origin:40px 12px"><path d="M40 10 Q48 3 56 6 Q52 2 46 1 Q42 2 40 10" fill="none" stroke="#22c55e" stroke-width="2"/><line x1="46" y1="6" x2="48" y2="3" stroke="#16a34a" stroke-width="1.5"/><line x1="44" y1="5" x2="46" y2="1" stroke="#16a34a" stroke-width="1.5"/></g></svg>',label:'PAULIE VS DRAGON',bg:'radial-gradient(ellipse at center,rgba(30,20,60,.8) 0%,rgba(10,5,20,.9) 100%)',cCls:'paulie-stage',eCls:'dragon-stage',cColor:'#a78bfa',eColor:'#22c55e',desc:'&#128302; Wizard\'s Duel'}
   ];
-  setTimeout(function(){ runCheckinMontage(overlay, scenes); }, 300);
+  setTimeout(function(){ runCheckinMontage(overlay, scenes, replay); }, 300);
 }
-function runCheckinMontage(overlay, scenes) {
+function runCheckinMontage(overlay, scenes, replay) {
   var flash = document.getElementById('cm-flash');
   var hit = document.getElementById('cm-hit');
   var label = document.getElementById('cm-label');
@@ -3823,7 +3823,12 @@ function runCheckinMontage(overlay, scenes) {
       victory.innerHTML='&#127942; VICTORY!';victory.style.animation='paulieShield .5s ease forwards';
     },700));
     timers.push(setTimeout(function(){
-      document.getElementById('cm-form').style.display='';
+      if (replay) {
+        if(status)status.innerHTML='<span style="color:#ffd700;font-weight:700">&#9889; VICTORY!</span>';
+        timers.push(setTimeout(function(){overlay.remove();},2000));
+      } else {
+        document.getElementById('cm-form').style.display='';
+      }
     },2200));
   }
 }
@@ -3839,6 +3844,9 @@ function submitCheckin() {
   saveData();
   if (window._cmOverlay) window._cmOverlay.remove();
   showTeamBattle({mood:mood,win:win});
+}
+function replayBattle() {
+  doCheckin(true);
 }
 
 // ====== BREATHING ======
@@ -5980,11 +5988,6 @@ function showBoxingMatch(onDone) {
   overlay.addEventListener('click', function(e) {
     if (e.target === overlay) { clearTimers(); overlay.remove(); if (onDone) onDone(); }
   });
-}
-
-function replayBattle() {
-  var last = D.checkins.length ? D.checkins[D.checkins.length-1] : null;
-  showTeamBattle({mood: last && last.mood ? last.mood : 3, win: last && last.win ? last.win : ''});
 }
 
 function showTeamBattle(data) {
