@@ -4304,14 +4304,13 @@ function rescueSkip() {
 
 // ====== RECOVERY COST CALCULATOR ======
 function costCalcDefaults() {
-  return { setup: false, items: [
-    { label: 'Drugs', cost: 0, unit: 'day', active: true },
-    { label: 'Alcohol', cost: 0, unit: 'day', active: true },
-    { label: 'Cigarettes', cost: 0, unit: 'day', active: true },
-    { label: 'Porn', cost: 0, unit: 'day', active: true },
-    { label: 'Gambling', cost: 0, unit: 'day', active: true },
-    { label: 'Other', cost: 0, unit: 'day', active: true, customLabel: '' }
-  ]};
+  var addictions = D.targetAddictions || [];
+  var items = [];
+  for (var ci=0;ci<addictions.length;ci++) {
+    items.push({ label: addictions[ci], cost: 0, unit: 'day', active: true });
+  }
+  if (!items.length) items.push({ label: 'My addiction', cost: 0, unit: 'day', active: true });
+  return { setup: false, items: items };
 }
 function costDailyTotal() {
   if (!D.costCalc || !D.costCalc.items) return 0;
@@ -4361,28 +4360,36 @@ function costCalcHTML() {
     h += '<div style="font-size:36px;font-weight:900;color:var(--primary)">$' + saved.toLocaleString() + '</div>';
     h += '<div style="font-size:12px;color:var(--muted)">$' + daily.toFixed(2) + '/day | $' + (daily*7).toFixed(2) + '/week | $' + (daily*30).toFixed(2) + '/month</div>';
     h += '</div>';
+  } else {
+    h += '<div class="card" style="text-align:center;background:var(--primary-light)"><div style="font-size:13px;color:var(--muted)">Enter your costs below to see what you\'ve saved.</div></div>';
   }
-  h += '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">Your Costs</h3>';
+  h += '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">Your Addictions</h3>';
   for (var ci=0;ci<items.length;ci++) {
     var it = items[ci];
-    var label = it.customLabel || it.label;
     h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
     h += '<input type="checkbox" ' + (it.active ? 'checked' : '') + ' onchange="costToggle(' + ci + ')" style="width:auto;margin:0">';
-    h += '<span style="flex:1;font-size:13px;' + (!it.active ? 'color:var(--muted);text-decoration:line-through' : '') + '">' + label + '</span>';
+    h += '<span style="flex:1;font-size:13px;' + (!it.active ? 'color:var(--muted);text-decoration:line-through' : '') + '">' + it.label + '</span>';
+    h += '<span style="font-size:12px;color:var(--muted)">$</span>';
     h += '<input type="number" value="' + it.cost + '" min="0" step="1" onchange="costUpdate(' + ci + ',this.value)" style="width:70px;text-align:right;font-size:13px;padding:4px 6px;border:1px solid var(--border);border-radius:6px">';
     h += '<select onchange="costUnit(' + ci + ',this.value)" style="width:auto;font-size:11px;padding:4px;border:1px solid var(--border);border-radius:6px">';
-    h += '<option value="day"' + (it.unit==='day'?' selected':'') + '>/day</option>';
-    h += '<option value="week"' + (it.unit==='week'?' selected':'') + '>/wk</option>';
-    h += '<option value="month"' + (it.unit==='month'?' selected':'') + '>/mo</option>';
+    h += '<option value="day"' + (it.unit==='day'?' selected':'') + '>per day</option>';
+    h += '<option value="week"' + (it.unit==='week'?' selected':'') + '>per week</option>';
+    h += '<option value="month"' + (it.unit==='month'?' selected':'') + '>per month</option>';
     h += '</select>';
-    if (it.label === 'Other') {
-      h += '<input type="text" value="' + (it.customLabel||'') + '" placeholder="Label" onchange="costRename(' + ci + ',this.value)" style="width:60px;font-size:11px;padding:4px;border:1px solid var(--border);border-radius:6px">';
-    }
     h += '</div>';
   }
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">Check/uncheck items to include. Edit costs and periods to match your usage.</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">Based on addictions you selected in <strong>Profile</strong>. Check/uncheck to toggle. <button class="btn btn-sm btn-outline" onclick="goTo(\'profile\')" style="font-size:11px;padding:4px 8px">Edit Addictions</button></div>';
   h += '</div>';
   if (daily > 0 && soberDays() > 0) {
+    h += '<div class="card" style="background:var(--primary-light)"><h3 style="font-size:14px;margin-bottom:6px">&#128202; Savings Breakdown</h3>';
+    for (var ci=0;ci<items.length;ci++) {
+      var it = items[ci];
+      if (!it.active || !it.cost) continue;
+      var itemDaily = it.unit === 'day' ? it.cost : it.unit === 'week' ? it.cost / 7 : it.cost / 30;
+      var itemSaved = Math.round(itemDaily * soberDays() * 100) / 100;
+      h += '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0"><span>' + it.label + '</span><span>$' + itemSaved.toFixed(2) + ' saved</span></div>';
+    }
+    h += '</div>';
     var milestones = [100, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
     var nextMilestone = null;
     for (var mi=0;mi<milestones.length;mi++) { if (saved < milestones[mi]) { nextMilestone = milestones[mi]; break; } }
@@ -4402,13 +4409,13 @@ function costCalcHTML() {
     h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Your daily cost of $' + daily.toFixed(2) + ' is equivalent to:</div>';
     for (var ei=0;ei<everydayItems.length;ei++) {
       var count = Math.floor(daily / everydayItems[ei].cost);
-      if (count > 0) h += '<div style="font-size:12px;padding:3px 0">&#8226; <strong>' + count + '</strong> ' + (count > 1 ? everydayItems[ei].label : everydayItems[ei].label) + (count > 1 ? 's' : '') + ' per day</div>';
+      if (count > 0) h += '<div style="font-size:12px;padding:3px 0">&#8226; <strong>' + count + '</strong> ' + everydayItems[ei].label + (count > 1 ? 's' : '') + ' per day</div>';
     }
     h += '</div>';
   }
   if (!D.costCalc.setup) {
     h += '<div class="card" style="border:2px solid var(--accent);background:#fef3c7;text-align:center">';
-    h += '<div style="font-size:13px;color:var(--text);margin-bottom:6px">&#128161; Enter your estimated costs above. This is private — only you can see it.</div>';
+    h += '<div style="font-size:13px;color:var(--text);margin-bottom:6px">&#128161; Enter how much you spent on each addiction. This is private — only you can see it.</div>';
     h += '<button class="btn btn-sm btn-primary" onclick="costAcknowledge()">Got it, thanks</button>';
     h += '</div>';
   }
@@ -4429,9 +4436,9 @@ function costUnit(idx, val) {
   D.costCalc.items[idx].unit = val;
   saveData();
 }
-function costRename(idx, val) {
+function costAcknowledge() {
   if (!D.costCalc) D.costCalc = costCalcDefaults();
-  D.costCalc.items[idx].customLabel = val;
+  D.costCalc.setup = true;
   saveData();
 }
 function costAcknowledge() {
