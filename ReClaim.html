@@ -768,7 +768,8 @@ function defaultData() {
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
     encryption: { enabled: false, salt: null, keyCheck: null },
     timeCapsules: [],
-    recoveryPrograms: { active: null, programs: {} }
+    recoveryPrograms: { active: null, programs: {} },
+    relapseRescue: { logs: [] }
   };
 }
 
@@ -4006,6 +4007,7 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'coping\')">'+t('Coping Cards')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')">'+t('Assessment')+'</div>';
   h += '<div class="sub-item" onclick="showRelapsePlan()">'+t('Relapse Plan')+'</div>';
+  h += '<div class="sub-item" onclick="showRelapseRescue()" style="border-color:var(--danger)">&#129309; Rescue</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
   h += '</div>';
 
@@ -4168,6 +4170,115 @@ function showSOS() {
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
   saveData();
+}
+
+var RESCUE_TRIGGERS = [
+  'I was around people/places I used with',
+  'I was stressed or overwhelmed',
+  'I felt angry or frustrated',
+  'I felt sad or lonely',
+  'I was celebrating and lost control',
+  'I had a craving I couldn\'t resist',
+  'I stopped using my coping tools',
+  'I don\'t know — it just happened'
+];
+
+var RESCUE_ACTIONS = [
+  { label: 'Call a supporter', icon: '&#128222;', action: 'call' },
+  { label: 'Go to a meeting', icon: '&#128101;', action: 'meeting' },
+  { label: 'Start breathing', icon: '&#128128;', action: 'breathe' },
+  { label: 'Write about it', icon: '&#128221;', action: 'journal' },
+  { label: 'Take a walk', icon: '&#127962;', action: 'walk' },
+  { label: 'Review my plan', icon: '&#128737;', action: 'plan' },
+  { label: 'Coping cards', icon: '&#127912;', action: 'coping' },
+  { label: 'Read recovery stories', icon: '&#128214;', action: 'stories' }
+];
+
+function showRelapseRescue() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'rescue-ov';
+  var days = soberDays();
+  var h = '<div class="overlay-content" style="max-width:440px;text-align:center">';
+  h += '<div style="font-size:48px;margin-bottom:4px">&#129309;</div>';
+  h += '<h3 style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px">You\'re still here. That matters.</h3>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.5">A slip doesn\'t erase your progress. ' + (days > 0 ? 'You had <strong>' + days + ' day' + (days !== 1 ? 's' : '') + '</strong> of growth — that experience stays with you.' : 'Every moment is a chance to start again.') + '</p>';
+  h += '<div class="card" style="background:var(--primary-light);padding:14px;margin-bottom:12px">';
+  h += '<div style="font-weight:600;font-size:14px;margin-bottom:8px">What led to this moment?</div>';
+  for (var ti=0;ti<RESCUE_TRIGGERS.length;ti++) {
+    h += '<label style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer"><input type="radio" name="rescue-trigger" value="' + RESCUE_TRIGGERS[ti].replace(/'/g, "\\'") + '" style="width:auto;flex-shrink:0"><span>' + RESCUE_TRIGGERS[ti] + '</span></label>';
+  }
+  h += '</div>';
+  h += '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">What helps right now?</div>';
+  h += '<div id="rescue-actions" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">';
+  for (var ai=0;ai<RESCUE_ACTIONS.length;ai++) {
+    h += '<div style="padding:8px 6px;border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:11px;text-align:center" onclick="rescueAction(\'' + RESCUE_ACTIONS[ai].action + '\',this)"><span style="font-size:20px;display:block;margin-bottom:2px">' + RESCUE_ACTIONS[ai].icon + '</span>' + RESCUE_ACTIONS[ai].label + '</div>';
+  }
+  h += '</div>';
+  h += '<button class="btn btn-primary btn-sm" onclick="rescueRecommit()" style="width:100%;margin-bottom:6px">&#128154; Re-commit to my recovery</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="rescueSkip()" style="width:100%">I\'m okay for now</button>';
+  h += '</div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+}
+
+function rescueAction(action, el) {
+  var els = document.querySelectorAll('#rescue-actions > div');
+  for (var i=0;i<els.length;i++) els[i].style.borderColor = 'var(--border)';
+  el.style.borderColor = 'var(--primary)';
+  el.style.background = 'var(--primary-light)';
+  if (action === 'breathe') { setTimeout(function(){ startBreathe(); }, 300); }
+  if (action === 'plan') { setTimeout(function(){ showRelapsePlan(); }, 300); }
+  if (action === 'coping') { setTimeout(function(){ goTo('coping'); }, 300); }
+  if (action === 'journal') { setTimeout(function(){ goTo('journal'); }, 300); }
+}
+
+function rescueRecommit() {
+  var selected = document.querySelector('input[name="rescue-trigger"]:checked');
+  var actionEl = document.querySelector('#rescue-actions > div[style*="var(--primary)"]');
+  var trigger = selected ? selected.value : 'unspecified';
+  var action = actionEl ? actionEl.textContent.trim() : 'none';
+  var prevDays = soberDays();
+  var log = { date: Date.now(), trigger: trigger, actionTaken: action, prevStreak: prevDays };
+  if (!D.relapseRescue) D.relapseRescue = { logs: [] };
+  D.relapseRescue.logs.push(log);
+  D.sobriety.relapseDates.push(Date.now());
+  D.sobriety.startDate = Date.now();
+  D.streak = 0;
+  saveData();
+  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost — it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove()" style="margin-top:6px">Keep going</button></div>';
+}
+
+function rescueSkip() {
+  document.getElementById('rescue-ov').remove();
+}
+
+function relapseRescueHTML() {
+  if (!D.relapseRescue) D.relapseRescue = { logs: [] };
+  var logs = D.relapseRescue.logs || [];
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#129309; Relapse Recovery</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">A place to process slips and re-commit to your journey.</p>';
+
+  h += '<div class="card" style="border-left:3px solid var(--primary);text-align:center">';
+  h += '<div style="font-size:14px;margin-bottom:8px">If you\'ve had a slip, let\'s work through it together.</div>';
+  h += '<button class="btn btn-primary btn-sm" onclick="showRelapseRescue()" style="width:100%">&#129309; Start Rescue Guide</button>';
+  h += '</div>';
+
+  if (logs.length > 0) {
+    h += '<h3 style="font-size:14px;font-weight:700;margin:12px 0 6px">Past Entries</h3>';
+    for (var li=logs.length-1;li>=0;li--) {
+      var l = logs[li];
+      h += '<div class="card" style="font-size:12px;padding:12px">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600">' + new Date(l.date).toLocaleDateString() + '</span><span style="font-size:10px;color:var(--muted)">' + (l.prevStreak > 0 ? l.prevStreak + ' day streak' : '') + '</span></div>';
+      h += '<div style="margin-top:4px"><span style="color:var(--muted)">Trigger:</span> ' + l.trigger + '</div>';
+      if (l.actionTaken && l.actionTaken !== 'none') h += '<div><span style="color:var(--muted)">Action:</span> ' + l.actionTaken + '</div>';
+      h += '</div>';
+    }
+    h += '<button class="btn btn-outline btn-sm" onclick="if(confirm(\'Clear all relapse logs?\')){D.relapseRescue.logs=[];saveData();render()}" style="width:100%;color:var(--danger);margin-top:4px">Clear History</button>';
+  } else {
+    h += '<div class="card" style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No entries yet. The rescue guide is here whenever you need it.</div>';
+  }
+  return h;
 }
 
 function doCheckin(replay) {
@@ -5355,6 +5466,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Buddy')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; Relapse Rescue</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
@@ -6824,7 +6936,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','timecapsule','screener','programs'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -7687,7 +7799,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    relapseplan: relapsePlanHTML, timecapsule: timeCapsuleHTML,
+    relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML,
   };
   var fn = pages[pg];
   if (fn) app.innerHTML = fn();
