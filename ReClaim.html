@@ -4302,6 +4302,289 @@ function rescueSkip() {
   document.getElementById('rescue-ov').remove();
 }
 
+// ====== RECOVERY COST CALCULATOR ======
+function costCalcDefaults() {
+  return { setup: false, items: [
+    { label: 'Drugs', cost: 0, unit: 'day', active: true },
+    { label: 'Alcohol', cost: 0, unit: 'day', active: true },
+    { label: 'Cigarettes', cost: 0, unit: 'day', active: true },
+    { label: 'Porn', cost: 0, unit: 'day', active: true },
+    { label: 'Gambling', cost: 0, unit: 'day', active: true },
+    { label: 'Other', cost: 0, unit: 'day', active: true, customLabel: '' }
+  ]};
+}
+function costDailyTotal() {
+  if (!D.costCalc || !D.costCalc.items) return 0;
+  var total = 0;
+  for (var ci=0;ci<D.costCalc.items.length;ci++) {
+    var it = D.costCalc.items[ci];
+    if (!it.active || !it.cost) continue;
+    if (it.unit === 'day') total += it.cost;
+    else if (it.unit === 'week') total += it.cost / 7;
+    else if (it.unit === 'month') total += it.cost / 30;
+  }
+  return Math.round(total * 100) / 100;
+}
+function costTotalSaved() {
+  var daily = costDailyTotal();
+  var days = soberDays();
+  return Math.round(daily * days * 100) / 100;
+}
+function costSavingsHTML() {
+  if (!D.costCalc || !D.costCalc.items) return '';
+  var daily = costDailyTotal();
+  var saved = costTotalSaved();
+  var days = soberDays();
+  if (daily <= 0) return '';
+  var h = '<div class="card" style="border-left:3px solid var(--primary);text-align:center">';
+  h += '<div style="font-size:13px;color:var(--muted);margin-bottom:4px">Estimated money saved</div>';
+  h += '<div style="font-size:28px;font-weight:800;color:var(--primary)">$' + saved.toLocaleString() + '</div>';
+  h += '<div style="font-size:11px;color:var(--muted)">$' + daily.toFixed(2) + '/day &middot; ' + days + ' day' + (days !== 1 ? 's' : '') + ' sober</div>';
+  if (saved >= 1000) {
+    var fun = saved >= 10000 ? '&#128176; That could buy a car!' : saved >= 5000 ? '&#9992;&#65039; That\'s a vacation!' : '&#127942; Five figures saved — incredible.';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + fun + '</div>';
+  }
+  h += '<button class="btn btn-sm btn-outline" onclick="goTo(\'costcalc\')" style="margin-top:6px">See Details</button>';
+  h += '</div>';
+  return h;
+}
+function costCalcHTML() {
+  if (!D.costCalc) D.costCalc = costCalcDefaults();
+  var items = D.costCalc.items;
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128176; Recovery Cost Calculator</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">See how much your addiction was costing you — and how much you\'ve saved in recovery.</p>';
+  var daily = costDailyTotal();
+  var saved = costTotalSaved();
+  if (daily > 0) {
+    h += '<div class="card" style="text-align:center;background:var(--primary-light);border:2px solid var(--primary)">';
+    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:2px">Total Saved</div>';
+    h += '<div style="font-size:36px;font-weight:900;color:var(--primary)">$' + saved.toLocaleString() + '</div>';
+    h += '<div style="font-size:12px;color:var(--muted)">$' + daily.toFixed(2) + '/day | $' + (daily*7).toFixed(2) + '/week | $' + (daily*30).toFixed(2) + '/month</div>';
+    h += '</div>';
+  }
+  h += '<div class="card"><h3 style="font-size:15px;margin-bottom:10px">Your Costs</h3>';
+  for (var ci=0;ci<items.length;ci++) {
+    var it = items[ci];
+    var label = it.customLabel || it.label;
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
+    h += '<input type="checkbox" ' + (it.active ? 'checked' : '') + ' onchange="costToggle(' + ci + ')" style="width:auto;margin:0">';
+    h += '<span style="flex:1;font-size:13px;' + (!it.active ? 'color:var(--muted);text-decoration:line-through' : '') + '">' + label + '</span>';
+    h += '<input type="number" value="' + it.cost + '" min="0" step="1" onchange="costUpdate(' + ci + ',this.value)" style="width:70px;text-align:right;font-size:13px;padding:4px 6px;border:1px solid var(--border);border-radius:6px">';
+    h += '<select onchange="costUnit(' + ci + ',this.value)" style="width:auto;font-size:11px;padding:4px;border:1px solid var(--border);border-radius:6px">';
+    h += '<option value="day"' + (it.unit==='day'?' selected':'') + '>/day</option>';
+    h += '<option value="week"' + (it.unit==='week'?' selected':'') + '>/wk</option>';
+    h += '<option value="month"' + (it.unit==='month'?' selected':'') + '>/mo</option>';
+    h += '</select>';
+    if (it.label === 'Other') {
+      h += '<input type="text" value="' + (it.customLabel||'') + '" placeholder="Label" onchange="costRename(' + ci + ',this.value)" style="width:60px;font-size:11px;padding:4px;border:1px solid var(--border);border-radius:6px">';
+    }
+    h += '</div>';
+  }
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">Check/uncheck items to include. Edit costs and periods to match your usage.</div>';
+  h += '</div>';
+  if (daily > 0 && soberDays() > 0) {
+    var milestones = [100, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
+    var nextMilestone = null;
+    for (var mi=0;mi<milestones.length;mi++) { if (saved < milestones[mi]) { nextMilestone = milestones[mi]; break; } }
+    if (nextMilestone) {
+      var need = nextMilestone - saved;
+      var daysToNext = Math.ceil(need / daily);
+      h += '<div class="card" style="background:var(--primary-light)">';
+      h += '<div style="font-size:13px;margin-bottom:6px">&#127919; Next Milestone: <strong>$' + nextMilestone.toLocaleString() + '</strong> in ~' + daysToNext + ' day' + (daysToNext!==1?'s':'') + '</div>';
+      h += '<div class="progress-bar" style="height:8px"><div class="fill" style="width:' + Math.round(saved/nextMilestone*100) + '%"></div></div>';
+      h += '</div>';
+    }
+    var everydayItems = [
+      { cost: 5, label: 'coffee' }, { cost: 10, label: 'lunch' }, { cost: 50, label: 'groceries' },
+      { cost: 15, label: 'movie ticket' }, { cost: 30, label: 'streaming & music' }
+    ];
+    h += '<div class="card"><h3 style="font-size:15px;margin-bottom:6px">What Else That Could Buy</h3>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Your daily cost of $' + daily.toFixed(2) + ' is equivalent to:</div>';
+    for (var ei=0;ei<everydayItems.length;ei++) {
+      var count = Math.floor(daily / everydayItems[ei].cost);
+      if (count > 0) h += '<div style="font-size:12px;padding:3px 0">&#8226; <strong>' + count + '</strong> ' + (count > 1 ? everydayItems[ei].label : everydayItems[ei].label) + (count > 1 ? 's' : '') + ' per day</div>';
+    }
+    h += '</div>';
+  }
+  if (!D.costCalc.setup) {
+    h += '<div class="card" style="border:2px solid var(--accent);background:#fef3c7;text-align:center">';
+    h += '<div style="font-size:13px;color:var(--text);margin-bottom:6px">&#128161; Enter your estimated costs above. This is private — only you can see it.</div>';
+    h += '<button class="btn btn-sm btn-primary" onclick="costAcknowledge()">Got it, thanks</button>';
+    h += '</div>';
+  }
+  return h;
+}
+function costToggle(idx) {
+  if (!D.costCalc) D.costCalc = costCalcDefaults();
+  D.costCalc.items[idx].active = !D.costCalc.items[idx].active;
+  saveData(); render();
+}
+function costUpdate(idx, val) {
+  if (!D.costCalc) D.costCalc = costCalcDefaults();
+  D.costCalc.items[idx].cost = parseFloat(val) || 0;
+  saveData();
+}
+function costUnit(idx, val) {
+  if (!D.costCalc) D.costCalc = costCalcDefaults();
+  D.costCalc.items[idx].unit = val;
+  saveData();
+}
+function costRename(idx, val) {
+  if (!D.costCalc) D.costCalc = costCalcDefaults();
+  D.costCalc.items[idx].customLabel = val;
+  saveData();
+}
+function costAcknowledge() {
+  if (!D.costCalc) D.costCalc = costCalcDefaults();
+  D.costCalc.setup = true;
+  saveData(); render();
+}
+
+// ====== ACCOUNTABILITY CHECK-IN ======
+function accountabilityHTML() {
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128170; Accountability Check-In</h2>';
+  if (!D.buddy || !D.buddy.name) {
+    h += '<div class="card" style="text-align:center;padding:20px">';
+    h += '<div style="font-size:32px;margin-bottom:8px">&#128104;&#8205;&#128104;</div>';
+    h += '<div style="font-size:14px;font-weight:600;margin-bottom:4px">No accountability partner yet</div>';
+    h += '<div style="font-size:12px;color:var(--muted)">Set up a buddy to use accountability check-ins.</div>';
+    h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'buddy\')" style="margin-top:8px">Go to Buddy</button>';
+    h += '</div>';
+    return h;
+  }
+  if (!D.accountability) D.accountability = { frequency: 1, lastCheckin: null, streak: 0, bestStreak: 0, checkins: [] };
+  var acc = D.accountability;
+  var buddyName = D.buddy.name;
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Stay consistent with ' + buddyName + '. Choose how often you check in and track your reliability.</p>';
+
+  // Stats
+  var streakLabel = acc.streak > 0 ? acc.streak + ' day' + (acc.streak !== 1 ? 's' : '') : 'Not started';
+  var totalCheckins = acc.checkins ? acc.checkins.length : 0;
+  h += '<div class="stat-grid" style="margin-bottom:8px">';
+  h += '<div class="stat-card"><div class="num">' + totalCheckins + '</div><div class="label">Check-Ins</div></div>';
+  h += '<div class="stat-card"><div class="num">' + streakLabel + '</div><div class="label">Current Streak</div></div>';
+  h += '<div class="stat-card"><div class="num">' + (acc.bestStreak || 0) + '</div><div class="label">Best Streak</div></div>';
+  h += '</div>';
+
+  // Check-in frequency setting
+  h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">&#128200; Frequency</h3>';
+  h += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
+  var freqs = [
+    { val: 1, label: 'Daily' },
+    { val: 2, label: 'Every 2 days' },
+    { val: 3, label: 'Every 3 days' },
+    { val: 7, label: 'Weekly' }
+  ];
+  for (var fi=0;fi<freqs.length;fi++) {
+    var sel = acc.frequency === freqs[fi].val ? ' btn-primary' : ' btn-outline';
+    h += '<button class="btn btn-sm' + sel + '" onclick="accSetFreq(' + freqs[fi].val + ')">' + freqs[fi].label + '</button>';
+  }
+  h += '</div></div>';
+
+  // Status
+  var now = Date.now();
+  var nextDue = acc.lastCheckin ? acc.lastCheckin + acc.frequency * 86400000 : now;
+  var isDue = !acc.lastCheckin || now >= nextDue;
+  var hoursLeft = nextDue > now ? Math.round((nextDue - now) / 3600000) : 0;
+
+  if (isDue) {
+    h += '<div class="card" style="border:2px solid var(--accent);background:#fef3c7;text-align:center">';
+    h += '<div style="font-size:24px;margin-bottom:4px">&#128170;</div>';
+    h += '<div style="font-weight:700;font-size:15px;margin-bottom:4px">Time to check in with ' + buddyName + '</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Reach out and see how they\'re doing. Accountability keeps you both strong.</div>';
+    h += '<button class="btn btn-primary btn-sm" onclick="accCheckin()">I Checked In</button>';
+    h += '</div>';
+  } else {
+    var nextDate = new Date(nextDue);
+    h += '<div class="card" style="text-align:center;background:var(--primary-light)">';
+    h += '<div style="font-size:13px;color:var(--muted);margin-bottom:2px">Next check-in due</div>';
+    h += '<div style="font-size:16px;font-weight:700;color:var(--primary)">' + nextDate.toLocaleDateString() + ' (~' + hoursLeft + 'h)</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">Stay consistent — every check-in builds trust.</div>';
+    h += '</div>';
+  }
+
+  // History
+  h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">Check-In History</h3>';
+  var recent = acc.checkins ? acc.checkins.slice().reverse().slice(0,10) : [];
+  if (!recent.length) {
+    h += '<div class="empty-state">No accountability check-ins yet.</div>';
+  } else {
+    for (var hi=0;hi<recent.length;hi++) {
+      var c = recent[hi];
+      var d = new Date(c.date);
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">';
+      h += '<span style="font-size:16px">' + (c.rating >= 4 ? '&#128513;' : c.rating >= 3 ? '&#128522;' : '&#128591;') + '</span>';
+      h += '<div style="flex:1"><div style="font-size:12px;font-weight:600">' + d.toLocaleDateString() + '</div>';
+      if (c.note) h += '<div style="font-size:11px;color:var(--muted)">' + c.note + '</div>';
+      h += '</div></div>';
+    }
+  }
+  if (recent.length >= 10) h += '<div style="font-size:11px;color:var(--muted);text-align:center;margin-top:4px">Showing last 10 of ' + acc.checkins.length + '</div>';
+  h += '</div>';
+
+  return h;
+}
+function accSetFreq(val) {
+  if (!D.accountability) D.accountability = { frequency: 1, lastCheckin: null, streak: 0, bestStreak: 0, checkins: [] };
+  D.accountability.frequency = val;
+  saveData(); render();
+}
+function accCheckin() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'acc-ov';
+  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:4px">&#128170; Accountability Check-In</h3>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did the interaction with ' + (D.buddy?D.buddy.name:'your buddy') + ' go?</p>';
+  h += '<div style="margin-bottom:10px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">How are you feeling about your recovery right now?</label>';
+  h += '<div class="mood-row" id="acc-moods">';
+  var labels = ['Struggling','Tough','Okay','Good','Strong'];
+  for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#acc-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
+  h += '</div></div>';
+  h += '<textarea id="acc-note" placeholder="Any wins, concerns, or things you discussed?" style="min-height:80px"></textarea>';
+  h += '<button class="btn btn-primary btn-sm" onclick="accSave()" style="width:100%">Save Check-In</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%;margin-top:4px">Cancel</button>';
+  h += '</div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+}
+function accSave() {
+  if (!D.accountability) D.accountability = { frequency: 1, lastCheckin: null, streak: 0, bestStreak: 0, checkins: [] };
+  var moodBtn = document.querySelector('#acc-moods .mood-btn.active');
+  var note = document.getElementById('acc-note');
+  var now = Date.now();
+  var entry = { date: now, rating: moodBtn ? parseInt(moodBtn.getAttribute('data-val')) : 3, note: note ? note.value.trim() : '' };
+  if (!D.accountability.checkins) D.accountability.checkins = [];
+  D.accountability.checkins.push(entry);
+  D.accountability.lastCheckin = now;
+  // Update streak
+  var streak = 0;
+  var sorted = D.accountability.checkins.slice().sort(function(a,b){return b.date - a.date});
+  for (var si=0;si<sorted.length;si++) {
+    if (si === 0) { streak = 1; continue; }
+    var gap = (sorted[si-1].date - sorted[si].date) / 86400000;
+    if (gap <= D.accountability.frequency * 1.5) streak++;
+    else break;
+  }
+  D.accountability.streak = streak;
+  if (streak > (D.accountability.bestStreak || 0)) D.accountability.bestStreak = streak;
+  saveData();
+  var ov = document.getElementById('acc-ov');
+  if (ov) ov.remove();
+  render();
+}
+function accPendingHTML() {
+  if (!D.buddy || !D.buddy.name) return '';
+  if (!D.accountability) D.accountability = { frequency: 1, lastCheckin: null, streak: 0, bestStreak: 0, checkins: [] };
+  var now = Date.now();
+  var nextDue = D.accountability.lastCheckin ? D.accountability.lastCheckin + D.accountability.frequency * 86400000 : now;
+  if (D.accountability.lastCheckin && now < nextDue) return '';
+  var buddyName = D.buddy.name;
+  var daysSince = D.accountability.lastCheckin ? Math.round((now - D.accountability.lastCheckin) / 86400000) : 0;
+  var h = '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#fef3c7,var(--card))" onclick="accCheckin()">';
+  h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#128170;</div><div><div style="font-weight:700;font-size:14px">Accountability Check-In</div><div style="font-size:12px;color:var(--muted)">' + (daysSince > 0 ? daysSince + ' day' + (daysSince !== 1 ? 's' : '') + ' since last check-in' : 'Time to check in') + ' with ' + buddyName + '.</div></div></div></div>';
+  return h;
+}
+
 function relapseRescueHTML() {
   if (!D.relapseRescue) D.relapseRescue = { logs: [] };
   var logs = D.relapseRescue.logs || [];
@@ -5750,6 +6033,8 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; Relapse Rescue</div>';
   h += '<div class="sub-item" onclick="goTo(\'insights\')" style="border-color:var(--primary)">&#128302; Insights</div>';
+  h += '<div class="sub-item" onclick="goTo(\'costcalc\')" style="border-color:var(--primary)">&#128176; Cost Calculator</div>';
+  h += '<div class="sub-item" onclick="goTo(\'accountability\')" style="border-color:var(--accent)">&#128170; Accountability</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
@@ -6514,6 +6799,8 @@ function homeHTML() {
   }
 
   h += pendingFollowUpHTML();
+  h += accPendingHTML();
+  h += costSavingsHTML();
 
   h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#127942; '+t('Share My Progress')+'</button></div>';
 
@@ -7221,7 +7508,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','costcalc','accountability'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -8084,7 +8371,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML,
+    insights: insightsHTML, costcalc: costCalcHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML,
   };
   var fn = pages[pg];
   if (fn) app.innerHTML = fn();
