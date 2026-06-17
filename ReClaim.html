@@ -2190,6 +2190,7 @@ function screenerRenderItem(idx) {
 var RECOVERY_PROGRAMS = {
   '12step': {
     id: '12step', name: '12-Step Program', icon: '&#10022;', color: 'var(--primary)',
+    minDaysPerStep: 2,
     steps: [
       'We admitted we were powerless over our addiction — that our lives had become unmanageable.',
       'Came to believe that a Power greater than ourselves could restore us to sanity.',
@@ -2310,7 +2311,13 @@ function programActiveHTML(pid) {
   h += '<div class="progress-bar" style="margin:10px 0"><div class="fill" style="width:'+pct+'%"></div></div>';
   h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>'+completed+'/'+total+' steps</span><span>'+pct+'%</span></div>';
   if (done) {
-    h += '<div style="text-align:center;padding:10px;background:var(--primary-light);border-radius:10px;margin-top:8px"><span style="font-size:24px">&#127942;</span><div style="font-weight:700;font-size:14px;color:var(--primary)">Program Completed!</div><div style="font-size:11px;color:var(--muted)">Finished '+new Date(data.completed).toLocaleDateString()+'</div></div>';
+    h += '<div style="text-align:center;padding:14px;background:var(--primary-light);border-radius:10px;margin-top:8px">';
+    h += '<span style="font-size:32px">&#127942;</span>';
+    h += '<div style="font-weight:700;font-size:15px;color:var(--primary);margin:4px 0">Program Completed!</div>';
+    h += '<div style="font-size:11px;color:var(--muted)">You worked through all '+total+' steps with reflection and intention.</div>';
+    h += '<div style="font-size:11px;color:var(--muted)">Finished '+new Date(data.completed).toLocaleDateString()+'</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-top:4px;font-style:italic">Recovery is not a destination — it\'s a daily practice. Keep showing up.</div>';
+    h += '</div>';
   }
   h += '</div>';
   for (var si=0;si<total;si++) {
@@ -2322,14 +2329,29 @@ function programActiveHTML(pid) {
     h += '<div style="font-weight:600;font-size:13px;margin-bottom:4px">Step '+(si+1)+'</div>';
     h += '<div style="font-size:12px;color:var(--text)">'+p.steps[si]+'</div>';
     if (data.notes && data.notes[si]) {
-      h += '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;padding:6px;background:var(--primary-light);border-radius:6px">'+data.notes[si]+'</div>';
+      h += '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;padding:8px;background:var(--primary-light);border-radius:6px;line-height:1.4">&#128221; "'+data.notes[si]+'"</div>';
     }
-    h += '<button class="btn btn-sm '+(stepDone?'btn-outline':'btn-primary')+'" onclick="programToggleStep(\''+pid+'\','+si+')" style="margin-top:6px;font-size:11px">'+(stepDone ? 'Unmark' : 'Mark Complete')+'</button>';
-    if (stepDone) {
-      h += '<button class="btn btn-sm btn-outline" onclick="programAddNote(\''+pid+'\','+si+')" style="margin-top:6px;margin-left:4px;font-size:11px">&#9998; Note</button>';
-    }
-    if (data.dates && data.dates[si]) {
-      h += '<span style="font-size:10px;color:var(--muted);margin-left:8px">&#10003; '+new Date(data.dates[si]).toLocaleDateString()+'</span>';
+    if (!stepDone) {
+      var canComplete = true;
+      var prevIdx = si - 1;
+      if (prevIdx >= 0 && data.steps[prevIdx] && data.dates && data.dates[prevIdx]) {
+        var daysSince = Math.round((Date.now() - data.dates[prevIdx]) / 86400000);
+        var minDays = p.minDaysPerStep || 1;
+        if (daysSince < minDays) {
+          canComplete = false;
+          h += '<div style="font-size:11px;color:var(--accent);margin-top:4px">&#128337; Available in '+ (minDays - daysSince) +' day' + ((minDays - daysSince) > 1 ? 's' : '') +' (reflect on Step '+ (prevIdx+1) +' in the meantime)</div>';
+        }
+      }
+      if (canComplete) {
+        h += '<button class="btn btn-sm btn-primary" onclick="programToggleStep(\''+pid+'\','+si+')" style="margin-top:6px;font-size:11px">&#10003; Mark Complete</button>';
+      } else {
+        h += '<button class="btn btn-sm btn-outline" disabled style="margin-top:6px;font-size:11px;opacity:0.5">&#128337; Locked</button>';
+      }
+    } else {
+      h += '<div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">';
+      h += '<span style="font-size:11px;color:var(--primary);font-weight:600">&#10003; Completed '+new Date(data.dates[si]).toLocaleDateString()+'</span>';
+      h += '<button class="btn btn-sm btn-outline" onclick="programToggleStep(\''+pid+'\','+si+')" style="font-size:11px">Undo</button>';
+      h += '</div>';
     }
     h += '</div></div></div>';
   }
@@ -2345,14 +2367,40 @@ function programClearActive() {
 
 function programToggleStep(pid, idx) {
   var data = programData(pid);
-  data.steps[idx] = !data.steps[idx];
-  if (data.steps[idx]) {
+  var p = RECOVERY_PROGRAMS[pid];
+
+  // If marking complete, require reflection and check time buffer
+  if (!data.steps[idx]) {
+    // Check minimum days since last step
+    var prevIdx = idx - 1;
+    if (prevIdx >= 0 && data.steps[prevIdx] && data.dates && data.dates[prevIdx]) {
+      var daysSince = Math.round((Date.now() - data.dates[prevIdx]) / 86400000);
+      var minDays = p.minDaysPerStep || 1;
+      if (daysSince < minDays) {
+        alert('\u23F1\uFE0F Take your time with Step ' + (prevIdx + 1) + '. Wait at least ' + minDays + ' day' + (minDays > 1 ? 's' : '') + ' before moving to Step ' + (idx + 1) + '. Recovery is not a race \u2014 reflect deeply on each step.\n\nYou can reflect on Step ' + (idx + 1) + ' in your journal in the meantime.');
+        return;
+      }
+    }
+
+    // Require a written reflection
+    var reflection = prompt('\u270D\uFE0F Step ' + (idx + 1) + ': What did you do to work on this step? How does it apply to your recovery?');
+    if (reflection === null || reflection.trim() === '') {
+      alert('Writing a brief reflection helps solidify what you\u2019ve learned. Try just one or two sentences.');
+      return;
+    }
+    reflection = reflection.trim();
+
+    data.steps[idx] = true;
     if (!data.notes) data.notes = [];
     if (!data.dates) data.dates = [];
+    data.notes[idx] = reflection;
     data.dates[idx] = Date.now();
     if (!data.started) data.started = Date.now();
   } else {
+    // Unmarking — only allow if no time buffer concern
+    data.steps[idx] = false;
     if (data.dates) data.dates[idx] = null;
+    if (data.notes) data.notes[idx] = '';
   }
   var allDone = data.steps.every(function(s){return s});
   if (allDone && !data.completed) data.completed = Date.now();
