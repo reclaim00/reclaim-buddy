@@ -1040,10 +1040,12 @@ function loadData() {
   return defaultData();
 }
 
+var _pageCache = {};
 function saveData() {
   localStorage.setItem(dataKey(), JSON.stringify(D));
   syncToFirestore();
   applyTheme();
+  _pageCache = {};
   render();
 }
 
@@ -8380,9 +8382,11 @@ function render() {
     reminders: remindersHTML, meetings: meetingsHTML,
     insights: insightsHTML, costcalc: costCalcHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML,
   };
-  var fn = pages[pg];
-  if (fn) app.innerHTML = fn();
-  else { pg = 'home'; app.innerHTML = homeHTML(); }
+  if (!_pageCache[pg]) {
+    var fn = pages[pg];
+    _pageCache[pg] = fn ? fn() : (pg = 'home', homeHTML());
+  }
+  app.innerHTML = _pageCache[pg];
   if (pg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
 
   [].forEach.call(document.querySelectorAll('.tab'),function(t){
