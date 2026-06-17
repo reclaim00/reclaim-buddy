@@ -4245,6 +4245,7 @@ function rescueRecommit() {
   D.sobriety.relapseDates.push(Date.now());
   D.sobriety.startDate = Date.now();
   D.streak = 0;
+  scheduleFollowUp();
   saveData();
   document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost — it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove()" style="margin-top:6px">Keep going</button></div>';
 }
@@ -4278,6 +4279,239 @@ function relapseRescueHTML() {
   } else {
     h += '<div class="card" style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No entries yet. The rescue guide is here whenever you need it.</div>';
   }
+  return h;
+}
+
+// ====== ARTHUR'S INSIGHTS (PATTERN DETECTION) ======
+function buildArthurInsights() {
+  var insights = [];
+  if (!D.relapseRescue) D.relapseRescue = { logs: [], followUps: [] };
+
+  // Journal recency
+  if (D.journal && D.journal.length) {
+    var lastEntry = new Date(D.journal[D.journal.length-1].date);
+    var daysSinceJournal = Math.round((Date.now() - lastEntry.getTime()) / 86400000);
+    if (daysSinceJournal > 3) insights.push({ icon: '&#128221;', text: 'It\'s been <strong>' + daysSinceJournal + ' days</strong> since your last journal entry. Gaps in journaling often correlate with increased risk. Try writing 3 sentences — even small entries build awareness.', severity: daysSinceJournal > 7 ? 'high' : 'medium' });
+    else if (daysSinceJournal <= 1) insights.push({ icon: '&#9989;', text: 'You journaled recently — consistent self-reflection is one of the strongest predictors of sustained recovery.', severity: 'positive' });
+    var recentCut = Date.now() - 14*86400000;
+    var recentCount = D.journal.filter(function(j){return new Date(j.date).getTime() > recentCut}).length;
+    var olderCut = Date.now() - 28*86400000;
+    var olderCount = D.journal.filter(function(j){var t=new Date(j.date).getTime();return t > olderCut && t <= recentCut}).length;
+    if (recentCount < olderCount && olderCount > 0) insights.push({ icon: '&#128200;', text: 'Your journal frequency has <strong>declined</strong> compared to two weeks ago. This can signal disengagement. A single check-in can help reset the pattern.', severity: 'medium' });
+    else if (recentCount > olderCount && recentCount >= 3) insights.push({ icon: '&#128200;', text: 'Your journal frequency is <strong>increasing</strong> — a great sign of growing engagement with your recovery.', severity: 'positive' });
+  } else {
+    insights.push({ icon: '&#128221;', text: 'You haven\'t started journaling yet. Journaling is one of the most effective tools for recognizing patterns in your recovery.', severity: 'info' });
+  }
+
+  // Check-in patterns
+  if (D.checkins && D.checkins.length >= 3) {
+    var recentCheckins = D.checkins.slice(-7);
+    var avgMood = recentCheckins.reduce(function(s,c){return s + (c.mood || 3)}, 0) / Math.max(1, recentCheckins.length);
+    if (avgMood < 2.5 && recentCheckins.length >= 3) insights.push({ icon: '&#128555;', text: 'Your recent check-in mood has been trending <strong>below average</strong>. Low mood lasting several days is worth talking to someone about.', severity: 'high' });
+    else if (avgMood >= 4) insights.push({ icon: '&#128513;', text: 'Your mood has been consistently <strong>high</strong> in recent check-ins. That\'s great — keep paying attention to what\'s working.', severity: 'positive' });
+    var checkDates = D.checkins.map(function(c){return c.date});
+    var uniqueDays = {};
+    checkDates.forEach(function(d){uniqueDays[d.substring(0,10)]=true});
+    var uniqueCount = Object.keys(uniqueDays).length;
+    var totalCheckDays = D.checkins.length;
+    if (uniqueCount < totalCheckDays * 0.5 && totalCheckDays > 5) insights.push({ icon: '&#128204;', text: 'You\'ve missed more check-ins than you\'ve completed recently. Regular check-ins help catch warning signs early.', severity: 'medium' });
+  } else if (D.checkins && D.checkins.length > 0) {
+    insights.push({ icon: '&#128204;', text: 'You\'ve done <strong>' + D.checkins.length + ' check-in' + (D.checkins.length !== 1 ? 's' : '') + '</strong> so far. The more consistently you check in, the more patterns Arthur can detect.', severity: 'info' });
+  } else {
+    insights.push({ icon: '&#128204;', text: 'No check-ins yet. The daily check-in helps track your mood and wins over time.', severity: 'info' });
+  }
+
+  // Craving patterns
+  if (D.cravings && D.cravings.length >= 2) {
+    var crav = D.cravings;
+    var hourBuckets = { morning: 0, afternoon: 0, evening: 0, night: 0 };
+    crav.forEach(function(c){
+      var h = c.time ? parseInt(c.time.split(':')[0]) : 12;
+      if (h < 12) hourBuckets.morning++;
+      else if (h < 17) hourBuckets.afternoon++;
+      else if (h < 21) hourBuckets.evening++;
+      else hourBuckets.night++;
+    });
+    var peakPeriod = Object.keys(hourBuckets).reduce(function(a,b){return hourBuckets[a]>hourBuckets[b]?a:b});
+    if (hourBuckets[peakPeriod] >= 3) insights.push({ icon: '&#128352;', text: 'Your cravings peak during the <strong>' + peakPeriod + '</strong> (' + hourBuckets[peakPeriod] + ' logged). Plan a coping activity during that window.', severity: peakPeriod === 'night' ? 'high' : 'medium' });
+    var triggerCounts = {};
+    crav.forEach(function(c){if (c.trigger) { triggerCounts[c.trigger] = (triggerCounts[c.trigger] || 0) + 1; }});
+    var topTrigger = Object.keys(triggerCounts).sort(function(a,b){return triggerCounts[b]-triggerCounts[a]})[0];
+    if (topTrigger && triggerCounts[topTrigger] >= 2) insights.push({ icon: '&#9888;', text: '"<strong>' + topTrigger + '</strong>" is your most common craving trigger (' + triggerCounts[topTrigger] + ' times). Review your relapse plan for this trigger.', severity: 'high' });
+    var recentCrav = crav.slice(-5);
+    var avgIntensity = recentCrav.reduce(function(s,c){return s + (c.intensity || 5)}, 0) / recentCrav.length;
+    if (avgIntensity >= 8) insights.push({ icon: '&#128293;', text: 'Your recent cravings have been <strong>high intensity</strong> (avg ' + Math.round(avgIntensity) + '/10). Consider reaching out to your support network today.', severity: 'high' });
+  } else if (D.cravings && D.cravings.length === 1) {
+    insights.push({ icon: '&#128352;', text: 'You\'ve logged 1 craving. Patterns become visible after a few entries — keep tracking and Arthur will spot trends.', severity: 'info' });
+  }
+
+  // Relapse pattern analysis
+  if (D.relapseRescue.logs && D.relapseRescue.logs.length >= 1) {
+    var logs = D.relapseRescue.logs;
+    var trigCounts = {};
+    logs.forEach(function(l){ trigCounts[l.trigger] = (trigCounts[l.trigger] || 0) + 1; });
+    var topRelapseTrigger = Object.keys(trigCounts).sort(function(a,b){return trigCounts[b]-trigCounts[a]})[0];
+    if (topRelapseTrigger && trigCounts[topRelapseTrigger] >= 2) insights.push({ icon: '&#128545;', text: '"<strong>' + topRelapseTrigger + '</strong>" has been your trigger in ' + trigCounts[topRelapseTrigger] + ' relapse' + (trigCounts[topRelapseTrigger] > 1 ? 'es' : '') + '. This is a high-risk pattern — build a specific coping plan for this situation.', severity: 'high' });
+    var avgStreak = Math.round(logs.reduce(function(s,l){return s + (l.prevStreak || 0)}, 0) / logs.length);
+    if (avgStreak > 0 && logs.length >= 2) insights.push({ icon: '&#128200;', text: 'On average, you\'ve gone <strong>' + avgStreak + ' days</strong> between relapses. Each attempt is longer — progress is happening even through setbacks.', severity: 'positive' });
+    var lastRelapse = new Date(logs[logs.length-1].date);
+    var daysSince = Math.round((Date.now() - lastRelapse.getTime()) / 86400000);
+    if (daysSince <= 3) insights.push({ icon: '&#129309;', text: 'You recently re-committed (<strong>' + daysSince + ' day' + (daysSince !== 1 ? 's' : '') + ' ago</strong>). The first week is the hardest — stay connected and use your coping tools.', severity: 'high' });
+    else if (daysSince > 30) insights.push({ icon: '&#127942;', text: 'It\'s been <strong>' + daysSince + ' days</strong> since your last relapse — that\'s real progress. Keep doing what\'s working.', severity: 'positive' });
+  }
+
+  // Cross-reference: journal gap before relapse
+  if (D.relapseRescue.logs && D.relapseRescue.logs.length >= 2 && D.journal && D.journal.length >= 3) {
+    var gapBeforeRelapse = 0;
+    for (var ri=0;ri<D.relapseRescue.logs.length;ri++) {
+      var relapseDate = new Date(D.relapseRescue.logs[ri].date);
+      var lastEntryBefore = null;
+      for (var ji2=D.journal.length-1;ji2>=0;ji2--) {
+        var entryDate = new Date(D.journal[ji2].date);
+        if (entryDate.getTime() < relapseDate.getTime()) { lastEntryBefore = entryDate; break; }
+      }
+      if (lastEntryBefore) {
+        var gap = Math.round((relapseDate.getTime() - lastEntryBefore.getTime()) / 86400000);
+        if (gap > 2) gapBeforeRelapse++;
+      }
+    }
+    if (gapBeforeRelapse >= 2) insights.push({ icon: '&#128200;', text: 'In <strong>' + gapBeforeRelapse + ' of your relapse' + (gapBeforeRelapse > 1 ? 'es' : '') + '</strong>, there was a journal gap of 3+ days beforehand. Journaling daily may be one of your most effective early warning systems.', severity: 'high' });
+  }
+
+  // Sobriety timeline
+  if (D.sobriety && D.sobriety.startDate) {
+    var currentStreak = soberDays();
+    if (currentStreak > 0) insights.push({ icon: '&#128154;', text: 'You are <strong>' + currentStreak + ' day' + (currentStreak !== 1 ? 's' : '') + ' sober</strong>. Every day is a victory — and the data shows consistency builds on itself.', severity: 'positive' });
+  }
+
+  // Program progress
+  if (D.recoveryPrograms && D.recoveryPrograms.active) {
+    var pid = D.recoveryPrograms.active;
+    if (RECOVERY_PROGRAMS[pid]) {
+      var pData = D.recoveryPrograms.programs[pid];
+      if (pData && pData.steps) {
+        var done = pData.steps.filter(function(s){return s}).length;
+        if (done > 0 && done < pData.steps.length) insights.push({ icon: '&#127891;', text: 'You\'re <strong>' + Math.round(done/pData.steps.length*100) + '%</strong> through the ' + RECOVERY_PROGRAMS[pid].name + '. Step ' + (done + 1) + ' is next.', severity: 'positive' });
+      }
+    }
+  }
+
+  return insights;
+}
+
+function insightsHTML() {
+  var insights = buildArthurInsights();
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128302; Arthur\'s Insights</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Pattern detection based on your journal, check-ins, cravings, and relapse history.</p>';
+
+  if (!insights.length) {
+    h += '<div class="card" style="text-align:center;padding:24px">';
+    h += '<div style="font-size:32px;margin-bottom:8px">&#128302;</div>';
+    h += '<div style="font-size:14px;font-weight:600;margin-bottom:4px">Not enough data yet</div>';
+    h += '<div style="font-size:12px;color:var(--muted)">Keep journaling, checking in, and logging cravings. The more data you give me, the more patterns I can find.</div>';
+    h += '</div>';
+  }
+
+  var sevOrder = { high: 0, medium: 1, info: 2, positive: 3 };
+  insights.sort(function(a,b){return (sevOrder[a.severity]||9) - (sevOrder[b.severity]||9)});
+
+  for (var ii=0;ii<insights.length;ii++) {
+    var ins = insights[ii];
+    var borderColor = ins.severity === 'high' ? 'var(--danger)' : ins.severity === 'medium' ? '#f97316' : ins.severity === 'info' ? 'var(--accent)' : 'var(--primary)';
+    var bgColor = ins.severity === 'high' ? 'var(--danger-bg)' : ins.severity === 'medium' ? '#fff7ed' : ins.severity === 'info' ? '#fef3c7' : 'var(--primary-light)';
+    h += '<div class="card" style="border-left:3px solid ' + borderColor + ';background:' + bgColor + ';padding:14px;margin-bottom:8px">';
+    h += '<div style="display:flex;align-items:flex-start;gap:8px">';
+    h += '<span style="font-size:20px;flex-shrink:0">' + ins.icon + '</span>';
+    h += '<div style="font-size:13px;line-height:1.5">' + ins.text + '</div>';
+    h += '</div></div>';
+  }
+
+  if (insights.length) {
+    h += '<div class="card" style="background:var(--primary-light);border:none;text-align:center;font-size:11px;color:var(--muted);line-height:1.5">';
+    h += '<strong>Note:</strong> These patterns are generated from your data. They are not clinical advice. Share concerning patterns with your support network or therapist.';
+    h += '</div>';
+  }
+
+  return h;
+}
+
+// ====== POST-RELAPSE FOLLOW-UP ======
+var FOLLOW_UP_SCHEDULE = [
+  { label: '1 day later', offset: 1, questions: ['How are you feeling 24 hours after recommitting?', 'What helped you get through the first day?', 'What feels different this time?'] },
+  { label: '3 days later', offset: 3, questions: ['How has the past 3 days been?', 'Have you noticed any warning signs returning?', 'What coping tools have you used?'] },
+  { label: '7 days later', offset: 7, questions: ['One week back in — how are things?', 'What has been your biggest challenge this week?', 'What has given you strength this week?'] }
+];
+
+function scheduleFollowUp() {
+  if (!D.relapseRescue) D.relapseRescue = { logs: [], followUps: [] };
+  if (!D.relapseRescue.followUps) D.relapseRescue.followUps = [];
+  for (var fi=0;fi<FOLLOW_UP_SCHEDULE.length;fi++) {
+    var fu = FOLLOW_UP_SCHEDULE[fi];
+    D.relapseRescue.followUps.push({
+      label: fu.label,
+      scheduledAt: Date.now() + fu.offset * 86400000,
+      completed: false,
+      questions: fu.questions.map(function(q){ return { q: q, a: '' }; }),
+      relapseDate: Date.now()
+    });
+  }
+  saveData();
+}
+
+function showFollowUp(fuIdx) {
+  if (!D.relapseRescue || !D.relapseRescue.followUps) return;
+  var fu = D.relapseRescue.followUps[fuIdx];
+  if (!fu) return;
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'followup-ov';
+  var h = '<div class="overlay-content" style="max-width:420px">';
+  h += '<h3 style="font-weight:700;font-size:18px;margin-bottom:4px">&#129309; Arthur\'s Follow-Up</h3>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">You re-committed ' + Math.round((Date.now() - fu.relapseDate) / 86400000) + ' day' + (Math.round((Date.now() - fu.relapseDate) / 86400000) !== 1 ? 's' : '') + ' ago. Let\'s check in.</p>';
+  for (var fi2=0;fi2<fu.questions.length;fi2++) {
+    h += '<div style="margin-bottom:10px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">' + fu.questions[fi2].q + '</label>';
+    h += '<textarea style="min-height:50px" data-fuidx="' + fi2 + '" placeholder="Share what\'s on your mind...">' + (fu.questions[fi2].a || '') + '</textarea></div>';
+  }
+  h += '<button class="btn btn-primary btn-sm" onclick="submitFollowUp(' + fuIdx + ',this)" style="width:100%">Save & Complete</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%;margin-top:4px">Later</button>';
+  h += '</div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+  // Bind change listeners for textareas
+  var tas = overlay.querySelectorAll('textarea[data-fuidx]');
+  for (var tfi=0;tfi<tas.length;tfi++) {
+    tas[tfi].addEventListener('change', function(e){
+      var idx = parseInt(this.getAttribute('data-fuidx'));
+      if (D.relapseRescue && D.relapseRescue.followUps && D.relapseRescue.followUps[fuIdx] && D.relapseRescue.followUps[fuIdx].questions[idx]) {
+        D.relapseRescue.followUps[fuIdx].questions[idx].a = this.value;
+        saveData();
+      }
+    });
+  }
+}
+
+function submitFollowUp(fuIdx, btn) {
+  if (!D.relapseRescue || !D.relapseRescue.followUps) return;
+  D.relapseRescue.followUps[fuIdx].completed = true;
+  saveData();
+  var overlay = btn ? btn.closest('.overlay') : document.querySelector('.overlay');
+  if (overlay) overlay.remove();
+  render();
+}
+
+function pendingFollowUpHTML() {
+  if (!D.relapseRescue || !D.relapseRescue.followUps) return '';
+  var now = Date.now();
+  var pending = null;
+  var pendingIdx = -1;
+  for (var pi=0;pi<D.relapseRescue.followUps.length;pi++) {
+    var f = D.relapseRescue.followUps[pi];
+    if (!f.completed && f.scheduledAt <= now) { pending = f; pendingIdx = pi; break; }
+  }
+  if (!pending) return '';
+  var hrsAgo = Math.round((now - pending.scheduledAt) / 3600000);
+  var h = '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#fef3c7,var(--card))" onclick="showFollowUp(' + pendingIdx + ')">';
+  h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#129309;</div><div><div style="font-weight:700;font-size:14px">Arthur wants to check in</div><div style="font-size:12px;color:var(--muted)">' + pending.label + ' follow-up (' + hrsAgo + ' hour' + (hrsAgo !== 1 ? 's' : '') + ' ago). Tap to respond.</div></div></div></div>';
   return h;
 }
 
@@ -5467,6 +5701,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; Relapse Rescue</div>';
+  h += '<div class="sub-item" onclick="goTo(\'insights\')" style="border-color:var(--primary)">&#128302; Insights</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
@@ -6230,6 +6465,8 @@ function homeHTML() {
     }
   }
 
+  h += pendingFollowUpHTML();
+
   h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#127942; '+t('Share My Progress')+'</button></div>';
 
   // Famous recovery figure (matched to user's addictions)
@@ -6936,7 +7173,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -7799,7 +8036,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML,
+    insights: insightsHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML,
   };
   var fn = pages[pg];
   if (fn) app.innerHTML = fn();
