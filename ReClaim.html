@@ -583,6 +583,9 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .dragon-stage .d-tail-g,.dragon-stage .d-head-g,.dragon-stage .d-wing-g{transition:transform .4s ease}
 .dragon-stage.stand .d-tail-g{transform:rotate(0deg)}.dragon-stage.stand .d-wing-g{transform:rotate(0deg)}
 .dragon-stage.stand .d-head-g{transform:rotate(0deg)}
+.dragon-stage.stagger .d-head-g{animation:dStagger .4s ease}.dragon-stage.stagger .d-tail-g{animation:dTailSwish .4s ease}
+.dragon-stage.fall .d-head-g{transform:rotate(25deg)}.dragon-stage.fall .d-tail-g{transform:rotate(-15deg)}.dragon-stage.fall .d-wing-g{transform:rotate(-30deg)}
+@keyframes koPop{0%{transform:translate(-50%,-50%) scale(0) rotate(-10deg);opacity:0}40%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg);opacity:1}60%{transform:translate(-50%,-50%) scale(0.9) rotate(-2deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1}}
 @keyframes guitarSmash{0%{transform:rotate(0deg) translateX(0)}25%{transform:rotate(-45deg) translateX(8px)}50%{transform:rotate(-60deg) translateX(12px)}75%{transform:rotate(-30deg) translateX(4px)}100%{transform:rotate(0deg) translateX(0)}}
 @keyframes fistPound{0%{transform:rotate(0deg) translateY(0)}30%{transform:rotate(-25deg) translateY(-5px)}60%{transform:rotate(-40deg) translateY(10px)}100%{transform:rotate(0deg) translateY(0)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
@@ -4882,8 +4885,13 @@ function doCheckin(replay) {
   h += '<div style="position:relative;height:220px;border-radius:14px;overflow:hidden;margin:0 auto 4px" id="cm-stage">';
   h += '<div id="cm-bg-box" style="position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(30,20,60,.8) 0%,rgba(10,5,20,.9) 100%);transition:background .6s"></div>';
   h += '<div id="cm-flash" style="position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:7"></div>';
-  h += '<div id="cm-hit" style="position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);font-size:48px;opacity:0;pointer-events:none;z-index:6">&#10024;</div>';
-  h += '<div id="cm-label" style="position:absolute;top:5px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(0,0,0,.5);padding:2px 10px;border-radius:4px;letter-spacing:2px;z-index:5;opacity:0"></div>';
+  h += '<div style="position:absolute;top:4px;left:6px;right:6px;z-index:5;display:flex;gap:4px;height:10px">';
+  h += '<div style="flex:1;background:rgba(0,0,0,.6);border-radius:3px;border:1px solid rgba(255,255,255,.2);overflow:hidden;position:relative"><div id="cm-hp" style="width:100%;height:100%;background:linear-gradient(90deg,#22c55e,#34d399);transition:width .4s ease;border-radius:2px"></div></div>';
+  h += '<div style="width:50px;text-align:center"><span id="cm-round" style="font-size:9px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)">ROUND 1</span></div>';
+  h += '<div style="flex:1;background:rgba(0,0,0,.6);border-radius:3px;border:1px solid rgba(255,255,255,.2);overflow:hidden;position:relative"><div id="cm-enemy-hp" style="width:100%;height:100%;background:linear-gradient(90deg,#ef4444,#f87171);transition:width .4s ease;border-radius:2px;margin-left:auto"></div></div>';
+  h += '</div>';
+  h += '<div id="cm-label" style="position:absolute;top:16px;left:50%;transform:translateX(-50%);font-size:8px;font-weight:700;color:rgba(255,255,255,.5);background:rgba(0,0,0,.5);padding:2px 10px;border-radius:4px;letter-spacing:2px;z-index:5;opacity:0"></div>';
+  h += '<div id="cm-ko" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:52px;font-weight:900;color:#ef4444;text-shadow:0 0 40px rgba(239,68,68,.8),0 2px 0 #000;z-index:8;pointer-events:none;opacity:0"></div>';
   h += '<div id="cm-char-box" style="position:absolute;left:12%;bottom:8px;z-index:3;transition:all .3s;filter:drop-shadow(0 0 10px rgba(255,215,0,.6))"></div>';
   h += '<div id="cm-enemy-box" style="position:absolute;right:10%;bottom:8px;z-index:2;transition:all .3s;filter:drop-shadow(0 0 8px rgba(239,68,68,.5))"></div>';
   h += '<div id="cm-count" style="position:absolute;top:35%;left:50%;transform:translateX(-50%);font-size:48px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5"></div>';
@@ -4913,11 +4921,13 @@ function doCheckin(replay) {
 }
 function runCheckinMontage(overlay, scenes, replay) {
   var flash = document.getElementById('cm-flash');
-  var hit = document.getElementById('cm-hit');
   var label = document.getElementById('cm-label');
   var charBox = document.getElementById('cm-char-box');
   var enemyBox = document.getElementById('cm-enemy-box');
-  var count = document.getElementById('cm-count');
+  var hp = document.getElementById('cm-hp');
+  var enemyHP = document.getElementById('cm-enemy-hp');
+  var round = document.getElementById('cm-round');
+  var ko = document.getElementById('cm-ko');
   var team = document.getElementById('cm-team');
   var victory = document.getElementById('cm-victory');
   var progress = document.getElementById('cm-progress');
@@ -4926,147 +4936,130 @@ function runCheckinMontage(overlay, scenes, replay) {
   var timers = [];
   function cls(){timers.forEach(function(t){clearTimeout(t)});timers=[];}
   function animClass(el,cls2,dur){if(!el||!cls2)return;var parts=cls2.split(' ');el.className=parts[0];el.offsetHeight;for(var i=1;i<parts.length;i++)el.classList.add(parts[i]);if(dur)setTimeout(function(){if(el)el.className=parts[0];},dur);}
-  function flashEl(el,anim,dur){if(!el)return;el.style.animation='none';el.offsetHeight;el.style.animation=anim;el.style.opacity='';if(dur)setTimeout(function(){if(el)el.style.opacity='0';},dur);}
   function setAnim(el,anim){if(!el)return;el.style.animation='none';el.offsetHeight;el.style.animation=anim;}
+  function updateHP(p){if(hp)hp.style.width=p+'%';}
+  function updateEnemyHP(p){if(enemyHP)enemyHP.style.width=p+'%';}
   function updateProgress(p){if(progress)progress.style.width=p+'%';}
+  function showKO(){if(!ko)return;ko.textContent='K.O.!';ko.style.opacity='1';ko.style.animation='none';ko.offsetHeight;ko.style.animation='koPop .5s ease forwards';setTimeout(function(){if(ko)ko.style.opacity='0';},1500);}
   function flashScene(cb){if(!flash)return cb();flash.style.animation='none';flash.offsetHeight;flash.style.transition='opacity .15s';flash.style.opacity='.45';setTimeout(function(){if(flash)flash.style.opacity='0';if(cb)setTimeout(cb,80);},200);}
   if(status)status.style.opacity='1';
-  timers.push(setTimeout(function(){showScene(0);},600));
+  timers.push(setTimeout(function(){showScene(0);},400));
   function showScene(idx){
     if(idx>=scenes.length){showAssemble();return;}
     var s=scenes[idx];
     if(bgBox)bgBox.style.background=s.bg;
     charBox.innerHTML=s.char;enemyBox.innerHTML=s.enemy;
     charBox.style.filter='drop-shadow(0 0 10px '+s.cColor+'88)';enemyBox.style.filter='drop-shadow(0 0 8px '+s.eColor+'88)';
-    label.textContent=s.label;label.style.opacity='1';label.style.animation='paulieFadeUp .35s ease forwards';
+    label.textContent=s.label;label.style.opacity='1';label.style.animation='paulieFadeUp .3s ease forwards';
     charBox.style.transform='';charBox.style.animation='none';charBox.offsetHeight;
     enemyBox.style.transform='';enemyBox.style.animation='none';enemyBox.offsetHeight;
+    if(round)round.textContent='ROUND '+(idx+1);
+    updateHP(100);updateEnemyHP(100);
     updateProgress(idx*33);
     if(status)status.style.opacity='1';
 
     if (idx === 0) {
-      charBox.style.animation='erinWalkIn .5s ease forwards';
-      enemyBox.style.animation='cowboyWalkIn .5s ease forwards';
+      charBox.style.animation='erinWalkIn .35s ease forwards';
+      enemyBox.style.animation='cowboyWalkIn .35s ease forwards';
       animClass(charBox, 'arthur stand',0);
       animClass(enemyBox, 'skeleton stand',0);
       if(status)status.innerHTML='<span style="color:#ffd700">&#129354; Arthur vs Skeleton</span>';
       timers.push(setTimeout(function(){
-        animClass(charBox, 'arthur combo',700);
-        animClass(enemyBox, 'skeleton wobble',700);
-        flashEl(hit,'screenFlash .5s ease',500);
-        flashEl(count,'countFade .4s ease',400);
+        animClass(charBox, 'arthur combo',500);
+        animClass(enemyBox, 'skeleton wobble',500);
+        updateEnemyHP(35);
         updateProgress(16);
-      },800));
+      },500));
       timers.push(setTimeout(function(){
-        animClass(enemyBox, 'skeleton knockdown',1200);
-        animClass(charBox, 'arthur celebrate',1500);
-        flashEl(hit,'screenFlash .6s ease',600);
-        if(status)status.innerHTML='<span style="color:#ffd700;font-weight:700">&#10003; ARTHUR KNOCKS OUT SKELETON!</span>';
+        animClass(enemyBox, 'skeleton knockdown',800);
+        animClass(charBox, 'arthur celebrate',1000);
+        updateEnemyHP(0);
+        showKO();
+        if(status)status.innerHTML='<span style="color:#ffd700;font-weight:700">K.O.!</span>';
         updateProgress(30);
-      },1700));
+      },1200));
       timers.push(setTimeout(function(){
         flashScene(function(){label.style.opacity='0';showScene(idx+1);});
-      },3000));
+      },2200));
     }
     else if (idx === 1) {
-      charBox.style.animation='erinWalkIn .5s ease forwards';
-      enemyBox.style.animation='cowboyFaceOff .5s ease forwards';
+      charBox.style.animation='erinWalkIn .35s ease forwards';
+      enemyBox.style.animation='cowboyWalkIn .35s ease forwards';
       animClass(charBox, 'erin-stage stand',0);
       animClass(enemyBox, 'cowboy-stage stand',0);
-      if(status)status.innerHTML='<span style="color:#ec4899">&#128200; Duel at Dawn</span>';
+      if(status)status.innerHTML='<span style="color:#ec4899">&#128200; Erin vs Cowboy</span>';
       timers.push(setTimeout(function(){
-        animClass(charBox, 'erin-stage ready',600);
-        animClass(enemyBox, 'cowboy-stage ready',600);
-      },700));
+        animClass(charBox, 'erin-stage ready',300);
+        animClass(enemyBox, 'cowboy-stage ready',300);
+      },500));
       timers.push(setTimeout(function(){
-        animClass(charBox, 'erin-stage draw',400);
-        animClass(enemyBox, 'cowboy-stage draw',400);
-      },1500));
-      timers.push(setTimeout(function(){
-        animClass(charBox, 'erin-stage hit',700);
-        var em=charBox.querySelector('.e-muzzle');if(em)em.style.animation='muzzleFlash .3s ease forwards';
-        var eb=charBox.querySelector('.e-bullet');if(eb)eb.style.animation='bullet .35s ease forwards';
-        flashEl(hit,'screenFlash .5s ease',500);
-        animClass(enemyBox, 'cowboy-stage hit',700);
-        if(status)status.innerHTML='<span style="color:#ec4899;font-weight:700">&#127919; ERIN FIRES!</span>';
-        updateProgress(16);
-      },2300));
-      timers.push(setTimeout(function(){
-        animClass(enemyBox, 'cowboy-stage fall',900);
-        setAnim(charBox,'erinApproach .8s ease forwards');
-        animClass(charBox, 'erin-stage walk',600);
-        if(status)status.innerHTML='<span style="color:#ec4899">Erin approaches the Cowboy...</span>';
-        updateProgress(23);
-      },3200));
-      timers.push(setTimeout(function(){
-        setAnim(charBox,'erinKneel .5s ease forwards');
-        animClass(charBox, 'erin-stage help',600);
-        animClass(enemyBox, 'cowboy-stage recover',600);
-        if(status)status.innerHTML='<span style="color:#ec4899">&#129309; Erin helps the Cowboy</span>';
-        flashEl(hit,'screenFlash .4s ease',400);
+        animClass(charBox, 'erin-stage hit',500);
+        var em=charBox.querySelector('.e-muzzle');if(em)em.style.animation='muzzleFlash .25s ease forwards';
+        var eb=charBox.querySelector('.e-bullet');if(eb)eb.style.animation='bullet .3s ease forwards';
+        animClass(enemyBox, 'cowboy-stage hit',500);
+        updateEnemyHP(0);
+        showKO();
+        if(status)status.innerHTML='<span style="color:#ec4899;font-weight:700">&#127919; K.O.!</span>';
         updateProgress(30);
-      },4200));
+      },1100));
       timers.push(setTimeout(function(){
         flashScene(function(){label.style.opacity='0';showScene(idx+1);});
-      },5300));
+      },2100));
     }
     else if (idx === 2) {
-      charBox.style.animation='paulieWalkIn .5s ease forwards';
-      enemyBox.style.animation='cowboyWalkIn .5s ease forwards';
+      charBox.style.animation='paulieWalkIn .35s ease forwards';
+      enemyBox.style.animation='cowboyWalkIn .35s ease forwards';
       enemyBox.style.transform='scaleX(-1)';
       animClass(charBox, 'paulie-stage stand',0);
       animClass(enemyBox, 'dragon-stage stand',0);
       if(status)status.innerHTML='<span style="color:#a78bfa">&#9876;&#65039; Paulie vs Dragon</span>';
       timers.push(setTimeout(function(){
-        animClass(charBox, 'paulie-stage powerup',1000);
-        setAnim(enemyBox,'dStagger .7s ease');
-        if(status)status.innerHTML='<span style="color:#a78bfa">&#9889; Paulie charges his spell...</span>';
+        animClass(charBox, 'paulie-stage powerup',600);
+        animClass(enemyBox, 'dragon-stage stagger',400);
+        updateEnemyHP(50);
+        if(status)status.innerHTML='<span style="color:#a78bfa">&#9889; Spell charging...</span>';
         updateProgress(16);
-      },800));
+      },500));
       timers.push(setTimeout(function(){
-        setAnim(charBox,'paulieAttack .7s ease forwards');
-        flashEl(count,'countFade .5s ease',500);
-        flashEl(hit,'screenFlash .6s ease',600);
-        if(status)status.innerHTML='<span style="color:#a78bfa;font-weight:700">&#9889; SPELL CAST!</span>';
-        updateProgress(23);
+        setAnim(charBox,'paulieAttack .5s ease forwards');
+        updateEnemyHP(0);
+        showKO();
+        if(status)status.innerHTML='<span style="color:#a78bfa;font-weight:700">&#9889; K.O.!</span>';
+        updateProgress(30);
+      },1300));
+      timers.push(setTimeout(function(){
+        animClass(enemyBox, 'dragon-stage fall',500);
+        setAnim(charBox,'paulieCelebrate .5s ease forwards');
       },2000));
       timers.push(setTimeout(function(){
-        setAnim(enemyBox,'dragonDefeat 1s ease forwards');
-        if(status)status.innerHTML='<span style="color:#a78bfa;font-weight:700">&#10003; Dragon defeated!</span>';
-        flashEl(hit,'screenFlash .5s ease',500);
-        updateProgress(30);
-      },2900));
-      timers.push(setTimeout(function(){
-        setAnim(charBox,'paulieCelebrate .6s ease forwards');
-      },3700));
-      timers.push(setTimeout(function(){
         flashScene(function(){label.style.opacity='0';showScene(idx+1);});
-      },4800));
+      },2700));
     }
   }
   function showAssemble(){
-    updateProgress(100);
+    updateProgress(100);updateHP(100);updateEnemyHP(100);
     charBox.innerHTML='';enemyBox.innerHTML='';label.style.opacity='0';
+    if(ko)ko.style.opacity='0';
     if(bgBox)bgBox.style.background='radial-gradient(ellipse at center,rgba(30,20,60,.8) 0%,rgba(10,5,20,.9) 100%)';
-    team.style.animation='paulieShield .6s ease forwards';
+    team.style.animation='paulieShield .4s ease forwards';
     team.innerHTML=scenes.map(function(s,i){
-      return '<div style="display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 0 12px '+(i===0?'#ffd700':i===1?'#ec4899':'#a78bfa')+'88);animation:cmCelebrate .8s ease '+(i*0.15)+'s forwards;opacity:0">'+
+      return '<div style="display:flex;flex-direction:column;align-items:center;filter:drop-shadow(0 0 12px '+(i===0?'#ffd700':i===1?'#ec4899':'#a78bfa')+'88);animation:cmCelebrate .6s ease '+(i*0.1)+'s forwards;opacity:0">'+
         (i===0?s.char:i===1?s.char:s.char)+
         '<span style="font-size:8px;color:#fff;margin-top:2px;opacity:.6">'+(i===0?'Arthur':i===1?'Erin':'Paulie')+'</span></div>';
     }).join('');
     if(status)status.innerHTML='<span style="color:#ffd700;font-weight:700">&#9889; TEAM RECLAIM ASSEMBLED!</span>';
     timers.push(setTimeout(function(){
-      victory.innerHTML='&#127942; VICTORY!';victory.style.animation='paulieShield .5s ease forwards';
+      victory.innerHTML='&#127942; VICTORY!';victory.style.animation='paulieShield .4s ease forwards';
       if(bgBox)bgBox.style.background='radial-gradient(ellipse at center,rgba(255,215,0,.15) 0%,rgba(30,20,60,.9) 100%)';
-    },600));
+    },500));
     timers.push(setTimeout(function(){
       if (replay) {
         if(status)status.innerHTML='<span style="color:#ffd700;font-weight:700">&#9889; VICTORY!</span>';
-        timers.push(setTimeout(function(){overlay.remove();},2000));
+        timers.push(setTimeout(function(){overlay.remove();},1500));
       } else {
         document.getElementById('cm-form').style.display='';
       }
-    },2400));
+    },2000));
   }
 }
 function submitCheckin() {
