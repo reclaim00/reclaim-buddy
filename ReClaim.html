@@ -767,7 +767,8 @@ function defaultData() {
     chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: [],
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
     encryption: { enabled: false, salt: null, keyCheck: null },
-    timeCapsules: []
+    timeCapsules: [],
+    recoveryPrograms: { active: null, programs: {} }
   };
 }
 
@@ -2182,6 +2183,192 @@ function screenerRenderItem(idx) {
   if (prev) prev.style.display = idx === 0 ? 'none' : 'block';
   if (next) next.style.display = idx >= total - 1 ? 'none' : 'block';
   if (submit) submit.style.display = idx >= total - 1 ? 'inline-block' : 'none';
+}
+
+// ====== RECOVERY PROGRAMS ======
+var RECOVERY_PROGRAMS = {
+  '12step': {
+    id: '12step', name: '12-Step Program', icon: '&#10022;', color: 'var(--primary)',
+    steps: [
+      'We admitted we were powerless over our addiction — that our lives had become unmanageable.',
+      'Came to believe that a Power greater than ourselves could restore us to sanity.',
+      'Made a decision to turn our will and our lives over to the care of God as we understood Him.',
+      'Made a searching and fearless moral inventory of ourselves.',
+      'Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.',
+      'Were entirely ready to have God remove all these defects of character.',
+      'Humbly asked Him to remove our shortcomings.',
+      'Made a list of all persons we had harmed, and became willing to make amends to them all.',
+      'Made direct amends to such people wherever possible, except when to do so would injure them or others.',
+      'Continued to take personal inventory and when we were wrong promptly admitted it.',
+      'Sought through prayer and meditation to improve our conscious contact with God as we understood Him, praying only for knowledge of His will for us and the power to carry that out.',
+      'Having had a spiritual awakening as the result of these steps, we tried to carry this message to others and to practice these principles in all our affairs.'
+    ]
+  },
+  smart: {
+    id: 'smart', name: 'SMART Recovery', icon: '&#9881;', color: 'var(--accent)',
+    steps: [
+      'Building and Maintaining Motivation — Find your reasons to change and stay committed.',
+      'Coping with Urges — Recognize and manage cravings and urges without acting on them.',
+      'Managing Thoughts, Feelings, and Behaviors — Identify and change unhealthy thinking patterns.',
+      'Living a Balanced Life — Build sustainable habits and a fulfilling life beyond addiction.'
+    ]
+  },
+  dharma: {
+    id: 'dharma', name: 'Recovery Dharma', icon: '&#9783;', color: '#a78bfa',
+    steps: [
+      'Embracing the Present — Face this moment with kindness, curiosity, and compassion.',
+      'Investigating Suffering — Look honestly at the causes of your suffering and addictive patterns.',
+      'Letting Go — Practice release — of cravings, shame, and the stories that keep you stuck.',
+      'Living in Harmony — Bring your practice into daily life and support others on the path.'
+    ]
+  },
+  celebrate: {
+    id: 'celebrate', name: 'Celebrate Recovery', icon: '&#10017;', color: '#f97316',
+    steps: [
+      'Admit I am powerless — I cannot control my addictive behavior; my life is unmanageable.',
+      'Believe God exists — I matter to Him and He has the power to help me recover.',
+      'Commit my life to Christ — Consciously choose to follow His care and control.',
+      'Openly examine my life — Confess my faults to myself, God, and someone I trust.',
+      'Submit to change — Voluntarily let God remove my character defects.',
+      'Evaluate relationships — Offer forgiveness and make amends for harm I\'ve caused.',
+      'Reserve daily time with God — Self-examination, prayer, and reading to know His will.',
+      'Yield to serve — Share this Good News with others by example and by words.'
+    ]
+  }
+};
+
+var PROGRAMS_IDS = ['12step', 'smart', 'dharma', 'celebrate'];
+
+function programData(pid) {
+  if (!D.recoveryPrograms) D.recoveryPrograms = { active: null, programs: {} };
+  if (!D.recoveryPrograms.programs) D.recoveryPrograms.programs = {};
+  if (!D.recoveryPrograms.programs[pid]) {
+    var prog = RECOVERY_PROGRAMS[pid];
+    D.recoveryPrograms.programs[pid] = { started: null, completed: null, steps: new Array(prog.steps.length).fill(false), notes: [], dates: [] };
+  }
+  return D.recoveryPrograms.programs[pid];
+}
+
+function programsHTML() {
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#127891; Recovery Programs</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Follow a structured program to guide your recovery journey step by step.</p>';
+  if (!D.recoveryPrograms) { D.recoveryPrograms = { active: null, programs: {} }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
+  var active = D.recoveryPrograms.active;
+  if (active && RECOVERY_PROGRAMS[active]) {
+    h += programActiveHTML(active);
+  } else {
+    h += '<div class="sub-grid">';
+    for (var pi=0;pi<PROGRAMS_IDS.length;pi++) {
+      var pid = PROGRAMS_IDS[pi];
+      var p = RECOVERY_PROGRAMS[pid];
+      var data = programData(pid);
+      var count = data.steps ? data.steps.filter(function(s){return s}).length : 0;
+      h += '<div class="card" style="border-left:3px solid '+p.color+';cursor:pointer;text-align:center" onclick="programStart(\''+pid+'\')">';
+      h += '<div style="font-size:28px;margin-bottom:4px">'+p.icon+'</div>';
+      h += '<div style="font-weight:700;font-size:14px">'+p.name+'</div>';
+      h += '<div style="font-size:12px;color:var(--muted)">'+p.steps.length+' steps</div>';
+      if (count > 0) {
+        h += '<div class="progress-bar" style="margin:6px auto;max-width:120px"><div class="fill" style="width:'+Math.round(count/p.steps.length*100)+'%"></div></div>';
+        h += '<div style="font-size:11px;color:var(--muted)">'+count+'/'+p.steps.length+' completed</div>';
+      }
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+  return h;
+}
+
+function programStart(pid) {
+  D.recoveryPrograms.active = pid;
+  saveData();
+  render();
+}
+
+function programReset(pid) {
+  if (!confirm('Reset all progress for '+RECOVERY_PROGRAMS[pid].name+'?')) return;
+  delete D.recoveryPrograms.programs[pid];
+  D.recoveryPrograms.active = null;
+  saveData();
+  render();
+}
+
+function programActiveHTML(pid) {
+  var p = RECOVERY_PROGRAMS[pid];
+  var data = programData(pid);
+  var completed = data.steps ? data.steps.filter(function(s){return s}).length : 0;
+  var total = p.steps.length;
+  var pct = Math.round(completed/total*100);
+  var done = completed === total;
+  var h = '<div style="display:flex;align-items:center;gap:8px;margin:8px 0">';
+  h += '<button class="btn btn-sm btn-outline" onclick="programClearActive()">&#8592; All Programs</button>';
+  h += '</div>';
+  h += '<div class="card" style="border-left:3px solid '+p.color+'">';
+  h += '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:28px">'+p.icon+'</span><div><div style="font-weight:700;font-size:16px">'+p.name+'</div>';
+  if (data.started) h += '<div style="font-size:11px;color:var(--muted)">Started '+new Date(data.started).toLocaleDateString()+'</div>';
+  h += '</div></div>';
+  h += '<div class="progress-bar" style="margin:10px 0"><div class="fill" style="width:'+pct+'%"></div></div>';
+  h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>'+completed+'/'+total+' steps</span><span>'+pct+'%</span></div>';
+  if (done) {
+    h += '<div style="text-align:center;padding:10px;background:var(--primary-light);border-radius:10px;margin-top:8px"><span style="font-size:24px">&#127942;</span><div style="font-weight:700;font-size:14px;color:var(--primary)">Program Completed!</div><div style="font-size:11px;color:var(--muted)">Finished '+new Date(data.completed).toLocaleDateString()+'</div></div>';
+  }
+  h += '</div>';
+  for (var si=0;si<total;si++) {
+    var stepDone = data.steps[si];
+    h += '<div class="card" style="border-left:3px solid '+(stepDone ? 'var(--primary)' : 'var(--border)')+';padding:14px">';
+    h += '<div style="display:flex;align-items:flex-start;gap:10px">';
+    h += '<div style="flex-shrink:0;width:28px;height:28px;border-radius:14px;border:2px solid '+(stepDone ? 'var(--primary)' : 'var(--border)')+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:'+(stepDone ? 'var(--primary)' : 'var(--muted)')+';background:'+(stepDone ? 'var(--primary-light)' : 'transparent')+';cursor:pointer" onclick="programToggleStep(\''+pid+'\','+si+')">'+(stepDone ? '&#10003;' : (si+1))+'</div>';
+    h += '<div style="flex:1">';
+    h += '<div style="font-weight:600;font-size:13px;margin-bottom:4px">Step '+(si+1)+'</div>';
+    h += '<div style="font-size:12px;color:var(--text)">'+p.steps[si]+'</div>';
+    if (data.notes && data.notes[si]) {
+      h += '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;padding:6px;background:var(--primary-light);border-radius:6px">'+data.notes[si]+'</div>';
+    }
+    h += '<button class="btn btn-sm '+(stepDone?'btn-outline':'btn-primary')+'" onclick="programToggleStep(\''+pid+'\','+si+')" style="margin-top:6px;font-size:11px">'+(stepDone ? 'Unmark' : 'Mark Complete')+'</button>';
+    if (stepDone) {
+      h += '<button class="btn btn-sm btn-outline" onclick="programAddNote(\''+pid+'\','+si+')" style="margin-top:6px;margin-left:4px;font-size:11px">&#9998; Note</button>';
+    }
+    if (data.dates && data.dates[si]) {
+      h += '<span style="font-size:10px;color:var(--muted);margin-left:8px">&#10003; '+new Date(data.dates[si]).toLocaleDateString()+'</span>';
+    }
+    h += '</div></div></div>';
+  }
+  h += '<button class="btn btn-outline btn-sm" onclick="programReset(\''+pid+'\')" style="margin-top:8px;width:100%;color:var(--danger)">Reset Program</button>';
+  return h;
+}
+
+function programClearActive() {
+  D.recoveryPrograms.active = null;
+  saveData();
+  render();
+}
+
+function programToggleStep(pid, idx) {
+  var data = programData(pid);
+  data.steps[idx] = !data.steps[idx];
+  if (data.steps[idx]) {
+    if (!data.notes) data.notes = [];
+    if (!data.dates) data.dates = [];
+    data.dates[idx] = Date.now();
+    if (!data.started) data.started = Date.now();
+  } else {
+    if (data.dates) data.dates[idx] = null;
+  }
+  var allDone = data.steps.every(function(s){return s});
+  if (allDone && !data.completed) data.completed = Date.now();
+  else if (!allDone) data.completed = null;
+  saveData();
+  render();
+}
+
+function programAddNote(pid, idx) {
+  var data = programData(pid);
+  var current = (data.notes && data.notes[idx]) || '';
+  var note = prompt('Reflection on Step '+(idx+1)+':', current);
+  if (note === null) return;
+  if (!data.notes) data.notes = [];
+  data.notes[idx] = note;
+  saveData();
+  render();
 }
 
 // ====== HABITS ======
@@ -5169,6 +5356,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
+  h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
   h += '</div>';
@@ -6636,7 +6824,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','timecapsule','screener'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','timecapsule','screener','programs'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -7496,7 +7684,7 @@ function render() {
     home: homeHTML, track: trackHTML, care: careHTML, reflect: reflectHTML,
     more: moreHTML, journal: journalHTML, library: libraryHTML, music: musicHTML,
     reports: reportsHTML, buddy: buddyHTML, coping: copingHTML,
-    screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
+    programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
     relapseplan: relapsePlanHTML, timecapsule: timeCapsuleHTML,
