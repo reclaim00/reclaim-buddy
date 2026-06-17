@@ -2054,6 +2054,8 @@ function screenerOptionsHTML(name, savedVal) {
 }
 
 function screenerHTML() {
+  if (!D.screenerPHQ9) { D.screenerPHQ9 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
+  if (!D.screenerGAD7) { D.screenerGAD7 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
   var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Mental Health Screeners</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">These brief questionnaires can help you check in on your mental health. Results are private and not a diagnosis.</p>';
 
