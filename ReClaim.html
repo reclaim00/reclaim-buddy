@@ -754,6 +754,8 @@ function defaultData() {
     targetAddictions: [],
     buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [],
     assessmentTaken: false, assessmentResult: null,
+    screenerPHQ9: { taken: false, result: null, progress: null },
+    screenerGAD7: { taken: false, result: null, progress: null },
     sobriety: { startDate: null, relapseDates: [], addictionType: '' },
     // Pre-populated coping cards displayed from defaults; user can add custom
     customCopingCards: [],
@@ -1752,6 +1754,51 @@ var ASSESS_QUESTIONS = [
   'I find myself needing more of a substance to achieve the desired effect.'
 ];
 
+var SCREENER_PHQ = [
+  'Little interest or pleasure in doing things',
+  'Feeling down, depressed, or hopeless',
+  'Trouble falling or staying asleep, or sleeping too much',
+  'Feeling tired or having little energy',
+  'Poor appetite or overeating',
+  'Feeling bad about yourself — or that you are a failure or have let yourself or your family down',
+  'Trouble concentrating on things, such as reading the newspaper or watching television',
+  'Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual',
+  'Thoughts that you would be better off dead, or of hurting yourself'
+];
+
+var SCREENER_GAD7 = [
+  'Feeling nervous, anxious, or on edge',
+  'Not being able to stop or control worrying',
+  'Worrying too much about different things',
+  'Trouble relaxing',
+  'Being so restless that it is hard to sit still',
+  'Becoming easily annoyed or irritable',
+  'Feeling afraid, as if something awful might happen'
+];
+
+function screenerScore(questions, answers) {
+  var total = 0, count = 0;
+  for (var i=0;i<answers.length;i++) {
+    if (answers[i] !== null && answers[i] !== undefined) { total += answers[i]; count++; }
+  }
+  return { total: total, count: count };
+}
+
+function screenerSeverityPHQ(score) {
+  if (score <= 4) return { label: 'Minimal', color: 'var(--primary)' };
+  if (score <= 9) return { label: 'Mild', color: 'var(--accent)' };
+  if (score <= 14) return { label: 'Moderate', color: '#f97316' };
+  if (score <= 19) return { label: 'Moderately Severe', color: 'var(--danger)' };
+  return { label: 'Severe', color: '#7c3aed' };
+}
+
+function screenerSeverityGAD(score) {
+  if (score <= 4) return { label: 'Minimal', color: 'var(--primary)' };
+  if (score <= 9) return { label: 'Mild', color: 'var(--accent)' };
+  if (score <= 14) return { label: 'Moderate', color: '#f97316' };
+  return { label: 'Severe', color: 'var(--danger)' };
+}
+
 function quizOptionsHTML(name, savedVal) {
   var opts = [
     {val:0, label:'Never', color:'var(--primary)', bg:'var(--primary-light)'},
@@ -1981,6 +2028,158 @@ function osiSubmit(btn) {
   var overlay = btn.closest('.overlay');
   overlay.remove();
   showAssessmentAfterSignIn();
+}
+
+// ====== MENTAL HEALTH SCREENERS ======
+var SCREENER_OPTS = [
+  { val: 0, label: 'Not at all', color: 'var(--primary)', bg: 'var(--primary-light)' },
+  { val: 1, label: 'Several days', color: 'var(--accent)', bg: '#fef3c7' },
+  { val: 2, label: 'More than half the days', color: '#f97316', bg: '#fff7ed' },
+  { val: 3, label: 'Nearly every day', color: 'var(--danger)', bg: 'var(--danger-bg)' }
+];
+
+var screenerActive = null; // 'phq9' or 'gad7'
+
+function screenerOptionsHTML(name, savedVal) {
+  var h = '<div class="quiz-opts" data-name="' + name + '" style="display:flex;gap:6px;margin:6px 0;flex-wrap:wrap">';
+  for (var i = 0; i < SCREENER_OPTS.length; i++) {
+    var isSel = (savedVal !== undefined && savedVal !== null && savedVal == SCREENER_OPTS[i].val);
+    h += '<label class="quiz-label" style="flex:1;text-align:center;padding:10px 4px;border-radius:10px;border:2px solid ' + (isSel ? SCREENER_OPTS[i].color : 'var(--border)') + ';background:' + (isSel ? SCREENER_OPTS[i].bg : 'var(--card)') + ';cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:2px">';
+    h += '<input type="radio" name="' + name + '" value="' + SCREENER_OPTS[i].val + '"' + (isSel ? ' checked' : '') + ' style="display:none">';
+    h += '<span style="font-size:12px;font-weight:' + (isSel ? '700' : '500') + ';color:' + (isSel ? SCREENER_OPTS[i].color : 'var(--text)') + '">' + SCREENER_OPTS[i].label + '</span>';
+    h += '</label>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function screenerHTML() {
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Mental Health Screeners</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">These brief questionnaires can help you check in on your mental health. Results are private and not a diagnosis.</p>';
+
+  function screenerCard(key, title, icon, questions, data) {
+    var card = '<div class="card" style="border-left:3px solid var(--primary);margin-bottom:10px">';
+    card += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:24px">' + icon + '</span><div><div style="font-weight:700;font-size:15px">' + title + '</div><div style="font-size:12px;color:var(--muted)">' + questions.length + ' questions, 2&ndash;3 minutes</div></div></div>';
+    if (data.taken && data.result) {
+      var r = data.result;
+      var sev = key === 'phq9' ? screenerSeverityPHQ(r.total) : screenerSeverityGAD(r.total);
+      card += '<div style="text-align:center;padding:10px;background:' + sev.color.replace('var(', '').replace(')', '') + '15;border-radius:10px;border:1px solid ' + sev.color + '">';
+      card += '<div style="font-size:32px;font-weight:900;color:' + sev.color + '">' + r.total + '/' + (key === 'phq9' ? 27 : 21) + '</div>';
+      card += '<div style="font-size:14px;font-weight:700;color:' + sev.color + '">' + sev.label + '</div>';
+      card += '<div style="font-size:11px;color:var(--muted);margin-top:2px">Taken ' + new Date(r.date).toLocaleDateString() + '</div>';
+      card += '<button class="btn btn-outline btn-sm" onclick="screenerRetake(\'' + key + '\')" style="margin-top:6px">Retake</button></div>';
+    } else {
+      card += '<button class="btn btn-primary btn-sm" onclick="screenerStart(\'' + key + '\')" style="width:100%">Start ' + title + '</button>';
+    }
+    card += '</div>';
+    return card;
+  }
+
+  h += screenerCard('phq9', 'PHQ-9', '&#128555;', SCREENER_PHQ, D.screenerPHQ9);
+  h += screenerCard('gad7', 'GAD-7', '&#128534;', SCREENER_GAD7, D.screenerGAD7);
+  h += '<div class="card" style="background:var(--primary-light);border:none;text-align:center;font-size:12px;color:var(--muted)"><strong>Important:</strong> These are screening tools only. They are not a substitute for professional mental health evaluation. If you are in crisis, use <strong>SOS</strong> or call <strong>988</strong> (Suicide &amp; Crisis Lifeline).</div>';
+  return h;
+}
+
+function screenerStart(type) {
+  screenerActive = type;
+  var questions = type === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
+  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
+  data.progress = new Array(questions.length).fill(null);
+  data.taken = false;
+  data.result = null;
+  saveData();
+  screenerRenderQuiz();
+}
+
+function screenerRetake(type) {
+  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
+  data.taken = false;
+  data.result = null;
+  screenerStart(type);
+}
+
+function screenerRenderQuiz() {
+  var questions = screenerActive === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
+  var data = screenerActive === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
+  var total = questions.length;
+  var title = screenerActive === 'phq9' ? 'PHQ-9' : 'GAD-7';
+  var h = '<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><button class="btn btn-sm btn-outline" onclick="screenerCancel()">&#8592; Back</button><h2 style="font-size:20px;font-weight:700;margin:0">' + title + '</h2></div>';
+  h += '<div class="card" id="squiz" data-type="' + screenerActive + '" data-idx="0">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="sq-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + total + '</span><span class="sq-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
+  h += '<div class="progress-bar" style="margin-bottom:10px"><div class="fill sq-bar" style="width:0%"></div></div>';
+  h += '<div class="sq-body"></div>';
+  h += '<div style="display:flex;gap:8px;margin-top:10px">';
+  h += '<button class="btn btn-outline btn-sm sq-prev" onclick="screenerNav(-1)" style="flex:1;display:none">&#8592; Previous</button>';
+  h += '<button class="btn btn-primary btn-sm sq-next" onclick="screenerNav(1)" style="flex:1">Next &#8594;</button>';
+  h += '<button class="btn btn-primary btn-sm sq-submit" onclick="screenerSubmit()" style="flex:1;display:none">See Results</button>';
+  h += '</div></div>';
+  var app = document.getElementById('app');
+  if (app) app.innerHTML = h;
+  screenerRenderItem(0);
+}
+
+function screenerCancel() {
+  screenerActive = null;
+  render();
+}
+
+function screenerNav(dir) {
+  var quiz = document.getElementById('squiz');
+  if (!quiz) return;
+  var idx = parseInt(quiz.getAttribute('data-idx'));
+  var type = quiz.getAttribute('data-type');
+  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
+  var sel = document.querySelector('.sq-body input[type=radio]:checked');
+  if (sel) data.progress[idx] = parseInt(sel.value);
+  var next = idx + dir;
+  var questions = type === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
+  if (next < 0 || next >= questions.length) return;
+  quiz.setAttribute('data-idx', next);
+  screenerRenderItem(next);
+  saveData();
+}
+
+function screenerSubmit() {
+  var quiz = document.getElementById('squiz');
+  if (!quiz) return;
+  var idx = parseInt(quiz.getAttribute('data-idx'));
+  var type = quiz.getAttribute('data-type');
+  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
+  var questions = type === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
+  var sel = document.querySelector('.sq-body input[type=radio]:checked');
+  if (sel) data.progress[idx] = parseInt(sel.value);
+  var result = screenerScore(questions, data.progress);
+  data.taken = true;
+  data.result = { total: result.total, date: Date.now(), answers: data.progress.slice() };
+  data.progress = null;
+  saveData();
+  screenerActive = null;
+  render();
+}
+
+function screenerRenderItem(idx) {
+  var quiz = document.getElementById('squiz');
+  if (!quiz) return;
+  var type = quiz.getAttribute('data-type');
+  var questions = type === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
+  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
+  var savedVal = data.progress && data.progress.length === questions.length ? data.progress[idx] : null;
+  var total = questions.length;
+  quiz.querySelector('.sq-body').innerHTML = '<div><p style="font-weight:600;font-size:15px;margin-bottom:8px">Over the last <strong>2 weeks</strong>, how often have you been bothered by:</p><p style="font-weight:600;font-size:15px;margin-bottom:8px">' + (idx+1) + '. ' + questions[idx] + '</p>' + screenerOptionsHTML('sq' + idx, savedVal) + '</div>';
+  var step = quiz.querySelector('.sq-step');
+  var bar = quiz.querySelector('.sq-bar');
+  var pct = quiz.querySelector('.sq-pct');
+  var prev = quiz.querySelector('.sq-prev');
+  var next = quiz.querySelector('.sq-next');
+  var submit = quiz.querySelector('.sq-submit');
+  if (step) step.textContent = 'Question ' + (idx+1) + ' of ' + total;
+  var pp = Math.round(((idx+1) / total) * 100);
+  if (bar) bar.style.width = pp + '%';
+  if (pct) pct.textContent = pp + '%';
+  if (prev) prev.style.display = idx === 0 ? 'none' : 'block';
+  if (next) next.style.display = idx >= total - 1 ? 'none' : 'block';
+  if (submit) submit.style.display = idx >= total - 1 ? 'inline-block' : 'none';
 }
 
 // ====== HABITS ======
@@ -4968,6 +5167,8 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
+  h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
+  h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Resources')+'</h3>';
   h += '<div class="sub-grid">';
@@ -6433,7 +6634,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','timecapsule'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','timecapsule','screener'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -7293,7 +7494,7 @@ function render() {
     home: homeHTML, track: trackHTML, care: careHTML, reflect: reflectHTML,
     more: moreHTML, journal: journalHTML, library: libraryHTML, music: musicHTML,
     reports: reportsHTML, buddy: buddyHTML, coping: copingHTML,
-    assessment: assessmentHTML, profile: profileHTML,
+    screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
     relapseplan: relapsePlanHTML, timecapsule: timeCapsuleHTML,
