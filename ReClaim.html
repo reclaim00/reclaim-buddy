@@ -6930,7 +6930,7 @@ function showBoxingMatch(onDone) {
     '<g class="a-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L18 38 L20 48" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M18 46 L23 46 L23 50 L17 50 Z" fill="#1a1a3a"/></g>' +
     '<g class="a-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L12 38 L10 48" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M8 46 L13 46 L13 50 L7 50 Z" fill="#1a1a3a"/></g>' +
     '<g class="a-body"><path d="M11 13 Q10 20 10.5 27 L19.5 27 Q20 20 19 13 Z" fill="#e8b88a"/><path d="M10.5 27 L19.5 27 L19 33 L11 33 Z" fill="#1e40af"/><rect x="10.5" y="26.5" width="9" height="1.5" rx=".8" fill="#1e3a8a"/></g>' +
-    '<g class="a-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 15" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="a-rarm-fg" style="transform-origin:19px 14px"><path d="M19 14 L20 10" stroke="#e8b88a" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="21" cy="9" rx="3.5" ry="3" fill="#dc2626"/><ellipse cx="19.5" cy="8.5" rx="1.5" ry="1" fill="#fff" opacity=".3"/></g></g>' +
+    '<g class="a-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="a-rarm-fg" style="transform-origin:19px 14px"><path d="M19 14 L20 10" stroke="#e8b88a" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="21" cy="9" rx="3.5" ry="3" fill="#dc2626"/><ellipse cx="19.5" cy="8.5" rx="1.5" ry="1" fill="#fff" opacity=".3"/></g></g>' +
     '<g class="a-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 18" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="a-larm-fg" style="transform-origin:21px 18px"><path d="M21 18 L22 12" stroke="#e8b88a" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="23" cy="11" rx="3.5" ry="3" fill="#dc2626"/><ellipse cx="22" cy="10.5" rx="1.5" ry="1" fill="#fff" opacity=".3"/></g></g>' +
     '<ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/>' +
     '<path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 2.5 17 1.8 Q15 1.5 13 1.8 Q9.5 2.5 9.5 5" fill="#5a3a1a"/>' +
@@ -6982,6 +6982,16 @@ function showBoxingMatch(onDone) {
       setTimeout(function(){ if (el) el.classList.remove(cls); }, duration);
     }
   }
+  function moveArm(el, arm, fist, armDeg, fistDeg, ms) {
+    var ag = el ? el.querySelector('.' + arm) : null;
+    var fg = el ? el.querySelector('.' + fist) : null;
+    if (ag) { ag.style.transition = 'transform .15s cubic-bezier(.22,1,.36,1)'; ag.style.transform = 'rotate(' + armDeg + 'deg)'; }
+    if (fg) { fg.style.transition = 'transform .15s cubic-bezier(.22,1,.36,1)'; fg.style.transform = 'rotate(' + fistDeg + 'deg)'; }
+    if (ms) setTimeout(function(){
+      if (ag) { ag.style.transition = 'transform .25s cubic-bezier(.34,1.2,.64,1)'; ag.style.transform = ''; }
+      if (fg) { fg.style.transition = 'transform .25s cubic-bezier(.34,1.2,.64,1)'; fg.style.transform = ''; }
+    }, ms);
+  }
   var HF = document.getElementById('hit-flash');
   var SB = document.getElementById('stars-burst');
   var GF = document.getElementById('glove-fly');
@@ -7008,91 +7018,99 @@ function showBoxingMatch(onDone) {
   // Phase 1: Walk in (0ms)
   timers.push(setTimeout(function(){ updateProgress(3); }, 0));
 
-  // Phase 2: Arthur pokes with a jab - Skeleton parries, steps back (1500ms)
+  // Phase 2: Arthur jabs (right arm) - Skeleton weaves (1500ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurLunge .45s cubic-bezier(.22,1,.36,1)';
     animClass(A, 'punch', 450);
+    moveArm(A, 'a-rarm-g', 'a-rarm-fg', '30', '130', 400);
     flyGlove('arthur');
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWeave .45s cubic-bezier(.34,1.2,.64,1)'; animClass(S, 'weave', 450); }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWeave .45s cubic-bezier(.34,1.2,.64,1)'; animClass(S, 'weave', 450); moveArm(S, 's-rarm-g', 's-rarm-fg', '-20', '-50', 400); moveArm(S, 's-larm-g', 's-larm-fg', '20', '50', 400); }
     updateProgress(10);
   }, 1500));
 
-  // Phase 3: Skeleton steps in with a hook - Arthur weaves under (2700ms)
+  // Phase 3: Skeleton hooks (right arm) - Arthur weaves (2700ms)
   timers.push(setTimeout(function(){
     if (!S) return; S.style.animation = 'none'; S.offsetHeight;
     S.style.animation = 'skeletonHook .55s cubic-bezier(.18,1,.3,1)';
     animClass(S, 'hook', 550);
-    // Arthur weaves under
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurWeave .55s cubic-bezier(.34,1.2,.64,1)'; animClass(A, 'weave', 550); }
+    moveArm(S, 's-rarm-g', 's-rarm-fg', '-45', '-80', 500);
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurWeave .55s cubic-bezier(.34,1.2,.64,1)'; animClass(A, 'weave', 550); moveArm(A, 'a-larm-g', 'a-larm-fg', '-25', '-50', 500); moveArm(A, 'a-rarm-g', 'a-rarm-fg', '-20', '-40', 500); }
     updateProgress(20);
   }, 2700));
 
-  // Phase 4: Arthur digs a body shot - Skeleton takes it, drops guard (3800ms)
+  // Phase 4: Arthur body shot (right arm down) - Skeleton takes it (3800ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurBody .55s cubic-bezier(.22,1,.36,1)';
     animClass(A, 'body', 550);
+    moveArm(A, 'a-rarm-g', 'a-rarm-fg', '-30', '70', 500);
     flyGlove('arthur'); flashHit();
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonBodyHit .65s cubic-bezier(.3,1,.5,1)'; animClass(S, 'recoil', 650); }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonBodyHit .65s cubic-bezier(.3,1,.5,1)'; animClass(S, 'recoil', 650); moveArm(S, 's-larm-g', 's-larm-fg', '30', '60', 600); moveArm(S, 's-rarm-g', 's-rarm-fg', '35', '50', 600); }
     updateProgress(32);
   }, 3800));
 
-  // Phase 5: Skeleton fires a cross - Arthur eats it, staggers (5000ms)
+  // Phase 5: Skeleton cross (left arm) - Arthur staggers (5000ms)
   timers.push(setTimeout(function(){
     if (!S) return; S.style.animation = 'none'; S.offsetHeight;
     S.style.animation = 'skeletonCross .55s cubic-bezier(.18,1,.3,1)';
     animClass(S, 'cross', 550);
+    moveArm(S, 's-larm-g', 's-larm-fg', '-30', '-130', 500);
     flyGlove('skeleton'); flashHit();
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurStagger .9s cubic-bezier(.34,1.2,.64,1)'; animClass(A, 'stagger', 900); }
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurStagger .9s cubic-bezier(.34,1.2,.64,1)'; animClass(A, 'stagger', 900); moveArm(A, 'a-rarm-g', 'a-rarm-fg', '30', '50', 800); moveArm(A, 'a-larm-g', 'a-larm-fg', '25', '40', 800); }
     updateProgress(44);
   }, 5000));
 
-  // Phase 6: Skeleton winds up a hook - Arthur ducks under, counters (6200ms)
+  // Phase 6: Skeleton hook (right arm) - Arthur ducks + counters (6200ms)
   timers.push(setTimeout(function(){
     if (!S) return; S.style.animation = 'none'; S.offsetHeight;
     S.style.animation = 'skeletonHook .65s cubic-bezier(.18,1,.3,1)';
     animClass(S, 'hook', 650);
-    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurDuck .55s cubic-bezier(.34,1.2,.64,1)'; animClass(A, 'duck', 550); }
-    // Arthur ducks the hook and counters
+    moveArm(S, 's-rarm-g', 's-rarm-fg', '-50', '-90', 600);
+    if (A) { A.style.animation = 'none'; A.offsetHeight; A.style.animation = 'arthurDuck .55s cubic-bezier(.34,1.2,.64,1)'; animClass(A, 'duck', 550); moveArm(A, 'a-larm-g', 'a-larm-fg', '-50', '-60', 500); moveArm(A, 'a-rarm-g', 'a-rarm-fg', '-45', '-55', 500); }
     setTimeout(function(){
       if (!A) return; A.style.animation = 'none'; A.offsetHeight;
       A.style.animation = 'arthurCross .45s cubic-bezier(.18,1,.3,1)';
       animClass(A, 'cross', 450);
+      moveArm(A, 'a-rarm-g', 'a-rarm-fg', '35', '140', 400);
       flyGlove('arthur'); flashHit();
-      if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble .8s cubic-bezier(.3,1,.5,1)'; animClass(S, 'wobble', 800); }
+      if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble .8s cubic-bezier(.3,1,.5,1)'; animClass(S, 'wobble', 800); moveArm(S, 's-larm-g', 's-larm-fg', '30', '50', 700); moveArm(S, 's-rarm-g', 's-rarm-fg', '25', '60', 700); }
     }, 350);
     updateProgress(55);
   }, 6200));
 
-  // Phase 7: Arthur presses forward with a hook - Skeleton hurt, reeling (7500ms)
+  // Phase 7: Arthur left hook - Skeleton hurt, reeling (7500ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurHook .55s cubic-bezier(.22,1,.36,1)';
     animClass(A, 'hook', 550);
+    moveArm(A, 'a-larm-g', 'a-larm-fg', '-50', '-95', 500);
     flyGlove('arthur'); flashHit();
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble 1.1s cubic-bezier(.3,1,.5,1)'; animClass(S, 'wobble', 1100); }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonWobble 1.1s cubic-bezier(.3,1,.5,1)'; animClass(S, 'wobble', 1100); moveArm(S, 's-larm-g', 's-larm-fg', '35', '60', 1000); moveArm(S, 's-rarm-g', 's-rarm-fg', '30', '50', 1000); }
     updateProgress(65);
   }, 7500));
 
-  // Phase 8: Arthur unloads a 2-punch combo - Skeleton backs up (8800ms)
+  // Phase 8: Arthur 2-punch combo (right arm x2) - Skeleton backs up (8800ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurCombo .8s cubic-bezier(.22,1,.36,1)';
     animClass(A, 'combo', 800);
+    moveArm(A, 'a-rarm-g', 'a-rarm-fg', '35', '135', 350);
+    setTimeout(function(){ moveArm(A, 'a-rarm-g', 'a-rarm-fg', '35', '135', 350); }, 400);
     flyGlove('arthur');
     setTimeout(function(){ flyGlove('arthur'); flashHit(); }, 400);
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonRecoil .9s cubic-bezier(.3,1,.5,1)'; animClass(S, 'recoil', 900); }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonRecoil .9s cubic-bezier(.3,1,.5,1)'; animClass(S, 'recoil', 900); moveArm(S, 's-larm-g', 's-larm-fg', '35', '55', 800); moveArm(S, 's-rarm-g', 's-rarm-fg', '30', '50', 800); }
     updateProgress(75);
   }, 8800));
 
-  // Phase 9: Arthur final cross - Skeleton knocked out cold! (10000ms)
+  // Phase 9: Arthur final cross (right arm) - Skeleton knocked out! (10000ms)
   timers.push(setTimeout(function(){
     if (!A) return; A.style.animation = 'none'; A.offsetHeight;
     A.style.animation = 'arthurCross .65s cubic-bezier(.18,1,.3,1)';
     animClass(A, 'cross', 650);
+    moveArm(A, 'a-rarm-g', 'a-rarm-fg', '40', '150', 600);
     flyGlove('arthur'); flashHit(); starsBurst();
-    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonKnockdown 1.8s cubic-bezier(.34,1.2,.64,1) forwards'; animClass(S, 'knockdown', 1800); }
+    if (S) { S.style.animation = 'none'; S.offsetHeight; S.style.animation = 'skeletonKnockdown 1.8s cubic-bezier(.34,1.2,.64,1) forwards'; animClass(S, 'knockdown', 1800); moveArm(S, 's-larm-g', 's-larm-fg', '50', '80', 1500); moveArm(S, 's-rarm-g', 's-rarm-fg', '45', '70', 1500); }
     updateProgress(84);
   }, 10000));
 
