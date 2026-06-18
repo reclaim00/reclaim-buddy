@@ -588,15 +588,6 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes koPop{0%{transform:translate(-50%,-50%) scale(0) rotate(-10deg);opacity:0}40%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg);opacity:1}60%{transform:translate(-50%,-50%) scale(0.9) rotate(-2deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1}}
 @keyframes vsBurst{0%{transform:translate(-50%,-50%) scale(0);opacity:0}30%{transform:translate(-50%,-50%) scale(1.4);opacity:1}50%{transform:translate(-50%,-50%) scale(0.9);opacity:1}70%{transform:translate(-50%,-50%) scale(1.1);opacity:.8}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
 @keyframes stageShake{0%{transform:scale(1.02) translateX(0)}20%{transform:scale(1.02) translateX(-4px)}40%{transform:scale(1.02) translateX(4px)}60%{transform:scale(1.02) translateX(-2px)}80%{transform:scale(1.02) translateX(2px)}100%{transform:scale(1.02) translateX(0)}}
-@keyframes jcTitleGlow{0%{opacity:0;transform:scale(0) rotate(-15deg);filter:blur(16px) brightness(3)}45%{opacity:1;transform:scale(1.2) rotate(3deg);filter:blur(0) brightness(1.5)}68%{transform:scale(0.92) rotate(-1.5deg);filter:brightness(1)}85%{transform:scale(1.04) rotate(.8deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
-@keyframes jcZoomIn{0%{opacity:0;transform:scale(0.8) translateY(40px);filter:blur(10px)}55%{opacity:1;transform:scale(1.03) translateY(-4px);filter:blur(0)}78%{transform:scale(0.98) translateY(1px)}92%{transform:scale(1.005)}100%{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes jcSlideUp{0%{opacity:0;transform:translateY(140px);filter:blur(6px)}50%{opacity:1;transform:translateY(-12px);filter:blur(0)}72%{transform:translateY(4px)}88%{transform:translateY(-1px)}100%{opacity:1;transform:translateY(0)}}
-@keyframes jcSlideLeft{0%{opacity:0;transform:translateX(-140px);filter:blur(6px)}50%{opacity:1;transform:translateX(14px);filter:blur(0)}72%{transform:translateX(-4px)}88%{transform:translateX(1px)}100%{opacity:1;transform:translateX(0)}}
-@keyframes jcSlideRight{0%{opacity:0;transform:translateX(140px);filter:blur(6px)}50%{opacity:1;transform:translateX(-14px);filter:blur(0)}72%{transform:translateX(4px)}88%{transform:translateX(-1px)}100%{opacity:1;transform:translateX(0)}}
-@keyframes jcDropIn{0%{opacity:0;transform:translateY(-80px) scale(0.9);filter:blur(12px)}48%{opacity:1;transform:translateY(14px) scale(1.04);filter:blur(0)}72%{transform:translateY(-5px) scale(.98)}88%{transform:translateY(2px) scale(1.005)}100%{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes jcMoodPulse{0%{box-shadow:0 0 0 0 var(--jc-mc),0 0 20px var(--jc-mc)}40%{box-shadow:0 0 0 18px transparent,0 0 40px var(--jc-mc66)}100%{box-shadow:0 0 0 0 transparent,0 0 20px var(--jc-mc33)}}
-@keyframes jcVignette{from{opacity:0}to{opacity:1}}
-@keyframes jcGrain{0%,100%{transform:translate(0)}20%{transform:translate(-1px,1px)}40%{transform:translate(1px,-1px)}60%{transform:translate(-1px,0)}80%{transform:translate(1px,0)}}
 @keyframes guitarSmash{0%{transform:rotate(0deg) translateX(0)}25%{transform:rotate(-45deg) translateX(8px)}50%{transform:rotate(-60deg) translateX(12px)}75%{transform:rotate(-30deg) translateX(4px)}100%{transform:rotate(0deg) translateX(0)}}
 @keyframes fistPound{0%{transform:rotate(0deg) translateY(0)}30%{transform:rotate(-25deg) translateY(-5px)}60%{transform:rotate(-40deg) translateY(10px)}100%{transform:rotate(0deg) translateY(0)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
@@ -3895,169 +3886,91 @@ function showReflection(idx) {
   var result = detectMood(entryText);
   var mood = result.primary;
   var scores = result.scores;
+  var reflection = buildPersonalReflection(entry, mood, D.journal, idx);
   var suggestions = buildSuggestions(entry, mood, D.journal, idx);
   var song = getSong(entryText, mood);
+  var name = D.name || 'there';
   var dayCount = soberDays();
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   var totalEntries = D.journal.length;
   var streak = D.streak || 0;
-  var moodColors = {sad:'#60a5fa',angry:'#ef4444',anxious:'#f59e0b',happy:'#34d399',grateful:'#a78bfa',reflective:'#818cf8',hopeful:'#fbbf24',mixed:'#94a3b8'};
-  var moodLabels = {sad:'Sad',angry:'Angry',anxious:'Anxious',happy:'Happy',grateful:'Grateful',reflective:'Reflective',hopeful:'Hopeful',mixed:'Mixed'};
-  var mc = moodColors[mood] || '#94a3b8';
+
+  var moodEmojis = {sad:'??', angry:'??', anxious:'??', happy:'??', grateful:'??', reflective:'??', hopeful:'??', mixed:'??'};
+  var moodLabels = {sad:'Sadness', angry:'Anger', anxious:'Anxiety', happy:'Happiness', grateful:'Gratitude', reflective:'Reflection', hopeful:'Hope', mixed:'Mixed'};
   var sorted = Object.keys(scores).sort(function(a,b){return scores[b]-scores[a]}).filter(function(k){return scores[k]>0});
-  var maxScore = sorted.length ? scores[sorted[0]] : 1;
-  var moodBars = sorted.map(function(k){
-    var pct = Math.min(100,Math.round(scores[k]/maxScore*100));
-    return '<div style="display:flex;align-items:center;gap:5px;padding:1.5px 0"><span style="font-size:10px;color:'+(k===mood?'rgba(255,255,255,.9)':'rgba(255,255,255,.5)')+';width:52px;text-align:right;font-weight:'+(k===mood?'700':'400')+'">'+(moodLabels[k]||k)+'</span><div style="flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden"><div class="jc-bar-fill" style="height:100%;width:0%;background:'+(moodColors[k]||'#94a3b8')+';border-radius:3px"></div></div><span style="color:rgba(255,255,255,.4);font-size:9px;width:14px;text-align:right">'+scores[k]+'</span></div>'
-  }).join('');
-
-  var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
-  var contextLines = [];
-  if (entryHour >= 5 && entryHour < 12) contextLines.push('Morning entry');
-  else if (entryHour >= 17 && entryHour < 21) contextLines.push('Evening reflection');
-  else if (entryHour >= 21 || (entryHour >= 0 && entryHour < 5)) contextLines.push('Late night thoughts');
-  if (dayCount > 0) contextLines.push(dayCount + ' day' + (dayCount!==1?'s':'') + ' sober');
-  if (hasCravings) contextLines.push('Cravings logged');
-  if (streak > 3) contextLines.push(streak + ' day streak');
-  if (totalEntries <= 2) contextLines.push('Early journey');
-  if (entry.type === 'checkin') contextLines.push('Daily check-in');
-
-  var ctx = contextLines.map(function(l){return '<span style="font-size:9px;background:rgba(255,255,255,.06);padding:2px 8px;border-radius:8px;color:rgba(255,255,255,.5);letter-spacing:.3px">'+l+'</span>'}).join(' ');
-  var entryNum = idx + 1;
-  var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour);
-  var mot = getMotivation(mood);
-  var songDesc = {sad:'A song that understands', angry:'A track to match the fire', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space'};
-
-  // Build overlay
+  var moodBar = sorted.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px"><span>'+moodEmojis[k]+'</span><div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,Math.round(scores[k]/Math.max(1,scores[sorted[0]])*100))+'%;background:var(--primary);border-radius:4px;transition:width .5s"></div></div><span style="color:var(--muted);font-size:10px;width:16px;text-align:right">'+scores[k]+'</span></div>'}).join('');
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
-  overlay.style.overflow = 'hidden';
-  var h = '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;background:repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%) 0 0 / 2px 2px;animation:jcGrain .3s steps(3) infinite"></div>';
-  h += '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);opacity:0;animation:jcVignette 1.5s ease .3s forwards"></div>';
-  // Scene 1: Title card (top)
-  h += '<div class="overlay-content" style="padding:16px 12px 8px;max-width:480px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:100%">';
-  h += '<div style="text-align:center;padding:30px 0 6px;opacity:0" id="jc-scene1"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">JOURNAL ENTRY</div>';
-  h += '<div style="font-size:38px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">#'+entryNum+'</div></div>';
-  // Context chips
-  h += '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px;opacity:0" id="jc-context">'+ctx+'</div>';
-  // Spacer to push content to center
-  h += '<div style="flex:1"></div>';
-  // Scene 2: Main content (middle)
-  h += '<div id="jc-main" style="opacity:0">';
-  // Mood orb
-  h += '<div style="text-align:center;margin-bottom:12px;opacity:0" id="jc-orb"><div style="--jc-mc:'+mc+';width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%,'+mc+','+mc+'44 70%,rgba(0,0,0,.3));margin:0 auto 8px;box-shadow:0 0 30px '+mc+'44,inset 0 -4px 12px rgba(0,0,0,.3)"></div>';
-  h += '<div style="font-size:18px;font-weight:700;color:'+mc+'">'+(moodLabels[mood]||mood)+'</div><div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:2px;margin-top:2px">PRIMARY EMOTION</div></div>';
-  // Mood bars
-  h += '<div style="padding:0 4px;opacity:0" id="jc-bars">'+moodBars+'</div>';
-  h += '</div>';
-  // Spacer
-  h += '<div style="flex:1"></div>';
-  // Scene 3: Summary (dialogue box style - bottom)
-  h += '<div id="jc-summary-box" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:6px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">SUMMARY</div><div id="jc-summary-text" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);min-height:1.2em"></div></div>';
-  // Spacer
-  h += '<div style="flex:1"></div>';
-  // Scene 4: Additional info (bottom)
-  h += '<div id="jc-more" style="opacity:0">';
-  // Suggestions
-  h += '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.05)"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">SUGGESTIONS</div>';
+  var h = '<div class="overlay-content"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><div><h3 style="margin:0;font-size:16px">'+t("Arthur's Reflection")+'</h3><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">'+t('Based on your journal entry')+'</p></div></div>';
+
+  var contextLines = [];
+  var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
+  if (entryHour >= 5 && entryHour < 12) contextLines.push('?? Good morning - starting your day with journaling sets a strong tone.');
+  else if (entryHour >= 12 && entryHour < 17) contextLines.push('?? A midday check-in shows you\'re staying present - that\'s real growth.');
+  else if (entryHour >= 17 && entryHour < 21) contextLines.push('?? Reflecting in the evening - a great way to process the day.');
+  else if (entryHour >= 21 || (entryHour >= 0 && entryHour < 5)) contextLines.push('?? Late night reflections - some of the deepest thoughts come when the world is quiet.');
+  if (dayCount > 0) contextLines.push('?? <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong>');
+  if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || dayCount % 365 === 0) contextLines.push('?? Major milestone - ' + dayCount + ' days!');
+  if (hasCravings) contextLines.push('?? You logged a craving recently. Let\'s explore that.');
+  if (streak > 3) contextLines.push('?? <strong>' + streak + ' day</strong> journal streak');
+  if (totalEntries <= 2) contextLines.push('?? One of your first entries - thank you for starting.');
+  if (entry.type === 'checkin') contextLines.push('?? Honest check-in - builds self-awareness.');
+
+  if (contextLines.length) {
+    h += '<div class="card" style="padding:8px 12px;margin-bottom:8px;font-size:13px;line-height:1.6">';
+    for (var ci=0;ci<contextLines.length;ci++) h += '<div style="padding:1px 0">' + contextLines[ci] + '</div>';
+    h += '</div>';
+  }
+
+  // Mood bar
+  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">'+t('Mood analysis')+'</div>' + moodBar + '</div>';
+
+  // Summary
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#128221; '+t('Your Entry Summary')+'</div><div style="font-size:13px;line-height:1.7">' + buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour) + '</div></div>';
+
+  // Reflection
+  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">?? '+t("Arthur's insight")+'</div><div style="font-size:14px;line-height:1.6">' + reflection + '</div></div>';
+
+  // Story
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;background:linear-gradient(135deg,var(--primary-light),var(--card));border-left:3px solid var(--accent)"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">&#128214; '+t("A Story for You")+'</div><div style="font-size:13px;line-height:1.7;font-style:italic">"' + getVignette(mood) + '"</div><div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right">- Arthur</div></div>';
+
+  // Suggestions / Advice
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">?? '+t("Arthur's advice")+'</div>';
   for (var si = 0; si < Math.min(suggestions.length, 3); si++) {
-    h += '<div style="font-size:11px;line-height:1.6;padding:2px 0;color:rgba(255,255,255,.6)">&#9654; '+suggestions[si]+'</div>';
+    h += '<div style="font-size:13px;line-height:1.6;padding:5px 0;border-bottom:' + (si < Math.min(suggestions.length, 3) - 1 ? '1px solid var(--border)' : 'none') + '">' + '&#9654; ' + suggestions[si] + '</div>';
   }
   h += '</div>';
-  // Quote
+
+  var mot = getMotivation(mood);
   if (mot) {
-    h += '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.05)"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:4px">'+mot.c+'</div><div style="font-size:13px;font-style:italic;line-height:1.5;color:rgba(255,255,255,.7)">'+mot.q+'</div><details style="margin-top:3px"><summary style="font-size:8px;color:rgba(255,255,255,.3);cursor:pointer;letter-spacing:1px">WHY THIS MATTERS</summary><p style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;line-height:1.5">'+mot.t+'</p></details></div>';
+    h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--blue)"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#127918; ' + mot.c + ' - ' + mot.p + '</div><div style="font-size:15px;font-style:italic;line-height:1.5;color:var(--text)">' + mot.q + '</div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Why this matters</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + mot.t + '</p></details></div>';
   }
+
   // Song
-  h += '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.05);text-align:center"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">'+(songDesc[mood]||'A song for you')+'</div>';
+  var songDesc = {sad:'A song that understands the weight you\'re carrying', angry:'A track to match the fire in you', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space for it all'};
+  h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; ' + (songDesc[mood] || 'A song that matches your energy') + '</div>';
   if (song) {
-    h += '<div style="font-weight:700;font-size:13px;color:rgba(255,255,255,.8)">'+song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;')+' <span style="font-weight:400;color:rgba(255,255,255,.4)">— '+song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span></div>';
-    h += '<div style="display:flex;gap:5px;justify-content:center;margin-top:5px;flex-wrap:wrap">';
-    h += '<a href="'+song.url_spotify+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Spotify</a>';
-    h += '<a href="'+song.url_youtube+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; YouTube</a>';
-    h += '<a href="'+song.url_apple+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a></div>';
+    h += '<div style="font-weight:700;font-size:15px;margin:2px 0">' + song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;') + ' <span style="font-weight:400;color:var(--muted)">- ' + song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span></div>';
+    h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap">';
+    h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Spotify</a>';
+    h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; YouTube</a>';
+    h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Apple Music</a>';
+    h += '</div>';
   } else {
-    h += '<div style="font-size:11px;color:rgba(255,255,255,.4);padding:3px 0">Finding the perfect song...</div>';
+    h += '<div style="font-size:13px;color:var(--muted);padding:6px 0">?? Arthur is picking the perfect song...</div>';
   }
   h += '</div>';
+
   // Original entry
-  h += '<details style="padding:6px 0;border-top:1px solid rgba(255,255,255,.05)"><summary style="font-size:9px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.4);letter-spacing:1px;padding:2px 0">READ YOUR ENTRY</summary>';
-  h += '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;white-space:pre-wrap;margin-top:4px;padding:4px 0">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p></details>';
-  // Close
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="jc-close">Close</button></div>';
+  h += '<details style="margin-bottom:8px"><summary style="font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);padding:4px 0">&#128196; Read your entry</summary>';
+  h += '<div class="card" style="padding:12px;margin-top:6px"><p style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap">' + (entryText || getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p></div></details>';
+
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:4px">Close</button></div>';
+  D.reflectionCount = (D.reflectionCount || 0) + 1;
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
-
-  // === CUTSCENE ANIMATION SEQUENCE ===
-  // Scene 1: Title + context (fast zoom-in)
-  setTimeout(function(){
-    var s1 = overlay.querySelector('#jc-scene1');
-    if(s1){s1.style.animation='jcTitleGlow 1s cubic-bezier(.34,1.56,.64,1) forwards';}
-  }, 200);
-  setTimeout(function(){
-    var ctxEl = overlay.querySelector('#jc-context');
-    if(ctxEl){ctxEl.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards';}
-  }, 700);
-  // Scene 2: Main content (zoom-in)
-  setTimeout(function(){
-    var main = overlay.querySelector('#jc-main');
-    if(main){main.style.animation='jcZoomIn .8s cubic-bezier(.16,1,.3,1) forwards';}
-  }, 1200);
-  setTimeout(function(){
-    var orb = overlay.querySelector('#jc-orb');
-    if(orb){orb.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards';}
-    // Start mood pulse after orb appears
-    setTimeout(function(){
-      var orbEl = overlay.querySelector('#jc-orb div:first-child');
-      if(orbEl){orbEl.style.animation='jcMoodPulse 2.5s ease-in-out infinite';}
-    }, 400);
-  }, 1300);
-  setTimeout(function(){
-    var bars = overlay.querySelector('#jc-bars');
-    if(bars){bars.style.animation='jcSlideUp .6s cubic-bezier(.16,1,.3,1) forwards';}
-  }, 1700);
-  // Animate mood bars after visible
-  setTimeout(function(){
-    var fills = overlay.querySelectorAll('.jc-bar-fill');
-    for (var fi=0;fi<fills.length;fi++){if(sorted[fi]){fills[fi].style.transition='width .8s cubic-bezier(.22,1,.36,1)';fills[fi].style.width=Math.min(100,Math.round(scores[sorted[fi]]/maxScore*100))+'%';}}
-  }, 1900);
-  // Scene 3: Summary with typewriter (dialogue box slides up)
-  setTimeout(function(){
-    var box = overlay.querySelector('#jc-summary-box');
-    if(box){box.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards';}
-  }, 2200);
-  // Typewriter after box is visible
-  setTimeout(function(){
-    var textEl = overlay.querySelector('#jc-summary-text');
-    if(textEl && summaryText){
-      textEl.textContent = '';
-      var chars = summaryText.split('');
-      var ti = 0;
-      function typeChar(){
-        if(ti < chars.length){
-          textEl.textContent += chars[ti];
-          ti++;
-          setTimeout(typeChar, 18 + (chars[ti-1]===' '||chars[ti-1]==='.'||chars[ti-1]===','?40:0));
-        }
-      }
-      typeChar();
-    }
-  }, 2500);
-  // Scene 4: Additional info (fade up)
-  setTimeout(function(){
-    var more = overlay.querySelector('#jc-more');
-    if(more){more.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards';}
-  }, 3400);
-  // Close button
-  setTimeout(function(){
-    var close = overlay.querySelector('#jc-close');
-    if(close){close.style.animation='jcZoomIn .5s cubic-bezier(.16,1,.3,1) forwards';}
-  }, 4000);
-
-  D.reflectionCount = (D.reflectionCount || 0) + 1;
   if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || (dayCount > 365 && dayCount % 365 === 0)) setTimeout(confetti, 300);
-  } catch(e) { alert('Could not generate reflection: ' + e.message); }
+  } catch(e) { alert('Arthur had trouble reflecting: ' + e.message); }
 }
 
 // ====== COPING CARDS ======
@@ -6925,21 +6838,14 @@ function showBoxingMatch(onDone) {
   overlay.style.paddingTop = '20px';
 
   var arthurSVG =
-    '<svg class="arthur-svg" viewBox="0 0 40 60">' +
-    '<ellipse cx="20" cy="57" rx="14" ry="2.5" fill="rgba(0,0,0,.12)"/>' +
-    '<g class="a-rleg-g" style="transform-origin:24px 38px"><path d="M24 36 L25 45 L27 52" stroke="#2d2d55" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M24 52 L28 52 L29 56 L23 56 Z" fill="#1a1a3a"/></g>' +
-    '<g class="a-rarm-g" style="transform-origin:26px 18px"><path d="M26 16 Q30 18 28 24" stroke="#e8b88a" stroke-width="8" stroke-linecap="round" fill="none"/><g class="a-rarm-fg" style="transform-origin:28px 24px"><path d="M28 24 Q26 28 24 30" stroke="#e8b88a" stroke-width="6" stroke-linecap="round" fill="none"/><ellipse cx="22" cy="33" rx="5.5" ry="6" fill="#dc2626"/><path d="M20 29 Q22 27 24 29" fill="none" stroke="#fff" stroke-width="1.5" opacity=".4"/></g></g>' +
-    '<g class="a-body"><path d="M16 14 Q14 24 14 36 L24 36 Q24 24 22 14 Z" fill="#e8b88a"/><path d="M16 16 Q19 14 22 16 Q20 20 18 20 Z" fill="#d4a07a" opacity=".5"/><line x1="18" y1="23" x2="20" y2="23" stroke="#d4a07a" stroke-width=".8" opacity=".4"/><line x1="17" y1="27" x2="21" y2="27" stroke="#d4a07a" stroke-width=".8" opacity=".4"/><line x1="17" y1="31" x2="21" y2="31" stroke="#d4a07a" stroke-width=".8" opacity=".3"/><path d="M14 34 L24 34 L25 41 L13 41 Z" fill="#1e40af"/><rect x="13" y="33.5" width="12" height="2" rx="1" fill="#1e3a8a"/></g>' +
-    '<g class="a-lleg-g" style="transform-origin:16px 38px"><path d="M16 36 L14 45 L12 52" stroke="#2d2d55" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M8 52 L14 52 L14 56 L7 56 Z" fill="#1a1a3a"/></g>' +
-    '<g class="a-larm-g" style="transform-origin:16px 16px"><path d="M16 16 Q10 18 7 22" stroke="#e8b88a" stroke-width="8" stroke-linecap="round" fill="none"/><g class="a-larm-fg" style="transform-origin:7px 22px"><path d="M7 22 Q4 26 3 28" stroke="#e8b88a" stroke-width="6" stroke-linecap="round" fill="none"/><ellipse cx="1" cy="31" rx="5.5" ry="6" fill="#dc2626"/><path d="M-1 27 Q1 25 3 27" fill="none" stroke="#fff" stroke-width="1.5" opacity=".4"/></g></g>' +
-    '<ellipse cx="20" cy="8" rx="8.5" ry="8" fill="#e8b88a"/>' +
-    '<path d="M11.5 6 Q11.5 0 20 0 Q28.5 0 28.5 6 Q28.5 3 24 2 Q20 1 16 2 Q11.5 3 11.5 6" fill="#8B6914"/>' +
-    '<ellipse cx="17" cy="7" rx="2" ry="1.3" fill="#fff"/><circle cx="17.5" cy="7" r="1.1" fill="#2d1a0a"/>' +
-    '<ellipse cx="23" cy="7" rx="2" ry="1.3" fill="#fff"/><circle cx="23.5" cy="7" r="1.1" fill="#2d1a0a"/>' +
-    '<line x1="15" y1="4.5" x2="19" y2="5" stroke="#5a3914" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<line x1="21" y1="5" x2="25" y2="4.5" stroke="#5a3914" stroke-width="1.2" stroke-linecap="round"/>' +
-    '<path d="M19 8 L18 10 L21 10" fill="none" stroke="#c4956a" stroke-width="1" stroke-linecap="round"/>' +
-    '<path d="M17 12 Q20 13.5 23 12" fill="none" stroke="#8B4513" stroke-width="1" stroke-linecap="round"/>' +
+    '<svg class="arthur-svg" viewBox="0 0 30 54">' +
+    '<path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8" stroke-linecap="round"/>' +
+    '<circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/>' +
+    '<line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round" class="a-body"/>' +
+    '<g class="a-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="18" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="18" r="1.5" fill="#ffd700"/><g class="a-larm-fg" style="transform-origin:21px 18px"><line x1="21" y1="18" x2="22" y2="12" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="23" cy="12" r="2.5" fill="#dc2626"/></g></g>' +
+    '<g class="a-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g class="a-rarm-fg" style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="10" r="2.5" fill="#dc2626"/></g></g>' +
+    '<g class="a-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="10" y2="39" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="10" cy="39" r="1.5" fill="#ffd700"/><g style="transform-origin:10px 39px"><line x1="10" y1="39" x2="7" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></g></g>' +
+    '<g class="a-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="21" y2="38" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="38" r="1.5" fill="#ffd700"/><g style="transform-origin:21px 38px"><line x1="21" y1="38" x2="24" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></g></g>' +
     '</svg>';
 
   overlay.innerHTML =
@@ -6955,21 +6861,28 @@ function showBoxingMatch(onDone) {
       '<div class="winner-text" id="winner-text"></div>' +
       '<div class="boxer-pos arthur" id="arthur-boxer">' + arthurSVG + '</div>' +
       '<div class="boxer-pos skeleton" id="skeleton-boxer">' +
-      '<svg class="skeleton-svg" viewBox="0 0 40 60">' +
-      '<ellipse cx="20" cy="57" rx="14" ry="2.5" fill="rgba(255,255,255,.08)"/>' +
-      '<g class="s-lleg-g" style="transform-origin:16px 38px"><path d="M16 36 L15 45 L13 52" stroke="#c0c0c0" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M10 52 L15 52 L15 56 L9 56 Z" fill="#666"/></g>' +
-      '<g class="s-larm-g" style="transform-origin:14px 18px"><path d="M14 16 Q10 18 12 24" stroke="#c0c0c0" stroke-width="5" stroke-linecap="round" fill="none"/><g class="s-larm-fg" style="transform-origin:12px 24px"><path d="M12 24 Q14 28 16 30" stroke="#c0c0c0" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="18" cy="33" rx="5.5" ry="6" fill="#dc2626"/><path d="M16 29 Q18 27 20 29" fill="none" stroke="#fff" stroke-width="1.5" opacity=".4"/></g></g>' +
-      '<g class="s-body"><path d="M16 14 Q14 20 14 36 L24 36 Q24 20 22 14 Z" fill="#e8e8e8"/><line x1="15" y1="17" x2="23" y2="17" stroke="#ccc" stroke-width="1.5"/><line x1="15" y1="20" x2="23" y2="20" stroke="#ccc" stroke-width="1.5"/><line x1="15" y1="23" x2="23" y2="23" stroke="#ccc" stroke-width="1.5"/><line x1="15" y1="26" x2="22" y2="26" stroke="#ccc" stroke-width="1.5"/><line x1="16" y1="29" x2="21" y2="29" stroke="#ccc" stroke-width="1.5"/><line x1="19" y1="14" x2="19" y2="32" stroke="#ccc" stroke-width="1.5"/><path d="M14 32 L24 32 Q24 35 22 36 L16 36 Q14 35 14 32" fill="#e0e0e0" stroke="#ccc" stroke-width="1"/><rect x="16" y="18" width="6" height="10" rx="1" fill="#222" opacity=".4"/></g>' +
-      '<g class="s-rleg-g" style="transform-origin:24px 38px"><path d="M24 36 L26 45 L28 52" stroke="#c0c0c0" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M25 52 L30 52 L31 56 L24 56 Z" fill="#666"/></g>' +
-      '<g class="s-rarm-g" style="transform-origin:26px 18px"><path d="M26 16 Q32 18 35 22" stroke="#c0c0c0" stroke-width="5" stroke-linecap="round" fill="none"/><g class="s-rarm-fg" style="transform-origin:35px 22px"><path d="M35 22 Q38 26 39 28" stroke="#c0c0c0" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="41" cy="31" rx="5.5" ry="6" fill="#dc2626"/><path d="M39 27 Q41 25 43 27" fill="none" stroke="#fff" stroke-width="1.5" opacity=".4"/></g></g>' +
-      '<ellipse cx="20" cy="8" rx="8" ry="8" fill="#e8e8e8"/>' +
-      '<path d="M12 6 Q12 0 20 0 Q28 0 28 6" fill="#e8e8e8"/>' +
-      '<ellipse cx="16" cy="6.5" rx="3.2" ry="2.8" fill="#333"/>' +
-      '<ellipse cx="24" cy="6.5" rx="3.2" ry="2.8" fill="#333"/>' +
-      '<path d="M19 9 L18 11 L22 11 Z" fill="#444"/>' +
-      '<rect x="16" y="12" width="8" height="2" rx="1" fill="#ddd"/>' +
-      '<line x1="18" y1="12" x2="18" y2="14" stroke="#ccc" stroke-width=".8"/><line x1="20" y1="12" x2="20" y2="14" stroke="#ccc" stroke-width=".8"/><line x1="22" y1="12" x2="22" y2="14" stroke="#ccc" stroke-width=".8"/>' +
-      '<path d="M14 9 Q20 16 26 9" fill="none" stroke="#ddd" stroke-width="1.5"/>' +
+      '<svg class="skeleton-svg" viewBox="0 0 30 54">' +
+      '<path d="M11.5 2 Q13 -0.5 15 -0.5 Q17 -0.5 18.5 2 L18.5 7 Q18 10 16.5 10.5 L15 11 L13.5 10.5 Q12 10 11.5 7 Z" fill="#f0f0f0" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<circle cx="12.5" cy="5" r="1.8" fill="#333"/><circle cx="17.5" cy="5" r="1.8" fill="#333"/>' +
+      '<path d="M14 7.5 L15 8.5 L16 7.5" fill="none" stroke="#333" stroke-width="1" stroke-linecap="round"/>' +
+      '<line x1="11.5" y1="2.5" x2="13.5" y2="3" stroke="#c0c0c0" stroke-width="1" stroke-linecap="round"/>' +
+      '<line x1="18.5" y1="2.5" x2="16.5" y2="3" stroke="#c0c0c0" stroke-width="1" stroke-linecap="round"/>' +
+      '<line x1="12.5" y1="9.5" x2="17.5" y2="9.5" stroke="#c0c0c0" stroke-width="1" stroke-linecap="round"/>' +
+      '<line x1="12.5" y1="9.5" x2="12.5" y2="10.5" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<line x1="13.5" y1="9.5" x2="13.5" y2="10.5" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<line x1="14.5" y1="9.5" x2="14.5" y2="10.5" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<line x1="15.5" y1="9.5" x2="15.5" y2="10.5" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<line x1="16.5" y1="9.5" x2="16.5" y2="10.5" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<line x1="17.5" y1="9.5" x2="17.5" y2="10.5" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<line x1="15" y1="11" x2="15" y2="12" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<path d="M12 12.5 L11 14 L11 18 L11.5 23 Q11 27 11.5 30 L18.5 30 Q19 27 18.5 23 L19 18 L19 14 L18 12.5 Z" fill="none" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round" class="s-body"/>' +
+      '<path d="M12.5 15 Q15 17 17.5 15" fill="none" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<path d="M12 18 Q15 20 18 18" fill="none" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<path d="M12.5 21 Q15 23 17.5 21" fill="none" stroke="#c0c0c0" stroke-width="0.8" stroke-linecap="round"/>' +
+      '<g class="s-rarm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="9" y2="18" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="18" r="1.2" fill="#c0c0c0"/><g class="s-rarm-fg" style="transform-origin:9px 18px"><line x1="9" y1="18" x2="8" y2="12" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><circle cx="7" cy="12" r="2.5" fill="#dc2626"/></g></g>' +
+      '<g class="s-larm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="11" y2="14" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="14" r="1.2" fill="#c0c0c0"/><g class="s-larm-fg" style="transform-origin:11px 14px"><line x1="11" y1="14" x2="10" y2="10" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><circle cx="9" cy="10" r="2.5" fill="#dc2626"/></g></g>' +
+      '<g class="s-lleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="11" y2="39" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="39" r="1.2" fill="#c0c0c0"/><g style="transform-origin:11px 39px"><line x1="11" y1="39" x2="8" y2="51" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="51" x2="5" y2="51" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round"/></g></g>' +
+      '<g class="s-rleg-g" style="transform-origin:15px 30px"><line x1="15" y1="30" x2="19" y2="38" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><circle cx="19" cy="38" r="1.2" fill="#c0c0c0"/><g style="transform-origin:19px 38px"><line x1="19" y1="38" x2="22" y2="51" stroke="#c0c0c0" stroke-width="2" stroke-linecap="round"/><line x1="22" y1="51" x2="25" y2="51" stroke="#c0c0c0" stroke-width="1.5" stroke-linecap="round"/></g></g>' +
       '</svg></div>' +
       '<div class="referee-pos" id="referee-pos">&#129489;&#8205;&#9878;&#65039;</div>' +
     '</div>' +
