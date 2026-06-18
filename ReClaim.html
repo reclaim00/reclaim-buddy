@@ -3770,10 +3770,10 @@ function reflectHTML() {
   h += artDailyRoutineHTML();
   h += journalInsightsHTML();
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
-  h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">Reflections from Arthur</div>';
-  h += '<p style="font-size:12px;color:var(--muted)">Tap any entry below for Arthur\'s reflection, suggestions, and a song recommendation.</p></div>';
+  h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">Journal Reflections</div>';
+  h += '<p style="font-size:12px;color:var(--muted)">Tap any entry below for a reflection summary, suggestions, and a song recommendation.</p></div>';
   if (!D.journal.length) {
-    h += '<div class="card"><div class="empty-state">No entries yet. Write something above and Arthur will reflect on it.</div></div>';
+    h += '<div class="card"><div class="empty-state">No entries yet. Write something above to see reflections here.</div></div>';
   } else {
     h += '<div class="card" style="text-align:center;cursor:pointer;padding:10px" onclick="var e=document.getElementById(\'past-journals\');if(e){var v=e.style.display!==\'none\';e.style.display=v?\'none\':\'block\';this.querySelector(\'.pj-toggle\').textContent=v?\'Show All (' + D.journal.length + ' entries)\':\'Hide Past Journals\'}">';
     h += '<span class="pj-toggle" style="font-weight:600;font-size:13px;color:var(--primary)">Show All (' + D.journal.length + ' entries)</span></div>';
@@ -3886,7 +3886,6 @@ function showReflection(idx) {
   var result = detectMood(entryText);
   var mood = result.primary;
   var scores = result.scores;
-  var reflection = buildPersonalReflection(entry, mood, D.journal, idx);
   var suggestions = buildSuggestions(entry, mood, D.journal, idx);
   var song = getSong(entryText, mood);
   var name = D.name || 'there';
@@ -3901,7 +3900,7 @@ function showReflection(idx) {
   var moodBar = sorted.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px"><span>'+moodEmojis[k]+'</span><div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,Math.round(scores[k]/Math.max(1,scores[sorted[0]])*100))+'%;background:var(--primary);border-radius:4px;transition:width .5s"></div></div><span style="color:var(--muted);font-size:10px;width:16px;text-align:right">'+scores[k]+'</span></div>'}).join('');
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><div><h3 style="margin:0;font-size:16px">'+t("Arthur's Reflection")+'</h3><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">'+t('Based on your journal entry')+'</p></div></div>';
+  var h = '<div class="overlay-content"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">📝</div><div><h3 style="margin:0;font-size:16px">'+t('Journal Reflection')+'</h3><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">'+t('Insights and suggestions based on your entry')+'</p></div></div>';
 
   var contextLines = [];
   var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
@@ -3928,14 +3927,8 @@ function showReflection(idx) {
   // Summary
   h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#128221; '+t('Your Entry Summary')+'</div><div style="font-size:13px;line-height:1.7">' + buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour) + '</div></div>';
 
-  // Reflection
-  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💭 '+t("Arthur's insight")+'</div><div style="font-size:14px;line-height:1.6">' + reflection + '</div></div>';
-
-  // Story
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;background:linear-gradient(135deg,var(--primary-light),var(--card));border-left:3px solid var(--accent)"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">&#128214; '+t("A Story for You")+'</div><div style="font-size:13px;line-height:1.7;font-style:italic">"' + getVignette(mood) + '"</div><div style="font-size:11px;color:var(--muted);margin-top:6px;text-align:right">— Arthur</div></div>';
-
   // Suggestions / Advice
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 '+t("Arthur's advice")+'</div>';
+  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 '+t('Suggestions')+'</div>';
   for (var si = 0; si < Math.min(suggestions.length, 3); si++) {
     h += '<div style="font-size:13px;line-height:1.6;padding:5px 0;border-bottom:' + (si < Math.min(suggestions.length, 3) - 1 ? '1px solid var(--border)' : 'none') + '">' + '&#9654; ' + suggestions[si] + '</div>';
   }
@@ -3970,7 +3963,7 @@ function showReflection(idx) {
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
   if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || (dayCount > 365 && dayCount % 365 === 0)) setTimeout(confetti, 300);
-  } catch(e) { alert('Arthur had trouble reflecting: ' + e.message); }
+  } catch(e) { alert('Could not generate reflection: ' + e.message); }
 }
 
 // ====== COPING CARDS ======
