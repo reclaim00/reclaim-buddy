@@ -588,6 +588,11 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes koPop{0%{transform:translate(-50%,-50%) scale(0) rotate(-10deg);opacity:0}40%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg);opacity:1}60%{transform:translate(-50%,-50%) scale(0.9) rotate(-2deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1}}
 @keyframes vsBurst{0%{transform:translate(-50%,-50%) scale(0);opacity:0}30%{transform:translate(-50%,-50%) scale(1.4);opacity:1}50%{transform:translate(-50%,-50%) scale(0.9);opacity:1}70%{transform:translate(-50%,-50%) scale(1.1);opacity:.8}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
 @keyframes stageShake{0%{transform:scale(1.02) translateX(0)}20%{transform:scale(1.02) translateX(-4px)}40%{transform:scale(1.02) translateX(4px)}60%{transform:scale(1.02) translateX(-2px)}80%{transform:scale(1.02) translateX(2px)}100%{transform:scale(1.02) translateX(0)}}
+@keyframes jcTitle{0%{transform:scale(0) rotate(-6deg);opacity:0}50%{transform:scale(1.15) rotate(2deg);opacity:1}70%{transform:scale(0.95) rotate(-1deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes jcFadeUp{0%{opacity:0;transform:translateY(24px) scale(0.96)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes jcSlideLeft{0%{opacity:0;transform:translateX(-50px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes jcSlideRight{0%{opacity:0;transform:translateX(50px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes jcGlowPulse{0%,100%{box-shadow:0 0 6px rgba(99,102,241,.15)}50%{box-shadow:0 0 24px rgba(99,102,241,.35)}}
 @keyframes guitarSmash{0%{transform:rotate(0deg) translateX(0)}25%{transform:rotate(-45deg) translateX(8px)}50%{transform:rotate(-60deg) translateX(12px)}75%{transform:rotate(-30deg) translateX(4px)}100%{transform:rotate(0deg) translateX(0)}}
 @keyframes fistPound{0%{transform:rotate(0deg) translateY(0)}30%{transform:rotate(-25deg) translateY(-5px)}60%{transform:rotate(-40deg) translateY(10px)}100%{transform:rotate(0deg) translateY(0)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
@@ -3888,80 +3893,82 @@ function showReflection(idx) {
   var scores = result.scores;
   var suggestions = buildSuggestions(entry, mood, D.journal, idx);
   var song = getSong(entryText, mood);
-  var name = D.name || 'there';
   var dayCount = soberDays();
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   var totalEntries = D.journal.length;
   var streak = D.streak || 0;
-
   var moodEmojis = {sad:'😔', angry:'😤', anxious:'😰', happy:'😊', grateful:'🙏', reflective:'🤔', hopeful:'🌟', mixed:'🎭'};
-  var moodLabels = {sad:'Sadness', angry:'Anger', anxious:'Anxiety', happy:'Happiness', grateful:'Gratitude', reflective:'Reflection', hopeful:'Hope', mixed:'Mixed'};
   var sorted = Object.keys(scores).sort(function(a,b){return scores[b]-scores[a]}).filter(function(k){return scores[k]>0});
-  var moodBar = sorted.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px"><span>'+moodEmojis[k]+'</span><div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,Math.round(scores[k]/Math.max(1,scores[sorted[0]])*100))+'%;background:var(--primary);border-radius:4px;transition:width .5s"></div></div><span style="color:var(--muted);font-size:10px;width:16px;text-align:right">'+scores[k]+'</span></div>'}).join('');
+  var maxScore = sorted.length ? scores[sorted[0]] : 1;
+  var moodBar = sorted.map(function(k){return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px"><span>'+moodEmojis[k]+'</span><div style="flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden"><div class="jc-bar-fill" style="height:100%;width:0%;background:var(--primary);border-radius:4px"></div></div><span style="color:var(--muted);font-size:10px;width:16px;text-align:right">'+scores[k]+'</span></div>'}).join('');
+
+  var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
+  var contextLines = [];
+  if (entryHour >= 5 && entryHour < 12) contextLines.push('🌅 Good morning — starting your day with journaling sets a strong tone.');
+  else if (entryHour >= 17 && entryHour < 21) contextLines.push('🌆 Reflecting in the evening — a great way to process the day.');
+  else if (entryHour >= 21 || (entryHour >= 0 && entryHour < 5)) contextLines.push('🌙 Late night reflections');
+  if (dayCount > 0) contextLines.push('🌟 <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong>');
+  if (hasCravings) contextLines.push('⚠️ You logged a craving recently.');
+  if (streak > 3) contextLines.push('🔥 <strong>' + streak + ' day</strong> journal streak');
+  if (totalEntries <= 2) contextLines.push('🌱 One of your first entries');
+  if (entry.type === 'checkin') contextLines.push('📋 Honest check-in');
+
+  var ctx = contextLines.map(function(l){return '<div style="padding:1px 0;font-size:11px">'+l+'</div>'}).join('');
+  var entryNum = idx + 1;
+  var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour);
+  var mot = getMotivation(mood);
+  var songDesc = {sad:'A song that understands', angry:'A track to match the fire', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space'};
+
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">📝</div><div><h3 style="margin:0;font-size:16px">'+t('Journal Reflection')+'</h3><p style="margin:2px 0 0;font-size:12px;color:var(--muted)">'+t('Insights and suggestions based on your entry')+'</p></div></div>';
-
-  var contextLines = [];
-  var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
-  if (entryHour >= 5 && entryHour < 12) contextLines.push('🌅 Good morning — starting your day with journaling sets a strong tone.');
-  else if (entryHour >= 12 && entryHour < 17) contextLines.push('☀️ A midday check-in shows you\'re staying present — that\'s real growth.');
-  else if (entryHour >= 17 && entryHour < 21) contextLines.push('🌆 Reflecting in the evening — a great way to process the day.');
-  else if (entryHour >= 21 || (entryHour >= 0 && entryHour < 5)) contextLines.push('🌙 Late night reflections — some of the deepest thoughts come when the world is quiet.');
-  if (dayCount > 0) contextLines.push('🌟 <strong>' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober</strong>');
-  if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || dayCount % 365 === 0) contextLines.push('🎉 Major milestone — ' + dayCount + ' days!');
-  if (hasCravings) contextLines.push('⚠️ You logged a craving recently. Let\'s explore that.');
-  if (streak > 3) contextLines.push('🔥 <strong>' + streak + ' day</strong> journal streak');
-  if (totalEntries <= 2) contextLines.push('🌱 One of your first entries — thank you for starting.');
-  if (entry.type === 'checkin') contextLines.push('📋 Honest check-in — builds self-awareness.');
-
-  if (contextLines.length) {
-    h += '<div class="card" style="padding:8px 12px;margin-bottom:8px;font-size:13px;line-height:1.6">';
-    for (var ci=0;ci<contextLines.length;ci++) h += '<div style="padding:1px 0">' + contextLines[ci] + '</div>';
-    h += '</div>';
-  }
-
-  // Mood bar
-  h += '<div class="card" style="padding:12px;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">'+t('Mood analysis')+'</div>' + moodBar + '</div>';
-
+  overlay.style.background = 'rgba(0,0,0,.92)';
+  var h = '<div class="overlay-content" style="padding:12px;max-width:480px">';
+  // Title card
+  h += '<div style="text-align:center;padding:14px 0 10px;opacity:0;animation:jcTitle .6s cubic-bezier(.22,1,.36,1) forwards">';
+  h += '<div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:3px;margin-bottom:4px">JOURNAL ENTRY</div>';
+  h += '<div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--primary),#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent">#'+entryNum+'</div>';
+  h += '</div>';
+  // Context lines
+  h += '<div class="card" style="padding:8px 12px;margin-bottom:6px;opacity:0;animation:jcSlideLeft .5s cubic-bezier(.22,1,.36,1) forwards;animation-delay:.25s">'+ctx+'</div>';
+  // Mood
+  h += '<div class="card" style="padding:10px 12px;margin-bottom:6px;opacity:0;animation:jcFadeUp .5s cubic-bezier(.22,1,.36,1) forwards;animation-delay:.45s"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">'+t('Mood analysis')+'</div>' + moodBar + '</div>';
   // Summary
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--purple)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#128221; '+t('Your Entry Summary')+'</div><div style="font-size:13px;line-height:1.7">' + buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour) + '</div></div>';
-
-  // Suggestions / Advice
-  h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--primary)"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">💡 '+t('Suggestions')+'</div>';
+  h += '<div class="card" style="padding:10px 12px;margin-bottom:6px;border-left:3px solid var(--purple);opacity:0;animation:jcSlideRight .5s cubic-bezier(.22,1,.36,1) forwards;animation-delay:.65s"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#128221; '+t('Your Entry Summary')+'</div><div style="font-size:13px;line-height:1.7">' + summaryText + '</div></div>';
+  // Suggestions
+  h += '<div class="card" style="padding:10px 12px;margin-bottom:6px;border-left:3px solid var(--primary);opacity:0;animation:jcFadeUp .5s cubic-bezier(.22,1,.36,1) forwards;animation-delay:.85s"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">💡 '+t('Suggestions')+'</div>';
   for (var si = 0; si < Math.min(suggestions.length, 3); si++) {
-    h += '<div style="font-size:13px;line-height:1.6;padding:5px 0;border-bottom:' + (si < Math.min(suggestions.length, 3) - 1 ? '1px solid var(--border)' : 'none') + '">' + '&#9654; ' + suggestions[si] + '</div>';
+    h += '<div style="font-size:12px;line-height:1.6;padding:4px 0;border-bottom:'+(si<Math.min(suggestions.length,3)-1?'1px solid var(--border)':'none')+'">&#9654; '+suggestions[si]+'</div>';
   }
   h += '</div>';
-
-  var mot = getMotivation(mood);
+  // Quote
   if (mot) {
-    h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--blue)"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#127918; ' + mot.c + ' — ' + mot.p + '</div><div style="font-size:15px;font-style:italic;line-height:1.5;color:var(--text)">' + mot.q + '</div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Why this matters</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + mot.t + '</p></details></div>';
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:6px;border-left:3px solid var(--blue);opacity:0;animation:jcSlideLeft .5s cubic-bezier(.22,1,.36,1) forwards;animation-delay:1.05s"><div style="font-size:10px;color:var(--muted);margin-bottom:4px">&#127918; '+mot.c+' — '+mot.p+'</div><div style="font-size:14px;font-style:italic;line-height:1.5;color:var(--text)">'+mot.q+'</div><details style="margin-top:4px"><summary style="font-size:10px;color:var(--muted);cursor:pointer">Why this matters</summary><p style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">'+mot.t+'</p></details></div>';
   }
-
   // Song
-  var songDesc = {sad:'A song that understands the weight you\'re carrying', angry:'A track to match the fire in you', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space for it all'};
-  h += '<div class="card" style="padding:12px;text-align:center;margin-bottom:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:4px">&#127926; ' + (songDesc[mood] || 'A song that matches your energy') + '</div>';
+  h += '<div class="card" style="padding:10px 12px;margin-bottom:6px;text-align:center;opacity:0;animation:jcFadeUp .5s cubic-bezier(.22,1,.36,1) forwards;animation-delay:1.25s"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">&#127926; '+(songDesc[mood]||'A song for you')+'</div>';
   if (song) {
-    h += '<div style="font-weight:700;font-size:15px;margin:2px 0">' + song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;') + ' <span style="font-weight:400;color:var(--muted)">— ' + song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span></div>';
+    h += '<div style="font-weight:700;font-size:14px;margin:2px 0">'+song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;')+' <span style="font-weight:400;color:var(--muted)">— '+song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span></div>';
     h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:6px;flex-wrap:wrap">';
-    h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Spotify</a>';
-    h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; YouTube</a>';
-    h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:11px">&#9654; Apple Music</a>';
-    h += '</div>';
+    h += '<a href="'+song.url_spotify+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:10px">&#9654; Spotify</a>';
+    h += '<a href="'+song.url_youtube+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:10px">&#9654; YouTube</a>';
+    h += '<a href="'+song.url_apple+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:10px">&#9654; Apple Music</a></div>';
   } else {
-    h += '<div style="font-size:13px;color:var(--muted);padding:6px 0">🎵 Arthur is picking the perfect song...</div>';
+    h += '<div style="font-size:12px;color:var(--muted);padding:4px 0">🎵 Finding the perfect song...</div>';
   }
   h += '</div>';
-
   // Original entry
-  h += '<details style="margin-bottom:8px"><summary style="font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);padding:4px 0">&#128196; Read your entry</summary>';
-  h += '<div class="card" style="padding:12px;margin-top:6px"><p style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap">' + (entryText || getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</p></div></details>';
-
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:4px">Close</button></div>';
-  D.reflectionCount = (D.reflectionCount || 0) + 1;
+  h += '<details class="card" style="padding:10px 12px;margin-bottom:6px;opacity:0;animation:jcSlideRight .5s cubic-bezier(.22,1,.36,1) forwards;animation-delay:1.45s"><summary style="font-size:12px;font-weight:600;cursor:pointer;color:var(--muted)">&#128196; Read your entry</summary>';
+  h += '<p style="font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap;margin-top:6px">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p></details>';
+  // Close
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:4px;opacity:0;animation:jcFadeUp .4s ease forwards;animation-delay:1.65s">Close</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
+  // Animate mood bars after a short delay
+  setTimeout(function(){
+    var fills = overlay.querySelectorAll('.jc-bar-fill');
+    for (var fi=0;fi<fills.length;fi++){if(sorted[fi]){fills[fi].style.transition='width .6s cubic-bezier(.22,1,.36,1)';fills[fi].style.width=Math.min(100,Math.round(scores[sorted[fi]]/maxScore*100))+'%';}}
+  }, 550);
+  D.reflectionCount = (D.reflectionCount || 0) + 1;
   if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || (dayCount > 365 && dayCount % 365 === 0)) setTimeout(confetti, 300);
   } catch(e) { alert('Could not generate reflection: ' + e.message); }
 }
