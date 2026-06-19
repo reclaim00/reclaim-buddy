@@ -14,14 +14,14 @@
 <title>Re.Claim</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f0f7f4;--card:#fff;--primary:#059669;--primary-dark:#047857;--primary-light:#d1fae5;--text:#1f2937;--muted:#9ca3af;--border:#e5e7eb;--radius:16px;--accent:#f59e0b;--danger:#ef4444;--danger-bg:#fef2f2;--purple:#8b5cf6;--purple-light:#ede9fe;--blue:#3b82f6;--blue-light:#dbeafe;--rose:#e11d48;--rose-light:#ffe4e6}
+:root{--bg:#f0f7f4;--card:#fff;--primary:#059669;--primary-dark:#047857;--primary-light:#d1fae5;--text:#1f2937;--muted:#9ca3af;--border:#e5e7eb;--radius:16px;--accent:#f59e0b;--danger:#ef4444;--danger-bg:#fef2f2;--purple:#8b5cf6;--purple-light:#ede9fe;--blue:#3b82f6;--blue-light:#dbeafe;--rose:#e11d48;--rose-light:#ffe4e6;--avatar-buddy:linear-gradient(135deg,var(--purple),var(--blue));--avatar-erin:linear-gradient(135deg,var(--rose),#f43f5e);--avatar-arthur:linear-gradient(135deg,var(--primary),var(--primary-dark));--grad-accent:#34d399}
 [theme=blue]{--primary:#3b82f6;--primary-dark:#2563eb;--primary-light:#dbeafe}
 [theme=purple]{--primary:#8b5cf6;--primary-dark:#7c3aed;--primary-light:#ede9fe}
 [theme=warm]{--primary:#f59e0b;--primary-dark:#d97706;--primary-light:#fef3c7}
 [theme=rose]{--primary:#e11d48;--primary-dark:#be123c;--primary-light:#ffe4e6}
 [theme=teal]{--primary:#0d9488;--primary-dark:#0f766e;--primary-light:#ccfbf1}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-body.dark{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--border:#475569;--primary-light:#064e3b;--primary-dark:#a7f3d0;--danger-bg:#450a0a}
+body.dark{--bg:#0f172a;--card:#1e293b;--text:#f1f5f9;--muted:#94a3b8;--border:#475569;--primary-light:#064e3b;--primary-dark:#a7f3d0;--danger-bg:#450a0a;--grad-accent:#a7f3d0}
 [theme=blue] body.dark{--primary-light:#1e3a5f;--primary-dark:#93c5fd}
 [theme=purple] body.dark{--primary-light:#3b0764;--primary-dark:#c4b5fd}
 [theme=warm] body.dark{--primary-light:#713f12;--primary-dark:#fde68a}
@@ -85,7 +85,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .google-btn:hover{background:#f9fafb}
 .google-btn svg{width:20px;height:20px}
 .buddy-card{display:flex;align-items:center;gap:12px;padding:12px;background:var(--primary-light);border-radius:12px;margin:8px 0}
-.buddy-avatar{width:48px;height:48px;border-radius:24px;background:linear-gradient(135deg,#8b5cf6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;font-weight:700}
+.buddy-avatar{width:48px;height:48px;border-radius:24px;background:var(--avatar-buddy);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;font-weight:700}
 .goal-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
 .goal-item.done{text-decoration:line-through;color:var(--muted)}
 .sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
@@ -1367,7 +1367,7 @@ function toggleTargetAddiction(type) {
 
 function safetyPlanHTML() {
   var addictions = D.targetAddictions || [];
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,#ec4899,#f43f5e);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">E</div><div><h3 style="margin:0;font-size:15px">Erin\'s Safety Plan</h3><p style="font-size:11px;color:var(--muted);margin:0">Personalized for your recovery</p></div></div>';
+  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-erin);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">E</div><div><h3 style="margin:0;font-size:15px">Erin\'s Safety Plan</h3><p style="font-size:11px;color:var(--muted);margin:0">Personalized for your recovery</p></div></div>';
   if (!addictions.length) {
     h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Select what you are working on below, and Erin will create a safety plan for you.</p>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
@@ -1632,7 +1632,7 @@ function soberTimerHTML() {
   parts.push(String(el.hours).padStart(2,'0') + 'h');
   parts.push(String(el.minutes).padStart(2,'0') + 'm');
   parts.push(String(el.seconds).padStart(2,'0') + 's');
-  return '<div id="sober-timer" style="background:linear-gradient(135deg,var(--primary),#34d399);border-radius:14px;padding:14px 16px;margin:8px 0;text-align:center;color:#fff;box-shadow:0 2px 12px rgba(5,150,105,.25)"><div style="font-size:11px;opacity:.8;margin-bottom:4px;font-weight:500;letter-spacing:1px;text-transform:uppercase">Time Since Last Reset</div><div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px">' + parts.join(' ') + '</div></div>';
+  return '<div id="sober-timer" style="background:linear-gradient(135deg,var(--primary),var(--grad-accent));border-radius:14px;padding:14px 16px;margin:8px 0;text-align:center;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15)"><div style="font-size:11px;opacity:.8;margin-bottom:4px;font-weight:500;letter-spacing:1px;text-transform:uppercase">Time Since Last Reset</div><div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px">' + parts.join(' ') + '</div></div>';
 }
 
 function startSoberTimer() {
@@ -2626,7 +2626,7 @@ function timelineHTML() {
   // Sort by date (oldest first)
   events.sort(function(a,b){return a.date - b.date});
   if (!events.length) return '<div class="card"><div class="empty-state">No events yet. Start tracking to see your timeline.</div></div>';
-  var colors = {start:'var(--primary)', relapse:'var(--danger)', journal:'#3b82f6', mood:'var(--accent)', checkin:'#22c55e', badge:'#8b5cf6', buddy:'#ec4899'};
+  var colors = {start:'var(--primary)', relapse:'var(--danger)', journal:'var(--blue)', mood:'var(--accent)', checkin:'#22c55e', badge:'var(--purple)', buddy:'var(--rose)'};
   var icons = {start:'&#127793;', relapse:'&#128260;', journal:'&#128221;', mood:'&#128164;', checkin:'&#9989;', badge:'&#127942;', buddy:'&#129309;'};
   // Latest badge earned
   var lastBadge = null;
@@ -3030,7 +3030,7 @@ var ROUTINE_POOLS = {
 function artDailyRoutineHTML() {
   var today = new Date().toDateString();
   if (D._artRoutineDate === today && D._artRoutine) return D._artRoutine;
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:16px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:700">A</div><div><h3 style="margin:0;font-size:15px">Arthur\'s Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
+  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:16px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:700">A</div><div><h3 style="margin:0;font-size:15px">Arthur\'s Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
   if (!D.journal.length) {
     h += '<div class="empty-state">Write in your journal so Arthur can create a personalized daily routine for you.</div></div>';
     return h;
@@ -8307,7 +8307,7 @@ function savePaulieStep() {
 function showRelapseCutscene() {
   var plan = D.relapsePlan;
   if (!plan || !plan.triggers || !plan.triggers.length) { render(); return; }
-  var mc = '#8b5cf6';
+  var mc = getComputedStyle(document.documentElement).getPropertyValue('--purple').trim()||'#8b5cf6';
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
@@ -8490,7 +8490,7 @@ function showErinDuel() {
     '<span id="erin-result" style="font-size:10px;color:var(--muted);opacity:0">The power of friendship wins!</span>' +
     '</div>' +
     '<div style="height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin:0 8px">' +
-    '<div id="erin-progress" style="height:100%;width:0%;background:linear-gradient(90deg,#f59e0b,#ef4444,#ec4899);border-radius:3px;transition:width .5s linear"></div>' +
+    '<div id="erin-progress" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--danger),var(--rose));border-radius:3px;transition:width .5s linear"></div>' +
     '</div>' +
     '<button id="erin-continue" style="display:none;margin-top:10px;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Continue &#8594;</button>' +
     '</div>';
@@ -8645,7 +8645,7 @@ function showSafetyCutscene() {
   var type = (types.length ? types[0] : 'Other');
   var sp = SAFETY_PLANS[type] || SAFETY_PLANS['Other'];
   var answers = D.safetyAnswers || [];
-  var mc = '#ec4899';
+  var mc = getComputedStyle(document.documentElement).getPropertyValue('--rose').trim()||'#ec4899';
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
@@ -8720,7 +8720,7 @@ function renderErinQuestion() {
   overlay.innerHTML =
     '<div style="background:var(--card);max-width:380px;width:90%;margin:0 auto;border-radius:20px;padding:28px 20px 20px;text-align:center;animation:siFade .3s ease;position:relative;max-height:85vh;overflow-y:auto">' +
     '<div style="font-size:40px;margin-bottom:4px">&#128105;</div>' +
-    '<div style="font-size:13px;font-weight:700;color:#ec4899;margin-bottom:2px">Erin asks:</div>' +
+    '<div style="font-size:13px;font-weight:700;color:var(--rose);margin-bottom:2px">Erin asks:</div>' +
     '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + q.q + '</div>' +
     '<textarea id="erin-q-input" placeholder="' + q.pl + '" style="min-height:80px">' + (ERIN_Q_ANSWERS[step] || '') + '</textarea>' +
     '<div style="display:flex;gap:6px;justify-content:center;margin:14px 0 10px">' +
