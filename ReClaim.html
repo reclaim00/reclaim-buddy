@@ -742,11 +742,15 @@ function loadFromFirestore(callback) {
   if (!AUTH_EMAIL) { if (callback) callback(null); return; }
   DB.collection('appData').doc(AUTH_EMAIL).get().then(function(doc) {
     if (doc.exists && doc.data().data && doc.data().data.joinDate) {
-      callback(doc.data().data);
+      var cloudData = validateData(doc.data().data);
+      // Merge cloud into D: cloud wins on conflicts, local fills gaps
+      for (var k in cloudData) D[k] = cloudData[k];
+      saveData();
+      if (callback) callback(cloudData);
     } else {
-      callback(null);
+      if (callback) callback(null);
     }
-  }).catch(function(){ callback(null); });
+  }).catch(function(){ if (callback) callback(null); });
 }
 
 // ====== AUTH ======
@@ -766,7 +770,6 @@ function onAuthReady(email, isNew) {
   registerCurrentUser();
   if (firebase && firebase.auth().currentUser) {
     loadFromFirestore(function(cloudData) {
-      if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
       render();
       if (isNew) { setTimeout(function(){ showOnboarding(); }, 400); }
       if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
@@ -777,6 +780,10 @@ function onAuthReady(email, isNew) {
     if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
   }
   if (isLockSet()) { showLockScreen(); } else { resetLockTimer(); }
+  // Periodic cloud sync — re-check on focus
+  if (window._focusSync) document.removeEventListener('focus', window._focusSync);
+  window._focusSync = function(){ if (AUTH_EMAIL && firebase && firebase.auth().currentUser) { loadFromFirestore(function(){}); } };
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && AUTH_EMAIL && firebase && firebase.auth().currentUser) { loadFromFirestore(function(){}); } });
 }
 
 try { firebase.auth().onAuthStateChanged(function(user) {
