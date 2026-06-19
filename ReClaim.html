@@ -4196,7 +4196,7 @@ function careHTML() {
     h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--primary-light);border-radius:10px;margin-bottom:6px"><span style="font-size:22px">'+moodStr+'</span><div style="flex:1"><div style="font-weight:600;font-size:13px;color:var(--primary)">'+t('Checked in today')+'</div>' +
       (ciData && ciData.win ? '<div style="font-size:11px;color:var(--text);margin-top:2px">&#127775; "'+ciData.win.substring(0,60)+(ciData.win.length>60?'...':'')+'"</div>' : '') +
       '</div></div>';
-    h += '<button class="btn btn-sm btn-outline" onclick="replayBattle()" style="font-size:11px">&#127918; Replay battle</button>';
+    h += '<button class="btn btn-sm btn-outline" onclick="render()" style="font-size:11px">&#127918; Check in again</button>';
   } else {
     h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('How was your day?')+'</p>';
     h += '<button class="btn btn-primary btn-sm" onclick="doCheckin()">'+t('Check In')+'</button>';
@@ -5003,7 +5003,7 @@ function submitCheckin() {
   D.streak = (D.streak || 0) + 1;
   saveData();
   if (window._cmOverlay) window._cmOverlay.remove();
-  showTeamBattle({mood:mood,win:win});
+  render();
 }
 function replayBattle() {
   doCheckin(true);
