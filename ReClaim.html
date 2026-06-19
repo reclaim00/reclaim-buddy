@@ -6666,7 +6666,7 @@ function getChallengeProgress(challenge) {
     case 'sober': count = soberDays(); break;
   }
   // Auto-save challenge progress
-  D.monthlyChallenge = { month: challenge.month, year: challenge.year, title: challenge.title, icon: challenge.icon, target: challenge.target, targetCount: challenge.targetCount, progress: count, completed: count >= challenge.targetCount };
+  D.monthlyChallenge = { month: challenge.month, year: challenge.year, title: challenge.title, icon: challenge.icon, target: challenge.target, targetCount: challenge.targetCount, progress: count, completed: count >= challenge.targetCount, pledge: D.monthlyChallenge ? D.monthlyChallenge.pledge : challenge.pledge };
   return count;
 }
 
@@ -6926,11 +6926,41 @@ function monthlyChallengeHTML() {
   var pct = Math.min(100, Math.round((progress / challenge.targetCount) * 100));
   var done = progress >= challenge.targetCount;
   var monthLabel = MONTH_NAMES[challenge.month] || '';
-  var h = '<div class="card" style="border:2px solid ' + (done ? 'var(--primary)' : 'var(--accent)') + '"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">' + challenge.icon + '</div><div><h3 style="margin:0;font-size:14px">' + (done ? '&#127881; ' : '') + monthLabel + ' Challenge</h3><p style="margin:0;font-size:11px;color:var(--muted)">' + challenge.title + '</p></div></div>';
-  h += '<div class="progress-bar" style="margin:6px 0"><div class="fill" style="width:' + pct + '%"></div></div>';
-  h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>' + progress + '/' + challenge.targetCount + '</span><span>' + pct + '%</span></div>';
+  var pledged = challenge.pledge || (D.monthlyChallenge && D.monthlyChallenge.pledge);
+  var h = '<div class="card" style="border:2px solid ' + (done ? 'var(--primary)' : (pledged ? 'var(--accent)' : 'var(--border)')) + '"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">' + challenge.icon + '</div><div><h3 style="margin:0;font-size:14px">' + (done ? '&#127881; ' : '') + monthLabel + ' Challenge</h3><p style="margin:0;font-size:11px;color:var(--muted)">' + challenge.title + '</p></div></div>';
+  if (!pledged && !done) {
+    h += '<button class="btn btn-sm btn-primary" onclick="pledgeToChallenge()" style="width:100%;margin:6px 0">&#9997; Pledge to Complete</button>';
+    h += '<div style="font-size:11px;color:var(--muted);text-align:center">Make a commitment to yourself — write down your promise</div>';
+  } else {
+    if (pledged) {
+      h += '<div style="font-size:11px;background:var(--primary-light);padding:6px 8px;border-radius:6px;margin:4px 0;line-height:1.4;color:var(--text)">&#128221; "' + safe(pledged) + '"</div>';
+    }
+    h += '<div class="progress-bar" style="margin:6px 0"><div class="fill" style="width:' + pct + '%"></div></div>';
+    h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>' + progress + '/' + challenge.targetCount + '</span><span>' + pct + '%</span></div>';
+    if (done) {
+      h += '<div style="text-align:center;margin-top:6px;font-size:13px;font-weight:700;color:var(--primary)">&#127881; Challenge Complete! You kept your word.</div>';
+    }
+  }
   h += '</div>';
   return h;
+}
+function pledgeToChallenge() {
+  var challenge = currentMonthlyChallenge();
+  var monthLabel = MONTH_NAMES[challenge.month] || '';
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;max-width:400px"><div style="font-size:40px;margin-bottom:6px">' + challenge.icon + '</div><h3 style="font-size:18px;margin-bottom:2px">' + monthLabel + ' Pledge</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Write your commitment to complete this month\'s challenge</p><div style="font-size:12px;background:var(--primary-light);padding:8px 10px;border-radius:8px;margin-bottom:8px;line-height:1.5"><strong>Challenge:</strong> ' + challenge.title + '<br><strong>Target:</strong> ' + challenge.targetCount + ' ' + challenge.target + ' entries this month</div><textarea id="pledge-text" placeholder="I, ' + (AUTH_EMAIL||'your name') + ', pledge to complete this challenge because..." style="width:100%;min-height:70px;margin-bottom:8px;resize:vertical">' + (D.monthlyChallenge && D.monthlyChallenge.pledge ? D.monthlyChallenge.pledge : '') + '</textarea><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary" onclick="saveChallengePledge()">&#9997; Lock In My Pledge</button></div></div>';
+  document.body.appendChild(overlay);
+  setTimeout(function(){var e=document.getElementById('pledge-text');if(e)e.focus()},200);
+}
+function saveChallengePledge() {
+  var text = document.getElementById('pledge-text');
+  if (!text || !text.value.trim()) { alert('Write your pledge before locking it in.'); return; }
+  D.monthlyChallenge = D.monthlyChallenge || currentMonthlyChallenge();
+  D.monthlyChallenge.pledge = text.value.trim();
+  saveData();
+  [].forEach.call(document.querySelectorAll('.overlay'),function(el){el.remove()});
+  render();
 }
 
 // ====== BUDDY MESSAGING ======
@@ -7113,6 +7143,8 @@ function homeHTML() {
   h += dailyQuote();
 
   h += dailyChallenge();
+
+  h += monthlyChallengeHTML();
 
   // Badges
   h += badgesHTML();
