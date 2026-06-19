@@ -624,14 +624,14 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes jcMoodPulse{0%{box-shadow:0 0 0 0 var(--jc-mc),0 0 20px var(--jc-mc)}40%{box-shadow:0 0 0 18px transparent,0 0 40px var(--jc-mc66)}100%{box-shadow:0 0 0 0 transparent,0 0 20px var(--jc-mc33)}}
 @keyframes jcVignette{from{opacity:0}to{opacity:1}}
 @keyframes jcGrain{0%,100%{transform:translate(0)}20%{transform:translate(-1px,1px)}40%{transform:translate(1px,-1px)}60%{transform:translate(-1px,0)}80%{transform:translate(1px,0)}}
-@keyframes guitarSmash{0%{transform:rotate(0deg) translateX(0)}25%{transform:rotate(-45deg) translateX(8px)}50%{transform:rotate(-60deg) translateX(12px)}75%{transform:rotate(-30deg) translateX(4px)}100%{transform:rotate(0deg) translateX(0)}}
+@keyframes staffStrike{0%{transform:rotate(-20deg) translateX(0)}30%{transform:rotate(-55deg) translateX(8px)}60%{transform:rotate(8deg) translateX(-4px)}100%{transform:rotate(0deg) translateX(0)}}
 @keyframes fistPound{0%{transform:rotate(0deg) translateY(0)}30%{transform:rotate(-25deg) translateY(-5px)}60%{transform:rotate(-40deg) translateY(10px)}100%{transform:rotate(0deg) translateY(0)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
 #mp-arthur.celebrate .tb-arm-g{transform:rotate(-50deg)}#mp-paulie.celebrate .tb-arm-g{transform:rotate(-70deg) scaleX(-1)}#mp-erin.celebrate .tb-arm-g{transform:rotate(-60deg)}
 #ta-arthur.fight .tb-arm-g{animation:fistPound .6s ease forwards}
 #ta-arthur.victory .tb-arm-g{transform:rotate(-40deg)}
-#ta-paulie.fight .tb-arm-g{animation:guitarSmash .5s ease forwards}
-#ta-paulie.fight .tb-weapon{animation:guitarSmash .5s ease forwards}
+#ta-paulie.fight .tb-arm-g{animation:staffStrike .5s ease forwards}
+#ta-paulie.fight .tb-weapon{animation:staffStrike .5s ease forwards}
 #ta-paulie.victory .tb-arm-g{transform:rotate(-60deg)}
 #ta-paulie.victory .tb-weapon{transform:rotate(-30deg)}
 #ta-erin.fight .tb-arm-g{animation:fistPound .4s ease forwards}
@@ -1305,7 +1305,7 @@ var SAFETY_PLANS = {
   },
   'Drugs (prescription/illicit)': {
     plan: 'Your safety starts with honesty. Talk to a doctor or counselor about your usage. Dispose of any unused substances safely. Build a list of emergency contacts you can call when urges arise. Avoid people and places associated with use. Create a daily routine that includes meals, sleep, and movement. Celebrate every day clean as a victory.',
-    steps: ['Consult a medical professional about your usage', 'Safely dispose of remaining substances', 'Create an emergency contact list', 'Avoid trigger environments', 'Build a structured daily routine', 'Log each clean day as a win']
+    steps: ['Talk to a doctor or counselor about your usage', 'Safely dispose of remaining substances', 'Create an emergency contact list', 'Avoid trigger environments', 'Build a structured daily routine', 'Log each clean day as a win']
   },
   'Pornography': {
     plan: 'Install accountability software on your devices. Identify what feelings or situations trigger the urge — boredom, stress, loneliness — and address those directly. Replace the habit with a positive alternative: exercise, creative work, or calling a friend. Track your streak and reward milestones. Be patient with yourself; recovery is a process.',
@@ -2122,7 +2122,7 @@ function osiSubmit(btn) {
   showAssessmentAfterSignIn();
 }
 
-// ====== MENTAL HEALTH SCREENERS ======
+// ====== SELF-CHECK SCREENERS ======
 var SCREENER_OPTS = [
   { val: 0, label: 'Not at all', color: 'var(--primary)', bg: 'var(--primary-light)' },
   { val: 1, label: 'Several days', color: 'var(--accent)', bg: '#fef3c7' },
@@ -2148,8 +2148,8 @@ function screenerOptionsHTML(name, savedVal) {
 function screenerHTML() {
   if (!D.screenerPHQ9) { D.screenerPHQ9 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
   if (!D.screenerGAD7) { D.screenerGAD7 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Mental Health Screeners</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">These brief questionnaires can help you check in on your mental health. Results are private and not a diagnosis.</p>';
+  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Self-Check Screeners</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">These brief questionnaires can help you check in on your well-being. Results are private and not a diagnosis.</p>';
 
   function screenerCard(key, title, icon, questions, data) {
     var card = '<div class="card" style="border-left:3px solid var(--primary);margin-bottom:10px">';
@@ -2171,7 +2171,7 @@ function screenerHTML() {
 
   h += screenerCard('phq9', 'PHQ-9', '&#128555;', SCREENER_PHQ, D.screenerPHQ9);
   h += screenerCard('gad7', 'GAD-7', '&#128534;', SCREENER_GAD7, D.screenerGAD7);
-  h += '<div class="card" style="background:var(--primary-light);border:none;text-align:center;font-size:12px;color:var(--muted)"><strong>Important:</strong> These are screening tools only. They are not a substitute for professional mental health evaluation. If you are in crisis, use <strong>SOS</strong> or call <strong>988</strong> (Suicide &amp; Crisis Lifeline).</div>';
+  h += '<div class="card" style="background:var(--primary-light);border:none;text-align:center;font-size:12px;color:var(--muted)"><strong>Important:</strong> These are self-checks only, not a diagnosis. If you are in crisis, use <strong>SOS</strong> or call <strong>988</strong> (Suicide &amp; Crisis Lifeline).</div>';
   return h;
 }
 
@@ -4934,7 +4934,7 @@ function insightsHTML() {
 
   if (insights.length) {
     h += '<div class="card" style="background:var(--primary-light);border:none;text-align:center;font-size:11px;color:var(--muted);line-height:1.5">';
-    h += '<strong>Note:</strong> These patterns are generated from your data. They are not clinical advice. Share concerning patterns with your support network or therapist.';
+    h += '<strong>Note:</strong> These patterns are generated from your data. Share concerning patterns with your support network.';
     h += '</div>';
   }
 
@@ -5302,7 +5302,7 @@ var LIB_BOOKS = [
 ];
 var LIB_PODCASTS = [
   {title:'The Recovery Show', desc:'12-step based recovery stories', url:'https://www.recoveryshow.com/'},
-  {title:'Psychology Unplugged', desc:'Mental health insights', url:'https://psychologyunplugged.com/'},
+  {title:'Psychology Unplugged', desc:'Wellness insights', url:'https://psychologyunplugged.com/'},
   {title:'The Happiness Lab', desc:'Science of wellbeing', url:'https://www.happinesslab.fm/'}
 ];
 var LIB_VIDEOS = [
@@ -7540,7 +7540,7 @@ function showTeamBattle(data) {
       '<svg class="arthur-svg" viewBox="0 0 30 54"><path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8" stroke-linecap="round"/><circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="10" r="2.5" fill="#dc2626"/></g></g><line x1="15" y1="30" x2="11" y2="39" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="30" x2="20" y2="38" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></svg>'
     },
     {id:'ta-paulie',color:'#4338ca',label:'Paulie',svg:
-      '<svg class="paulie-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21.5" y1="21.5" x2="28" y2="12" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><ellipse cx="28" cy="11" rx="2.5" ry="2" fill="#6366f1"/><ellipse cx="27.5" cy="10.5" rx="1" ry=".8" fill="#a5b4fc"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'
+      '<svg class="paulie-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round" class="tb-weapon"/><circle cx="27" cy="9" r="2.5" fill="#a5b4fc"/><circle cx="27" cy="9" r="1" fill="#e0e7ff"/><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'
     },
     {id:'ta-erin',color:'#ec4899',label:'Erin',svg:
       '<svg class="erin-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="3" x2="11" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="3" x2="19" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="19" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 19px"><line x1="21" y1="19" x2="23" y2="13" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="13" r="2" fill="#ec4899"/><line x1="24" y1="13" x2="30" y2="13" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><circle cx="30" cy="13" r="4" fill="#fbbf24" class="tb-muzzle" style="transform-origin:0 0"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/></svg>'
