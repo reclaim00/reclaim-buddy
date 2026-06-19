@@ -461,7 +461,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .erin-stage.hit .e-larm-g{transform:rotate(0deg)}
 .erin-stage.help .e-rarm-g{transform:rotate(-30deg)}
 .erin-stage.help .e-larm-g{transform:rotate(0deg)}
-.erin-stage.celebrate .e-larm-g{transform:rotate(-110deg)}
+.erin-stage.celebrate .e-larm-g{transform:rotate(0deg)}
 .erin-stage.celebrate .e-rarm-g{transform:rotate(110deg)}
 .erin-stage .e-gun,.cowboy-stage .c-gun{opacity:1}
 .erin-stage .e-muzzle,.cowboy-stage .c-muzzle{opacity:0}
@@ -8210,8 +8210,7 @@ function showErinDuel() {
   // Phase 9: Erin realizes her mistake - rushes toward wounded cowboy (10500ms)
   timers.push(setTimeout(function(){
     var eg = document.querySelector('#erin-char .e-gun'); if (eg) eg.style.opacity = '0';
-    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinWalkToCowboy 1.2s ease forwards'; }
-    eAnim('walk', 1200);
+    if (E) { E.style.animation = 'none'; E.offsetHeight; E.style.animation = 'erinWalkToCowboy 1.2s ease forwards'; E.className = 'erin-stage'; }
     updateProgress(68);
   }, 10500));
 
