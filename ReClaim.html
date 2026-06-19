@@ -1093,7 +1093,7 @@ function dataKey() { return 'rc_data_' + (AUTH_USER || 'local').replace(/[^a-zA-
 function loadData() {
   try {
     var d = JSON.parse(localStorage.getItem(dataKey()));
-    if (d) return d;
+    if (d) return validateData(d);
   } catch(e) {}
   return defaultData();
 }
@@ -1105,6 +1105,16 @@ function saveData() {
   applyTheme();
   _pageCache = {};
   render();
+}
+function safe(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function validateData(d) {
+  var def = defaultData();
+  for (var k in def) {
+    if (!(k in d)) d[k] = JSON.parse(JSON.stringify(def[k]));
+    else if (Array.isArray(def[k]) && !Array.isArray(d[k])) d[k] = [];
+    else if (typeof def[k] === 'object' && def[k] !== null && !Array.isArray(def[k]) && (typeof d[k] !== 'object' || d[k] === null || Array.isArray(d[k]))) d[k] = JSON.parse(JSON.stringify(def[k]));
+  }
+  return d;
 }
 
 // ====== DATA PROTECTION / PASSCODE LOCK ======
@@ -2499,7 +2509,7 @@ function habitHTML() {
       var streak = calcHabitStreak(D.habits[i]);
       h += '<div class="card" style="padding:12px">';
       h += '<div class="habit-item"><div class="check'+(done?' done':'')+'" onclick="toggleHabit('+i+')">'+(done?'✓':'')+'</div>';
-      h += '<div class="info"><div class="name">'+D.habits[i].name+'</div><div class="streak">'+streak+' day streak</div></div>';
+      h += '<div class="info"><div class="name">'+safe(D.habits[i].name)+'</div><div class="streak">'+streak+' day streak</div></div>';
       h += '<button class="btn btn-sm btn-outline" onclick="deleteHabit('+i+')" style="padding:4px 8px;width:auto;font-size:11px">Delete</button></div></div>';
     }
   }
@@ -2712,7 +2722,7 @@ function trackHTML() {
   if (D.habits.length) {
     for (var i=0;i<D.habits.length;i++) {
       var done = D.habits[i].logs && D.habits[i].logs.indexOf(new Date().toDateString()) !== -1;
-      h += '<div class="habit-item" style="padding:6px 0"><div class="check'+(done?' done':'')+'" onclick="toggleHabit('+i+')" style="width:20px;height:20px;font-size:11px">'+(done?'✓':'')+'</div><span style="font-size:13px;flex:1">'+D.habits[i].name+'</span></div>';
+      h += '<div class="habit-item" style="padding:6px 0"><div class="check'+(done?' done':'')+'" onclick="toggleHabit('+i+')" style="width:20px;height:20px;font-size:11px">'+(done?'✓':'')+'</div><span style="font-size:13px;flex:1">'+safe(D.habits[i].name)+'</span></div>';
     }
   } else {
     h += '<div class="empty-state">'+t('No habits yet.')+'</div>';
@@ -4113,7 +4123,7 @@ function copingHTML() {
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="margin-bottom:8px">Breathing Exercise</button>';
   var cards = DEFAULT_COPING.concat(D.customCopingCards || []);
   for (var i=0;i<cards.length;i++) {
-    h += '<div class="coping-card" onclick="this.classList.toggle(\'open\')"><div class="title">'+cards[i].title+'</div><div class="text">'+cards[i].text+'</div></div>';
+    h += '<div class="coping-card" onclick="this.classList.toggle(\'open\')"><div class="title">'+safe(cards[i].title)+'</div><div class="text">'+safe(cards[i].text)+'</div></div>';
   }
   h += '<button class="btn btn-outline btn-sm" onclick="addCopingCard()" style="margin-top:8px">+ Custom Coping Card</button>';
   return h;
@@ -4163,11 +4173,11 @@ function showRelapsePlanSummary() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center"><div style="font-size:40px;margin-bottom:4px">&#128737;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:4px">'+t('Your Relapse Prevention Plan')+'</h3>';
-  h += '<div class="card" style="background:var(--primary-light);border-left:4px solid var(--primary);padding:12px;font-size:14px;font-style:italic;line-height:1.5">"' + plan.statement + '"</div></div>';
-  if (plan.triggers.length) h += '<div class="card"><h3>'+t('Triggers')+'</h3><div style="font-size:13px">' + plan.triggers.map(function(t){return '&bull; ' + t}).join('<br>') + '</div></div>';
-  if (plan.warningSigns.length) h += '<div class="card"><h3>'+t('Warning Signs')+'</h3><div style="font-size:13px">' + plan.warningSigns.map(function(w){return '&bull; ' + w}).join('<br>') + '</div></div>';
-  if (plan.coping.length) h += '<div class="card"><h3>'+t('Coping Strategies')+'</h3><div style="font-size:13px">' + plan.coping.map(function(c){return '&bull; ' + c}).join('<br>') + '</div></div>';
-  if (plan.support.length) h += '<div class="card"><h3>'+t('Support Network')+'</h3><div style="font-size:13px">' + plan.support.map(function(s){return '&bull; ' + s}).join('<br>') + '</div></div>';
+  h += '<div class="card" style="background:var(--primary-light);border-left:4px solid var(--primary);padding:12px;font-size:14px;font-style:italic;line-height:1.5">"' + safe(plan.statement) + '"</div></div>';
+  if (plan.triggers.length) h += '<div class="card"><h3>'+t('Triggers')+'</h3><div style="font-size:13px">' + plan.triggers.map(function(t){return '&bull; ' + safe(t)}).join('<br>') + '</div></div>';
+  if (plan.warningSigns.length) h += '<div class="card"><h3>'+t('Warning Signs')+'</h3><div style="font-size:13px">' + plan.warningSigns.map(function(w){return '&bull; ' + safe(w)}).join('<br>') + '</div></div>';
+  if (plan.coping.length) h += '<div class="card"><h3>'+t('Coping Strategies')+'</h3><div style="font-size:13px">' + plan.coping.map(function(c){return '&bull; ' + safe(c)}).join('<br>') + '</div></div>';
+  if (plan.support.length) h += '<div class="card"><h3>'+t('Support Network')+'</h3><div style="font-size:13px">' + plan.support.map(function(s){return '&bull; ' + safe(s)}).join('<br>') + '</div></div>';
   h += '<button class="btn btn-outline btn-sm" onclick="showRelapsePlan()">'+t('Edit Plan')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
@@ -4752,8 +4762,8 @@ function relapseRescueHTML() {
       var l = logs[li];
       h += '<div class="card" style="font-size:12px;padding:12px">';
       h += '<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600">' + new Date(l.date).toLocaleDateString() + '</span><span style="font-size:10px;color:var(--muted)">' + (l.prevStreak > 0 ? l.prevStreak + ' day streak' : '') + '</span></div>';
-      h += '<div style="margin-top:4px"><span style="color:var(--muted)">Trigger:</span> ' + l.trigger + '</div>';
-      if (l.actionTaken && l.actionTaken !== 'none') h += '<div><span style="color:var(--muted)">Action:</span> ' + l.actionTaken + '</div>';
+      h += '<div style="margin-top:4px"><span style="color:var(--muted)">Trigger:</span> ' + safe(l.trigger) + '</div>';
+      if (l.actionTaken && l.actionTaken !== 'none') h += '<div><span style="color:var(--muted)">Action:</span> ' + safe(l.actionTaken) + '</div>';
       h += '</div>';
     }
     h += '<button class="btn btn-outline btn-sm" onclick="if(confirm(\'Clear all relapse logs?\')){D.relapseRescue.logs=[];saveData();render()}" style="width:100%;color:var(--danger);margin-top:4px">Clear History</button>';
@@ -5333,7 +5343,7 @@ function musicHTML() {
     h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#9835;</div><h3 style="margin:0">My Recovery Playlist</h3></div><p style="font-size:12px;color:var(--muted);margin-bottom:6px">Songs Arthur recommended from your journal reflections.</p>';
     for (var pi=0;pi<D.playlist.length;pi++) {
       var s = D.playlist[pi];
-      h += '<div class="music-item" style="padding:8px"><div class="info"><div class="mood">' + s.title + '</div><div class="desc">' + s.artist + ' &middot; ' + s.dateAdded + '</div><div class="platforms"><a href="' + s.url_spotify + '" target="_blank">Spotify</a>' + (s.url_apple ? '<a href="' + s.url_apple + '" target="_blank">Apple Music</a>' : '') + '</div></div></div>';
+      h += '<div class="music-item" style="padding:8px"><div class="info"><div class="mood">' + safe(s.title) + '</div><div class="desc">' + safe(s.artist) + ' &middot; ' + safe(s.dateAdded) + '</div><div class="platforms"><a href="' + safe(s.url_spotify) + '" target="_blank">Spotify</a>' + (s.url_apple ? '<a href="' + safe(s.url_apple) + '" target="_blank">Apple Music</a>' : '') + '</div></div></div>';
     }
     h += '</div>';
   }
@@ -5566,7 +5576,7 @@ function finishPairing(match, email) {
   }
   saveData();
   var result = document.getElementById('pairing-result');
-  if (result) result.innerHTML = '<div style="font-size:13px;color:var(--primary);font-weight:600">Connected with ' + match.name + ' from ' + (match.language || 'your language') + '! You can now support each other.</div>';
+  if (result) result.innerHTML = '<div style="font-size:13px;color:var(--primary);font-weight:600">Connected with ' + safe(match.name) + ' from ' + safe(match.language || 'your language') + '! You can now support each other.</div>';
   var input = document.getElementById('pairing-code');
   if (input) input.value = '';
 }
@@ -5600,7 +5610,7 @@ function findBuddyAuto() {
     var pick = available[Math.floor(Math.random() * available.length)];
     finishPairing(pick, pick.email);
     var el = document.getElementById('auto-buddy-result');
-    if (el) el.innerHTML = '<div style="text-align:center;padding:12px;background:var(--primary-light);border-radius:10px;border:2px solid var(--primary)"><div style="font-size:24px;margin-bottom:4px">🎉</div><div style="font-weight:700;font-size:15px;color:var(--primary)">Connected with ' + pick.name + '!</div><div style="font-size:12px;color:var(--muted)">You can support each other on your recovery journey.</div><button class="btn btn-sm btn-primary" onclick="goTo(\'buddy\')" style="margin-top:6px">Go to Buddy Page</button></div>';
+    if (el) el.innerHTML = '<div style="text-align:center;padding:12px;background:var(--primary-light);border-radius:10px;border:2px solid var(--primary)"><div style="font-size:24px;margin-bottom:4px">🎉</div><div style="font-weight:700;font-size:15px;color:var(--primary)">Connected with ' + safe(pick.name) + '!</div><div style="font-size:12px;color:var(--muted)">You can support each other on your recovery journey.</div><button class="btn btn-sm btn-primary" onclick="goTo(\'buddy\')" style="margin-top:6px">Go to Buddy Page</button></div>';
   }).catch(function(){
     if (btn) { btn.textContent = 'Find Me a Buddy'; btn.disabled = false; }
     var el = document.getElementById('auto-buddy-result');
@@ -5622,17 +5632,17 @@ function buddyHTML() {
   var today = new Date().toDateString();
   var checkedInToday = D.buddyCheckins.filter(function(c){return c.date===today}).length;
   if (checkedInToday) {
-    h += '<div class="card" style="background:var(--primary-light);border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px"><div><div style="font-weight:600;font-size:14px">Checked in with ' + D.buddy.name + '</div><div style="font-size:12px;color:var(--muted)">Great job staying connected!</div></div></div></div>';
+    h += '<div class="card" style="background:var(--primary-light);border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px"><div><div style="font-weight:600;font-size:14px">Checked in with ' + safe(D.buddy.name) + '</div><div style="font-size:12px;color:var(--muted)">Great job staying connected!</div></div></div></div>';
   } else {
-    h += '<div class="card"><h3>Check in with ' + D.buddy.name + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Reach out and see how they\'re doing.</p><button class="btn btn-primary btn-sm" onclick="buddyCheckin()">Check In Now</button></div>';
+    h += '<div class="card"><h3>Check in with ' + safe(D.buddy.name) + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Reach out and see how they\'re doing.</p><button class="btn btn-primary btn-sm" onclick="buddyCheckin()">Check In Now</button></div>';
   }
   h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Shared Goals</h3><button class="btn btn-sm btn-outline" onclick="addGoal()">+ Add</button></div>';
   if (!D.buddyGoals.length) {
-    h += '<div class="empty-state">No shared goals yet. Set a goal with ' + D.buddy.name + '.</div>';
+    h += '<div class="empty-state">No shared goals yet. Set a goal with ' + safe(D.buddy.name) + '.</div>';
   } else {
     for (var i=0;i<D.buddyGoals.length;i++) {
       var done = D.buddyGoals[i].completed ? ' done' : '';
-      h += '<div class="goal-item' + done + '"><input type="checkbox" ' + (D.buddyGoals[i].completed ? 'checked' : '') + ' onchange="toggleGoal(' + i + ')" style="width:auto;margin:0"><span style="flex:1">' + D.buddyGoals[i].title + '</span><span style="font-size:11px;color:var(--muted)">' + (D.buddyGoals[i].dateCreated || '') + '</span></div>';
+      h += '<div class="goal-item' + done + '"><input type="checkbox" ' + (D.buddyGoals[i].completed ? 'checked' : '') + ' onchange="toggleGoal(' + i + ')" style="width:auto;margin:0"><span style="flex:1">' + safe(D.buddyGoals[i].title) + '</span><span style="font-size:11px;color:var(--muted)">' + safe(D.buddyGoals[i].dateCreated || '') + '</span></div>';
     }
   }
   h += '</div>';
@@ -5642,13 +5652,13 @@ function buddyHTML() {
     h += '<div class="empty-state">No check-ins yet.</div>';
   } else {
     for (var i=0;i<recent.length;i++) {
-      h += '<div class="entry-item"><div class="date">' + recent[i].date + ' at ' + recent[i].time + '</div><div class="preview">' + (recent[i].note || 'Checked in') + '</div></div>';
+      h += '<div class="entry-item"><div class="date">' + safe(recent[i].date) + ' at ' + safe(recent[i].time) + '</div><div class="preview">' + safe(recent[i].note || 'Checked in') + '</div></div>';
     }
   }
   h += '</div>';
   // Progress sharing
-  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Let ' + D.buddy.name + ' see your recovery stats. Sharing is automatic when you visit this page.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button></div>';
-  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128170;</div><h3 style="margin:0">' + D.buddy.name + '\'s Progress</h3></div><div id="buddy-progress"><div class="empty-state">Loading...</div></div></div>';
+  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Let ' + safe(D.buddy.name) + ' see your recovery stats. Sharing is automatic when you visit this page.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button></div>';
+  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128170;</div><h3 style="margin:0">' + safe(D.buddy.name) + '\'s Progress</h3></div><div id="buddy-progress"><div class="empty-state">Loading...</div></div></div>';
   // Streak competition
   h += buddyCompetitionHTML();
   // Shared challenges
@@ -5764,7 +5774,7 @@ function setupBuddyHTML() {
   h += '<div class="card" id="buddies-local"><h3>Available Buddies (' + lang + ') <span id="buddy-count" style="font-size:12px;color:var(--muted);font-weight:400">(local)</span></h3>';
   if (matches.length) {
     for (var mi=0;mi<matches.length;mi++) {
-      h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">' + matches[mi].name + '</div><div style="font-size:11px;color:var(--muted)">' + matches[mi].language + ' speaker</div></div><button class="btn btn-sm btn-primary" onclick="connectToBuddy(\'' + matches[mi].email + '\')">Connect</button></div>';
+      h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">' + safe(matches[mi].name) + '</div><div style="font-size:11px;color:var(--muted)">' + safe(matches[mi].language) + ' speaker</div></div><button class="btn btn-sm btn-primary" onclick="connectToBuddy(\'' + matches[mi].email.replace(/'/g,'\\\'') + '\')">Connect</button></div>';
     }
   } else {
     h += '<div class="empty-state">No local buddies found yet.</div>';
@@ -5791,7 +5801,7 @@ function setupBuddyHTML() {
       }
       var gh = '';
       for (var gi=0;gi<globalMatches.length;gi++) {
-        gh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">' + globalMatches[gi].name + '</div><div style="font-size:11px;color:var(--muted)">' + globalMatches[gi].language + ' speaker</div></div><button class="btn btn-sm btn-primary" onclick="connectToBuddy(\'' + globalMatches[gi].email + '\')">Connect</button></div>';
+        gh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">' + safe(globalMatches[gi].name) + '</div><div style="font-size:11px;color:var(--muted)">' + safe(globalMatches[gi].language) + ' speaker</div></div><button class="btn btn-sm btn-primary" onclick="connectToBuddy(\'' + globalMatches[gi].email.replace(/'/g,'\\\'') + '\')">Connect</button></div>';
       }
       listEl.innerHTML = gh;
       var countEl = document.getElementById('buddy-count');
@@ -5909,7 +5919,7 @@ function fetchBuddyProgress() {
       el.innerHTML = '<div class="empty-state">' + (D.buddy ? D.buddy.name : 'Buddy') + ' has not shared progress yet. Encourage them to use the Share Progress button!</div>';
       return;
     }
-    el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-align:center">Last updated: ' + p.updated + '</div><div class="stat-grid"><div class="stat-card"><div class="num">' + p.soberDays + '</div><div class="label">Sober Days</div></div><div class="stat-card"><div class="num">' + p.streak + '</div><div class="label">Day Streak</div></div><div class="stat-card"><div class="num">' + p.journalCount + '</div><div class="label">Journal</div></div><div class="stat-card"><div class="num">' + p.moodCount + '</div><div class="label">Moods</div></div><div class="stat-card"><div class="num">' + p.badges + '</div><div class="label">Badges</div></div><div class="stat-card"><div class="num">' + p.checkins + '</div><div class="label">Check-Ins</div></div></div>' + (p.addictionType ? '<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px">Working on: ' + p.addictionType + '</div>' : '');
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-align:center">Last updated: ' + safe(p.updated) + '</div><div class="stat-grid"><div class="stat-card"><div class="num">' + (p.soberDays||0) + '</div><div class="label">Sober Days</div></div><div class="stat-card"><div class="num">' + (p.streak||0) + '</div><div class="label">Day Streak</div></div><div class="stat-card"><div class="num">' + (p.journalCount||0) + '</div><div class="label">Journal</div></div><div class="stat-card"><div class="num">' + (p.moodCount||0) + '</div><div class="label">Moods</div></div><div class="stat-card"><div class="num">' + (p.badges||0) + '</div><div class="label">Badges</div></div><div class="stat-card"><div class="num">' + (p.checkins||0) + '</div><div class="label">Check-Ins</div></div></div>' + (p.addictionType ? '<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px">Working on: ' + safe(p.addictionType) + '</div>' : '');
   }).catch(function(){
     var el = document.getElementById('buddy-progress');
     if (el) el.innerHTML = '<div class="empty-state">Could not load progress. Check internet connection.</div>';
@@ -6607,7 +6617,7 @@ function recoveryGoalsHTML() {
     }
     h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">';
     h += '<div class="check'+(doneToday?' done':'')+'" onclick="toggleGoal('+gi+')" style="width:22px;height:22px;font-size:12px;flex-shrink:0;cursor:pointer">'+(doneToday?'✓':'')+'</div>';
-    h += '<div style="flex:1"><div style="font-size:13px;font-weight:600">' + g.text + '</div><div style="font-size:11px;color:var(--muted)">' + streak + ' day streak</div></div>';
+    h += '<div style="flex:1"><div style="font-size:13px;font-weight:600">' + safe(g.text) + '</div><div style="font-size:11px;color:var(--muted)">' + streak + ' day streak</div></div>';
     h += '<button class="btn btn-sm btn-danger" onclick="D.recoveryGoals.splice('+gi+',1);saveData();render()" style="padding:2px 6px;font-size:10px;width:auto">&#10005;</button></div>';
   }
   h += '</div>';
@@ -6759,7 +6769,7 @@ function buddyMessagesHTML() {
     h += '<div style="max-height:200px;overflow-y:auto;margin-bottom:8px">';
     for (var mi=0;mi<localMsgs.length;mi++) {
       var isMe = localMsgs[mi].from === AUTH_EMAIL;
-      h += '<div style="padding:6px 10px;border-radius:10px;margin:4px 0;background:' + (isMe ? 'var(--primary-light)' : 'var(--card)') + ';text-align:' + (isMe ? 'right' : 'left') + ';font-size:13px"><div>' + localMsgs[mi].text + '</div><div style="font-size:10px;color:var(--muted)">' + localMsgs[mi].date + ' ' + localMsgs[mi].time + '</div></div>';
+      h += '<div style="padding:6px 10px;border-radius:10px;margin:4px 0;background:' + (isMe ? 'var(--primary-light)' : 'var(--card)') + ';text-align:' + (isMe ? 'right' : 'left') + ';font-size:13px"><div>' + safe(localMsgs[mi].text) + '</div><div style="font-size:10px;color:var(--muted)">' + safe(localMsgs[mi].date) + ' ' + safe(localMsgs[mi].time) + '</div></div>';
     }
     h += '</div>';
   }
@@ -6794,13 +6804,13 @@ function buddyMessagesHTML() {
         all.sort(function(a,b){ return (a.timestamp||0) - (b.timestamp||0); });
         all = all.slice(-20);
         if (!all.length) {
-          el.innerHTML = '<div class="empty-state">Send a message to ' + (D.buddy?D.buddy.name:'your buddy') + '!</div>';
+          el.innerHTML = '<div class="empty-state">Send a message to ' + safe(D.buddy?D.buddy.name:'your buddy') + '!</div>';
           return;
         }
         var html = '<div style="max-height:200px;overflow-y:auto;margin-bottom:8px">';
         for (var i=0;i<all.length;i++) {
           var me = all[i].from === AUTH_EMAIL;
-          html += '<div style="padding:6px 10px;border-radius:10px;margin:4px 0;background:' + (me ? 'var(--primary-light)' : 'var(--card)') + ';text-align:' + (me ? 'right' : 'left') + ';font-size:13px"><div>' + all[i].text + '</div><div style="font-size:10px;color:var(--muted)">' + all[i].date + ' ' + all[i].time + '</div></div>';
+          html += '<div style="padding:6px 10px;border-radius:10px;margin:4px 0;background:' + (me ? 'var(--primary-light)' : 'var(--card)') + ';text-align:' + (me ? 'right' : 'left') + ';font-size:13px"><div>' + safe(all[i].text) + '</div><div style="font-size:10px;color:var(--muted)">' + safe(all[i].date) + ' ' + safe(all[i].time) + '</div></div>';
         }
         html += '</div>';
         el.innerHTML = html;
@@ -6892,7 +6902,7 @@ function habitBarsHTML() {
   for (var i=0;i<D.habits.length;i++) {
     var streak = calcHabitStreak(D.habits[i]);
     var total = D.habits[i].logs ? D.habits[i].logs.length : 0;
-    h += '<div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px"><span>' + D.habits[i].name + '</span><span style="color:var(--muted)">' + streak + ' day streak</span></div><div class="progress-bar"><div class="fill" style="width:' + Math.min(streak/30*100,100) + '%"></div></div></div>';
+    h += '<div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px"><span>' + safe(D.habits[i].name) + '</span><span style="color:var(--muted)">' + streak + ' day streak</span></div><div class="progress-bar"><div class="fill" style="width:' + Math.min(streak/30*100,100) + '%"></div></div></div>';
   }
   h += '</div>';
   return h;
