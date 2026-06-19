@@ -791,7 +791,12 @@ try { firebase.auth().onAuthStateChanged(function(user) {
       });
     }
   } else if (AUTH_RESTORED) {
-    signOutCleanup();
+    localStorage.removeItem('rc_user');
+    AUTH_USER = '';
+    AUTH_EMAIL = '';
+    D = defaultData();
+    document.body.classList.remove('logged-in');
+    render();
   }
 }); } catch(e) {}
 
@@ -1095,7 +1100,7 @@ function loadData() {
 
 var _pageCache = {};
 function saveData() {
-  localStorage.setItem(dataKey(), JSON.stringify(D));
+  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) {}
   syncToFirestore();
   applyTheme();
   _pageCache = {};
@@ -1403,7 +1408,12 @@ function handleAuth() {
 }
 function signOut() {
   firebase.auth().signOut().catch(function(){});
-  signOutCleanup();
+  localStorage.removeItem('rc_user');
+  AUTH_USER = '';
+  AUTH_EMAIL = '';
+  D = defaultData();
+  document.body.classList.remove('logged-in');
+  render();
 }
 // ====== UI ======
 function showSignIn() {
