@@ -14,7 +14,7 @@
 <title>Re.Claim</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#f0f7f4;--card:#fff;--primary:#059669;--primary-dark:#047857;--primary-light:#d1fae5;--text:#1f2937;--muted:#9ca3af;--border:#e5e7eb;--radius:16px;--accent:#f59e0b;--danger:#ef4444;--danger-bg:#fef2f2;--purple:#8b5cf6;--purple-light:#ede9fe;--blue:#3b82f6;--blue-light:#dbeafe;--rose:#e11d48;--rose-light:#ffe4e6;--avatar-buddy:linear-gradient(135deg,var(--purple),var(--blue));--avatar-erin:linear-gradient(135deg,var(--rose),#f43f5e);--avatar-arthur:linear-gradient(135deg,var(--primary),var(--primary-dark));--grad-accent:#34d399}
+:root{--bg:#f0f7f4;--card:#fff;--primary:#059669;--primary-dark:#047857;--primary-light:#d1fae5;--text:#1f2937;--muted:#9ca3af;--border:#e5e7eb;--radius:16px;--accent:#f59e0b;--danger:#ef4444;--danger-bg:#fef2f2;--purple:#8b5cf6;--purple-light:#ede9fe;--blue:#3b82f6;--blue-light:#dbeafe;--rose:#e11d48;--rose-light:#ffe4e6;--avatar-buddy:linear-gradient(135deg,var(--purple),var(--blue));--avatar-gertrude:linear-gradient(135deg,#be185d,#9d174d);--avatar-arthur:linear-gradient(135deg,var(--primary),var(--primary-dark));--grad-accent:#34d399}
 [theme=blue]{--primary:#3b82f6;--primary-dark:#2563eb;--primary-light:#dbeafe}
 [theme=purple]{--primary:#8b5cf6;--primary-dark:#7c3aed;--primary-light:#ede9fe}
 [theme=warm]{--primary:#f59e0b;--primary-dark:#d97706;--primary-light:#fef3c7}
@@ -457,7 +457,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 85%{transform:translateX(8px) translateY(0) scale(1.01) rotate(-0.5deg)}
 100%{transform:translateX(8px) translateY(0) scale(1) rotate(0deg)}
 }
-/* Erin state-based limb animations */
+/* Gertrude state-based limb animations */
 .erin-stage .e-larm-g,.erin-stage .e-rarm-g{transition:transform .4s cubic-bezier(.34,1.2,.64,1)}
 .erin-stage .e-lleg-g,.erin-stage .e-rleg-g{transition:transform .35s cubic-bezier(.3,1,.5,1)}
 .erin-stage.stand .e-larm-g,.erin-stage.stand .e-rarm-g{transform:rotate(0deg)}
@@ -484,11 +484,19 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes sparkFade{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-20px) scale(0.3)}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px) rotate(-1deg)}40%{transform:translateX(6px) rotate(1deg)}60%{transform:translateX(-4px) rotate(-.5deg)}80%{transform:translateX(4px) rotate(.5deg)}}
 @keyframes clashSpark{0%{opacity:0;transform:translateX(-50%) scale(0.2)}15%{opacity:1;transform:translateX(-50%) scale(1.4)}40%{opacity:.8;transform:translateX(-50%) scale(1)}70%{opacity:.3;transform:translateX(-50%) scale(0.5)}100%{opacity:0;transform:translateX(-50%) scale(0.2)}}
+@keyframes knightWalkLegL{0%{transform:rotate(15deg)}30%{transform:rotate(-3deg)}60%{transform:rotate(-8deg)}100%{transform:rotate(15deg)}}
+@keyframes knightWalkLegR{0%{transform:rotate(-12deg)}30%{transform:rotate(3deg)}60%{transform:rotate(8deg)}100%{transform:rotate(-12deg)}}
+@keyframes knightWalkArmR{0%{transform:rotate(8deg)}30%{transform:rotate(-3deg)}60%{transform:rotate(-8deg)}100%{transform:rotate(8deg)}}
+@keyframes knightWalkArmL{0%{transform:rotate(-15deg)}30%{transform:rotate(3deg)}60%{transform:rotate(8deg)}100%{transform:rotate(-15deg)}}
 /* Knight state-based limb animations */
 .knight-stage .k-larm-g,.knight-stage .k-rarm-g{transition:transform .4s cubic-bezier(.34,1.2,.64,1)}
 .knight-stage .k-lleg-g,.knight-stage .k-rleg-g{transition:transform .35s cubic-bezier(.3,1,.5,1)}
 .knight-stage.stand .k-larm-g,.knight-stage.stand .k-rarm-g{transform:rotate(0deg)}
 .knight-stage.stand .k-lleg-g,.knight-stage.stand .k-rleg-g{transform:rotate(0deg)}
+.knight-stage.walk .k-lleg-g{animation:knightWalkLegL .4s cubic-bezier(.3,1,.5,1) infinite}
+.knight-stage.walk .k-rleg-g{animation:knightWalkLegR .4s cubic-bezier(.3,1,.5,1) infinite}
+.knight-stage.walk .k-rarm-g{animation:knightWalkArmR .4s cubic-bezier(.3,1,.5,1) infinite}
+.knight-stage.walk .k-larm-g{animation:knightWalkArmL .4s cubic-bezier(.3,1,.5,1) infinite}
 .knight-stage.ready .k-rarm-g{transform:rotate(-20deg)}
 .knight-stage.ready .k-larm-g{transform:rotate(10deg)}
 .knight-stage.charge .k-rarm-g{transform:rotate(-5deg)}
@@ -558,15 +566,15 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes staffStrike{0%{transform:rotate(-20deg) translateX(0)}30%{transform:rotate(-55deg) translateX(8px)}60%{transform:rotate(8deg) translateX(-4px)}100%{transform:rotate(0deg) translateX(0)}}
 @keyframes fistPound{0%{transform:rotate(0deg) translateY(0)}30%{transform:rotate(-25deg) translateY(-5px)}60%{transform:rotate(-40deg) translateY(10px)}100%{transform:rotate(0deg) translateY(0)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
-#mp-arthur.celebrate .tb-arm-g{transform:rotate(-50deg)}#mp-paulie.celebrate .tb-arm-g{transform:rotate(-70deg) scaleX(-1)}#mp-erin.celebrate .tb-arm-g{transform:rotate(-60deg)}
+#mp-arthur.celebrate .tb-arm-g{transform:rotate(-50deg)}#mp-paulie.celebrate .tb-arm-g{transform:rotate(-70deg) scaleX(-1)}#mp-gertrude.celebrate .tb-arm-g{transform:rotate(-60deg)}
 #ta-arthur.fight .tb-arm-g{animation:fistPound .6s ease forwards}
 #ta-arthur.victory .tb-arm-g{transform:rotate(-40deg)}
 #ta-paulie.fight .tb-arm-g{animation:staffStrike .5s ease forwards}
 #ta-paulie.fight .tb-weapon{animation:staffStrike .5s ease forwards}
 #ta-paulie.victory .tb-arm-g{transform:rotate(-60deg)}
 #ta-paulie.victory .tb-weapon{transform:rotate(-30deg)}
-#ta-erin.fight .tb-arm-g{animation:fistPound .4s ease forwards}
-#ta-erin.victory .tb-arm-g{transform:rotate(-30deg)}
+#ta-gertrude.fight .tb-arm-g{animation:fistPound .4s ease forwards}
+#ta-gertrude.victory .tb-arm-g{transform:rotate(-30deg)}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
 .boxing-progress .fill{height:100%;background:var(--primary);border-radius:2px;width:0%;transition:width .5s linear}
 @keyframes cmSlideUp{0%{transform:translateY(30px);opacity:0}100%{transform:translateY(0);opacity:1}}
@@ -1292,15 +1300,15 @@ function toggleTargetAddiction(type) {
   else D.targetAddictions.push(type);
   saveData();
   if (wasEmpty && D.targetAddictions.length > 0) {
-    setTimeout(showErinDuel, 300);
+    setTimeout(showGertrudeDuel, 300);
   }
 }
 
 function safetyPlanHTML() {
   var addictions = D.targetAddictions || [];
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-erin);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">E</div><div><h3 style="margin:0;font-size:15px">Erin\'s Safety Plan</h3><p style="font-size:11px;color:var(--muted);margin:0">Personalized for your recovery</p></div></div>';
+  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">G</div><div><h3 style="margin:0;font-size:15px">Gertrude\'s Safety Plan</h3><p style="font-size:11px;color:var(--muted);margin:0">Personalized for your recovery</p></div></div>';
   if (!addictions.length) {
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Select what you are working on below, and Erin will create a safety plan for you.</p>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Select what you are working on below, and Gertrude will create a safety plan for you.</p>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
     for (var i=0;i<ADDICTION_TYPES.length;i++) {
       h += '<button class="btn btn-sm ' + (addictions.indexOf(ADDICTION_TYPES[i]) >= 0 ? 'btn-primary' : 'btn-outline') + '" onclick="toggleTargetAddiction(\''+ADDICTION_TYPES[i]+'\')" style="font-size:11px;padding:8px">' + ADDICTION_TYPES[i] + '</button>';
@@ -7505,8 +7513,8 @@ function showTeamBattle(data) {
     {id:'ta-paulie',color:'#4338ca',label:'Paulie',svg:
       '<svg class="paulie-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round" class="tb-weapon"/><circle cx="27" cy="9" r="2.5" fill="#a5b4fc"/><circle cx="27" cy="9" r="1" fill="#e0e7ff"/><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'
     },
-    {id:'ta-erin',color:'#ec4899',label:'Erin',svg:
-      '<svg class="erin-svg" viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="3" x2="11" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="3" x2="19" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="19" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 19px"><line x1="21" y1="19" x2="23" y2="13" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="13" r="2" fill="#ec4899"/><line x1="24" y1="13" x2="30" y2="13" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><circle cx="30" cy="13" r="4" fill="#fbbf24" class="tb-muzzle" style="transform-origin:0 0"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/></svg>'
+    {id:'ta-gertrude',color:'#be185d',label:'Gertrude',svg:
+      '<svg class="erin-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="tb-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.5" fill="#f0d5b0"/><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/></g></g><g class="tb-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:21px 19px"><path d="M21 19 L23 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="24" cy="12" r="1.5" fill="#f0d5b0"/><line x1="24" y1="12" x2="28" y2="-2" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" class="tb-weapon"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>'
     }
   ];
 
@@ -7553,7 +7561,7 @@ function showTeamBattle(data) {
   // Get elements
   var A = document.getElementById('ta-arthur');
   var P = document.getElementById('ta-paulie');
-  var E = document.getElementById('ta-erin');
+  var E = document.getElementById('ta-gertrude');
   var m0 = document.getElementById('tb-monster-0');
   var m1 = document.getElementById('tb-monster-1');
   var m2 = document.getElementById('tb-monster-2');
@@ -7577,7 +7585,7 @@ function showTeamBattle(data) {
     if (status) { status.textContent = '&#128170; ARTHUR PUNCHES!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
   }, 2500));
 
-  // Phase 3 (3800ms): Erin shoots
+  // Phase 3 (3800ms): Gertrude attacks
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'battleErin .5s ease'; E.classList.add('fight'); setTimeout(function(){if(E)E.classList.remove('fight');},400); }
     if (blast) { blast.style.animation = 'gunBlast .4s ease forwards'; blast.style.opacity = '1'; setTimeout(function(){ if(blast) { blast.style.animation = 'none'; blast.style.opacity = '0'; } }, 400); }
@@ -7659,7 +7667,7 @@ function showMilestoneParty(days) {
   var teamMembers = [
     {id:'mp-arthur',color:'#ffd700',svg:'<svg viewBox="0 0 30 54"><path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8" stroke-linecap="round"/><circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="22" cy="10" r="2.5" fill="#dc2626"/></g></g><line x1="15" y1="30" x2="11" y2="39" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="30" x2="20" y2="38" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></svg>'},
     {id:'mp-paulie',color:'#4338ca',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21.5" y1="21.5" x2="28" y2="12" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><ellipse cx="28" cy="11" rx="2.5" ry="2" fill="#6366f1"/><ellipse cx="27.5" cy="10.5" rx="1" ry=".8" fill="#a5b4fc"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'},
-    {id:'mp-erin',color:'#ec4899',svg:'<svg viewBox="0 0 30 54"><circle cx="15" cy="7" r="5" fill="none" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/><line x1="12" y1="3" x2="11" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="3" x2="19" y2="7" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="12" x2="15" y2="30" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="21" y2="19" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><g style="transform-origin:21px 19px"><line x1="21" y1="19" x2="23" y2="13" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><circle cx="24" cy="13" r="2" fill="#ec4899"/><line x1="24" y1="13" x2="30" y2="13" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><circle cx="30" cy="13" r="4" fill="#fbbf24" class="tb-muzzle" style="transform-origin:0 0"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="15" y1="30" x2="21" y2="38" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#ec4899" stroke-width="2" stroke-linecap="round"/></svg>'}
+    {id:'mp-gertrude',color:'#be185d',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="tb-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.5" fill="#f0d5b0"/><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>'}
   ];
   var label = days + ' Day' + (days !== 1 ? 's' : '') + ' Sober';
   var subtitle = days >= 365 ? 'ONE YEAR! Incredible!' : days >= 90 ? 'Quarter of a year - massive!' : days >= 30 ? 'One month strong!' : days >= 7 ? 'One week down!' : 'Amazing start!';
@@ -7704,7 +7712,7 @@ function showMilestoneParty(days) {
   setTimeout(function(){
     var A = document.getElementById('mp-arthur');
     var P = document.getElementById('mp-paulie');
-    var E = document.getElementById('mp-erin');
+    var E = document.getElementById('mp-gertrude');
     if (A) { A.style.animation = 'partyArthur .6s ease 3'; A.classList.add('celebrate'); setTimeout(function(){if(A)A.classList.remove('celebrate');},1800); }
     if (P) { P.style.animation = 'partyPaulie .6s ease 3'; P.classList.add('celebrate'); setTimeout(function(){if(P)P.classList.remove('celebrate');},1800); }
     if (E) { E.style.animation = 'partyErin .6s ease 3'; E.classList.add('celebrate'); setTimeout(function(){if(E)E.classList.remove('celebrate');},1800); }
@@ -8422,11 +8430,11 @@ function openCapsuleAnimation(idx) {
   document.body.appendChild(overlay);
 }
 
-function showErinDuel() {
-  if (document.getElementById('erin-duel')) return;
+function showGertrudeDuel() {
+  if (document.getElementById('gertrude-duel')) return;
   var anim = document.createElement('div');
   anim.className = 'overlay';
-  anim.id = 'erin-duel';
+  anim.id = 'gertrude-duel';
   anim.style.background = 'rgba(0,0,0,.5)';
   anim.style.alignItems = 'flex-start';
   anim.style.paddingTop = '20px';
@@ -8436,6 +8444,10 @@ function showErinDuel() {
     '<div style="font-size:11px;color:rgba(255,255,255,.7);margin-bottom:12px">Your safety plan is being forged in a medieval duel...</div>' +
     '<div id="duel-stage" style="position:relative;height:260px;background:linear-gradient(180deg,#1e293b,#334155,#0f172a);border-radius:16px;overflow:hidden;margin-bottom:8px;border:1px solid var(--border);box-shadow:inset 0 0 30px rgba(0,0,0,.4)">' +
     '<div style="position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(180deg,transparent,rgba(30,41,59,0.8))"></div>' +
+    '<div style="position:absolute;bottom:8px;left:0;right:0;height:1px;background:rgba(148,163,184,0.15)"></div>' +
+    '<div style="position:absolute;bottom:24px;left:10%;right:10%;height:1px;background:rgba(148,163,184,0.1)"></div>' +
+    '<div style="position:absolute;bottom:40px;left:22%;right:22%;height:1px;background:rgba(148,163,184,0.07)"></div>' +
+    '<div style="position:absolute;bottom:60px;left:34%;right:34%;height:1px;background:rgba(148,163,184,0.05)"></div>' +
     '<div class="stone-brick" style="position:absolute;top:6%;left:10%;width:8px;height:6px;opacity:0.4;background:#94a3b8;border-radius:1px"></div>' +
     '<div class="stone-brick" style="position:absolute;top:12%;right:15%;width:6px;height:4px;opacity:0.3;background:#94a3b8;border-radius:1px"></div>' +
     '<div class="stone-brick" style="position:absolute;top:4%;left:35%;width:10px;height:5px;opacity:0.35;background:#94a3b8;border-radius:1px"></div>' +
@@ -8444,8 +8456,8 @@ function showErinDuel() {
     '<div style="position:absolute;top:3%;left:50%;transform:translateX(-50%);font-size:14px;opacity:0.2;color:#fbbf24">&#9876;</div>' +
     '<div style="position:absolute;top:8%;left:25%;font-size:5px;opacity:0.3;color:#fbbf24;filter:blur(2px)">&#128293;</div>' +
     '<div style="position:absolute;top:12%;right:20%;font-size:4px;opacity:0.2;color:#fbbf24;filter:blur(2px)">&#128293;</div>' +
-    '<div id="gertrude-char" style="position:absolute;left:6%;bottom:12px;filter:drop-shadow(0 0 8px rgba(190,24,93,0.7));z-index:2;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><svg class="erin-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><g class="e-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L11 39" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:11px 39px"><path d="M11 39 L8 48" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M6 47 L10 47 L11 51 L5 51 Z" fill="#8B4513"/></g></g><g class="e-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L19 39" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:19px 39px"><path d="M19 39 L22 48" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M20 47 L24 47 L25 51 L19 51 Z" fill="#8B4513"/></g></g><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="e-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="e-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="e-larm-fg" style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.5" fill="#f0d5b0"/><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/><line x1="3" y1="7" x2="3" y2="17" stroke="#fbbf24" stroke-width=".4"/></g></g><g class="e-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="e-rarm-fg" style="transform-origin:21px 19px"><path d="M21 19 L23 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="24" cy="12" r="1.5" fill="#f0d5b0"/><g class="e-sword-g" style="transform-origin:24px 12px;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><line x1="24" y1="12" x2="28" y2="-2" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round"/><line x1="25" y1="7" x2="27" y2="7" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="-2" x2="28" y2="-5" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity=".6"/></g></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg></div>' +
-    '<div id="rival-char" style="position:absolute;right:8%;bottom:12px;z-index:2;transform:scaleX(-1);transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><svg class="knight-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><g class="k-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L11 39" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:11px 39px"><path d="M11 39 L8 48" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M6 47 L10 47 L11 51 L5 51 Z" fill="#1e293b"/></g></g><g class="k-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L19 39" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:19px 39px"><path d="M19 39 L22 48" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M20 47 L24 47 L25 51 L19 51 Z" fill="#1e293b"/></g></g><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#475569" class="k-body"/><path d="M10.5 27 L19.5 27 L19 33 L11 33 Z" fill="#1e293b"/><rect x="10.5" y="27" width="9" height="2" rx=".5" fill="#334155"/><rect x="14" y="27.3" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="k-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#475569" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="k-larm-fg" style="transform-origin:9px 19px"><path d="M9 19 L6 13" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.8" fill="#64748b"/></g></g><g class="k-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#475569" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="k-rarm-fg" style="transform-origin:21px 19px"><path d="M21 19 L24 13" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="25" cy="12" r="1.8" fill="#64748b"/><g class="k-sword-g" style="transform-origin:25px 12px;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><line x1="25" y1="12" x2="32" y2="2" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="27" y1="8" x2="29" y2="8" stroke="#fbbf24" stroke-width="1.5"/></g></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#64748b"/><path d="M9.5 4 L9.5 1 Q15 -1 20.5 1 L20.5 4 Z" fill="#475569"/><rect x="11" y="3.5" width="8" height="1.8" rx=".5" fill="#334155"/><circle cx="12.5" cy="6" r=".7" fill="#333"/><circle cx="17.5" cy="6" r=".7" fill="#333"/><line x1="14" y1="7.5" x2="16" y2="7.5" stroke="#333" stroke-width=".5" stroke-linecap="round"/><path d="M9.5 3 L9.5 0 Q15 -2 20.5 0 L20.5 3 Z" fill="#ef4444"/></svg></div>' +
+    '<div id="gertrude-char" class="erin-stage" style="position:absolute;left:6%;bottom:12px;filter:drop-shadow(0 0 8px rgba(190,24,93,0.7));z-index:2;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><svg class="erin-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><g class="e-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L11 39" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:11px 39px"><path d="M11 39 L8 48" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M6 47 L10 47 L11 51 L5 51 Z" fill="#8B4513"/></g></g><g class="e-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L19 39" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:19px 39px"><path d="M19 39 L22 48" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M20 47 L24 47 L25 51 L19 51 Z" fill="#8B4513"/></g></g><path d="M10 12 Q9 15 9.5 27 L20.5 27 Q21 15 20 12 Z" fill="#94a3b8"/><line x1="11" y1="15" x2="19" y2="15" stroke="#78716c" stroke-width=".6"/><line x1="10.5" y1="18" x2="19.5" y2="18" stroke="#78716c" stroke-width=".6"/><line x1="10" y1="21" x2="20" y2="21" stroke="#78716c" stroke-width=".6"/><line x1="10" y1="24" x2="20" y2="24" stroke="#78716c" stroke-width=".6"/><path d="M11.5 12 Q11 15 11 24 L19 24 Q19 15 18.5 12 Z" fill="#be185d"/><path d="M12 14 L18 14 L17.5 22 L12.5 22 Z" fill="#fff" opacity=".15"/><circle cx="15" cy="17.5" r="1.2" fill="#fbbf24"/><path d="M14 15.5 L14 19.5 M16 15.5 L16 19.5 M13 17 L17 17 M13 18 L17 18" stroke="#fbbf24" stroke-width=".4" opacity=".6"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="25" width="9" height="2.5" rx="1" fill="#78350f"/><rect x="14" y="25.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="e-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="e-larm-fg" style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.5" fill="#f0d5b0"/><path d="M0 5 L0 18 L8 18 L8 5 Q6 2 4 2 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".4"/><path d="M2 7 L2 16 L6 16 L6 7 Z" fill="#fff" opacity=".1"/><circle cx="4" cy="11" r="1" fill="#fbbf24" opacity=".6"/></g></g><g class="e-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="e-rarm-fg" style="transform-origin:21px 19px"><path d="M21 19 L23 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="24" cy="12" r="1.5" fill="#f0d5b0"/><g class="e-sword-g" style="transform-origin:24px 12px;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><line x1="24" y1="12" x2="29" y2="-3" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round"/><line x1="25" y1="7" x2="28" y2="7" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/><line x1="29" y1="-3" x2="29" y2="-6" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity=".6"/><circle cx="24" cy="12" r="1" fill="#fbbf24"/></g></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9 1 L9 9 L21 9 L21 1 Q15 -2 9 1 Z" fill="#78716c"/><path d="M10 2 L10 8 L20 8 L20 2 Z" fill="#57534e"/><path d="M12 3 L12 7 L14 7 L14 5 Z" fill="#f0d5b0"/><path d="M16 3 L16 7 L18 7 L18 5 Z" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg></div>' +
+    '<div id="rival-char" class="knight-stage" style="position:absolute;right:8%;bottom:12px;z-index:2;transform:scaleX(-1);transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><svg class="knight-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><g class="k-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L11 39" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:11px 39px"><path d="M11 39 L8 48" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M6 47 L10 47 L11 51 L5 51 Z" fill="#1e293b"/></g></g><g class="k-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L19 39" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:19px 39px"><path d="M19 39 L22 48" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M20 47 L24 47 L25 51 L19 51 Z" fill="#1e293b"/></g></g><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#475569" class="k-body"/><path d="M10.5 27 L19.5 27 L19 33 L11 33 Z" fill="#1e293b"/><rect x="10.5" y="27" width="9" height="2" rx=".5" fill="#334155"/><rect x="14" y="27.3" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="k-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#475569" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="k-larm-fg" style="transform-origin:9px 19px"><path d="M9 19 L6 13" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.8" fill="#64748b"/></g></g><g class="k-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#475569" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="k-rarm-fg" style="transform-origin:21px 19px"><path d="M21 19 L24 13" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="25" cy="12" r="1.8" fill="#64748b"/><g class="k-sword-g" style="transform-origin:25px 12px;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><line x1="25" y1="12" x2="32" y2="2" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="27" y1="8" x2="29" y2="8" stroke="#fbbf24" stroke-width="1.5"/></g></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#64748b"/><path d="M9.5 4 L9.5 1 Q15 -1 20.5 1 L20.5 4 Z" fill="#475569"/><rect x="11" y="3.5" width="8" height="1.8" rx=".5" fill="#334155"/><circle cx="12.5" cy="6" r=".7" fill="#333"/><circle cx="17.5" cy="6" r=".7" fill="#333"/><line x1="14" y1="7.5" x2="16" y2="7.5" stroke="#333" stroke-width=".5" stroke-linecap="round"/><path d="M9.5 3 L9.5 0 Q15 -2 20.5 0 L20.5 3 Z" fill="#ef4444"/></svg></div>' +
     '<div id="g-count-3" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">3</div>' +
     '<div id="g-count-2" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">2</div>' +
     '<div id="g-count-1" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">1</div>' +
@@ -8518,64 +8530,75 @@ function showErinDuel() {
   }
   function showEl(el) { if (el) el.style.opacity = '1'; }
 
-  var gBaseX = 18, gBaseY = 0;
-  var rBaseX = 0, rBaseY = 0;
+  // Start both characters FAR away from each other
+  G.style.transition = 'none';
+  R.style.transition = 'none';
+  G.className = '';
+  R.className = '';
+  setPos(G, -200, 12, 0);
+  setPos(R, 200, 12, 0);
+  setSword(GS, 0);
+  setSword(RS, 0);
 
   updateProgress(0);
 
-  // Phase 1: Walk in (800ms)
+  // Phase 1: Both CHARGE toward the middle! (1200ms)
   timers.push(setTimeout(function(){
-    G.style.transition = 'transform .8s cubic-bezier(.2,.8,.3,1)';
-    R.style.transition = 'transform .8s cubic-bezier(.2,.8,.3,1)';
+    G.style.transition = 'transform 1s cubic-bezier(.1,.8,.2,1)';
+    R.style.transition = 'transform 1s cubic-bezier(.1,.8,.2,1)';
+    G.className = 'walk';
+    R.className = 'walk';
     setPos(G, 0, 0, 0);
     setPos(R, 0, 0, 0);
-    updateProgress(5);
-  }, 300));
+    updateProgress(8);
+  }, 400));
 
-  // Phase 2: Face off - stand still (2800ms)
+  // Phase 2: Face off - stand still, draw weapons (3000ms)
   timers.push(setTimeout(function(){
-    G.style.transition = 'transform .6s cubic-bezier(.34,1.2,.64,1)';
-    R.style.transition = 'transform .6s cubic-bezier(.34,1.2,.64,1)';
+    G.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
+    R.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
     setPos(G, 5, 2, 3);
     setPos(R, -5, 2, -3);
-    updateProgress(12);
-  }, 2800));
+    setSword(GS, -10);
+    setSword(RS, 10);
+    updateProgress(15);
+  }, 3000));
 
-  // Phase 3: Ready stance + Countdown 3 (4500ms)
+  // Phase 3: Ready stance + Countdown 3 (4700ms)
   timers.push(setTimeout(function(){
     setPos(G, 8, 4, 5);
     setPos(R, -8, 4, -5);
     setSword(GS, -20);
     setSword(RS, 20);
     flashEl(C3, 'countFade .5s ease forwards', 500);
-    updateProgress(20);
-  }, 4500));
+    updateProgress(22);
+  }, 4700));
 
-  // Phase 4: Countdown 2 (5300ms)
+  // Phase 4: Countdown 2 (5500ms)
   timers.push(setTimeout(function(){
     flashEl(C2, 'countFade .5s ease forwards', 500);
-    updateProgress(28);
-  }, 5300));
+    updateProgress(30);
+  }, 5500));
 
-  // Phase 5: Countdown 1 (6100ms)
+  // Phase 5: Countdown 1 (6300ms)
   timers.push(setTimeout(function(){
     flashEl(C1, 'countFade .5s ease forwards', 500);
     setSword(GS, -45);
     setSword(RS, 45);
-    updateProgress(36);
-  }, 6100));
+    updateProgress(38);
+  }, 6300));
 
-  // Phase 6: Knight charges! (6900ms) - dynamic charge with wobble
+  // Phase 6: Knight charges! (7100ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .5s cubic-bezier(.1,.7,.3,1)';
     setPos(R, -55, 8, -8);
     setSword(RS, -10);
     setPos(G, 12, 6, 6);
     setSword(GS, 10);
-    updateProgress(44);
-  }, 6900));
+    updateProgress(46);
+  }, 7100));
 
-  // Phase 7: Knight swings - Gertrude blocks with shield! Sparks fly! (7900ms)
+  // Phase 7: Knight swings - Gertrude blocks with shield! (8100ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .25s cubic-bezier(.22,1,.36,1)';
     setPos(R, -50, 10, -12);
@@ -8586,10 +8609,10 @@ function showErinDuel() {
     screenFlash();
     spawnSparks(6);
     shakeStage(300);
-    updateProgress(52);
-  }, 7900));
+    updateProgress(54);
+  }, 8100));
 
-  // Phase 8: Recoil - both push back (8900ms)
+  // Phase 8: Recoil - both push back (9100ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
     setPos(R, -35, 6, -6);
@@ -8597,10 +8620,10 @@ function showErinDuel() {
     G.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
     setPos(G, 5, 3, 3);
     setSword(GS, 10);
-    updateProgress(60);
-  }, 8900));
+    updateProgress(62);
+  }, 9100));
 
-  // Phase 9: Gertrude lunges - slash! (10000ms)
+  // Phase 9: Gertrude lunges - slash! (10200ms)
   timers.push(setTimeout(function(){
     G.style.transition = 'transform .3s cubic-bezier(.1,.7,.3,1)';
     setPos(G, 20, 2, 12);
@@ -8610,10 +8633,10 @@ function showErinDuel() {
     setSword(RS, -40);
     spawnSparks(4);
     shakeStage(200);
-    updateProgress(68);
-  }, 10000));
+    updateProgress(70);
+  }, 10200));
 
-  // Phase 10: Knight staggers back, Gertrude presses (11200ms)
+  // Phase 10: Knight staggers back, Gertrude presses (11400ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
     setPos(R, -20, 14, -18);
@@ -8622,10 +8645,10 @@ function showErinDuel() {
     setPos(G, 16, 4, 10);
     setSword(GS, -30);
     spawnSparks(2);
-    updateProgress(76);
-  }, 11200));
+    updateProgress(78);
+  }, 11400));
 
-  // Phase 11: Final blow! Gertrude strikes the knight down! (12500ms)
+  // Phase 11: Final blow! Gertrude strikes! (12700ms)
   timers.push(setTimeout(function(){
     G.style.transition = 'transform .35s cubic-bezier(.1,.7,.3,1)';
     setPos(G, 28, -2, 18);
@@ -8636,10 +8659,10 @@ function showErinDuel() {
     screenFlash();
     spawnSparks(8);
     shakeStage(400);
-    updateProgress(84);
-  }, 12500));
+    updateProgress(86);
+  }, 12700));
 
-  // Phase 12: Knight falls (13800ms)
+  // Phase 12: Knight falls (14000ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .6s cubic-bezier(.34,1.2,.64,1)';
     setPos(R, -10, 38, -55);
@@ -8647,32 +8670,32 @@ function showErinDuel() {
     G.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
     setPos(G, 24, -4, 14);
     setSword(GS, -120);
-    updateProgress(90);
-  }, 13800));
+    updateProgress(92);
+  }, 14000));
 
-  // Phase 13: Gertrude victorious - raises sword! (14900ms)
+  // Phase 13: Gertrude victorious - raises sword! (15100ms)
   timers.push(setTimeout(function(){
     G.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
     setPos(G, 20, -6, 10);
     setSword(GS, -150);
-    updateProgress(95);
-  }, 14900));
+    updateProgress(96);
+  }, 15100));
 
-  // Phase 14: Show result text (15800ms)
+  // Phase 14: Show result text (16000ms)
   timers.push(setTimeout(function(){
     if (ER) ER.style.opacity = '1';
-    updateProgress(98);
-  }, 15800));
+    updateProgress(99);
+  }, 16000));
 
-  // Phase 15: Show Continue button (17000ms)
+  // Phase 15: Show Continue button (17200ms)
   timers.push(setTimeout(function(){
     updateProgress(100);
     if (PCont) PCont.style.display = 'inline-block';
-  }, 17000));
+  }, 17200));
 
   if (PCont) PCont.onclick = function(){
     timers.forEach(function(t){clearTimeout(t)});
-    var el = document.getElementById('erin-duel');
+    var el = document.getElementById('gertrude-duel');
     if (el) el.remove();
     setTimeout(showSafetyCutscene, 300);
   };
@@ -8688,7 +8711,7 @@ function showSafetyCutscene() {
   overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
   overlay.style.overflow = 'hidden';
   var h = '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;background:repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%) 0 0 / 2px 2px;animation:jcGrain .3s steps(3) infinite"></div><div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);opacity:0;animation:jcVignette 1.5s ease .3s forwards"></div><div class="overlay-content" style="padding:16px 12px 8px;max-width:480px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:100%">';
-  h += '<div style="text-align:center;padding:30px 0 6px;opacity:0" id="sc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">ERIN vs THE RIVAL KNIGHT</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR SAFETY PLAN</div></div>';
+  h += '<div style="text-align:center;padding:30px 0 6px;opacity:0" id="sc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">GERTRUDE vs THE RIVAL KNIGHT</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR SAFETY PLAN</div></div>';
   var chipList = [];
   if (sp && sp.steps) chipList.push(sp.steps.length + ' steps');
   chipList.push('For ' + type);
@@ -8705,8 +8728,8 @@ function showSafetyCutscene() {
   }
   h += '</div></div><div style="flex:1"></div>';
   if (answers && answers.length) {
-    h += '<div id="sc-answers" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:6px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">YOUR ANSWERS TO ERIN</div>';
-    for (var ai=0;ai<Math.min(answers.length,ERIN_QUESTIONS.length);ai++) {
+    h += '<div id="sc-answers" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:6px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">YOUR ANSWERS TO GERTRUDE</div>';
+    for (var ai=0;ai<Math.min(answers.length,GERTRUDE_QUESTIONS.length);ai++) {
       if (answers[ai] && answers[ai].trim()) h += '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:4px"><span style="color:rgba(255,255,255,.3)">Q'+(ai+1)+':</span> '+safe(answers[ai])+'</div>';
     }
     h += '</div>';
@@ -8724,52 +8747,52 @@ function showSafetyCutscene() {
   setTimeout(function(){var e=overlay.querySelector('#sc-answers');if(e)e.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards'},3000);
   setTimeout(function(){var e=overlay.querySelector('#sc-close');if(e)e.style.animation='jcZoomIn .5s cubic-bezier(.16,1,.3,1) forwards'},3800);
 }
-var ERIN_QUESTIONS = [
+var GERTRUDE_QUESTIONS = [
   {q:'What situations or environments make you feel most at risk?',pl:'e.g. parties, certain people, times of day, stress at work'},
   {q:'Who is in your support network that you can reach out to?',pl:'e.g. sponsor, therapist, family member, close friend'},
   {q:'What healthy activities or coping strategies work best for you?',pl:'e.g. exercise, meditation, journaling, calling a friend'},
   {q:'What early warning signs tell you a relapse might be near?',pl:'e.g. irritability, isolation, cravings, sleep changes'},
   {q:'What is your deepest motivation for staying in recovery?',pl:'e.g. family, health, self-respect, future goals'}
 ];
-var ERIN_Q_STEP = 0;
-var ERIN_Q_ANSWERS = [];
-function startErinQuestions() {
-  ERIN_Q_STEP = 0;
-  ERIN_Q_ANSWERS = D.safetyAnswers || ['','','','',''];
-  renderErinQuestion();
+var GERTRUDE_Q_STEP = 0;
+var GERTRUDE_Q_ANSWERS = [];
+function startGertrudeQuestions() {
+  GERTRUDE_Q_STEP = 0;
+  GERTRUDE_Q_ANSWERS = D.safetyAnswers || ['','','','',''];
+  renderGertrudeQuestion();
 }
-function renderErinQuestion() {
-  var step = ERIN_Q_STEP;
-  if (step >= ERIN_QUESTIONS.length) {
-    D.safetyAnswers = ERIN_Q_ANSWERS;
+function renderGertrudeQuestion() {
+  var step = GERTRUDE_Q_STEP;
+  if (step >= GERTRUDE_QUESTIONS.length) {
+    D.safetyAnswers = GERTRUDE_Q_ANSWERS;
     D._safetyQuestionsDone = true;
     saveData();
-    var ov = document.getElementById('erin-q-ov');
+    var ov = document.getElementById('gertrude-q-ov');
     if (ov) ov.remove();
     render();
     return;
   }
-  var q = ERIN_QUESTIONS[step];
+  var q = GERTRUDE_QUESTIONS[step];
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.id = 'erin-q-ov';
+  overlay.id = 'gertrude-q-ov';
   overlay.style.background = 'rgba(0,0,0,0.6)';
   overlay.innerHTML =
     '<div style="background:var(--card);max-width:380px;width:90%;margin:0 auto;border-radius:20px;padding:28px 20px 20px;text-align:center;animation:siFade .3s ease;position:relative;max-height:85vh;overflow-y:auto">' +
     '<div style="font-size:40px;margin-bottom:4px">&#128105;</div>' +
     '<div style="font-size:13px;font-weight:700;color:var(--rose);margin-bottom:2px">Gertrude asks:</div>' +
     '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + q.q + '</div>' +
-    '<textarea id="erin-q-input" placeholder="' + q.pl + '" style="min-height:80px">' + (ERIN_Q_ANSWERS[step] || '') + '</textarea>' +
+    '<textarea id="gertrude-q-input" placeholder="' + q.pl + '" style="min-height:80px">' + (GERTRUDE_Q_ANSWERS[step] || '') + '</textarea>' +
     '<div style="display:flex;gap:6px;justify-content:center;margin:14px 0 10px">' +
-    ERIN_QUESTIONS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'#ec4899':'var(--border)')+';transition:.2s"></div>'; }).join('') +
+    GERTRUDE_QUESTIONS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'#ec4899':'var(--border)')+';transition:.2s"></div>'; }).join('') +
     '</div>' +
     '<div style="display:flex;gap:8px">' +
-    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="ERIN_Q_ANSWERS[ERIN_Q_STEP]=document.getElementById(\'erin-q-input\').value;ERIN_Q_STEP--;renderErinQuestion()" style="flex:1">Back</button>' : '') +
-    '<button class="btn btn-sm btn-primary" onclick="ERIN_Q_ANSWERS[ERIN_Q_STEP]=document.getElementById(\'erin-q-input\').value;ERIN_Q_STEP++;renderErinQuestion()" style="flex:1">' + (step < ERIN_QUESTIONS.length-1 ? 'Next' : 'Done') + '</button>' +
+    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="GERTRUDE_Q_ANSWERS[GERTRUDE_Q_STEP]=document.getElementById(\'gertrude-q-input\').value;GERTRUDE_Q_STEP--;renderGertrudeQuestion()" style="flex:1">Back</button>' : '') +
+    '<button class="btn btn-sm btn-primary" onclick="GERTRUDE_Q_ANSWERS[GERTRUDE_Q_STEP]=document.getElementById(\'gertrude-q-input\').value;GERTRUDE_Q_STEP++;renderGertrudeQuestion()" style="flex:1">' + (step < GERTRUDE_QUESTIONS.length-1 ? 'Next' : 'Done') + '</button>' +
     '</div>' +
-    '<button onclick="document.getElementById(\'erin-q-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>' +
+    '<button onclick="document.getElementById(\'gertrude-q-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>' +
     '</div>';
-  var existing = document.getElementById('erin-q-ov');
+  var existing = document.getElementById('gertrude-q-ov');
   if (existing) existing.remove();
   document.body.appendChild(overlay);
 }
@@ -8779,15 +8802,15 @@ function safetyHTML() {
     h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Safety Plan</h2>';
     h += '<div class="card" style="text-align:center;padding:24px">';
     h += '<div style="font-size:48px;margin-bottom:8px">&#128105;</div>';
-    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Erin</div>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">Erin will guide you through building a personalized safety plan. First, let\'s start with a few questions.</p>';
-    h += '<button class="btn btn-primary" onclick="startErinQuestions()" style="margin-top:8px">Start with Erin</button>';
+    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Gertrude</div>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">Gertrude will guide you through building a personalized safety plan. First, let\'s start with a few questions.</p>';
+    h += '<button class="btn btn-primary" onclick="startGertrudeQuestions()" style="margin-top:8px">Start with Gertrude</button>';
     h += '</div>';
     return h;
   }
   h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">My Addiction Targets</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. Erin will create a personalized safety plan for each one.</p>';
-  h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,#ec4899,#f43f5e);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">E</div><div><h3 style="margin:0;font-size:15px">Safety Plans</h3></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. Gertrude will create a personalized safety plan for each one.</p>';
+  h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">G</div><div><h3 style="margin:0;font-size:15px">Safety Plans</h3></div></div>';
   var addictions = D.targetAddictions || [];
   if (!addictions.length) {
     h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose one or more addictions you want to work on:</p>';
