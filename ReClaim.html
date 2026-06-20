@@ -8546,14 +8546,14 @@ function showGertrudeDuel() {
     updateProgress(8);
   }, 400));
 
-  // Phase 2: Swords CLASH in the middle! (1600ms)
+  // Phase 2: Swords CLASH in the middle! (1600ms) - move close so swords cross
   timers.push(setTimeout(function(){
     G.style.transition = 'transform .15s cubic-bezier(.22,1,.36,1)';
     R.style.transition = 'transform .15s cubic-bezier(.22,1,.36,1)';
     G.className = '';
     R.className = '';
-    setPos(G, 3, 1, 2);
-    setPos(R, -3, 1, -2);
+    setPos(G, 165, 1, 2);
+    setPos(R, -165, 1, -2);
     setSword(GS, -60);
     setSword(RS, 60);
     screenFlash();
@@ -8565,10 +8565,10 @@ function showGertrudeDuel() {
   // Phase 3: Recoil - both push back (2400ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
-    setPos(R, -30, 5, -5);
+    setPos(R, -90, 5, -5);
     setSword(RS, 15);
     G.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 15, 5, 4);
+    setPos(G, 90, 5, 4);
     setSword(GS, 10);
     updateProgress(35);
   }, 2400));
@@ -8576,10 +8576,10 @@ function showGertrudeDuel() {
   // Phase 4: Gertrude lunges - slash! (3400ms)
   timers.push(setTimeout(function(){
     G.style.transition = 'transform .3s cubic-bezier(.1,.7,.3,1)';
-    setPos(G, 25, 3, 14);
+    setPos(G, 130, 3, 14);
     setSword(GS, -85);
     R.style.transition = 'transform .2s cubic-bezier(.22,1,.36,1)';
-    setPos(R, -25, 7, -9);
+    setPos(R, -130, 7, -9);
     setSword(RS, -35);
     spawnSparks(5);
     shakeStage(250);
@@ -8589,10 +8589,10 @@ function showGertrudeDuel() {
   // Phase 5: Knight staggers back, Gertrude presses (4500ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
-    setPos(R, -15, 16, -20);
+    setPos(R, -70, 16, -20);
     setSword(RS, 55);
     G.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 20, 5, 12);
+    setPos(G, 120, 5, 12);
     setSword(GS, -25);
     spawnSparks(3);
     updateProgress(60);
@@ -8601,10 +8601,10 @@ function showGertrudeDuel() {
   // Phase 6: Final blow! Gertrude strikes! (5700ms)
   timers.push(setTimeout(function(){
     G.style.transition = 'transform .35s cubic-bezier(.1,.7,.3,1)';
-    setPos(G, 32, -1, 20);
+    setPos(G, 175, -1, 20);
     setSword(GS, -110);
     R.style.transition = 'transform .3s cubic-bezier(.34,1.2,.64,1)';
-    setPos(R, -10, 24, -32);
+    setPos(R, -60, 24, -32);
     setSword(RS, 75);
     screenFlash();
     spawnSparks(10);
@@ -8615,10 +8615,10 @@ function showGertrudeDuel() {
   // Phase 7: Knight falls (6900ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .6s cubic-bezier(.34,1.2,.64,1)';
-    setPos(R, -5, 40, -60);
+    setPos(R, -30, 40, -60);
     setSword(RS, 130);
     G.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 28, -3, 16);
+    setPos(G, 140, -3, 16);
     setSword(GS, -130);
     updateProgress(86);
   }, 6900));
@@ -8626,7 +8626,7 @@ function showGertrudeDuel() {
   // Phase 8: Gertrude victorious - raises sword! (8000ms)
   timers.push(setTimeout(function(){
     G.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 22, -5, 12);
+    setPos(G, 135, -5, 12);
     setSword(GS, -160);
     updateProgress(93);
   }, 8000));
