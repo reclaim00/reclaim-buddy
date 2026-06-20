@@ -101,7 +101,6 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 @keyframes doorSplinter{0%{transform:scale(0);opacity:0}40%{transform:scale(1.5);opacity:1}70%{transform:scale(2);opacity:0.8}100%{transform:scale(2.5);opacity:0}}
 @keyframes kingThrough{0%{transform:translateY(12px) scale(0.3);opacity:0}30%{transform:translateY(-4px) scale(1.15);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
 @keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
-@keyframes countFade{0%{transform:translateX(-50%) scale(0.5);opacity:0}25%{transform:translateX(-50%) scale(1.2);opacity:1}50%{transform:translateX(-50%) scale(1);opacity:1}100%{transform:translateX(-50%) scale(0.8);opacity:0}}
 
 @keyframes dragonDrama{
 0%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
@@ -8458,9 +8457,6 @@ function showGertrudeDuel() {
     '<div style="position:absolute;top:12%;right:20%;font-size:4px;opacity:0.2;color:#fbbf24;filter:blur(2px)">&#128293;</div>' +
     '<div id="gertrude-char" class="erin-stage" style="position:absolute;left:6%;bottom:12px;filter:drop-shadow(0 0 8px rgba(190,24,93,0.7));z-index:2;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><svg class="erin-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><g class="e-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L11 39" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:11px 39px"><path d="M11 39 L8 48" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M6 47 L10 47 L11 51 L5 51 Z" fill="#8B4513"/></g></g><g class="e-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L19 39" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:19px 39px"><path d="M19 39 L22 48" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M20 47 L24 47 L25 51 L19 51 Z" fill="#8B4513"/></g></g><path d="M10 12 Q9 15 9.5 27 L20.5 27 Q21 15 20 12 Z" fill="#94a3b8"/><line x1="11" y1="15" x2="19" y2="15" stroke="#78716c" stroke-width=".6"/><line x1="10.5" y1="18" x2="19.5" y2="18" stroke="#78716c" stroke-width=".6"/><line x1="10" y1="21" x2="20" y2="21" stroke="#78716c" stroke-width=".6"/><line x1="10" y1="24" x2="20" y2="24" stroke="#78716c" stroke-width=".6"/><path d="M11.5 12 Q11 15 11 24 L19 24 Q19 15 18.5 12 Z" fill="#be185d"/><path d="M12 14 L18 14 L17.5 22 L12.5 22 Z" fill="#fff" opacity=".15"/><circle cx="15" cy="17.5" r="1.2" fill="#fbbf24"/><path d="M14 15.5 L14 19.5 M16 15.5 L16 19.5 M13 17 L17 17 M13 18 L17 18" stroke="#fbbf24" stroke-width=".4" opacity=".6"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="25" width="9" height="2.5" rx="1" fill="#78350f"/><rect x="14" y="25.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="e-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="e-larm-fg" style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.5" fill="#f0d5b0"/><path d="M0 5 L0 18 L8 18 L8 5 Q6 2 4 2 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".4"/><path d="M2 7 L2 16 L6 16 L6 7 Z" fill="#fff" opacity=".1"/><circle cx="4" cy="11" r="1" fill="#fbbf24" opacity=".6"/></g></g><g class="e-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="e-rarm-fg" style="transform-origin:21px 19px"><path d="M21 19 L23 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="24" cy="12" r="1.5" fill="#f0d5b0"/><g class="e-sword-g" style="transform-origin:24px 12px;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><line x1="24" y1="12" x2="29" y2="-3" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round"/><line x1="25" y1="7" x2="28" y2="7" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/><line x1="29" y1="-3" x2="29" y2="-6" stroke="#fff" stroke-width="1" stroke-linecap="round" opacity=".6"/><circle cx="24" cy="12" r="1" fill="#fbbf24"/></g></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9 1 L9 9 L21 9 L21 1 Q15 -2 9 1 Z" fill="#78716c"/><path d="M10 2 L10 8 L20 8 L20 2 Z" fill="#57534e"/><path d="M12 3 L12 7 L14 7 L14 5 Z" fill="#f0d5b0"/><path d="M16 3 L16 7 L18 7 L18 5 Z" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg></div>' +
     '<div id="rival-char" class="knight-stage" style="position:absolute;right:8%;bottom:12px;z-index:2;transform:scaleX(-1);transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><svg class="knight-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><g class="k-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L11 39" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:11px 39px"><path d="M11 39 L8 48" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M6 47 L10 47 L11 51 L5 51 Z" fill="#1e293b"/></g></g><g class="k-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L19 39" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:19px 39px"><path d="M19 39 L22 48" stroke="#475569" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M20 47 L24 47 L25 51 L19 51 Z" fill="#1e293b"/></g></g><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#475569" class="k-body"/><path d="M10.5 27 L19.5 27 L19 33 L11 33 Z" fill="#1e293b"/><rect x="10.5" y="27" width="9" height="2" rx=".5" fill="#334155"/><rect x="14" y="27.3" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="k-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#475569" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="k-larm-fg" style="transform-origin:9px 19px"><path d="M9 19 L6 13" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.8" fill="#64748b"/></g></g><g class="k-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#475569" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="k-rarm-fg" style="transform-origin:21px 19px"><path d="M21 19 L24 13" stroke="#475569" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="25" cy="12" r="1.8" fill="#64748b"/><g class="k-sword-g" style="transform-origin:25px 12px;transition:transform .3s cubic-bezier(.34,1.2,.64,1)"><line x1="25" y1="12" x2="32" y2="2" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="27" y1="8" x2="29" y2="8" stroke="#fbbf24" stroke-width="1.5"/></g></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#64748b"/><path d="M9.5 4 L9.5 1 Q15 -1 20.5 1 L20.5 4 Z" fill="#475569"/><rect x="11" y="3.5" width="8" height="1.8" rx=".5" fill="#334155"/><circle cx="12.5" cy="6" r=".7" fill="#333"/><circle cx="17.5" cy="6" r=".7" fill="#333"/><line x1="14" y1="7.5" x2="16" y2="7.5" stroke="#333" stroke-width=".5" stroke-linecap="round"/><path d="M9.5 3 L9.5 0 Q15 -2 20.5 0 L20.5 3 Z" fill="#ef4444"/></svg></div>' +
-    '<div id="g-count-3" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">3</div>' +
-    '<div id="g-count-2" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">2</div>' +
-    '<div id="g-count-1" style="position:absolute;top:30%;left:50%;transform:translateX(-50%);font-size:56px;font-weight:900;color:#fbbf24;text-shadow:0 0 30px #f59e0b;opacity:0;z-index:5">1</div>' +
     '<div id="g-flash" style="position:absolute;inset:0;background:#fff;opacity:0;z-index:10;pointer-events:none"></div>' +
     '<div id="g-sparks" style="position:absolute;inset:0;z-index:6;pointer-events:none"></div>' +
     '</div>' +
@@ -8480,9 +8476,6 @@ function showGertrudeDuel() {
   var RS = document.querySelector('#rival-char .k-sword-g');
   var Stage = document.getElementById('duel-stage');
   var Sparks = document.getElementById('g-sparks');
-  var C3 = document.getElementById('g-count-3');
-  var C2 = document.getElementById('g-count-2');
-  var C1 = document.getElementById('g-count-1');
   var ER = document.getElementById('g-result');
   var PBar = document.getElementById('g-progress');
   var PCont = document.getElementById('g-continue');
@@ -8553,145 +8546,102 @@ function showGertrudeDuel() {
     updateProgress(8);
   }, 400));
 
-  // Phase 2: Face off - stand still, draw weapons (3000ms)
+  // Phase 2: Swords CLASH in the middle! (1600ms)
   timers.push(setTimeout(function(){
-    G.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
-    R.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 5, 2, 3);
-    setPos(R, -5, 2, -3);
-    setSword(GS, -10);
-    setSword(RS, 10);
-    updateProgress(15);
-  }, 3000));
-
-  // Phase 3: Ready stance + Countdown 3 (4700ms)
-  timers.push(setTimeout(function(){
-    setPos(G, 8, 4, 5);
-    setPos(R, -8, 4, -5);
-    setSword(GS, -20);
-    setSword(RS, 20);
-    flashEl(C3, 'countFade .5s ease forwards', 500);
-    updateProgress(22);
-  }, 4700));
-
-  // Phase 4: Countdown 2 (5500ms)
-  timers.push(setTimeout(function(){
-    flashEl(C2, 'countFade .5s ease forwards', 500);
-    updateProgress(30);
-  }, 5500));
-
-  // Phase 5: Countdown 1 (6300ms)
-  timers.push(setTimeout(function(){
-    flashEl(C1, 'countFade .5s ease forwards', 500);
-    setSword(GS, -45);
-    setSword(RS, 45);
-    updateProgress(38);
-  }, 6300));
-
-  // Phase 6: Knight charges! (7100ms)
-  timers.push(setTimeout(function(){
-    R.style.transition = 'transform .5s cubic-bezier(.1,.7,.3,1)';
-    setPos(R, -55, 8, -8);
-    setSword(RS, -10);
-    setPos(G, 12, 6, 6);
-    setSword(GS, 10);
-    updateProgress(46);
-  }, 7100));
-
-  // Phase 7: Knight swings - Gertrude blocks with shield! (8100ms)
-  timers.push(setTimeout(function(){
-    R.style.transition = 'transform .25s cubic-bezier(.22,1,.36,1)';
-    setPos(R, -50, 10, -12);
-    setSword(RS, -70);
     G.style.transition = 'transform .15s cubic-bezier(.22,1,.36,1)';
-    setPos(G, 10, 4, -2);
-    setSword(GS, -30);
-    screenFlash();
-    spawnSparks(6);
-    shakeStage(300);
-    updateProgress(54);
-  }, 8100));
-
-  // Phase 8: Recoil - both push back (9100ms)
-  timers.push(setTimeout(function(){
-    R.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
-    setPos(R, -35, 6, -6);
-    setSword(RS, 20);
-    G.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 5, 3, 3);
-    setSword(GS, 10);
-    updateProgress(62);
-  }, 9100));
-
-  // Phase 9: Gertrude lunges - slash! (10200ms)
-  timers.push(setTimeout(function(){
-    G.style.transition = 'transform .3s cubic-bezier(.1,.7,.3,1)';
-    setPos(G, 20, 2, 12);
-    setSword(GS, -80);
-    R.style.transition = 'transform .2s cubic-bezier(.22,1,.36,1)';
-    setPos(R, -30, 8, -10);
-    setSword(RS, -40);
-    spawnSparks(4);
-    shakeStage(200);
-    updateProgress(70);
-  }, 10200));
-
-  // Phase 10: Knight staggers back, Gertrude presses (11400ms)
-  timers.push(setTimeout(function(){
-    R.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
-    setPos(R, -20, 14, -18);
+    R.style.transition = 'transform .15s cubic-bezier(.22,1,.36,1)';
+    G.className = '';
+    R.className = '';
+    setPos(G, 3, 1, 2);
+    setPos(R, -3, 1, -2);
+    setSword(GS, -60);
     setSword(RS, 60);
-    G.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 16, 4, 10);
-    setSword(GS, -30);
-    spawnSparks(2);
-    updateProgress(78);
-  }, 11400));
-
-  // Phase 11: Final blow! Gertrude strikes! (12700ms)
-  timers.push(setTimeout(function(){
-    G.style.transition = 'transform .35s cubic-bezier(.1,.7,.3,1)';
-    setPos(G, 28, -2, 18);
-    setSword(GS, -100);
-    R.style.transition = 'transform .3s cubic-bezier(.34,1.2,.64,1)';
-    setPos(R, -15, 22, -30);
-    setSword(RS, 80);
     screenFlash();
     spawnSparks(8);
-    shakeStage(400);
-    updateProgress(86);
-  }, 12700));
+    shakeStage(350);
+    updateProgress(20);
+  }, 1600));
 
-  // Phase 12: Knight falls (14000ms)
+  // Phase 3: Recoil - both push back (2400ms)
+  timers.push(setTimeout(function(){
+    R.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
+    setPos(R, -30, 5, -5);
+    setSword(RS, 15);
+    G.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
+    setPos(G, 15, 5, 4);
+    setSword(GS, 10);
+    updateProgress(35);
+  }, 2400));
+
+  // Phase 4: Gertrude lunges - slash! (3400ms)
+  timers.push(setTimeout(function(){
+    G.style.transition = 'transform .3s cubic-bezier(.1,.7,.3,1)';
+    setPos(G, 25, 3, 14);
+    setSword(GS, -85);
+    R.style.transition = 'transform .2s cubic-bezier(.22,1,.36,1)';
+    setPos(R, -25, 7, -9);
+    setSword(RS, -35);
+    spawnSparks(5);
+    shakeStage(250);
+    updateProgress(48);
+  }, 3400));
+
+  // Phase 5: Knight staggers back, Gertrude presses (4500ms)
+  timers.push(setTimeout(function(){
+    R.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
+    setPos(R, -15, 16, -20);
+    setSword(RS, 55);
+    G.style.transition = 'transform .4s cubic-bezier(.34,1.2,.64,1)';
+    setPos(G, 20, 5, 12);
+    setSword(GS, -25);
+    spawnSparks(3);
+    updateProgress(60);
+  }, 4500));
+
+  // Phase 6: Final blow! Gertrude strikes! (5700ms)
+  timers.push(setTimeout(function(){
+    G.style.transition = 'transform .35s cubic-bezier(.1,.7,.3,1)';
+    setPos(G, 32, -1, 20);
+    setSword(GS, -110);
+    R.style.transition = 'transform .3s cubic-bezier(.34,1.2,.64,1)';
+    setPos(R, -10, 24, -32);
+    setSword(RS, 75);
+    screenFlash();
+    spawnSparks(10);
+    shakeStage(450);
+    updateProgress(74);
+  }, 5700));
+
+  // Phase 7: Knight falls (6900ms)
   timers.push(setTimeout(function(){
     R.style.transition = 'transform .6s cubic-bezier(.34,1.2,.64,1)';
-    setPos(R, -10, 38, -55);
-    setSword(RS, 120);
+    setPos(R, -5, 40, -60);
+    setSword(RS, 130);
     G.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 24, -4, 14);
-    setSword(GS, -120);
-    updateProgress(92);
-  }, 14000));
+    setPos(G, 28, -3, 16);
+    setSword(GS, -130);
+    updateProgress(86);
+  }, 6900));
 
-  // Phase 13: Gertrude victorious - raises sword! (15100ms)
+  // Phase 8: Gertrude victorious - raises sword! (8000ms)
   timers.push(setTimeout(function(){
     G.style.transition = 'transform .5s cubic-bezier(.34,1.2,.64,1)';
-    setPos(G, 20, -6, 10);
-    setSword(GS, -150);
-    updateProgress(96);
-  }, 15100));
+    setPos(G, 22, -5, 12);
+    setSword(GS, -160);
+    updateProgress(93);
+  }, 8000));
 
-  // Phase 14: Show result text (16000ms)
+  // Phase 9: Show result text (8800ms)
   timers.push(setTimeout(function(){
     if (ER) ER.style.opacity = '1';
-    updateProgress(99);
-  }, 16000));
+    updateProgress(98);
+  }, 8800));
 
-  // Phase 15: Show Continue button (17200ms)
+  // Phase 10: Show Continue button (10000ms)
   timers.push(setTimeout(function(){
     updateProgress(100);
     if (PCont) PCont.style.display = 'inline-block';
-  }, 17200));
+  }, 10000));
 
   if (PCont) PCont.onclick = function(){
     timers.forEach(function(t){clearTimeout(t)});
