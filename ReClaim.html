@@ -430,8 +430,6 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 @keyframes knightClash{0%{transform:translateX(-70px) translateY(7px) rotate(0deg)}10%{transform:translateX(-66px) translateY(5px) rotate(-18deg)}25%{transform:translateX(-68px) translateY(6px) rotate(10deg)}40%{transform:translateX(-64px) translateY(4px) rotate(-12deg)}55%{transform:translateX(-66px) translateY(5px) rotate(6deg)}100%{transform:translateX(-66px) translateY(5px) rotate(0deg)}}
 @keyframes knightStagger{0%{transform:translateX(-66px) translateY(5px) rotate(0deg)}20%{transform:translateX(-54px) translateY(10px) rotate(18deg)}50%{transform:translateX(-42px) translateY(16px) rotate(30deg)}80%{transform:translateX(-36px) translateY(20px) rotate(38deg)}100%{transform:translateX(-32px) translateY(22px) rotate(40deg)}}
 @keyframes knightFall{0%{transform:translateX(-32px) translateY(22px) rotate(40deg)}25%{transform:translateX(-28px) translateY(32px) rotate(55deg)}55%{transform:translateX(-24px) translateY(40px) rotate(68deg)}100%{transform:translateX(-20px) translateY(48px) rotate(78deg)}}
-100%{transform:translateX(-8px) translateY(3px) rotate(-6deg)}
-}
 @keyframes fadeOutUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-20px)}}
 /* Team battle keyframes */
 @keyframes monsterApproach{0%{transform:translateX(200px) scale(0.5);opacity:0}15%{opacity:1}40%{transform:translateX(0) scale(1);opacity:1}100%{transform:translateX(-60px) scale(0.8);opacity:0}}
@@ -543,17 +541,17 @@ var firebaseConfig = {
   appId: "1:252489457973:web:6d785afa4c32b3374c2c7c",
   measurementId: "G-J1J62RQ93Y"
 };
-firebase.initializeApp(firebaseConfig);
-var DB = firebase.firestore();
-var MESSAGING = null;
-try { MESSAGING = firebase.messaging(); } catch(e) {}
+try { firebase.initializeApp(firebaseConfig); } catch(e) { console.warn('Firebase init failed:', e); }
+var DB = null; var MESSAGING = null;
+try { if (firebase) { DB = firebase.firestore(); } } catch(e) {}
+try { if (firebase) { MESSAGING = firebase.messaging(); } } catch(e) {}
 // Set your VAPID key below from Firebase Console > Cloud Messaging > Web Push certificates
 var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHOSCA7l4_ZUvy4RMvxDVaUFI84';
 
 function subscribePush() {
   if (!MESSAGING || !AUTH_EMAIL || VAPID_KEY === 'REPLACE_WITH_YOUR_VAPID_KEY') return;
   MESSAGING.getToken({vapidKey: VAPID_KEY}).then(function(token) {
-    DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({token: token, updated: firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
+    if (DB) DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({token: token, updated: firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
   }).catch(function(){});
 }
 
@@ -2721,7 +2719,7 @@ function showCrisisAlert(text) {
       notifyBtn.style.cssText = 'margin-top:4px;width:100%';
       notifyBtn.onclick = function() {
         var msg = t('I need support right now. Your buddy may be in distress. Please reach out.');
-        DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('Your buddy has been notified.'));notifyBtn.remove();}).catch(function(){});
+        if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('Your buddy has been notified.'));notifyBtn.remove();}).catch(function(){});
       };
       overlay.querySelector('.overlay-content').appendChild(notifyBtn);
     }, 300);
@@ -7391,19 +7389,6 @@ function showBoxingMatch(onDone) {
       if (typeof onDone === 'function') onDone();
     };
   }
-}
-
-  // Phase 14: Auto-redirect to journal reflection (17500ms)
-  timers.push(setTimeout(function(){
-    clearTimers();
-    overlay.remove();
-    if (onDone) onDone();
-  }, 17500));
-
-  // Cleanup if overlay is removed manually
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) { clearTimers(); overlay.remove(); if (onDone) onDone(); }
-  });
 }
 
 function showTeamBattle(data) {
