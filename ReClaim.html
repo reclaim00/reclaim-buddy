@@ -244,6 +244,8 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 .joust-pos.arthur{left:5%}.joust-pos.skeleton{right:5%}
 .arthur-svg{width:120px;height:90px;transform-origin:bottom center}
 .skeleton-svg{width:120px;height:90px;transform-origin:bottom center}
+.skeleton-rider{position:absolute;top:0;left:0;width:120px;height:90px;pointer-events:none;transform-origin:bottom center}
+.skeleton-rider-svg{width:100%;height:100%;overflow:visible}
 .oswald-svg{width:75px;height:105px;transform-origin:bottom center}
 .dragon-svg{width:180px;height:auto;transform-origin:bottom center}
 .d-body{animation:dBodyBreathe 3.5s ease-in-out infinite;transform-origin:33px 22px}
@@ -7203,7 +7205,7 @@ function showBoxingMatch(onDone) {
     '<path d="M31 15 Q35 13 38 12" stroke="#8B4513" stroke-width=".6" fill="none"/>' +
     '</svg>';
 
-  var skeletonMountSVG =
+  var skeletonHorseSVG =
     '<svg class="skeleton-svg" viewBox="0 0 60 42">' +
     '<ellipse cx="30" cy="40" rx="16" ry="2.5" fill="rgba(0,0,0,.15)"/>' +
     '<g class="s-horse-legs">' +
@@ -7220,6 +7222,10 @@ function showBoxingMatch(onDone) {
     '<path d="M17 22 Q13 19 11 21 Q9 23 12 25 Q14 23 17 24" stroke="#555" stroke-width="2" fill="none"/>' +
     '<path d="M24 20 L28 20 L28 28 L24 28 Z" fill="#666" opacity=".5"/>' +
     '<rect x="24" y="20" width="4" height="8" fill="none" stroke="#888" stroke-width=".5"/>' +
+    '</svg>';
+
+  var skeletonRiderSVG =
+    '<svg class="skeleton-rider-svg" viewBox="0 0 60 42" style="position:absolute;top:0;left:0;width:100%;height:100%">' +
     '<g class="s-rider">' +
     '<line x1="29" y1="11" x2="29" y2="18" stroke="#d4d0c8" stroke-width="1.5"/>' +
     '<line x1="27" y1="12" x2="29" y2="14" stroke="#d4d0c8" stroke-width="1"/><line x1="31" y1="12" x2="29" y2="14" stroke="#d4d0c8" stroke-width="1"/>' +
@@ -7245,7 +7251,7 @@ function showBoxingMatch(onDone) {
       '<div class="lance-hit" id="lance-hit">&#128481;&#65039;</div>' +
       '<div class="winner-text" id="winner-text"></div>' +
       '<div class="joust-pos arthur" id="arthur-boxer">' + arthurMountSVG + '</div>' +
-      '<div class="joust-pos skeleton" id="skeleton-boxer">' + skeletonMountSVG + '</div>' +
+      '<div class="joust-pos skeleton" id="skeleton-boxer">' + skeletonHorseSVG + '<div class="skeleton-rider" id="skeleton-rider">' + skeletonRiderSVG + '</div></div>' +
     '</div>' +
     '<div class="boxing-progress"><div class="fill" id="boxing-progress-bar"></div></div>' +
     '<button class="btn btn-primary btn-sm" id="boxing-continue" style="display:none;margin-top:4px">Continue &#8594;</button>' +
@@ -7255,6 +7261,7 @@ function showBoxingMatch(onDone) {
 
   var A = document.getElementById('arthur-boxer');
   var S = document.getElementById('skeleton-boxer');
+  var R = document.getElementById('skeleton-rider');
   var HF = document.getElementById('hit-flash');
   var SB = document.getElementById('stars-burst');
   var LH = document.getElementById('lance-hit');
@@ -7320,7 +7327,7 @@ function showBoxingMatch(onDone) {
   // Round 3: Arthur hits - skeleton knocked backwards off horse! Stays gone.
   timers.push(setTimeout(function(){
     lanceStrike(); flashHit();
-    if (S) { horseAnim(S, 'skeletonKnockback 2s cubic-bezier(.3,1,.5,1) forwards', 0); }
+    if (R) { horseAnim(R, 'skeletonKnockback 2s cubic-bezier(.3,1,.5,1) forwards', 0); }
     if (A) { horseAnim(A, 'arthurCelebrateJoust 1.5s ease 3', 4500); }
     updateProgress(80);
   }, 12000));
