@@ -91,11 +91,11 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 .sub-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 12px;background:var(--card);border-radius:var(--radius);box-shadow:0 1px 4px rgba(0,0,0,.06);cursor:pointer;border:2px solid transparent;font-size:13px;font-weight:600;color:var(--text);text-align:center}
 .sub-item:hover{border-color:var(--primary)}
-@keyframes paulieBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes paulieShield{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
-@keyframes paulieFadeUp{0%{transform:translateY(12px);opacity:0}100%{transform:translateY(0);opacity:1}}
-@keyframes paulieGlow{0%,100%{box-shadow:0 0 8px rgba(5,150,105,.3)}50%{box-shadow:0 0 24px rgba(5,150,105,.7)}}
-@keyframes paulieCraftBar{0%{transform:scaleX(0)}60%{transform:scaleX(0.7)}100%{transform:scaleX(1)}}
+@keyframes oswaldBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes oswaldShield{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes oswaldFadeUp{0%{transform:translateY(12px);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes oswaldGlow{0%,100%{box-shadow:0 0 8px rgba(5,150,105,.3)}50%{box-shadow:0 0 24px rgba(5,150,105,.7)}}
+@keyframes oswaldCraftBar{0%{transform:scaleX(0)}60%{transform:scaleX(0.7)}100%{transform:scaleX(1)}}
 @keyframes kingFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes doorShake{0%{transform:translateX(0) scale(1)}15%{transform:translateX(-4px) scale(1.02)}30%{transform:translateX(3px) scale(1.04)}45%{transform:translateX(-2px) scale(1.06)}55%{transform:translateX(0) scale(1.08)}70%{transform:translateX(0) scale(0.6);opacity:0.8}85%{transform:scale(0.3) rotate(15deg);opacity:0.4}100%{transform:scale(0) rotate(30deg);opacity:0}}
 @keyframes doorSplinter{0%{transform:scale(0);opacity:0}40%{transform:scale(1.5);opacity:1}70%{transform:scale(2);opacity:0.8}100%{transform:scale(2.5);opacity:0}}
@@ -127,7 +127,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 @keyframes dDefeat{0%{transform:rotate(0deg) scale(1)}30%{transform:rotate(5deg) scale(0.95)}60%{transform:rotate(-3deg) scale(0.9)}100%{transform:rotate(0deg) scale(0.85)}}
 @keyframes finalBlast{0%{transform:scale(0);opacity:0}30%{transform:scale(2);opacity:1}70%{transform:scale(2.5);opacity:0.8}100%{transform:scale(3);opacity:0}}
 @keyframes dragonFire{0%{opacity:0;transform:scale(0.3) rotate(-10deg)}30%{opacity:1;transform:scale(1.8) rotate(5deg)}60%{opacity:0.8;transform:scale(1.3) rotate(-3deg)}100%{opacity:0;transform:scale(2.5) rotate(15deg)}}
-@keyframes paulieHitGlow{0%{opacity:0;transform:scale(0.5)}25%{opacity:0.5;transform:scale(1.3)}50%{opacity:0.3;transform:scale(1)}75%{opacity:0.6;transform:scale(1.6)}100%{opacity:0;transform:scale(2)}}
+@keyframes oswaldHitGlow{0%{opacity:0;transform:scale(0.5)}25%{opacity:0.5;transform:scale(1.3)}50%{opacity:0.3;transform:scale(1)}75%{opacity:0.6;transform:scale(1.6)}100%{opacity:0;transform:scale(2)}}
 /* ====== PLANT ====== */
 .plant-container{text-align:center;padding:10px 0 0;position:relative;min-height:220px}
 .plant-pot{width:120px;height:50px;background:linear-gradient(135deg,#b45309,#78350f);border-radius:0 0 16px 16px;margin:0 auto;position:relative;z-index:1;border-top:3px solid #92400e}
@@ -245,7 +245,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .boxer-pos.arthur{left:22%;filter:drop-shadow(0 0 10px rgba(255,215,0,.8))}.boxer-pos.skeleton{right:22%}
 .arthur-svg{width:75px;height:105px;transform-origin:bottom center}
 .skeleton-svg{width:75px;height:105px;transform-origin:bottom center}
-.paulie-svg{width:75px;height:105px;transform-origin:bottom center}
+.oswald-svg{width:75px;height:105px;transform-origin:bottom center}
 .dragon-svg{width:180px;height:auto;transform-origin:bottom center}
 .d-body{animation:dBodyBreathe 3.5s ease-in-out infinite;transform-origin:33px 22px}
 .erin-svg{width:75px;height:105px;transform-origin:bottom center}
@@ -378,24 +378,24 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 .skeleton.recoil .s-body{animation:sRecoilBody .55s cubic-bezier(.3,1,.5,1) forwards}
 .skeleton.wobble .s-rarm-g,.skeleton.wobble .s-larm-g{animation:sWobbleArm .85s cubic-bezier(.3,1,.5,1) forwards}
 .skeleton.knockdown .s-rarm-g,.skeleton.knockdown .s-larm-g{animation:sKDArm 1.1s cubic-bezier(.34,1.2,.64,1) forwards}
-/* Paulie state-based limb animations */
-.paulie-stage .p-larm-g,.paulie-stage .p-rarm-g{transition:transform .25s cubic-bezier(.34,1.2,.64,1)}
-.paulie-stage.stand .p-larm-g{transform:rotate(-20deg)}
-.paulie-stage.stand .p-rarm-g{transform:rotate(25deg)}
-.paulie-stage.dodge .p-larm-g{transform:rotate(35deg)}
-.paulie-stage.dodge .p-rarm-g{transform:rotate(-30deg)}
-.paulie-stage.knockdown .p-larm-g{transform:rotate(110deg)}
-.paulie-stage.knockdown .p-rarm-g{transform:rotate(-105deg)}
-.paulie-stage.rise .p-larm-g{transform:rotate(25deg)}
-.paulie-stage.rise .p-rarm-g{transform:rotate(-25deg)}
-.paulie-stage.powerup .p-larm-g{transform:rotate(-55deg)}
-.paulie-stage.powerup .p-rarm-g{transform:rotate(60deg)}
-.paulie-stage.attack .p-larm-g{transform:rotate(-75deg)}
-.paulie-stage.attack .p-rarm-g{transform:rotate(40deg)}
-.paulie-stage.celebrate .p-larm-g{transform:rotate(-110deg)}
-.paulie-stage.celebrate .p-rarm-g{transform:rotate(110deg)}
-/* Paulie body movement keyframes */
-@keyframes paulieWalkIn{
+/* Oswald state-based limb animations */
+.oswald-stage .p-larm-g,.oswald-stage .p-rarm-g{transition:transform .25s cubic-bezier(.34,1.2,.64,1)}
+.oswald-stage.stand .p-larm-g{transform:rotate(-20deg)}
+.oswald-stage.stand .p-rarm-g{transform:rotate(25deg)}
+.oswald-stage.dodge .p-larm-g{transform:rotate(35deg)}
+.oswald-stage.dodge .p-rarm-g{transform:rotate(-30deg)}
+.oswald-stage.knockdown .p-larm-g{transform:rotate(110deg)}
+.oswald-stage.knockdown .p-rarm-g{transform:rotate(-105deg)}
+.oswald-stage.rise .p-larm-g{transform:rotate(25deg)}
+.oswald-stage.rise .p-rarm-g{transform:rotate(-25deg)}
+.oswald-stage.powerup .p-larm-g{transform:rotate(-55deg)}
+.oswald-stage.powerup .p-rarm-g{transform:rotate(60deg)}
+.oswald-stage.attack .p-larm-g{transform:rotate(-75deg)}
+.oswald-stage.attack .p-rarm-g{transform:rotate(40deg)}
+.oswald-stage.celebrate .p-larm-g{transform:rotate(-110deg)}
+.oswald-stage.celebrate .p-rarm-g{transform:rotate(110deg)}
+/* Oswald body movement keyframes */
+@keyframes oswaldWalkIn{
 0%{transform:translateX(-80px) translateY(0) scale(1);opacity:0}
 25%{transform:translateX(-50px) translateY(-1px) scale(1.01) rotate(-1.5deg)}
 50%{transform:translateX(-22px) translateY(0) scale(1.02) rotate(1deg)}
@@ -403,7 +403,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 90%{transform:translateX(-1px) translateY(0) scale(1) rotate(0deg)}
 100%{transform:translateX(0) translateY(0) scale(1) rotate(0deg);opacity:1}
 }
-@keyframes paulieDodge{
+@keyframes oswaldDodge{
 0%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
 12%{transform:translateX(-14px) translateY(2px) scale(0.9) rotate(-7deg)}
 28%{transform:translateX(-22px) translateY(7px) scale(0.78) rotate(-14deg)}
@@ -412,7 +412,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 80%{transform:translateX(-6px) translateY(2px) scale(0.94) rotate(-3deg)}
 100%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
 }
-@keyframes paulieKnockdown{
+@keyframes oswaldKnockdown{
 0%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
 15%{transform:translateX(-10px) translateY(8px) scale(0.78) rotate(-12deg);filter:brightness(0.7)}
 32%{transform:translateX(-18px) translateY(18px) scale(0.52) rotate(-28deg)}
@@ -421,7 +421,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 85%{transform:translateX(-22px) translateY(40px) scale(0.24) rotate(-58deg)}
 100%{transform:translateX(-22px) translateY(42px) scale(0.22) rotate(-62deg);opacity:0.6}
 }
-@keyframes paulieRise{
+@keyframes oswaldRise{
 0%{transform:translateX(-22px) translateY(42px) scale(0.22) rotate(-62deg);opacity:0.6}
 18%{transform:translateX(-18px) translateY(28px) scale(0.4) rotate(-42deg);opacity:0.8}
 35%{transform:translateX(-12px) translateY(16px) scale(0.6) rotate(-24deg);opacity:1}
@@ -430,7 +430,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 88%{transform:translateX(0) translateY(0) scale(0.98) rotate(-1deg)}
 100%{transform:translateX(0) translateY(0) scale(1) rotate(0deg)}
 }
-@keyframes pauliePowerUp{
+@keyframes oswaldPowerUp{
 0%{transform:translateX(0) translateY(0) scale(1);filter:brightness(1) drop-shadow(0 0 0 transparent)}
 20%{transform:translateX(0) translateY(-4px) scale(1.06) rotate(-1deg);filter:brightness(1.3) drop-shadow(0 0 4px rgba(147,51,234,.4))}
 40%{transform:translateX(0) translateY(-2px) scale(1.1) rotate(2deg);filter:brightness(1.6) drop-shadow(0 0 10px rgba(147,51,234,.6))}
@@ -438,7 +438,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 75%{transform:translateX(0) translateY(-3px) scale(1.12) rotate(0.5deg);filter:brightness(1.8) drop-shadow(0 0 14px rgba(147,51,234,.7))}
 100%{transform:translateX(0) translateY(0) scale(1.08) rotate(0deg);filter:brightness(1.5) drop-shadow(0 0 8px rgba(147,51,234,.5))}
 }
-@keyframes paulieAttack{
+@keyframes oswaldAttack{
 0%{transform:translateX(0) translateY(0) scale(1.08) rotate(0deg);filter:brightness(1.2)}
 12%{transform:translateX(8px) translateY(-3px) scale(1.14) rotate(-3deg);filter:brightness(1.4)}
 28%{transform:translateX(22px) translateY(-5px) scale(1.22) rotate(-5deg);filter:brightness(1.6)}
@@ -447,7 +447,7 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 78%{transform:translateX(58px) translateY(0) scale(1.3) rotate(0deg);filter:brightness(1.6)}
 100%{transform:translateX(58px) translateY(0) scale(1.28) rotate(0deg);filter:brightness(1.3)}
 }
-@keyframes paulieCelebrate{
+@keyframes oswaldCelebrate{
 0%{transform:translateX(58px) translateY(0) scale(1.28) rotate(0deg)}
 18%{transform:translateX(46px) translateY(-6px) scale(1.18) rotate(-4deg)}
 35%{transform:translateX(32px) translateY(-3px) scale(1.1) rotate(2deg)}
@@ -528,13 +528,13 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes monsterApproach{0%{transform:translateX(200px) scale(0.5);opacity:0}15%{opacity:1}40%{transform:translateX(0) scale(1);opacity:1}100%{transform:translateX(-60px) scale(0.8);opacity:0}}
 @keyframes monsterHit{0%{transform:translateX(0) scale(1);opacity:1}20%{transform:translateX(20px) scale(1.2) rotate(10deg);opacity:1}50%{transform:translateX(-30px) scale(0.6) rotate(-20deg);opacity:.6}100%{transform:translateX(-80px) scale(0.2) rotate(-45deg);opacity:0}}
 @keyframes battleArthur{0%{transform:translateX(0) translateY(0)}20%{transform:translateX(20px) translateY(-2px) rotate(-8deg)}40%{transform:translateX(35px) translateY(0) rotate(-12deg)}55%{transform:translateX(20px) translateY(2px) rotate(-4deg)}70%{transform:translateX(0) translateY(0) rotate(0deg)}100%{transform:translateX(0) translateY(0) rotate(0deg)}}
-@keyframes battlePaulie{0%{transform:translateX(0) translateY(0)}15%{transform:translateX(0) translateY(-6px) rotate(0deg)}30%{transform:translateX(10px) translateY(0) rotate(-6deg)}50%{transform:translateX(0) translateY(0) rotate(0deg)}70%{transform:translateX(0) translateY(-4px)}100%{transform:translateX(0) translateY(0)}}
+@keyframes battleOswald{0%{transform:translateX(0) translateY(0)}15%{transform:translateX(0) translateY(-6px) rotate(0deg)}30%{transform:translateX(10px) translateY(0) rotate(-6deg)}50%{transform:translateX(0) translateY(0) rotate(0deg)}70%{transform:translateX(0) translateY(-4px)}100%{transform:translateX(0) translateY(0)}}
 @keyframes battleErin{0%{transform:translateX(0) translateY(0)}20%{transform:translateX(0) translateY(-3px) rotate(3deg)}40%{transform:translateX(0) translateY(0) rotate(-2deg)}60%{transform:translateX(0) translateY(-2px)}80%{transform:translateX(0) translateY(0)}100%{transform:translateX(0) translateY(0)}}
 @keyframes battleVictory{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-6px) scale(1.08) rotate(-2deg)}60%{transform:translateY(-2px) scale(1.04) rotate(0deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
 @keyframes battleFlash{0%{opacity:0}10%{opacity:.8}25%{opacity:.3}40%{opacity:0}100%{opacity:0}}
 /* Party celebration keyframes */
 @keyframes partyArthur{0%{transform:translateY(0) scale(1)}20%{transform:translateY(-12px) scale(1.1) rotate(-5deg)}40%{transform:translateY(-4px) scale(1.05) rotate(-2deg)}60%{transform:translateY(-10px) scale(1.08) rotate(3deg)}80%{transform:translateY(-2px) scale(1.02) rotate(1deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
-@keyframes partyPaulie{0%{transform:translateY(0) scale(1)}25%{transform:translateY(-10px) scale(1.1) rotate(4deg)}50%{transform:translateY(-3px) scale(1.05) rotate(1deg)}75%{transform:translateY(-14px) scale(1.12) rotate(-3deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
+@keyframes partyOswald{0%{transform:translateY(0) scale(1)}25%{transform:translateY(-10px) scale(1.1) rotate(4deg)}50%{transform:translateY(-3px) scale(1.05) rotate(1deg)}75%{transform:translateY(-14px) scale(1.12) rotate(-3deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
 @keyframes partyErin{0%{transform:translateY(0) scale(1)}15%{transform:translateY(-8px) scale(1.08) rotate(2deg)}35%{transform:translateY(-14px) scale(1.12) rotate(-4deg)}55%{transform:translateY(-4px) scale(1.04) rotate(1deg)}75%{transform:translateY(-10px) scale(1.1) rotate(-2deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
 @keyframes partyFloat{0%{opacity:0;transform:translateY(60px) scale(0)}30%{opacity:1;transform:translateY(-10px) scale(1)}60%{opacity:1;transform:translateY(-20px) scale(0.9)}100%{opacity:0;transform:translateY(-50px) scale(0.3)}}
 @keyframes partyBounce{0%{transform:translateY(0)}30%{transform:translateY(-8px)}50%{transform:translateY(0)}70%{transform:translateY(-4px)}100%{transform:translateY(0)}}
@@ -565,13 +565,13 @@ body.dark .boxing-ring{background:repeating-linear-gradient(0deg,transparent,tra
 @keyframes staffStrike{0%{transform:rotate(-20deg) translateX(0)}30%{transform:rotate(-55deg) translateX(8px)}60%{transform:rotate(8deg) translateX(-4px)}100%{transform:rotate(0deg) translateX(0)}}
 @keyframes fistPound{0%{transform:rotate(0deg) translateY(0)}30%{transform:rotate(-25deg) translateY(-5px)}60%{transform:rotate(-40deg) translateY(10px)}100%{transform:rotate(0deg) translateY(0)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
-#mp-arthur.celebrate .tb-arm-g{transform:rotate(-50deg)}#mp-paulie.celebrate .tb-arm-g{transform:rotate(-70deg) scaleX(-1)}#mp-gertrude.celebrate .tb-arm-g{transform:rotate(-60deg)}
+#mp-arthur.celebrate .tb-arm-g{transform:rotate(-50deg)}#mp-oswald.celebrate .tb-arm-g{transform:rotate(-70deg) scaleX(-1)}#mp-gertrude.celebrate .tb-arm-g{transform:rotate(-60deg)}
 #ta-arthur.fight .tb-arm-g{animation:fistPound .6s ease forwards}
 #ta-arthur.victory .tb-arm-g{transform:rotate(-40deg)}
-#ta-paulie.fight .tb-arm-g{animation:staffStrike .5s ease forwards}
-#ta-paulie.fight .tb-weapon{animation:staffStrike .5s ease forwards}
-#ta-paulie.victory .tb-arm-g{transform:rotate(-60deg)}
-#ta-paulie.victory .tb-weapon{transform:rotate(-30deg)}
+#ta-oswald.fight .tb-arm-g{animation:staffStrike .5s ease forwards}
+#ta-oswald.fight .tb-weapon{animation:staffStrike .5s ease forwards}
+#ta-oswald.victory .tb-arm-g{transform:rotate(-60deg)}
+#ta-oswald.victory .tb-weapon{transform:rotate(-30deg)}
 #ta-gertrude.fight .tb-arm-g{animation:fistPound .4s ease forwards}
 #ta-gertrude.victory .tb-arm-g{transform:rotate(-30deg)}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
@@ -7265,13 +7265,15 @@ function showBoxingMatch(onDone) {
   var arthurSVG =
     '<svg class="arthur-svg" viewBox="0 0 30 54">' +
     '<ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/>' +
-    '<g class="a-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L18 38 L20 48" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M18 46 L23 46 L23 50 L17 50 Z" fill="#1a1a3a"/></g>' +
-    '<g class="a-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L12 38 L10 48" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M8 46 L13 46 L13 50 L7 50 Z" fill="#1a1a3a"/></g>' +
-    '<g class="a-body"><path d="M11 13 Q10 20 10.5 27 L19.5 27 Q20 20 19 13 Z" fill="#e8b88a"/><path d="M10.5 27 L19.5 27 L19 33 L11 33 Z" fill="#1e40af"/><rect x="10.5" y="26.5" width="9" height="1.5" rx=".8" fill="#1e3a8a"/></g>' +
-    '<g class="a-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="a-rarm-fg" style="transform-origin:19px 14px"><path d="M19 14 L20 10" stroke="#e8b88a" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="21" cy="9" rx="3.5" ry="3" fill="#dc2626"/><ellipse cx="19.5" cy="8.5" rx="1.5" ry="1" fill="#fff" opacity=".3"/></g></g>' +
-    '<g class="a-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 18" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="a-larm-fg" style="transform-origin:21px 18px"><path d="M21 18 L22 12" stroke="#e8b88a" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="23" cy="11" rx="3.5" ry="3" fill="#dc2626"/><ellipse cx="22" cy="10.5" rx="1.5" ry="1" fill="#fff" opacity=".3"/></g></g>' +
+    '<g class="a-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L18 38 L20 48" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M18 46 L23 46 L23 50 L17 50 Z" fill="#6d28d9"/></g>' +
+    '<g class="a-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L12 38 L10 48" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M8 46 L13 46 L13 50 L7 50 Z" fill="#6d28d9"/></g>' +
+    '<g class="a-body"><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/></g>' +
+    '<g class="a-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="a-rarm-fg" style="transform-origin:19px 14px"><path d="M19 14 L20 10" stroke="#e8b88a" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="21" cy="9" rx="3.5" ry="3" fill="#ffd700"/><ellipse cx="19.5" cy="8.5" rx="1.5" ry="1" fill="#fff" opacity=".3"/></g></g>' +
+    '<g class="a-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 18" stroke="#e8b88a" stroke-width="4.5" stroke-linecap="round" fill="none"/><g class="a-larm-fg" style="transform-origin:21px 18px"><path d="M21 18 L22 12" stroke="#e8b88a" stroke-width="4" stroke-linecap="round" fill="none"/><ellipse cx="23" cy="11" rx="3.5" ry="3" fill="#ffd700"/><ellipse cx="22" cy="10.5" rx="1.5" ry="1" fill="#fff" opacity=".3"/></g></g>' +
     '<ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/>' +
-    '<path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 2.5 17 1.8 Q15 1.5 13 1.8 Q9.5 2.5 9.5 5" fill="#5a3a1a"/>' +
+    '<path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/>' +
+    '<path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/>' +
+    '<path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><circle cx="13" cy="2" r="0.6" fill="#e11d48"/><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><circle cx="17" cy="2" r="0.6" fill="#22c55e"/>' +
     '<circle cx="12.5" cy="7.5" r=".9" fill="#222"/><circle cx="17.5" cy="7.5" r=".9" fill="#222"/>' +
     '<path d="M13.5 10.5 Q15 11.5 16.5 10.5" fill="none" stroke="#c4956a" stroke-width=".7" stroke-linecap="round"/>' +
     '</svg>';
@@ -7507,10 +7509,10 @@ function showTeamBattle(data) {
 
   var teamMembers = [
     {id:'ta-arthur',color:'#ffd700',label:'Arthur',svg:
-      '<svg class="arthur-svg" viewBox="0 0 30 54"><path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8" stroke-linecap="round"/><circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="20" y2="10" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="21" cy="10" r="2.5" fill="#dc2626"/></g></g><line x1="15" y1="30" x2="11" y2="39" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="30" x2="20" y2="38" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></svg>'
+      '<svg class="arthur-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9" class="tb-body"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="19" cy="14" r="1.5" fill="#e8b88a"/><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><circle cx="22" cy="10" r="1.8" fill="#ffd700"/></g></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><circle cx="13" cy="2" r="0.6" fill="#e11d48"/><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><circle cx="17" cy="2" r="0.6" fill="#22c55e"/><circle cx="12.5" cy="6.5" r=".8" fill="#222"/><circle cx="17.5" cy="6.5" r=".8" fill="#222"/></svg>'
     },
-    {id:'ta-paulie',color:'#4338ca',label:'Paulie',svg:
-      '<svg class="paulie-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round" class="tb-weapon"/><circle cx="27" cy="9" r="2.5" fill="#a5b4fc"/><circle cx="27" cy="9" r="1" fill="#e0e7ff"/><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'
+    {id:'ta-oswald',color:'#4338ca',label:'Oswald',svg:
+      '<svg class="oswald-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round" class="tb-weapon"/><circle cx="27" cy="9" r="2.5" fill="#a5b4fc"/><circle cx="27" cy="9" r="1" fill="#e0e7ff"/><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'
     },
     {id:'ta-gertrude',color:'#be185d',label:'Gertrude',svg:
       '<svg class="erin-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="tb-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.5" fill="#f0d5b0"/><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/></g></g><g class="tb-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:21px 19px"><path d="M21 19 L23 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="24" cy="12" r="1.5" fill="#f0d5b0"/><line x1="24" y1="12" x2="28" y2="-2" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" class="tb-weapon"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>'
@@ -7559,7 +7561,7 @@ function showTeamBattle(data) {
 
   // Get elements
   var A = document.getElementById('ta-arthur');
-  var P = document.getElementById('ta-paulie');
+  var P = document.getElementById('ta-oswald');
   var E = document.getElementById('ta-gertrude');
   var m0 = document.getElementById('tb-monster-0');
   var m1 = document.getElementById('tb-monster-1');
@@ -7593,12 +7595,12 @@ function showTeamBattle(data) {
     if (status) { status.textContent = '&#9876; GERTRUDE STRIKES!'; status.style.opacity = '1';  setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
   }, 3800));
 
-  // Phase 4 (5000ms): Paulie smashes with guitar
+  // Phase 4 (5000ms): Oswald smashes with guitar
   timers.push(setTimeout(function(){
-    if (P) { P.style.animation = 'battlePaulie .6s ease'; P.classList.add('fight'); setTimeout(function(){if(P)P.classList.remove('fight');},500); }
+    if (P) { P.style.animation = 'battleOswald .6s ease'; P.classList.add('fight'); setTimeout(function(){if(P)P.classList.remove('fight');},500); }
     if (m2) { m2.style.animation = 'monsterHit .5s ease forwards'; }
     if (flash) { flash.style.animation = 'battleFlash .4s ease'; }
-    if (status) { status.textContent = '&#127928; PAULIE CRUSHES!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
+    if (status) { status.textContent = '&#127928; OSWALD CRUSHES!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
   }, 5000));
 
   // Phase 5 (6500ms): Victory
@@ -7664,8 +7666,8 @@ function showMilestoneParty(days) {
   overlay.className = 'overlay';
   overlay.style.background = 'rgba(0,0,0,.65)';
   var teamMembers = [
-    {id:'mp-arthur',color:'#ffd700',svg:'<svg viewBox="0 0 30 54"><path d="M10.5 2 L12 0.5 L15 2 L18 0.5 L19.5 2 L20 4 L10 4 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.8" stroke-linecap="round"/><circle cx="15" cy="8" r="5" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="13" x2="15" y2="30" stroke="#ffd700" stroke-width="3.5" stroke-linecap="round" class="tb-body"/><g class="tb-arm-g" style="transform-origin:15px 17px"><line x1="15" y1="17" x2="19" y2="14" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="19" cy="14" r="1.5" fill="#ffd700"/><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><circle cx="22" cy="10" r="2.5" fill="#dc2626"/></g></g><line x1="15" y1="30" x2="11" y2="39" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/><line x1="15" y1="30" x2="20" y2="38" stroke="#ffd700" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round"/></svg>'},
-    {id:'mp-paulie',color:'#4338ca',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21.5" y1="21.5" x2="28" y2="12" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><ellipse cx="28" cy="11" rx="2.5" ry="2" fill="#6366f1"/><ellipse cx="27.5" cy="10.5" rx="1" ry=".8" fill="#a5b4fc"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'},
+    {id:'mp-arthur',color:'#ffd700',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9" class="tb-body"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><circle cx="19" cy="14" r="1.5" fill="#e8b88a"/><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><circle cx="22" cy="10" r="1.8" fill="#ffd700"/></g></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><circle cx="13" cy="2" r="0.6" fill="#e11d48"/><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><circle cx="17" cy="2" r="0.6" fill="#22c55e"/><circle cx="12.5" cy="6.5" r=".8" fill="#222"/><circle cx="17.5" cy="6.5" r=".8" fill="#222"/></svg>'},
+    {id:'mp-oswald',color:'#4338ca',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21.5" y1="21.5" x2="28" y2="12" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><ellipse cx="28" cy="11" rx="2.5" ry="2" fill="#6366f1"/><ellipse cx="27.5" cy="10.5" rx="1" ry=".8" fill="#a5b4fc"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'},
     {id:'mp-gertrude',color:'#be185d',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="tb-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="12" r="1.5" fill="#f0d5b0"/><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>'}
   ];
   var label = days + ' Day' + (days !== 1 ? 's' : '') + ' Sober';
@@ -7710,15 +7712,15 @@ function showMilestoneParty(days) {
   // Play celebrations
   setTimeout(function(){
     var A = document.getElementById('mp-arthur');
-    var P = document.getElementById('mp-paulie');
+    var P = document.getElementById('mp-oswald');
     var E = document.getElementById('mp-gertrude');
     if (A) { A.style.animation = 'partyArthur .6s ease 3'; A.classList.add('celebrate'); setTimeout(function(){if(A)A.classList.remove('celebrate');},1800); }
-    if (P) { P.style.animation = 'partyPaulie .6s ease 3'; P.classList.add('celebrate'); setTimeout(function(){if(P)P.classList.remove('celebrate');},1800); }
+    if (P) { P.style.animation = 'partyOswald .6s ease 3'; P.classList.add('celebrate'); setTimeout(function(){if(P)P.classList.remove('celebrate');},1800); }
     if (E) { E.style.animation = 'partyErin .6s ease 3'; E.classList.add('celebrate'); setTimeout(function(){if(E)E.classList.remove('celebrate');},1800); }
   }, 300);
   setTimeout(function(){
     if (A) { A.style.animation = 'partyArthur .5s ease infinite'; }
-    if (P) { P.style.animation = 'partyPaulie .55s ease infinite'; }
+    if (P) { P.style.animation = 'partyOswald .55s ease infinite'; }
     if (E) { E.style.animation = 'partyErin .5s ease infinite'; }
   }, 2400);
 }
@@ -7900,7 +7902,7 @@ function relapsePlanHTML() {
   var h = '';
   var rp = D.relapsePlan;
   h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Relapse Plan</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Guided by Paulie — your relapse prevention coach.</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Guided by Oswald — your relapse prevention coach.</p>';
   if (rp && rp.triggers && rp.triggers.length) {
     h += '<div class="card" style="border-left:3px solid var(--accent)">';
     h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:20px">&#128170;</span><span style="font-weight:700;font-size:14px">Your Plan</span></div>';
@@ -7915,85 +7917,85 @@ function relapsePlanHTML() {
     }
     if (rp.commitment) { h += '<div style="font-size:12px;margin-bottom:4px;margin-top:6px;color:var(--muted)">My Commitment:</div><div class="quote" style="font-size:13px;margin:0">' + rp.commitment + '</div>'; }
     h += '</div>';
-    h += '<button class="btn btn-outline btn-sm" onclick="startPaulieWizard()" style="margin-top:8px">Revise Plan with Paulie</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="startOswaldWizard()" style="margin-top:8px">Revise Plan with Oswald</button>';
   } else {
     h += '<div class="card" style="text-align:center;padding:24px">';
     h += '<div style="font-size:48px;margin-bottom:8px">&#129497;</div>';
-    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Paulie</div>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your personal relapse prevention coach. Paulie will guide you through building a plan step by step.</p>';
-    h += '<button class="btn btn-primary" onclick="startPaulieWizard()">Start with Paulie</button>';
+    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Oswald</div>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your personal relapse prevention coach. Oswald will guide you through building a plan step by step.</p>';
+    h += '<button class="btn btn-primary" onclick="startOswaldWizard()">Start with Oswald</button>';
     h += '</div>';
   }
   return h;
 }
-var PAULIE_STEP = 0;
-var PAULIE_DATA = {};
+var OSWALD_STEP = 0;
+var OSWALD_DATA = {};
 var TRIGGER_OPTIONS = ['Stress','Loneliness','Boredom','Anger','Social pressure','Celebration','Financial trouble','Relationship conflict','Insomnia','Physical pain','Certain places','Certain people','Alcohol/drug cues','Anniversary dates','Holidays'];
 var INTERRUPT_OPTIONS = ['Call my sponsor','Go for a walk','Journal','Go to a meeting','Text a friend','Exercise','Meditate/Breathe','Read my commitment','Leave the situation','Listen to music','Take a nap','Drink water'];
-function startPaulieWizard() {
-  PAULIE_DATA = {};
+function startOswaldWizard() {
+  OSWALD_DATA = {};
   var rp = D.relapsePlan;
   if (rp) {
-    PAULIE_DATA.triggers = rp.triggers ? rp.triggers.slice() : [];
-    PAULIE_DATA.warningSigns = rp.warningSigns || '';
-    PAULIE_DATA.interruptActions = rp.interruptActions ? rp.interruptActions.slice() : [];
-    PAULIE_DATA.contacts = rp.contacts ? JSON.parse(JSON.stringify(rp.contacts)) : [{name:'',phone:''},{name:'',phone:''}];
-    PAULIE_DATA.commitment = rp.commitment || '';
+    OSWALD_DATA.triggers = rp.triggers ? rp.triggers.slice() : [];
+    OSWALD_DATA.warningSigns = rp.warningSigns || '';
+    OSWALD_DATA.interruptActions = rp.interruptActions ? rp.interruptActions.slice() : [];
+    OSWALD_DATA.contacts = rp.contacts ? JSON.parse(JSON.stringify(rp.contacts)) : [{name:'',phone:''},{name:'',phone:''}];
+    OSWALD_DATA.commitment = rp.commitment || '';
   } else {
-    PAULIE_DATA.triggers = [];
-    PAULIE_DATA.warningSigns = '';
-    PAULIE_DATA.interruptActions = [];
-    PAULIE_DATA.contacts = [{name:'',phone:''},{name:'',phone:''}];
-    PAULIE_DATA.commitment = '';
+    OSWALD_DATA.triggers = [];
+    OSWALD_DATA.warningSigns = '';
+    OSWALD_DATA.interruptActions = [];
+    OSWALD_DATA.contacts = [{name:'',phone:''},{name:'',phone:''}];
+    OSWALD_DATA.commitment = '';
   }
-  PAULIE_STEP = 0;
-  renderPaulieStep();
+  OSWALD_STEP = 0;
+  renderOswaldStep();
 }
-function renderPaulieStep() {
+function renderOswaldStep() {
   var steps = ['Triggers','Warning Signs','Interrupt Actions','Emergency Contacts','Commitment','Review'];
-  var step = PAULIE_STEP;
-  if (step >= steps.length) { PAULIE_STEP = 0; return; }
+  var step = OSWALD_STEP;
+  if (step >= steps.length) { OSWALD_STEP = 0; return; }
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.id = 'paulie-ov';
+  overlay.id = 'oswald-ov';
   overlay.style.background = 'rgba(0,0,0,0.6)';
   var body = '';
   var icon = ['&#128064;','&#128533;','&#128299;','&#128222;','&#128221;','&#9989;'][step] || '&#129497;';
-  var paulieSays = ['Let\'s identify what might trigger a relapse. Check all that apply to you.','Good. Now what early warning signs do you usually feel before a craving hits?','Smart. What actions can you take to interrupt a craving when it starts?','Who can you call in an emergency? Add at least one person.','Write a short commitment statement. Read this when you need strength.','Here\'s your plan. Does everything look right?'][step] || '';
+  var oswaldSays = ['Let\'s identify what might trigger a relapse. Check all that apply to you.','Good. Now what early warning signs do you usually feel before a craving hits?','Smart. What actions can you take to interrupt a craving when it starts?','Who can you call in an emergency? Add at least one person.','Write a short commitment statement. Read this when you need strength.','Here\'s your plan. Does everything look right?'][step] || '';
   body += '<div style="font-size:40px;margin-bottom:4px">' + icon + '</div>';
-  body += '<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">Paulie says:</div>';
-  body += '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + paulieSays + '</div>';
+  body += '<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">Oswald says:</div>';
+  body += '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + oswaldSays + '</div>';
   if (step === 0) {
     body += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">';
     for (var i=0;i<TRIGGER_OPTIONS.length;i++) {
-      var sel = PAULIE_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]) !== -1;
-      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="togglePaulieTrigger('+i+')" style="font-size:11px">' + TRIGGER_OPTIONS[i] + '</button>';
+      var sel = OSWALD_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]) !== -1;
+      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleOswaldTrigger('+i+')" style="font-size:11px">' + TRIGGER_OPTIONS[i] + '</button>';
     }
     body += '</div>';
   } else if (step === 1) {
-    body += '<textarea id="paulie-warning" placeholder="e.g. racing thoughts, irritability, isolating myself..." style="min-height:80px">' + PAULIE_DATA.warningSigns + '</textarea>';
+    body += '<textarea id="oswald-warning" placeholder="e.g. racing thoughts, irritability, isolating myself..." style="min-height:80px">' + OSWALD_DATA.warningSigns + '</textarea>';
   } else if (step === 2) {
     body += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">';
     for (var i=0;i<INTERRUPT_OPTIONS.length;i++) {
-      var sel = PAULIE_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]) !== -1;
-      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="togglePaulieInterrupt('+i+')" style="font-size:11px">' + INTERRUPT_OPTIONS[i] + '</button>';
+      var sel = OSWALD_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]) !== -1;
+      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleOswaldInterrupt('+i+')" style="font-size:11px">' + INTERRUPT_OPTIONS[i] + '</button>';
     }
     body += '</div>';
   } else if (step === 3) {
     body += '<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted)">Contact 1</div>';
-    body += '<input id="paulie-contact1-name" placeholder="Name" value="' + (PAULIE_DATA.contacts[0]?PAULIE_DATA.contacts[0].name:'') + '" style="margin-bottom:4px">';
-    body += '<input id="paulie-contact1-phone" placeholder="Phone number" value="' + (PAULIE_DATA.contacts[0]?PAULIE_DATA.contacts[0].phone:'') + '" style="margin-bottom:10px">';
+    body += '<input id="oswald-contact1-name" placeholder="Name" value="' + (OSWALD_DATA.contacts[0]?OSWALD_DATA.contacts[0].name:'') + '" style="margin-bottom:4px">';
+    body += '<input id="oswald-contact1-phone" placeholder="Phone number" value="' + (OSWALD_DATA.contacts[0]?OSWALD_DATA.contacts[0].phone:'') + '" style="margin-bottom:10px">';
     body += '<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted)">Contact 2</div>';
-    body += '<input id="paulie-contact2-name" placeholder="Name" value="' + (PAULIE_DATA.contacts[1]?PAULIE_DATA.contacts[1].name:'') + '" style="margin-bottom:4px">';
-    body += '<input id="paulie-contact2-phone" placeholder="Phone number" value="' + (PAULIE_DATA.contacts[1]?PAULIE_DATA.contacts[1].phone:'') + '">';
+    body += '<input id="oswald-contact2-name" placeholder="Name" value="' + (OSWALD_DATA.contacts[1]?OSWALD_DATA.contacts[1].name:'') + '" style="margin-bottom:4px">';
+    body += '<input id="oswald-contact2-phone" placeholder="Phone number" value="' + (OSWALD_DATA.contacts[1]?OSWALD_DATA.contacts[1].phone:'') + '">';
   } else if (step === 4) {
-    body += '<textarea id="paulie-commitment" placeholder="e.g. I deserve a better life. I will pause, breathe, and reach out before using." style="min-height:80px">' + PAULIE_DATA.commitment + '</textarea>';
+    body += '<textarea id="oswald-commitment" placeholder="e.g. I deserve a better life. I will pause, breathe, and reach out before using." style="min-height:80px">' + OSWALD_DATA.commitment + '</textarea>';
   } else if (step === 5) {
-    var t = PAULIE_DATA.triggers || [];
-    var w = PAULIE_DATA.warningSigns || '';
-    var ia = PAULIE_DATA.interruptActions || [];
-    var co = PAULIE_DATA.contacts || [];
-    var cm = PAULIE_DATA.commitment || '';
+    var t = OSWALD_DATA.triggers || [];
+    var w = OSWALD_DATA.warningSigns || '';
+    var ia = OSWALD_DATA.interruptActions || [];
+    var co = OSWALD_DATA.contacts || [];
+    var cm = OSWALD_DATA.commitment || '';
     body += '<div style="text-align:left;background:var(--primary-light);padding:12px;border-radius:10px;font-size:12px;line-height:1.6">';
     body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">Triggers:</div><div style="margin-bottom:8px">' + (t.length ? t.join(', ') : 'None selected') + '</div>';
     body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">Warning Signs:</div><div style="margin-bottom:8px">' + (w || 'None') + '</div>';
@@ -8011,55 +8013,55 @@ function renderPaulieStep() {
     steps.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'var(--primary)':'var(--border)')+';transition:.2s"></div>'; }).join('') +
     '</div>' +
     '<div style="display:flex;gap:8px">' +
-    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="savePaulieStep();PAULIE_STEP--;renderPaulieStep()" style="flex:1">Back</button>' : '') +
-    '<button class="btn btn-sm btn-primary" onclick="savePaulieStep();PAULIE_STEP++;renderPaulieStep()" style="flex:1">' + (step < steps.length-1 ? 'Next' : 'Save Plan') + '</button>' +
+    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="saveOswaldStep();OSWALD_STEP--;renderOswaldStep()" style="flex:1">Back</button>' : '') +
+    '<button class="btn btn-sm btn-primary" onclick="saveOswaldStep();OSWALD_STEP++;renderOswaldStep()" style="flex:1">' + (step < steps.length-1 ? 'Next' : 'Save Plan') + '</button>' +
     '</div>' +
-    '<button onclick="document.getElementById(\'paulie-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>' +
+    '<button onclick="document.getElementById(\'oswald-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>' +
     '</div>';
-  var existing = document.getElementById('paulie-ov');
+  var existing = document.getElementById('oswald-ov');
   if (existing) existing.remove();
   document.body.appendChild(overlay);
 }
-function togglePaulieTrigger(i) {
-  var idx = PAULIE_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]);
-  if (idx === -1) PAULIE_DATA.triggers.push(TRIGGER_OPTIONS[i]);
-  else PAULIE_DATA.triggers.splice(idx,1);
-  renderPaulieStep();
+function toggleOswaldTrigger(i) {
+  var idx = OSWALD_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]);
+  if (idx === -1) OSWALD_DATA.triggers.push(TRIGGER_OPTIONS[i]);
+  else OSWALD_DATA.triggers.splice(idx,1);
+  renderOswaldStep();
 }
-function togglePaulieInterrupt(i) {
-  var idx = PAULIE_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]);
-  if (idx === -1) PAULIE_DATA.interruptActions.push(INTERRUPT_OPTIONS[i]);
-  else PAULIE_DATA.interruptActions.splice(idx,1);
-  renderPaulieStep();
+function toggleOswaldInterrupt(i) {
+  var idx = OSWALD_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]);
+  if (idx === -1) OSWALD_DATA.interruptActions.push(INTERRUPT_OPTIONS[i]);
+  else OSWALD_DATA.interruptActions.splice(idx,1);
+  renderOswaldStep();
 }
-function savePaulieStep() {
+function saveOswaldStep() {
   var el;
-  el = document.getElementById('paulie-warning');
-  if (el) PAULIE_DATA.warningSigns = el.value;
-  el = document.getElementById('paulie-commitment');
-  if (el) PAULIE_DATA.commitment = el.value;
-  el = document.getElementById('paulie-contact1-name');
-  if (el && PAULIE_DATA.contacts[0]) PAULIE_DATA.contacts[0].name = el.value;
-  el = document.getElementById('paulie-contact1-phone');
-  if (el && PAULIE_DATA.contacts[0]) PAULIE_DATA.contacts[0].phone = el.value;
-  el = document.getElementById('paulie-contact2-name');
-  if (el && PAULIE_DATA.contacts[1]) PAULIE_DATA.contacts[1].name = el.value;
-  el = document.getElementById('paulie-contact2-phone');
-  if (el && PAULIE_DATA.contacts[1]) PAULIE_DATA.contacts[1].phone = el.value;
-  if (PAULIE_STEP === 5) {
-    PAULIE_DATA.contacts = PAULIE_DATA.contacts.filter(function(c){ return c.name || c.phone; });
-    D.relapsePlan = PAULIE_DATA;
+  el = document.getElementById('oswald-warning');
+  if (el) OSWALD_DATA.warningSigns = el.value;
+  el = document.getElementById('oswald-commitment');
+  if (el) OSWALD_DATA.commitment = el.value;
+  el = document.getElementById('oswald-contact1-name');
+  if (el && OSWALD_DATA.contacts[0]) OSWALD_DATA.contacts[0].name = el.value;
+  el = document.getElementById('oswald-contact1-phone');
+  if (el && OSWALD_DATA.contacts[0]) OSWALD_DATA.contacts[0].phone = el.value;
+  el = document.getElementById('oswald-contact2-name');
+  if (el && OSWALD_DATA.contacts[1]) OSWALD_DATA.contacts[1].name = el.value;
+  el = document.getElementById('oswald-contact2-phone');
+  if (el && OSWALD_DATA.contacts[1]) OSWALD_DATA.contacts[1].phone = el.value;
+  if (OSWALD_STEP === 5) {
+    OSWALD_DATA.contacts = OSWALD_DATA.contacts.filter(function(c){ return c.name || c.phone; });
+    D.relapsePlan = OSWALD_DATA;
     saveData();
-    document.getElementById('paulie-ov').remove();
+    document.getElementById('oswald-ov').remove();
     var anim = document.createElement('div');
     anim.className = 'overlay';
-    anim.id = 'paulie-craft';
+    anim.id = 'oswald-craft';
     anim.style.background = 'rgba(0,0,0,.5)';
     anim.style.alignItems = 'flex-start';
     anim.style.paddingTop = '20px';
     anim.innerHTML =
       '<div class="overlay-content" style="background:transparent;padding:10px;overflow:hidden;text-align:center">' +
-      '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#128302; Paulie vs The Dragon</div>' +
+      '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#128302; Oswald vs The Dragon</div>' +
       '<div style="font-size:11px;color:rgba(255,255,255,.7);margin-bottom:12px">Your relapse plan is being forged in battle...</div>' +
       '<div style="position:relative;height:260px;background:linear-gradient(180deg,#0f0c29,#302b63,#24243e);border-radius:16px;overflow:hidden;margin-bottom:8px;border:1px solid var(--border);box-shadow:inset 0 0 30px rgba(0,0,0,.4)">' +
       '<div style="position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(180deg,transparent,rgba(147,51,234,0.3))"></div>' +
@@ -8068,51 +8070,51 @@ function savePaulieStep() {
       '<div style="position:absolute;top:8%;left:55%;font-size:7px;opacity:0.5">&#10022;</div>' +
       '<div style="position:absolute;top:20%;left:30%;font-size:4px;opacity:0.3">&#10022;</div>' +
       '<div style="position:absolute;top:5%;right:35%;font-size:5px;opacity:0.4">&#10022;</div>' +
-      '<div id="paulie-char" class="paulie-stage" style="position:absolute;left:8%;bottom:12px;filter:drop-shadow(0 0 6px rgba(147,51,234,0.6));z-index:2"><svg class="paulie-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><g class="p-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L11 39" stroke="#4338ca" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:11px 39px"><path d="M11 39 L9 48" stroke="#4338ca" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M7 47 L11 47 L12 51 L6 51 Z" fill="#1e1b4b"/></g></g><g class="p-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L19 39" stroke="#4338ca" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:19px 39px"><path d="M19 39 L21 48" stroke="#4338ca" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M19 47 L23 47 L24 51 L18 51 Z" fill="#1e1b4b"/></g></g><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="p-body"/><path d="M14.5 12 L14.5 50 L15.5 50 L15.5 12 Z" fill="rgba(0,0,0,.08)"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><text x="13" y="35" font-size="2" fill="#fbbf24" opacity=".5">★</text><text x="17" y="42" font-size="1.8" fill="#fbbf24" opacity=".4">★</text><g class="p-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L10 28" stroke="#4338ca" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="9.5" cy="28.5" r="1.8" fill="#f0d5b0"/></g><g class="p-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="5" stroke-linecap="round" fill="none"/><g class="p-rarm-fg" style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21.5" rx="2" ry="1.5" fill="#f0d5b0"/><line x1="21.5" y1="21.5" x2="28" y2="12" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="28" cy="11" rx="2.5" ry="2" fill="#6366f1"/><ellipse cx="27.5" cy="10.5" rx="1" ry=".8" fill="#a5b4fc"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".9" fill="#333"/><circle cx="17.5" cy="6" r=".9" fill="#333"/><path d="M14.5 7 L15 8 L15.5 7" fill="none" stroke="#c4956a" stroke-width=".6" stroke-linecap="round"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".7" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg></div>' +
+      '<div id="oswald-char" class="oswald-stage" style="position:absolute;left:8%;bottom:12px;filter:drop-shadow(0 0 6px rgba(147,51,234,0.6));z-index:2"><svg class="oswald-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><g class="p-lleg-g" style="transform-origin:15px 30px"><path d="M15 30 L11 39" stroke="#4338ca" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:11px 39px"><path d="M11 39 L9 48" stroke="#4338ca" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M7 47 L11 47 L12 51 L6 51 Z" fill="#1e1b4b"/></g></g><g class="p-rleg-g" style="transform-origin:15px 30px"><path d="M15 30 L19 39" stroke="#4338ca" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:19px 39px"><path d="M19 39 L21 48" stroke="#4338ca" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M19 47 L23 47 L24 51 L18 51 Z" fill="#1e1b4b"/></g></g><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="p-body"/><path d="M14.5 12 L14.5 50 L15.5 50 L15.5 12 Z" fill="rgba(0,0,0,.08)"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><text x="13" y="35" font-size="2" fill="#fbbf24" opacity=".5">★</text><text x="17" y="42" font-size="1.8" fill="#fbbf24" opacity=".4">★</text><g class="p-larm-g" style="transform-origin:15px 17px"><path d="M15 17 L10 28" stroke="#4338ca" stroke-width="5" stroke-linecap="round" fill="none"/><circle cx="9.5" cy="28.5" r="1.8" fill="#f0d5b0"/></g><g class="p-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="5" stroke-linecap="round" fill="none"/><g class="p-rarm-fg" style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21.5" rx="2" ry="1.5" fill="#f0d5b0"/><line x1="21.5" y1="21.5" x2="28" y2="12" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="28" cy="11" rx="2.5" ry="2" fill="#6366f1"/><ellipse cx="27.5" cy="10.5" rx="1" ry=".8" fill="#a5b4fc"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">★</text><circle cx="12.5" cy="6" r=".9" fill="#333"/><circle cx="17.5" cy="6" r=".9" fill="#333"/><path d="M14.5 7 L15 8 L15.5 7" fill="none" stroke="#c4956a" stroke-width=".6" stroke-linecap="round"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".7" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg></div>' +
       '<div id="dragon-char" style="position:absolute;right:0%;bottom:6px;animation:dragonDrama 20s ease-in-out infinite;filter:drop-shadow(0 0 12px rgba(34,197,94,0.7));z-index:2"><svg class="dragon-svg" viewBox="0 0 60 45"><g class="d-tail-g" style="transform-origin:52px 22px"><path d="M46 20 Q52 17 56 13 Q59 9 57 5" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round"/><path d="M53 10 L57 7" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"/><path d="M55 14 L59 13" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"/><path d="M57 5 L61 2" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/></g><g class="d-blleg-g" style="transform-origin:39px 29px"><path d="M39 29 L36 38" stroke="#22c55e" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:36px 38px"><path d="M36 38 L34 42" stroke="#22c55e" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M34 42 L32 44 M34 42 L35 44 M34 42 L36 44" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round"/></g></g><g class="d-brleg-g" style="transform-origin:45px 29px"><path d="M45 29 L48 38" stroke="#22c55e" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:48px 38px"><path d="M48 38 L50 42" stroke="#22c55e" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M50 42 L52 44 M50 42 L51 44 M50 42 L49 44" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round"/></g></g><ellipse cx="33" cy="22" rx="14" ry="9" fill="#166534" class="d-body"/><ellipse cx="33" cy="25" rx="10" ry="5" fill="#4ade80" opacity=".3"/><ellipse cx="33" cy="22" rx="12" ry="7.5" fill="none" stroke="#22c55e" stroke-width="1.5"/><path d="M22 16 Q33 11 44 16" fill="none" stroke="#15803d" stroke-width="1.2" opacity=".6"/><path d="M24 20 Q33 16 42 20" fill="none" stroke="#15803d" stroke-width="1" opacity=".5"/><path d="M22 13 L23 8 L24 13" fill="#fbbf24"/><path d="M27 11 L28 6 L29 11" fill="#fbbf24"/><path d="M32 10 L33 5 L34 10" fill="#fbbf24"/><path d="M37 11 L38 6 L39 11" fill="#fbbf24"/><path d="M42 13 L43 8 L44 13" fill="#fbbf24"/><g class="d-flleg-g" style="transform-origin:24px 29px"><path d="M24 29 L21 38" stroke="#22c55e" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:21px 38px"><path d="M21 38 L19 42" stroke="#22c55e" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M19 42 L17 44 M19 42 L20 44 M19 42 L21 44" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round"/></g></g><g class="d-frleg-g" style="transform-origin:30px 29px"><path d="M30 29 L33 38" stroke="#22c55e" stroke-width="3.5" stroke-linecap="round" fill="none"/><g style="transform-origin:33px 38px"><path d="M33 38 L35 42" stroke="#22c55e" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M35 42 L37 44 M35 42 L36 44 M35 42 L34 44" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round"/></g></g><g class="d-wing-g" style="transform-origin:33px 14px"><path d="M33 14 Q25 -4 13 4 Q20 10 17 20 Q28 15 33 14 Z" fill="#22c55e" opacity=".2"/><path d="M33 14 Q25 -4 13 4" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/><path d="M33 14 L20 8" fill="none" stroke="#22c55e" stroke-width="1" stroke-linecap="round"/><path d="M33 14 L17 20" fill="none" stroke="#22c55e" stroke-width="1" stroke-linecap="round"/></g><g class="d-head-g" style="transform-origin:18px 16px"><path d="M21 18 Q20 12 16 11 Q12 10 8 13 L5 15 L4 17 L8 19 L14 20 Z" fill="#166534"/><path d="M21 18 Q20 12 16 11 Q12 10 8 13 L5 15 L4 17 L8 19 L14 20 Z" fill="none" stroke="#22c55e" stroke-width="1.5"/><path d="M4 17 L8 19" stroke="#22c55e" stroke-width="1" stroke-linecap="round"/><path d="M7 17 L7.5 18.5 L8 17" fill="#fff"/><path d="M9 18 L9.5 19 L10 18" fill="#fff"/><ellipse cx="13" cy="13.5" rx="2" ry="1.8" fill="#fbbf24"/><ellipse cx="13" cy="13.5" rx="1.3" ry="1.5" fill="#dc2626"/><circle cx="12.5" cy="13" r=".5" fill="#fff" opacity=".8"/><path d="M17 11 L19 5 L22 9" fill="#fbbf24" stroke="#d97706" stroke-width=".5"/><path d="M18 11 Q20 11 21 13" fill="none" stroke="#15803d" stroke-width=".8"/></g></svg></div>' +
       '<div id="dragon-fire1" style="position:absolute;right:36%;bottom:26px;font-size:28px;opacity:0;z-index:3;filter:drop-shadow(0 0 10px #ef4444)">&#128293;</div>' +
       '<div id="dragon-fire2" style="position:absolute;right:36%;bottom:26px;font-size:28px;opacity:0;z-index:3;filter:drop-shadow(0 0 10px #ef4444)">&#128293;</div>' +
-      '<div id="paulie-glow" style="position:absolute;left:8%;bottom:12px;opacity:0;z-index:4;width:85px;height:115px;margin-left:-5px;margin-bottom:-5px;border-radius:12px"></div>' +
-      '<div id="paulie-blast" style="position:absolute;right:12%;bottom:20px;font-size:56px;opacity:0;z-index:4;filter:drop-shadow(0 0 20px #fbbf24)">&#9889;</div>' +
-      '<div id="paulie-boom" style="position:absolute;right:8%;bottom:30px;font-size:52px;opacity:0;z-index:5;filter:drop-shadow(0 0 15px #f59e0b)">&#128165;</div>' +
-      '<div id="paulie-trophy" style="position:absolute;left:8%;bottom:20px;font-size:56px;opacity:0;z-index:3;filter:drop-shadow(0 0 10px #fbbf24)">&#127942;</div>' +
-      '<div id="paulie-spark1" style="position:absolute;left:3%;top:16%;font-size:11px;opacity:0;z-index:3">&#10024;</div>' +
-      '<div id="paulie-spark2" style="position:absolute;left:14%;top:8%;font-size:10px;opacity:0;z-index:3">&#10024;</div>' +
-      '<div id="paulie-spark3" style="position:absolute;left:6%;top:50%;font-size:9px;opacity:0;z-index:3">&#10024;</div>' +
+      '<div id="oswald-glow" style="position:absolute;left:8%;bottom:12px;opacity:0;z-index:4;width:85px;height:115px;margin-left:-5px;margin-bottom:-5px;border-radius:12px"></div>' +
+      '<div id="oswald-blast" style="position:absolute;right:12%;bottom:20px;font-size:56px;opacity:0;z-index:4;filter:drop-shadow(0 0 20px #fbbf24)">&#9889;</div>' +
+      '<div id="oswald-boom" style="position:absolute;right:8%;bottom:30px;font-size:52px;opacity:0;z-index:5;filter:drop-shadow(0 0 15px #f59e0b)">&#128165;</div>' +
+      '<div id="oswald-trophy" style="position:absolute;left:8%;bottom:20px;font-size:56px;opacity:0;z-index:3;filter:drop-shadow(0 0 10px #fbbf24)">&#127942;</div>' +
+      '<div id="oswald-spark1" style="position:absolute;left:3%;top:16%;font-size:11px;opacity:0;z-index:3">&#10024;</div>' +
+      '<div id="oswald-spark2" style="position:absolute;left:14%;top:8%;font-size:10px;opacity:0;z-index:3">&#10024;</div>' +
+      '<div id="oswald-spark3" style="position:absolute;left:6%;top:50%;font-size:9px;opacity:0;z-index:3">&#10024;</div>' +
       '</div>' +
       '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">' +
-      '<span id="paulie-result" style="font-size:10px;color:var(--muted);opacity:0">&#127942; Paulie wins!</span>' +
+      '<span id="oswald-result" style="font-size:10px;color:var(--muted);opacity:0">&#127942; Oswald wins!</span>' +
       '</div>' +
       '<div style="height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin:0 8px">' +
-      '<div id="paulie-progress" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--danger),var(--primary));border-radius:3px;transition:width .5s linear"></div>' +
+      '<div id="oswald-progress" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--danger),var(--primary));border-radius:3px;transition:width .5s linear"></div>' +
       '</div>' +
-      '<button id="paulie-continue" style="display:none;margin-top:10px;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Continue &#8594;</button>' +
+      '<button id="oswald-continue" style="display:none;margin-top:10px;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Continue &#8594;</button>' +
       '</div>';
     document.body.appendChild(anim);
 
-    var P = document.getElementById('paulie-char');
+    var P = document.getElementById('oswald-char');
     var DR = document.getElementById('dragon-char');
-    var G = document.getElementById('paulie-glow');
+    var G = document.getElementById('oswald-glow');
     var DF1 = document.getElementById('dragon-fire1');
     var DF2 = document.getElementById('dragon-fire2');
-    var PB = document.getElementById('paulie-blast');
-    var PM = document.getElementById('paulie-boom');
-    var PT = document.getElementById('paulie-trophy');
-    var PS1 = document.getElementById('paulie-spark1');
-    var PS2 = document.getElementById('paulie-spark2');
-    var PS3 = document.getElementById('paulie-spark3');
-    var PR = document.getElementById('paulie-result');
-    var PBar = document.getElementById('paulie-progress');
-    var PCont = document.getElementById('paulie-continue');
+    var PB = document.getElementById('oswald-blast');
+    var PM = document.getElementById('oswald-boom');
+    var PT = document.getElementById('oswald-trophy');
+    var PS1 = document.getElementById('oswald-spark1');
+    var PS2 = document.getElementById('oswald-spark2');
+    var PS3 = document.getElementById('oswald-spark3');
+    var PR = document.getElementById('oswald-result');
+    var PBar = document.getElementById('oswald-progress');
+    var PCont = document.getElementById('oswald-continue');
 
     var timers = [];
     function updateProgress(pct) { if (PBar) PBar.style.width = pct + '%'; }
     function pAnim(cls, duration) {
       if (!P) return;
-      P.className = 'paulie-stage';
+      P.className = 'oswald-stage';
       P.offsetHeight;
       if (cls) P.classList.add(cls);
-      if (duration && cls) timers.push(setTimeout(function(){ if (P) P.className = 'paulie-stage'; }, duration));
+      if (duration && cls) timers.push(setTimeout(function(){ if (P) P.className = 'oswald-stage'; }, duration));
     }
     function flashEl(el, cssAnim, dur) {
       if (!el) return;
@@ -8162,7 +8164,7 @@ function savePaulieStep() {
     // Phase 1: Walk in (800ms)
     timers.push(setTimeout(function(){
       dIdleOn();
-      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'paulieWalkIn 1.5s ease forwards'; }
+      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'oswaldWalkIn 1.5s ease forwards'; }
       updateProgress(7);
     }, 800));
 
@@ -8172,62 +8174,62 @@ function savePaulieStep() {
       updateProgress(14);
     }, 3000));
 
-    // Phase 3: Dragon fire 1 - Paulie dodges (5000ms)
+    // Phase 3: Dragon fire 1 - Oswald dodges (5000ms)
     timers.push(setTimeout(function(){
       dIdleOff();
       flashEl(DF1, 'dragonFire .5s ease forwards', 500);
       dWing('dWingFlap .6s ease infinite');
-      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'paulieDodge .8s ease forwards'; }
+      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'oswaldDodge .8s ease forwards'; }
       pAnim('dodge', 800);
       updateProgress(24);
     }, 5000));
 
-    // Phase 4: Dragon fire 2 - Paulie dodges again (6500ms)
+    // Phase 4: Dragon fire 2 - Oswald dodges again (6500ms)
     timers.push(setTimeout(function(){
       flashEl(DF2, 'dragonFire .5s ease forwards', 500);
       dWing('dWingFlap .6s ease infinite');
-      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'paulieDodge .8s ease forwards'; }
+      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'oswaldDodge .8s ease forwards'; }
       pAnim('dodge', 800);
       updateProgress(34);
     }, 6500));
 
-    // Phase 5: Dragon knocks Paulie down (8200ms)
+    // Phase 5: Dragon knocks Oswald down (8200ms)
     timers.push(setTimeout(function(){
       dIdleOff();
       dWing('dWingFlap .4s ease 2');
       dBodyAnim('dRoar', 600);
-      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'paulieKnockdown 1.2s ease forwards'; }
+      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'oswaldKnockdown 1.2s ease forwards'; }
       pAnim('knockdown', 1200);
       updateProgress(44);
     }, 8200));
 
-    // Phase 6: Paulie stays down - dragon idles (10000ms)
+    // Phase 6: Oswald stays down - dragon idles (10000ms)
     timers.push(setTimeout(function(){
       dIdleOn();
       updateProgress(50);
     }, 10000));
 
-    // Phase 7: Paulie starts getting up (11500ms)
+    // Phase 7: Oswald starts getting up (11500ms)
     timers.push(setTimeout(function(){
-      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'paulieRise 1.5s ease forwards'; }
+      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'oswaldRise 1.5s ease forwards'; }
       pAnim('rise', 1500);
       updateProgress(57);
     }, 11500));
 
-    // Phase 8: Paulie powers up (13500ms)
+    // Phase 8: Oswald powers up (13500ms)
     timers.push(setTimeout(function(){
-      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'pauliePowerUp 1.5s ease forwards'; }
+      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'oswaldPowerUp 1.5s ease forwards'; }
       pAnim('powerup', 1500);
-      flashEl(G, 'paulieHitGlow 1.2s ease forwards', 1200);
+      flashEl(G, 'oswaldHitGlow 1.2s ease forwards', 1200);
       updateProgress(67);
     }, 13500));
 
-    // Phase 9: Paulie attacks with lightning (15500ms)
+    // Phase 9: Oswald attacks with lightning (15500ms)
     timers.push(setTimeout(function(){
       dIdleOff();
       dWing('dWingLift .6s ease forwards');
       dBodyAnim('dStagger', 600);
-      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'paulieAttack 1.2s ease forwards'; }
+      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'oswaldAttack 1.2s ease forwards'; }
       pAnim('attack', 1200);
       flashEl(PB, 'finalBlast .7s ease forwards', 700);
       updateProgress(77);
@@ -8243,7 +8245,7 @@ function savePaulieStep() {
     timers.push(setTimeout(function(){
       dIdleOff();
       dBodyAnim('dDefeat', 1000, true);
-      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'paulieCelebrate 1.5s ease forwards'; }
+      if (P) { P.style.animation = 'none'; P.offsetHeight; P.style.animation = 'oswaldCelebrate 1.5s ease forwards'; }
       pAnim('celebrate', 1500);
       flashEl(PT, 'kingThrough .6s ease forwards', 600);
       updateProgress(90);
@@ -8266,7 +8268,7 @@ function savePaulieStep() {
 
     if (PCont) PCont.onclick = function(){
       timers.forEach(function(t){clearTimeout(t)});
-      var el = document.getElementById('paulie-craft');
+      var el = document.getElementById('oswald-craft');
       if (el) el.remove();
       setTimeout(showRelapseCutscene, 300);
     };
@@ -8283,7 +8285,7 @@ function showRelapseCutscene() {
   overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
   overlay.style.overflow = 'hidden';
   var h = '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;background:repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%) 0 0 / 2px 2px;animation:jcGrain .3s steps(3) infinite"></div><div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);opacity:0;animation:jcVignette 1.5s ease .3s forwards"></div><div class="overlay-content" style="padding:16px 12px 8px;max-width:480px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:100%">';
-  h += '<div style="text-align:center;padding:30px 0 6px;opacity:0" id="rc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">PAULIE vs THE DRAGON</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR RELAPSE PLAN</div></div>';
+  h += '<div style="text-align:center;padding:30px 0 6px;opacity:0" id="rc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">OSWALD vs THE DRAGON</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR RELAPSE PLAN</div></div>';
   var chips = [];
   if (plan.triggers && plan.triggers.length) chips.push(plan.triggers.length + ' triggers');
   if (plan.interruptActions && plan.interruptActions.length) chips.push(plan.interruptActions.length + ' actions');
@@ -8313,7 +8315,7 @@ function showRelapseCutscene() {
   setTimeout(function(){var e=overlay.querySelector('#rc-close');if(e)e.style.animation='jcZoomIn .5s cubic-bezier(.16,1,.3,1) forwards'},3600);
 }
 function showRelapsePlan() {
-  startPaulieWizard();
+  startOswaldWizard();
 }
 
 // ====== TIME CAPSULE ======
