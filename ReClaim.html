@@ -7284,59 +7284,59 @@ function showBoxingMatch(onDone) {
 
   // Round 1: Both charge and miss
   timers.push(setTimeout(function(){
-    if (A) { horseAnim(A, 'arthurCharge 1.5s cubic-bezier(.22,1,.36,1) forwards', 1500); }
-    if (S) { horseAnim(S, 'skeletonCharge 1.5s cubic-bezier(.22,1,.36,1) forwards', 1500); }
-    updateProgress(10);
-  }, 2000));
+    if (A) { horseAnim(A, 'arthurCharge 1s cubic-bezier(.22,1,.36,1) forwards', 1000); }
+    if (S) { horseAnim(S, 'skeletonCharge 1s cubic-bezier(.22,1,.36,1) forwards', 1000); }
+    updateProgress(12);
+  }, 1500));
 
   // Round 1: Both retreat
   timers.push(setTimeout(function(){
-    if (A) { horseAnim(A, 'arthurRetreat .8s cubic-bezier(.34,1.2,.64,1) forwards', 800); }
-    if (S) { horseAnim(S, 'skeletonRetreat .8s cubic-bezier(.34,1.2,.64,1) forwards', 800); }
-    updateProgress(20);
-  }, 4500));
+    if (A) { horseAnim(A, 'arthurRetreat .7s cubic-bezier(.34,1.2,.64,1) forwards', 700); }
+    if (S) { horseAnim(S, 'skeletonRetreat .7s cubic-bezier(.34,1.2,.64,1) forwards', 700); }
+    updateProgress(25);
+  }, 3500));
 
   // Round 2: Both charge and miss
   timers.push(setTimeout(function(){
-    if (A) { horseAnim(A, 'arthurCharge 1.5s cubic-bezier(.22,1,.36,1) forwards', 1500); }
-    if (S) { horseAnim(S, 'skeletonCharge 1.5s cubic-bezier(.22,1,.36,1) forwards', 1500); }
-    updateProgress(35);
-  }, 8500));
+    if (A) { horseAnim(A, 'arthurCharge 1s cubic-bezier(.22,1,.36,1) forwards', 1000); }
+    if (S) { horseAnim(S, 'skeletonCharge 1s cubic-bezier(.22,1,.36,1) forwards', 1000); }
+    updateProgress(40);
+  }, 6000));
 
   // Round 2: Both retreat
   timers.push(setTimeout(function(){
-    if (A) { horseAnim(A, 'arthurRetreat .8s cubic-bezier(.34,1.2,.64,1) forwards', 800); }
-    if (S) { horseAnim(S, 'skeletonRetreat .8s cubic-bezier(.34,1.2,.64,1) forwards', 800); }
-    updateProgress(50);
-  }, 11000));
+    if (A) { horseAnim(A, 'arthurRetreat .7s cubic-bezier(.34,1.2,.64,1) forwards', 700); }
+    if (S) { horseAnim(S, 'skeletonRetreat .7s cubic-bezier(.34,1.2,.64,1) forwards', 700); }
+    updateProgress(55);
+  }, 8000));
 
   // Round 3: Both charge - Arthur strikes!
   timers.push(setTimeout(function(){
-    if (A) { horseAnim(A, 'arthurCharge 1.5s cubic-bezier(.22,1,.36,1) forwards', 1500); }
-    if (S) { horseAnim(S, 'skeletonCharge 1.5s cubic-bezier(.22,1,.36,1) forwards', 1500); }
-    updateProgress(65);
-  }, 15000));
+    if (A) { horseAnim(A, 'arthurCharge 1s cubic-bezier(.22,1,.36,1) forwards', 1000); }
+    if (S) { horseAnim(S, 'skeletonCharge 1s cubic-bezier(.22,1,.36,1) forwards', 1000); }
+    updateProgress(68);
+  }, 10000));
 
-  // Round 3: Arthur hits - skeleton knocked backwards off horse!
+  // Round 3: Arthur hits - skeleton knocked backwards off horse! Stays gone.
   timers.push(setTimeout(function(){
     lanceStrike(); flashHit();
-    if (S) { horseAnim(S, 'skeletonKnockback 2s cubic-bezier(.3,1,.5,1) forwards', 2000); }
-    if (A) { horseAnim(A, 'arthurCelebrateJoust 2s ease 3', 6000); }
+    if (S) { horseAnim(S, 'skeletonKnockback 2s cubic-bezier(.3,1,.5,1) forwards', 0); }
+    if (A) { horseAnim(A, 'arthurCelebrateJoust 1.5s ease 3', 4500); }
     updateProgress(80);
-  }, 17000));
+  }, 12000));
 
   // Stars burst as skeleton flies off
   timers.push(setTimeout(function(){
     starsBurst();
-    updateProgress(90);
-  }, 18500));
+    updateProgress(92);
+  }, 13700));
 
   // Winner!
   timers.push(setTimeout(function(){
     if (WT) { WT.innerHTML = '&#127942; ARTHUR WINS! &#127942;'; WT.className = 'winner-text show'; }
     updateProgress(100);
     if (contBtn) contBtn.style.display = 'inline-block';
-  }, 19500));
+  }, 14800));
 
   // Close/cleanup
   if (contBtn) {
