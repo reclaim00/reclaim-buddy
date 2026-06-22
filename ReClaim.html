@@ -2441,7 +2441,7 @@ function timelineHTML() {
   for (var ji=0;ji<D.journal.length;ji++) {
     var jd = new Date(D.journal[ji].date);
     if (!isNaN(jd.getTime())) {
-      events.push({date: jd, type:'journal', label:'Journal entry', detail: D.journal[ji].text.substring(0,60) + (D.journal[ji].text.length>60?'...':'')});
+      var jt = getEntryText(D.journal[ji]); events.push({date: jd, type:'journal', label:'Journal entry', detail: (jt||'').substring(0,60) + ((jt||'').length>60?'...':'')});
     }
   }
   // Mood logs (one per day)
@@ -8827,7 +8827,7 @@ function render() {
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
-    _pageCache[pg] = fn ? fn() : (pg = 'home', homeHTML());
+    try { _pageCache[pg] = fn ? fn() : (pg = 'home', homeHTML()); } catch(e) { _pageCache[pg] = '<div class="card"><h3>Could not load page</h3><p style="font-size:12px;color:var(--muted)">' + e.message + '</p></div>'; }
   }
   app.innerHTML = _pageCache[pg];
   if (pg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
