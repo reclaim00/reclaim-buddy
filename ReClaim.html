@@ -3607,33 +3607,55 @@ function buildSummary(txt, mood, topics, dayCount, streak, entryHour) {
   var lines = [];
   var words = txt.trim().split(/\s+/).length;
   var mins = Math.ceil(words / 15);
-  lines.push('You wrote ' + words + ' words' + (mins > 1 ? ' — about ' + mins + ' minutes of honest reflection' : ' — a short check-in, but it counts') + '.');
+  lines.push('<b>Length:</b> ' + words + ' words' + (mins > 1 ? ' — about <b>' + mins + ' minutes</b> of honest reflection' : ' — a <b>short check-in</b>, but it counts') + '.');
 
-  if (dayCount > 0) lines.push('You\'re ' + dayCount + ' day' + (dayCount!==1?'s':'') + ' sober.');
-  if (streak > 3) lines.push('This is day ' + streak + ' of journaling — building real momentum.');
+  if (dayCount > 0) lines.push('<b>Sobriety:</b> You\'re <b>' + dayCount + '</b> day' + (dayCount!==1?'s':'') + ' sober.');
+  if (streak > 3) lines.push('<b>Streak:</b> This is day <b>' + streak + '</b> of journaling — building <b>real momentum</b>.');
 
   var timeOfDay = '';
-  if (entryHour >= 5 && entryHour < 12) timeOfDay = 'morning entry sets a strong tone for the day ahead.';
-  else if (entryHour >= 12 && entryHour < 17) timeOfDay = 'checking in mid-day shows you\'re staying present through the ups and downs.';
-  else if (entryHour >= 17 && entryHour < 21) timeOfDay = 'evening reflection is a powerful way to process and release the day.';
-  else timeOfDay = 'late-night thoughts often carry the most honesty. The quiet hours bring clarity.';
+  if (entryHour >= 5 && entryHour < 12) timeOfDay = 'This <b>morning entry</b> sets a <b>strong tone</b> for the day ahead.';
+  else if (entryHour >= 12 && entryHour < 17) timeOfDay = '<b>Checking in mid-day</b> shows you\'re staying present through the <b>ups and downs</b>.';
+  else if (entryHour >= 17 && entryHour < 21) timeOfDay = '<b>Evening reflection</b> is a powerful way to <b>process and release</b> the day.';
+  else timeOfDay = '<b>Late-night thoughts</b> often carry the most <b>honesty</b>. The quiet hours bring <b>clarity</b>.';
 
-  if (timeOfDay) lines.push('A ' + timeOfDay);
+  if (timeOfDay) lines.push(timeOfDay);
 
   if (topics && topics.length) {
     var topicPhrases = [];
-    if (topics.indexOf('craving') !== -1) topicPhrases.push('you acknowledged a craving — awareness is the first defense');
-    if (topics.indexOf('work') !== -1) topicPhrases.push('your work life is on your mind');
-    if (topics.indexOf('relationships') !== -1) topicPhrases.push('your relationships are weighing on your heart');
-    if (topics.indexOf('health') !== -1) topicPhrases.push('you touched on your health');
-    if (topics.indexOf('wellness') !== -1) topicPhrases.push('wellness and self-care came up');
-    if (topics.indexOf('school') !== -1) topicPhrases.push('your studies are present in your thoughts');
-    if (topics.indexOf('finances') !== -1) topicPhrases.push('financial stress is real and heavy');
-    if (topics.indexOf('progress') !== -1) topicPhrases.push('you spoke about your progress — that takes courage');
-    if (topics.indexOf('loneliness') !== -1) topicPhrases.push('you opened up about feeling alone — thank you for trusting the page');
+    if (topics.indexOf('craving') !== -1) topicPhrases.push('you acknowledged a <b>craving</b> — awareness is the <b>first defense</b>');
+    if (topics.indexOf('work') !== -1) topicPhrases.push('your <b>work life</b> is on your mind');
+    if (topics.indexOf('relationships') !== -1) topicPhrases.push('your <b>relationships</b> are weighing on your heart');
+    if (topics.indexOf('health') !== -1) topicPhrases.push('you touched on your <b>health</b>');
+    if (topics.indexOf('wellness') !== -1) topicPhrases.push('<b>wellness and self-care</b> came up');
+    if (topics.indexOf('school') !== -1) topicPhrases.push('your <b>studies</b> are present in your thoughts');
+    if (topics.indexOf('finances') !== -1) topicPhrases.push('<b>financial stress</b> is real and heavy');
+    if (topics.indexOf('progress') !== -1) topicPhrases.push('you spoke about your <b>progress</b> — that takes <b>courage</b>');
+    if (topics.indexOf('loneliness') !== -1) topicPhrases.push('you opened up about <b>feeling alone</b> — thank you for <b>trusting the page</b>');
     if (topicPhrases.length) lines.push('In your entry, ' + topicPhrases.join(', ') + '.');
-    else lines.push('You wrote about what matters to you today.');
+    else lines.push('You wrote about <b>what matters to you</b> today.');
   }
+
+  // Mood insight
+  var moodReflections = {
+    sad: 'Your heart feels <b>heavy</b> right now — <b>honoring your sadness</b> is part of healing.',
+    angry: 'There\'s <b>fire in your words</b> today. Anger is a <b>signal</b> — something matters deeply.',
+    anxious: '<b>Anxiety</b> is loud right now, but you <b>showed up anyway</b>. That takes real <b>courage</b>.',
+    happy: 'There\'s a <b>lightness</b> in your words. <b>Savor this moment</b> — you\'ve earned it.',
+    grateful: 'You\'re seeing the <b>good</b> even when it\'s hard. That\'s not denial — that\'s <b>strength</b>.',
+    reflective: 'You\'re in a <b>quiet, thoughtful space</b>. These moments are where <b>growth</b> happens.',
+    hopeful: 'There\'s <b>hope</b> in what you wrote. Hold onto it — it\'s <b>real</b> and it <b>matters</b>.'
+  };
+  if (moodReflections[mood]) lines.push(moodReflections[mood]);
+
+  // Weekly context
+  if (streak >= 7 && streak < 30) lines.push('You\'ve journaled <b>' + streak + ' days straight</b> — that\'s over a <b>full week</b> of showing up for yourself. <b>Consistency</b> like this changes everything.');
+  else if (streak >= 30 && streak < 90) lines.push('A <b>' + streak + '-day streak</b> is remarkable. You\'ve built a <b>habit</b> that most people never reach. <b>Keep going</b>.');
+  else if (streak >= 90) lines.push('<b>' + streak + ' days.</b> This isn\'t a streak anymore — it\'s <b>who you are</b>. You\'re <b>unrecognizable</b> from where you started.');
+
+  // Word count encouragement
+  if (words > 200) lines.push('You wrote <b>' + words + ' words</b> — that\'s a <b>deep session</b>. You\'re <b>digging</b> and it shows.');
+  else if (words > 100) lines.push('Over <b>' + words + ' words</b> — you\'re <b>opening up</b> and getting to the <b>real stuff</b>.');
+  else if (words > 30) lines.push('Every word counts. You showed up and that\'s the <b>hardest part</b>.');
 
   return lines.join('<br>');
 }
@@ -3941,17 +3963,30 @@ function showReflection(idx) {
   setTimeout(function(){
     var textEl = overlay.querySelector('#jc-summary-text');
     if(textEl && summaryText){
-      textEl.textContent = '';
-      var chars = summaryText.split('');
-      var ti = 0;
-      function typeChar(){
-        if(ti < chars.length){
-          textEl.textContent += chars[ti];
-          ti++;
-          setTimeout(typeChar, 18 + (chars[ti-1]===' '||chars[ti-1]==='.'||chars[ti-1]===','?40:0));
+      textEl.innerHTML = '';
+      var segs = summaryText.split(/(<[^>]*>)/);
+      var si = 0, ci = 0;
+      function typeHTML(){
+        if (si >= segs.length) return;
+        var s = segs[si];
+        if (s.charAt(0) === '<') {
+          textEl.innerHTML += s;
+          si++; ci = 0;
+          setTimeout(typeHTML, 0);
+        } else {
+          if (ci < s.length) {
+            textEl.innerHTML += s.charAt(ci);
+            var ch = s.charAt(ci);
+            ci++;
+            setTimeout(typeHTML, 18 + (ch===' '||ch==='.'||ch===','||ch==='\u2014'?40:0));
+          } else {
+            ci = 0;
+            si++;
+            setTimeout(typeHTML, 0);
+          }
         }
       }
-      typeChar();
+      typeHTML();
     }
   }, 2500);
   // Scene 4: Additional info (fade up)
