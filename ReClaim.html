@@ -4198,7 +4198,9 @@ function journalInsightsHTML() {
   var keywords = {};
   var topicWords = ['family','friend','work','school','health','anxiety','stress','happy','sad','angry','love','hope','fear','trigger','craving','proud','grateful','tired','alone','help'];
   for (var ji2=0;ji2<D.journal.length;ji2++) {
-    var text = D.journal[ji2].text.toLowerCase();
+    var text = getEntryText(D.journal[ji2]);
+    if (typeof text !== 'string' || !text) continue;
+    text = text.toLowerCase();
     for (var kw=0;kw<topicWords.length;kw++) {
       if (text.indexOf(topicWords[kw]) !== -1) {
         if (!keywords[topicWords[kw]]) keywords[topicWords[kw]] = 0;
