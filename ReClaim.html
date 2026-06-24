@@ -1782,7 +1782,7 @@ function endSobrietyProud(overlay) {
   D.sobriety.startDate = null;
   D.sobriety.addictionType = '';
   saveData();
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;max-width:420px"><div style="font-size:48px;margin-bottom:8px">&#127881;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:4px">We are so proud of you</h3><p style="font-size:14px;color:var(--muted);line-height:1.6">Look at how far you have come. Every day of your journey mattered. The growth, the strength, the courage to keep showing up — that stays with you forever. Whenever you are ready to begin again, your plant will be here waiting.</p><button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove();render()">Thank you</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;max-width:420px"><div style="font-size:48px;margin-bottom:8px">&#x269C;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:4px">We are so proud of you</h3><p style="font-size:14px;color:var(--muted);line-height:1.6">Look at how far you have come. Every day of your journey mattered. The growth, the strength, the courage to keep showing up — that stays with you forever. Whenever you are ready to begin again, your plant will be here waiting.</p><button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove();render()">Thank you</button></div>';
 }
 
 function endSobrietyReset(overlay) {
@@ -2373,7 +2373,7 @@ function programActiveHTML(pid) {
   h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>'+completed+'/'+total+' steps</span><span>'+pct+'%</span></div>';
   if (done) {
     h += '<div style="text-align:center;padding:14px;background:var(--primary-light);border-radius:10px;margin-top:8px">';
-    h += '<span style="font-size:32px">&#127942;</span>';
+    h += '<span style="font-size:32px">&#x265B;</span>';
     h += '<div style="font-weight:700;font-size:15px;color:var(--primary);margin:4px 0">Program Completed!</div>';
     h += '<div style="font-size:11px;color:var(--muted)">You worked through all '+total+' steps with reflection and intention.</div>';
     h += '<div style="font-size:11px;color:var(--muted)">Finished '+new Date(data.completed).toLocaleDateString()+'</div>';
@@ -2598,16 +2598,16 @@ function timelineHTML() {
   events.sort(function(a,b){return a.date - b.date});
   if (!events.length) return '<div class="card"><div class="empty-state">No events yet. Start tracking to see your timeline.</div></div>';
   var colors = {start:'var(--primary)', relapse:'var(--danger)', journal:'var(--blue)', mood:'var(--accent)', checkin:'#22c55e', badge:'var(--purple)', buddy:'var(--rose)'};
-  var icons = {start:'&#127793;', relapse:'&#128260;', journal:'&#128221;', mood:'&#128164;', checkin:'&#9989;', badge:'&#127942;', buddy:'&#129309;'};
+  var icons = {start:'&#x2726;', relapse:'&#x2628;', journal:'&#x2712;', mood:'&#x2766;', checkin:'&#x2713;', badge:'&#x265B;', buddy:'&#x2618;'};
   // Latest badge earned
   var lastBadge = null;
   for (var ei=events.length-1;ei>=0;ei--) {
     if (events[ei].type === 'badge') { lastBadge = events[ei]; break; }
   }
   var h = '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="var el=document.getElementById(\'timeline-body\');var btn=document.getElementById(\'timeline-toggle\');if(el.style.display===\'none\'){el.style.display=\'block\';btn.textContent=\'&#9650; '+t('Hide Timeline')+'\'}else{el.style.display=\'none\';btn.textContent=\'&#9660; '+t('Show Timeline')+'\'}">';
-  h += '<div style="display:flex;align-items:center;gap:8px"><div style="font-size:20px">&#128198;</div><div><h3 style="margin:0;font-size:14px">'+t('Recovery Timeline')+'</h3>';
+  h += '<div style="display:flex;align-items:center;gap:8px"><div style="font-size:20px">&#x2726;</div><div><h3 style="margin:0;font-size:14px">'+t('Recovery Timeline')+'</h3>';
   if (lastBadge) {
-    h += '<div style="font-size:12px;color:var(--muted)">&#127942; ' + lastBadge.label + '</div>';
+    h += '<div style="font-size:12px;color:var(--muted)">&#x265B; ' + lastBadge.label + '</div>';
   }
   h += '</div></div>';
   h += '<span id="timeline-toggle" style="font-size:13px;color:var(--primary);font-weight:600">&#9660; '+t('Show Timeline')+'</span>';
@@ -4516,7 +4516,7 @@ function costSavingsHTML() {
   h += '<div style="font-size:28px;font-weight:800;color:var(--primary)">$' + saved.toLocaleString() + '</div>';
   h += '<div style="font-size:11px;color:var(--muted)">$' + daily.toFixed(2) + '/day &middot; ' + days + ' day' + (days !== 1 ? 's' : '') + ' sober</div>';
   if (saved >= 1000) {
-    var fun = saved >= 10000 ? '&#128176; That could buy a car!' : saved >= 5000 ? '&#9992;&#65039; That\'s a vacation!' : '&#127942; Five figures saved — incredible.';
+    var fun = saved >= 10000 ? '&#128176; That could buy a car!' : saved >= 5000 ? '&#9992;&#65039; That\'s a vacation!' : '&#x265B; Five figures saved — incredible.';
     h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">' + fun + '</div>';
   }
   h += '<button class="btn btn-sm btn-outline" onclick="goTo(\'costcalc\')" style="margin-top:6px">See Details</button>';
@@ -4871,7 +4871,7 @@ function buildArthurInsights() {
     var lastRelapse = new Date(logs[logs.length-1].date);
     var daysSince = Math.round((Date.now() - lastRelapse.getTime()) / 86400000);
     if (daysSince <= 3) insights.push({ icon: '&#129309;', text: 'You recently re-committed (<strong>' + daysSince + ' day' + (daysSince !== 1 ? 's' : '') + ' ago</strong>). The first week is the hardest — stay connected and use your coping tools.', severity: 'high' });
-    else if (daysSince > 30) insights.push({ icon: '&#127942;', text: 'It\'s been <strong>' + daysSince + ' days</strong> since your last relapse — that\'s real progress. Keep doing what\'s working.', severity: 'positive' });
+    else if (daysSince > 30) insights.push({ icon: '&#x265B;', text: 'It\'s been <strong>' + daysSince + ' days</strong> since your last relapse — that\'s real progress. Keep doing what\'s working.', severity: 'positive' });
   }
 
   // Cross-reference: journal gap before relapse
@@ -5079,7 +5079,7 @@ function runClimbPhase(overlay) {
   document.getElementById('mtn-inner').innerHTML =
     '<div style="background:transparent;padding:10px;overflow:hidden;text-align:center">' +
     '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#9968; Streak Mountain</div>' +
-    '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:8px">'+(atop?'&#127942; Summit celebration!':'The climb continues...')+'</div>' +
+    '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:8px">'+(atop?'&#x265B; Summit celebration!':'The climb continues...')+'</div>' +
     '<div style="position:relative;height:280px;border-radius:16px;overflow:hidden;margin-bottom:6px;border:1px solid var(--border);box-shadow:inset 0 0 40px rgba(0,0,0,.5)">' +
     '<div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(180deg,rgba(74,144,196,.4),transparent);z-index:1"></div>' +
     '<div class="mtn-scroll-bg" style="position:absolute;inset:-40px 0;background:linear-gradient(180deg,#3d2b1f,#2a1f15,#3d2b1f,#2a1f15);background-size:100% 80px"></div>' +
@@ -5131,7 +5131,7 @@ function showMapPhase(overlay) {
   document.getElementById('mtn-inner').innerHTML =
     '<div style="background:transparent;padding:10px;overflow:hidden;text-align:center">' +
     '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#9968; Streak Mountain</div>' +
-    '<div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:8px">'+(atop?'&#127942; You reached the summit!':'Day '+streak+' of the climb')+'</div>' +
+    '<div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:8px">'+(atop?'&#x265B; You reached the summit!':'Day '+streak+' of the climb')+'</div>' +
     '<div style="position:relative;height:280px;background:linear-gradient(180deg,#0f1a2e,#4a90c4 40%,#87ceeb 60%,#b8d4e8);border-radius:16px;overflow:hidden;margin-bottom:6px;border:1px solid var(--border);box-shadow:inset 0 0 40px rgba(0,0,0,.3)">' +
     '<svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 100 160" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f1a2e"/><stop offset="40%" stop-color="#4a90c4"/><stop offset="100%" stop-color="#b8d4e8"/></linearGradient><linearGradient id="mtnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a5568"/><stop offset="40%" stop-color="#5a7d5a"/><stop offset="100%" stop-color="#3d6b3d"/></linearGradient></defs>' +
     '<rect width="100" height="160" fill="url(#skyG)"/><polygon points="0,120 25,60 50,100 75,50 100,90 100,160 0,160" fill="#3a6b3a" opacity="0.4"/><polygon points="0,100 35,50 70,80 100,40 100,160 0,160" fill="#2d5a2d" opacity="0.25"/>' +
@@ -5147,7 +5147,7 @@ function showMapPhase(overlay) {
     '<div class="mtn-climber" style="position:absolute;left:'+(charP[2].x)+'%;top:'+(charP[2].y/160*100)+'%;z-index:5;transform:translate(-50%,-50%)">'+me+'</div>' +
     '<div style="position:absolute;bottom:6px;left:12%;right:12%;z-index:10"><div style="display:flex;justify-content:space-between;font-size:7px;color:rgba(255,255,255,.6);margin-bottom:1px;text-shadow:0 1px 3px rgba(0,0,0,.5)"><span>Base</span><span>Summit</span></div><div style="height:3px;background:rgba(0,0,0,.25);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+Math.round(progress*100)+'%;background:linear-gradient(90deg,#22c55e,#eab308);border-radius:2px;transition:width .8s cubic-bezier(.22,1,.36,1)"></div></div></div>' +
     '</div>' +
-    '<div style="font-size:9px;color:rgba(255,255,255,.5);margin-bottom:6px">'+(atop?'&#127881; Summit celebration! '+streak+' day streak!':streak+' day streak &middot; '+Math.round(progress*100)+'% to summit')+'</div>' +
+    '<div style="font-size:9px;color:rgba(255,255,255,.5);margin-bottom:6px">'+(atop?'&#x269C; Summit celebration! '+streak+' day streak!':streak+' day streak &middot; '+Math.round(progress*100)+'% to summit')+'</div>' +
     '<div style="display:flex;gap:8px;justify-content:center">' +
     '<button onclick="var el=document.getElementById(\'streak-mtn\');if(el){el.remove();render();}" style="background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Continue &#8594;</button>' +
     '<button onclick="runClimbPhase(document.getElementById(\'streak-mtn\'))" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer">&#8635; Replay</button>' +
@@ -5455,18 +5455,18 @@ function reportsHTML() {
   // Milestones
   h += '<div class="card"><h3>Milestones</h3>';
   var milestones = [];
-  if (sober >= 1) milestones.push({icon:'🌱',title:'1 Day Sober',desc:'You started your journey'});
-  if (sober >= 3) milestones.push({icon:'🔥',title:'3 Days Sober',desc:'Building momentum'});
-  if (sober >= 7) milestones.push({icon:'⭐',title:'1 Week Sober',desc:'Incredible progress'});
-  if (sober >= 14) milestones.push({icon:'🌟',title:'2 Weeks Sober',desc:'Building strong habits'});
-  if (sober >= 30) milestones.push({icon:'🏆',title:'1 Month Sober',desc:'Amazing commitment'});
-  if (sober >= 60) milestones.push({icon:'💪',title:'2 Months Sober',desc:'You are transforming'});
-  if (sober >= 90) milestones.push({icon:'🎯',title:'90 Days Sober',desc:'Quarter of a year!'});
-  if (sober >= 180) milestones.push({icon:'🌈',title:'6 Months Sober',desc:'Half a year of freedom'});
-  if (sober >= 365) milestones.push({icon:'👑',title:'1 Year Sober',desc:'One year of reclaiming your life'});
-  if (journalCount >= (REPORT_PERIOD==='month'?10:3)) milestones.push({icon:'📝',title:'Consistent Journaler',desc:'Wrote ' + (REPORT_PERIOD==='month'?'10+':'3+') + ' times'});
-  if (checkinCount >= (REPORT_PERIOD==='month'?20:5)) milestones.push({icon:'✅',title:D.checkins.length>=20?'Check-In Champion':'Daily Check-In Champ',desc:'Checked in ' + (REPORT_PERIOD==='month'?'20+':'5+') + ' times'});
-  if (D.habits.length > 0 && habitsDone >= D.habits.length * (REPORT_PERIOD==='month'?20:5)) milestones.push({icon:'🎯',title:'Habit Hero',desc:'Most habits completed'});
+  if (sober >= 1) milestones.push({icon:'&#x2618;',title:'1 Day Sober',desc:'You started your journey'});
+  if (sober >= 3) milestones.push({icon:'&#x2726;',title:'3 Days Sober',desc:'Building momentum'});
+  if (sober >= 7) milestones.push({icon:'&#x2727;',title:'1 Week Sober',desc:'Incredible progress'});
+  if (sober >= 14) milestones.push({icon:'&#x2766;',title:'2 Weeks Sober',desc:'Building strong habits'});
+  if (sober >= 30) milestones.push({icon:'&#x265B;',title:'1 Month Sober',desc:'Amazing commitment'});
+  if (sober >= 60) milestones.push({icon:'&#x269C;',title:'2 Months Sober',desc:'You are transforming'});
+  if (sober >= 90) milestones.push({icon:'&#x2694;',title:'90 Days Sober',desc:'Quarter of a year!'});
+  if (sober >= 180) milestones.push({icon:'&#x2726;&#x2727;',title:'6 Months Sober',desc:'Half a year of freedom'});
+  if (sober >= 365) milestones.push({icon:'&#x265B;&#x265B;',title:'1 Year Sober',desc:'One year of reclaiming your life'});
+  if (journalCount >= (REPORT_PERIOD==='month'?10:3)) milestones.push({icon:'&#x2712;',title:'Consistent Journaler',desc:'Wrote ' + (REPORT_PERIOD==='month'?'10+':'3+') + ' times'});
+  if (checkinCount >= (REPORT_PERIOD==='month'?20:5)) milestones.push({icon:'&#x2713;',title:D.checkins.length>=20?'Check-In Champion':'Daily Check-In Champ',desc:'Checked in ' + (REPORT_PERIOD==='month'?'20+':'5+') + ' times'});
+  if (D.habits.length > 0 && habitsDone >= D.habits.length * (REPORT_PERIOD==='month'?20:5)) milestones.push({icon:'&#x2694;',title:'Habit Hero',desc:'Most habits completed'});
   if (!milestones.length) h += '<div class="empty-state">Complete more activities to earn milestones!</div>';
   for (var i=0;i<milestones.length;i++) {
     h += '<div class="milestone"><div class="info"><div class="title">' + milestones[i].title + '</div><div class="desc">' + milestones[i].desc + '</div></div></div>';
@@ -5727,7 +5727,7 @@ function buddyCompetitionHTML() {
       var winner = myStreak > buddyStreakData ? myName : (buddyStreakData > myStreak ? buddyName : 'Tie');
       var myPct = Math.min(100, (myStreak / Math.max(myStreak, buddyStreakData, 1)) * 100);
       var budPct = Math.min(100, (buddyStreakData / Math.max(myStreak, buddyStreakData, 1)) * 100);
-      var emoji = winner === myName ? '&#127942;' : (winner === buddyName ? '&#127775;' : '&#129309;');
+      var emoji = winner === myName ? '&#x265B;' : (winner === buddyName ? '&#x2726;&#x2726;' : '&#x2618;');
       el.innerHTML = '<div style="text-align:center;margin-bottom:8px"><span style="font-size:28px">' + emoji + '</span><div style="font-weight:700;font-size:16px;color:var(--primary)">' + (winner === 'Tie' ? 'You\'re tied!' : winner + ' is winning!') + '</div></div><div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>' + myName + '</span><span style="font-weight:700">' + myStreak + ' days</span></div><div class="progress-bar"><div class="fill" style="width:' + myPct + '%"></div></div></div><div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>' + buddyName + '</span><span style="font-weight:700">' + buddyStreakData + ' days</span></div><div class="progress-bar"><div class="fill" style="width:' + budPct + '%;background:var(--accent)"></div></div></div><div style="text-align:center;font-size:11px;color:var(--muted);margin-top:4px">Keep checking in to stay ahead!</div>';
     }).catch(function(){
       var el = document.getElementById('buddy-competition-content');
@@ -5740,7 +5740,7 @@ function buddyCompetitionHTML() {
 // ====== BUDDY CHALLENGES ======
 function buddyChallengesHTML() {
   var challenges = D.buddyGoals || [];
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#127942;</div><h3 style="margin:0">Shared Challenges</h3></div>';
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#x265B;</div><h3 style="margin:0">Shared Challenges</h3></div>';
   if (!challenges.length) {
     h += '<div class="empty-state">No challenges yet. Create one to compete with ' + (D.buddy ? D.buddy.name : 'your buddy') + '!</div>';
     h += '<button class="btn btn-outline btn-sm" onclick="newChallenge()">+ New Challenge</button></div>';
@@ -6288,12 +6288,12 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += pushToggleRowHTML();
   h += notifRowHTML('morning', '🌅', t('Morning'), t('Set your intention'));
   h += notifRowHTML('evening', '🌙', t('Evening'), t('Reflect on your day'));
-  h += notifRowHTML('craving', '⚠️', t('Craving Check-In'), t('Log & manage cravings'));
-  h += notifRowHTML('journal', '📝', t('Journal Prompt'), t('Write about your day'));
-  h += notifRowHTML('breathe', '🫁', t('Breathing Exercise'), t('Take a mindful moment'));
-  h += notifRowHTML('checkinReminder', '✅', t('Check-In Reminder'), t('Remind if you haven\'t checked in'));
-  h += notifToggleHTML('buddyCheckin', '🤝', t('Buddy Check-In'), t('Remind to check in with your buddy'));
-  h += notifToggleHTML('streakMilestone', '🏆', t('Streak Milestones'), t('Celebrate hitting milestones'));
+  h += notifRowHTML('craving', '&#x2694;', t('Craving Check-In'), t('Log & manage cravings'));
+  h += notifRowHTML('journal', '&#x2712;', t('Journal Prompt'), t('Write about your day'));
+  h += notifRowHTML('breathe', '&#x2726;', t('Breathing Exercise'), t('Take a mindful moment'));
+  h += notifRowHTML('checkinReminder', '&#x2713;', t('Check-In Reminder'), t('Remind if you haven\'t checked in'));
+  h += notifToggleHTML('buddyCheckin', '&#x2618;', t('Buddy Check-In'), t('Remind to check in with your buddy'));
+  h += notifToggleHTML('streakMilestone', '&#x265B;', t('Streak Milestones'), t('Celebrate hitting milestones'));
   h += reminderNotifRowHTML();
   h += '</div>';
   // Encryption settings
@@ -6762,7 +6762,7 @@ function showMilestoneCelebration(days) {
   saveData();
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;animation:scaleIn .3s"><div style="font-size:60px;margin:10px 0">🎉</div><h2 style="margin:8px 0">' + days + ' '+t('Days Sober!')+'</h2><p style="font-size:14px;color:var(--muted);line-height:1.5">'+t('That is an incredible milestone. You are building something real, one day at a time.')+'</p><div id="confetti-canvas" style="height:100px;margin:10px 0;position:relative;overflow:hidden"></div><button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove();startConfetti()" style="width:100%">&#127881; '+t('Celebrate!')+'</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;animation:scaleIn .3s"><div style="font-size:60px;margin:10px 0">&#x265B;</div><h2 style="margin:8px 0">' + days + ' '+t('Days Sober!')+'</h2><p style="font-size:14px;color:var(--muted);line-height:1.5">'+t('That is an incredible milestone. You are building something real, one day at a time.')+'</p><div id="confetti-canvas" style="height:100px;margin:10px 0;position:relative;overflow:hidden"></div><button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove();startConfetti()" style="width:100%">&#x269C; '+t('Celebrate!')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -6877,7 +6877,7 @@ function showShareCard() {
     var tmp = chars[ri]; chars[ri] = chars[rj]; chars[rj] = tmp;
   }
 
-  var h = '<div class="overlay-content" style="max-width:380px;text-align:center"><div style="font-size:40px;margin-bottom:4px">&#127942;</div><h3 style="margin:0;font-size:18px">'+t('My Recovery So Far')+'</h3>';
+  var h = '<div class="overlay-content" style="max-width:380px;text-align:center"><div style="font-size:40px;margin-bottom:4px">&#x265B;</div><h3 style="margin:0;font-size:18px">'+t('My Recovery So Far')+'</h3>';
 
   // Character row
   h += '<div style="display:flex;justify-content:center;align-items:flex-end;gap:2px;margin:2px 0;min-height:80px">';
@@ -6960,7 +6960,7 @@ function monthlyChallengeHTML() {
   var done = progress >= challenge.targetCount;
   var monthLabel = MONTH_NAMES[challenge.month] || '';
   var pledged = challenge.pledge || (D.monthlyChallenge && D.monthlyChallenge.pledge);
-  var h = '<div class="card" style="border:2px solid ' + (done ? 'var(--primary)' : (pledged ? 'var(--accent)' : 'var(--border)')) + '"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">' + challenge.icon + '</div><div><h3 style="margin:0;font-size:14px">' + (done ? '&#127881; ' : '') + monthLabel + ' Challenge</h3><p style="margin:0;font-size:11px;color:var(--muted)">' + challenge.title + '</p></div></div>';
+  var h = '<div class="card" style="border:2px solid ' + (done ? 'var(--primary)' : (pledged ? 'var(--accent)' : 'var(--border)')) + '"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">' + challenge.icon + '</div><div><h3 style="margin:0;font-size:14px">' + (done ? '&#x269C; ' : '') + monthLabel + ' Challenge</h3><p style="margin:0;font-size:11px;color:var(--muted)">' + challenge.title + '</p></div></div>';
   if (!pledged && !done) {
     h += '<button class="btn btn-sm btn-primary" onclick="pledgeToChallenge()" style="width:100%;margin:6px 0">&#9997; Pledge to Complete</button>';
     h += '<div style="font-size:11px;color:var(--muted);text-align:center">Make a commitment to yourself — write down your promise</div>';
@@ -6971,7 +6971,7 @@ function monthlyChallengeHTML() {
     h += '<div class="progress-bar" style="margin:6px 0"><div class="fill" style="width:' + pct + '%"></div></div>';
     h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>' + progress + '/' + challenge.targetCount + '</span><span>' + pct + '%</span></div>';
     if (done) {
-      h += '<div style="text-align:center;margin-top:6px;font-size:13px;font-weight:700;color:var(--primary)">&#127881; Challenge Complete! You kept your word.</div>';
+      h += '<div style="text-align:center;margin-top:6px;font-size:13px;font-weight:700;color:var(--primary)">&#x269C; Challenge Complete! You kept your word.</div>';
     }
   }
   h += '</div>';
@@ -7078,31 +7078,31 @@ function buddyMessagesHTML() {
 
 // ====== BADGES / ACHIEVEMENTS ======
 var BADGES = [
-  {id:'first_words', name:'First Words', desc:'Write your first journal entry', icon:'📝', check:function(){return D.journal.length>=1}},
-  {id:'storyteller', name:'Storyteller', desc:'Write 5 journal entries', icon:'✍️', check:function(){return D.journal.length>=5}},
-  {id:'journal_master', name:'Journal Master', desc:'Write 25 journal entries', icon:'📖', check:function(){return D.journal.length>=25}},
-  {id:'journal_sage', name:'Journal Sage', desc:'Write 50 journal entries', icon:'🧠', check:function(){return D.journal.length>=50}},
-  {id:'first_feeling', name:'First Feeling', desc:'Log your first mood', icon:'💭', check:function(){return D.moods.length>=1}},
-  {id:'mood_mirror', name:'Mood Mirror', desc:'Log 10 moods', icon:'🪞', check:function(){return D.moods.length>=10}},
-  {id:'mood_master', name:'Mood Master', desc:'Log 30 moods', icon:'🏆', check:function(){return D.moods.length>=30}},
-  {id:'first_step', name:'First Step', desc:'Complete your first habit', icon:'👣', check:function(){for(var i=0;i<D.habits.length;i++){if(D.habits[i].logs&&D.habits[i].logs.length)return true}return false}},
-  {id:'week_warrior', name:'Week Warrior', desc:'7-day habit streak', icon:'⚔️', check:function(){for(var i=0;i<D.habits.length;i++){if(calcHabitStreak(D.habits[i])>=7)return true}return false}},
-  {id:'habit_hero', name:'Habit Hero', desc:'30-day habit streak', icon:'💪', check:function(){for(var i=0;i<D.habits.length;i++){if(calcHabitStreak(D.habits[i])>=30)return true}return false}},
-  {id:'sober_1', name:'Day One', desc:'1 day sober', icon:'🌱', check:function(){return soberDays()>=1}},
-  {id:'sober_7', name:'Clean Week', desc:'7 days sober', icon:'🌿', check:function(){return soberDays()>=7}},
-  {id:'sober_30', name:'Freedom Month', desc:'30 days sober', icon:'🌳', check:function(){return soberDays()>=30}},
-  {id:'sober_90', name:'Resilience', desc:'90 days sober', icon:'🛡️', check:function(){return soberDays()>=90}},
-  {id:'sober_365', name:'One Year Strong', desc:'365 days sober', icon:'👑', check:function(){return soberDays()>=365}},
-  {id:'first_check', name:'First Check', desc:'Complete your first daily check-in', icon:'✅', check:function(){return D.checkins.length>=1}},
-  {id:'week_streak', name:'Week Streak', desc:'7-day check-in streak', icon:'🔥', check:function(){return D.streak>=7}},
-  {id:'month_streak', name:'Month Streak', desc:'30-day check-in streak', icon:'🔥', check:function(){return D.streak>=30}},
-  {id:'first_breathe', name:'First Breath', desc:'Complete a breathing exercise', icon:'🫁', check:function(){return D.breatheCount>=1}},
-  {id:'breathe_master', name:'Breathe Master', desc:'10 breathing exercises', icon:'🧘', check:function(){return D.breatheCount>=10}},
-  {id:'self_aware', name:'Self Aware', desc:'Complete the addiction assessment', icon:'🔍', check:function(){return D.assessmentTaken}},
-  {id:'deep_dive', name:'Deep Dive', desc:'Get your first Arthur reflection', icon:'🌊', check:function(){return D.reflectionCount>=1}},
-  {id:'reflection_pro', name:'Reflection Pro', desc:'5 Arthur reflections', icon:'🎯', check:function(){return D.reflectionCount>=5}},
-  {id:'connected', name:'Connected', desc:'Add an accountability partner', icon:'🤝', check:function(){return D.buddy&&D.buddy.name}},
-  {id:'crisis_ready', name:'Crisis Ready', desc:'View the SOS helplines', icon:'🆘', check:function(){return D.sosUsed}}
+  {id:'first_words', name:'First Words', desc:'Write your first journal entry', icon:'&#x2712;', check:function(){return D.journal.length>=1}},
+  {id:'storyteller', name:'Storyteller', desc:'Write 5 journal entries', icon:'&#x270E;', check:function(){return D.journal.length>=5}},
+  {id:'journal_master', name:'Journal Master', desc:'Write 25 journal entries', icon:'&#x2712;&#x2712;', check:function(){return D.journal.length>=25}},
+  {id:'journal_sage', name:'Journal Sage', desc:'Write 50 journal entries', icon:'&#x2726;', check:function(){return D.journal.length>=50}},
+  {id:'first_feeling', name:'First Feeling', desc:'Log your first mood', icon:'&#x2766;', check:function(){return D.moods.length>=1}},
+  {id:'mood_mirror', name:'Mood Mirror', desc:'Log 10 moods', icon:'&#x2727;', check:function(){return D.moods.length>=10}},
+  {id:'mood_master', name:'Mood Master', desc:'Log 30 moods', icon:'&#x265B;', check:function(){return D.moods.length>=30}},
+  {id:'first_step', name:'First Step', desc:'Complete your first habit', icon:'&#x2618;', check:function(){for(var i=0;i<D.habits.length;i++){if(D.habits[i].logs&&D.habits[i].logs.length)return true}return false}},
+  {id:'week_warrior', name:'Week Warrior', desc:'7-day habit streak', icon:'&#x2694;', check:function(){for(var i=0;i<D.habits.length;i++){if(calcHabitStreak(D.habits[i])>=7)return true}return false}},
+  {id:'habit_hero', name:'Habit Hero', desc:'30-day habit streak', icon:'&#x269C;', check:function(){for(var i=0;i<D.habits.length;i++){if(calcHabitStreak(D.habits[i])>=30)return true}return false}},
+  {id:'sober_1', name:'Day One', desc:'1 day sober', icon:'&#x2618;', check:function(){return soberDays()>=1}},
+  {id:'sober_7', name:'Clean Week', desc:'7 days sober', icon:'&#x2726;', check:function(){return soberDays()>=7}},
+  {id:'sober_30', name:'Freedom Month', desc:'30 days sober', icon:'&#x2727;', check:function(){return soberDays()>=30}},
+  {id:'sober_90', name:'Resilience', desc:'90 days sober', icon:'&#x269C;', check:function(){return soberDays()>=90}},
+  {id:'sober_365', name:'One Year Strong', desc:'365 days sober', icon:'&#x265B;', check:function(){return soberDays()>=365}},
+  {id:'first_check', name:'First Check', desc:'Complete your first daily check-in', icon:'&#x2713;', check:function(){return D.checkins.length>=1}},
+  {id:'week_streak', name:'Week Streak', desc:'7-day check-in streak', icon:'&#x2694;', check:function(){return D.streak>=7}},
+  {id:'month_streak', name:'Month Streak', desc:'30-day check-in streak', icon:'&#x2694;&#x2694;', check:function(){return D.streak>=30}},
+  {id:'first_breathe', name:'First Breath', desc:'Complete a breathing exercise', icon:'&#x2712;', check:function(){return D.breatheCount>=1}},
+  {id:'breathe_master', name:'Breathe Master', desc:'10 breathing exercises', icon:'&#x2726;', check:function(){return D.breatheCount>=10}},
+  {id:'self_aware', name:'Self Aware', desc:'Complete the addiction assessment', icon:'&#x2727;', check:function(){return D.assessmentTaken}},
+  {id:'deep_dive', name:'Deep Dive', desc:'Get your first Arthur reflection', icon:'&#x2766;', check:function(){return D.reflectionCount>=1}},
+  {id:'reflection_pro', name:'Reflection Pro', desc:'5 Arthur reflections', icon:'&#x2767;', check:function(){return D.reflectionCount>=5}},
+  {id:'connected', name:'Connected', desc:'Add an accountability partner', icon:'&#x2618;', check:function(){return D.buddy&&D.buddy.name}},
+  {id:'crisis_ready', name:'Crisis Ready', desc:'View the SOS helplines', icon:'&#x2628;', check:function(){return D.sosUsed}}
 ];
 
 function earnedBadges() { return BADGES.filter(function(b){return b.check()}); }
@@ -7197,7 +7197,7 @@ function homeHTML() {
   h += accPendingHTML();
   h += costSavingsHTML();
 
-  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#127942; '+t('Share My Progress')+'</button></div>';
+  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#x265B; '+t('Share My Progress')+'</button></div>';
 
   // Famous recovery figure (matched to user's addictions)
   var userAddictions = D.targetAddictions || [];
@@ -7205,7 +7205,7 @@ function homeHTML() {
   if (!matchedFigs.length) matchedFigs = FAMOUS_RECOVERY;
   if (matchedFigs.length) {
     var pick = matchedFigs[Math.floor(Math.random() * matchedFigs.length)];
-    h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:20px">&#127942;</span><span style="font-weight:700;font-size:14px">'+t('They Recovered Too')+'</span></div>';
+    h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:20px">&#x265B;</span><span style="font-weight:700;font-size:14px">'+t('They Recovered Too')+'</span></div>';
     h += '<div style="font-weight:600;font-size:15px;margin-bottom:2px">' + pick.name + '</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">'+t('Overcame')+' ' + pick.addiction + '</div>';
     h += '<div style="font-size:13px;line-height:1.5;margin-bottom:6px">' + pick.story + '</div>';
@@ -7525,7 +7525,7 @@ function showBoxingMatch(onDone) {
 
   // Winner!
   timers.push(setTimeout(function(){
-    if (WT) { WT.innerHTML = '&#127942; ARTHUR WINS! &#127942;'; WT.className = 'winner-text show'; }
+    if (WT) { WT.innerHTML = '&#x265B; ARTHUR WINS! &#x265B;'; WT.className = 'winner-text show'; }
     updateProgress(100);
     if (contBtn) contBtn.style.display = 'inline-block';
   }, 14800));
@@ -7652,7 +7652,7 @@ function showTeamBattle(data) {
   timers.push(setTimeout(function(){
     if (status) {
       var winText = win ? '&#127775; "' + win.substring(0,50) + (win.length > 50 ? '...' : '') + '"' : '';
-      status.innerHTML = '&#127942; VICTORY! Darkness defeated. ' + winText;
+      status.innerHTML = '&#x265B; VICTORY! Darkness defeated. ' + winText;
       status.style.opacity = '1';
       status.style.fontSize = '14px';
     }
@@ -7750,7 +7750,7 @@ function showMilestoneParty(days) {
     '<div style="display:flex;flex-direction:column;gap:4px;align-items:center;margin-top:2px">' +
     '<div id="mp-quote" style="font-size:11px;color:rgba(255,255,255,.6);font-style:italic;max-width:360px;line-height:1.4">You are doing something incredibly hard, and you are doing it beautifully.</div>' +
     '<div style="display:flex;gap:6px;margin-top:2px">' +
-    '<button class="btn btn-primary btn-sm" onclick="partyConfetti();this.style.display=\'none\'" style="font-size:11px">&#127881; Confetti</button>' +
+    '<button class="btn btn-primary btn-sm" onclick="partyConfetti();this.style.display=\'none\'" style="font-size:11px">&#x269C; Confetti</button>' +
     '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="font-size:11px;color:#fff;border-color:rgba(255,255,255,.3)">Close</button>' +
     '</div></div></div>';
   document.body.appendChild(overlay);
@@ -8122,13 +8122,13 @@ function saveOswaldStep() {
       '<div id="oswald-glow" style="position:absolute;left:8%;bottom:12px;opacity:0;z-index:4;width:85px;height:115px;margin-left:-5px;margin-bottom:-5px;border-radius:12px"></div>' +
       '<div id="oswald-blast" style="position:absolute;right:12%;bottom:20px;font-size:56px;opacity:0;z-index:4;filter:drop-shadow(0 0 20px #fbbf24)">&#9889;</div>' +
       '<div id="oswald-boom" style="position:absolute;right:8%;bottom:30px;font-size:52px;opacity:0;z-index:5;filter:drop-shadow(0 0 15px #f59e0b)">&#128165;</div>' +
-      '<div id="oswald-trophy" style="position:absolute;left:8%;bottom:20px;font-size:56px;opacity:0;z-index:3;filter:drop-shadow(0 0 10px #fbbf24)">&#127942;</div>' +
+      '<div id="oswald-trophy" style="position:absolute;left:8%;bottom:20px;font-size:56px;opacity:0;z-index:3;filter:drop-shadow(0 0 10px #fbbf24)">&#x265B;</div>' +
       '<div id="oswald-spark1" style="position:absolute;left:3%;top:16%;font-size:11px;opacity:0;z-index:3">&#10024;</div>' +
       '<div id="oswald-spark2" style="position:absolute;left:14%;top:8%;font-size:10px;opacity:0;z-index:3">&#10024;</div>' +
       '<div id="oswald-spark3" style="position:absolute;left:6%;top:50%;font-size:9px;opacity:0;z-index:3">&#10024;</div>' +
       '</div>' +
       '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">' +
-      '<span id="oswald-result" style="font-size:10px;color:var(--muted);opacity:0">&#127942; Oswald wins!</span>' +
+      '<span id="oswald-result" style="font-size:10px;color:var(--muted);opacity:0">&#x265B; Oswald wins!</span>' +
       '</div>' +
       '<div style="height:3px;background:var(--border);border-radius:3px;overflow:hidden;margin:0 8px">' +
       '<div id="oswald-progress" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--danger),var(--primary));border-radius:3px;transition:width .5s linear"></div>' +
