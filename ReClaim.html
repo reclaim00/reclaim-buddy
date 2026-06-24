@@ -17,10 +17,10 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 /* ===== PARCHMENT & INK (light) ===== */
-:root{--bg:#b5dff5;--card:#f2efe8;--primary:#7a1a1a;--primary-dark:#a83030;--primary-light:#f5ece8;--text:#1a1612;--text-light:#5a564c;--muted:#8a867a;--border:#c4c0b4;--radius:16px;--radius-sm:10px;--accent:#2d5a5a;--danger:#b91c1c;--danger-bg:#fce8e8;--purple:#5b21b6;--purple-light:#ede9fe;--blue:#1e3a5f;--blue-light:#dbeafe;--rose:#9f1239;--rose-light:#ffe4e6;--gold:#8a7a6a;--gold-light:#ece6de;--shadow-card:0 1px 3px rgba(26,22,18,.06),0 4px 16px rgba(26,22,18,.04);--shadow-btn:0 2px 8px rgba(26,22,18,.1);--shadow-hover:0 6px 24px rgba(26,22,18,.12);--focus-ring:0 0 0 3px rgba(122,26,26,.15);--grad-primary:linear-gradient(135deg,#7a1a1a,#a83030);--grad-accent:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-buddy:linear-gradient(135deg,#7a1a1a,#a83030);--avatar-gertrude:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-arthur:linear-gradient(135deg,#5b21b6,#7c3aed);--scrollbar-thumb:#c4c0b4;--scrollbar-track:transparent}
+:root{--bg:#b5dff5;--card:#f2efe8;--primary:#7a1a1a;--primary-dark:#a83030;--primary-light:#f5ece8;--text:#1a1612;--text-light:#5a564c;--muted:#8a867a;--border:#c4c0b4;--radius:16px;--radius-sm:10px;--accent:#2d5a5a;--danger:#b91c1c;--danger-bg:#fce8e8;--purple:#5b21b6;--purple-light:#ede9fe;--blue:#1e3a5f;--blue-light:#dbeafe;--rose:#9f1239;--rose-light:#ffe4e6;--gold:#8a7a6a;--gold-light:#ece6de;--shadow-card:0 1px 3px rgba(26,22,18,.06),0 4px 16px rgba(26,22,18,.04);--shadow-btn:0 2px 8px rgba(26,22,18,.1);--shadow-hover:0 6px 24px rgba(26,22,18,.12);--focus-ring:0 0 0 3px rgba(122,26,26,.15);--grad-primary:linear-gradient(135deg,#7a1a1a,#a83030);--grad-accent:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-buddy:linear-gradient(135deg,#7a1a1a,#a83030);--avatar-gertrude:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-arthur:linear-gradient(135deg,#5b21b6,#7c3aed);--avatar-oswald:linear-gradient(135deg,#4338ca,#6366f1);--scrollbar-thumb:#c4c0b4;--scrollbar-track:transparent}
 #landscape-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 #landscape-bg svg{width:100%;height:100%;display:block}
-.day-scene{opacity:.35}
+.day-scene{opacity:.5}
 .night-scene{display:none}
 .app,.top-bar,.tabs{position:relative;z-index:1}
 [theme=blue]{--primary:#1e3a5f;--primary-dark:#2b5a8c;--primary-light:#dbeafe;--grad-primary:linear-gradient(135deg,#1e3a5f,#2b5a8c);--focus-ring:0 0 0 3px rgba(30,58,95,.15)}
@@ -83,9 +83,10 @@ body.dark .logo span{text-shadow:0 1px 6px rgba(138,122,154,.2)}
 .card{position:relative;overflow:hidden;background:var(--card);border-radius:var(--radius);padding:16px;margin:10px 0;box-shadow:var(--shadow-card)}
 .card h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--primary-dark)}
 body.dark .card h3{color:var(--primary-dark)}
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;width:100%}
-.btn-primary{background:var(--grad-primary);color:#fff;box-shadow:var(--shadow-btn);transition:all .2s}
-.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;width:100%;position:relative;letter-spacing:.3px}
+.btn-primary{background:var(--grad-primary);color:#fff;box-shadow:var(--shadow-btn),inset 0 1px 0 rgba(255,255,255,.12);transition:all .2s}
+.btn-primary::before{content:'';position:absolute;top:-1px;left:12px;right:12px;height:2px;background:rgba(255,255,255,.2);border-radius:1px;pointer-events:none}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:var(--shadow-hover),inset 0 1px 0 rgba(255,255,255,.12)}
 .btn-primary:active{transform:translateY(0);filter:brightness(.95)}
 .btn-outline{background:var(--primary-light);color:var(--primary-dark);border:1.5px solid var(--primary);transition:all .2s}
 body.dark .btn-outline{background:rgba(138,122,154,.06);color:var(--primary-dark)}
@@ -209,6 +210,8 @@ body.dark .buddy-card{background:rgba(138,122,154,.04);border-color:rgba(138,122
 .plant-grow .flower-inner{width:10px;height:10px;border-radius:50%;background:var(--primary-dark);position:absolute;top:5px;left:5px}
 .plant-grow .fruit{width:12px;height:15px;border-radius:50%;background:var(--danger);position:absolute}
 .plant-grow .seed{width:14px;height:18px;background:#8B4513;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;margin:0 auto;position:relative;top:0;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+.plant-grow.glow{animation:plantGlow 3s ease-in-out infinite}
+@keyframes plantGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(45,90,90,.3))}50%{filter:drop-shadow(0 0 16px rgba(45,90,90,.6))}}
 .chat-box{background:var(--card);border-radius:var(--radius);padding:12px;height:350px;overflow-y:auto;margin:10px 0;display:flex;flex-direction:column;gap:8px;box-shadow:inset 0 2px 8px rgba(0,0,0,.04)}
 .chat-msg{max-width:80%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.4;animation:fadeIn .2s ease}
 .chat-msg.user{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;align-self:flex-end;border-radius:16px 16px 4px 16px;box-shadow:0 1px 4px rgba(0,0,0,.1)}
@@ -633,6 +636,16 @@ body.dark #tools-badge{background:var(--gold);color:#0f0a1a}
 body.dark .overlay-content{background:#1c1612}
 /* ===== DISABLED STATE ===== */
 button:disabled,.btn:disabled{cursor:not-allowed;opacity:.4;filter:grayscale(.3);pointer-events:none}
+/* ===== TOAST NOTIFICATION ===== */
+#toast-container{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;max-width:360px;width:90%}
+.toast{padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;text-align:center;pointer-events:auto;animation:toastIn .35s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 4px 20px rgba(0,0,0,.15);border:1px solid;position:relative}
+.toast-out{animation:toastOut .25s ease forwards}
+.toast-info{background:var(--card);color:var(--text);border-color:var(--border)}
+.toast-success{background:#065f46;color:#fff;border-color:#059669}
+.toast-warning{background:#78350f;color:#fff;border-color:#d97706}
+.toast-danger{background:#7f1d1d;color:#fff;border-color:#dc2626}
+@keyframes toastIn{0%{opacity:0;transform:translateY(-16px) scale(.95)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastOut{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-12px) scale(.95)}}
 /* ===== LOADING PULSE ===== */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .loading-pulse{animation:pulse 1.5s ease-in-out infinite}
@@ -651,26 +664,33 @@ button:disabled,.btn:disabled{cursor:not-allowed;opacity:.4;filter:grayscale(.3)
   </defs>
   <g class="day-scene">
     <rect width="1440" height="900" fill="url(#skyDay)"/>
-    <circle cx="180" cy="140" r="90" fill="url(#sunGlow)"/>
-    <circle cx="180" cy="140" r="45" fill="#ffe066"/>
-    <circle cx="180" cy="140" r="38" fill="#fff8dc"/>
-    <g opacity=".5">
-      <ellipse cx="500" cy="120" rx="70" ry="20" fill="#fff"/>
-      <ellipse cx="520" cy="110" rx="50" ry="15" fill="#fff"/>
-      <ellipse cx="850" cy="170" rx="80" ry="18" fill="#fff" opacity=".7"/>
-      <ellipse cx="865" cy="158" rx="55" ry="12" fill="#fff" opacity=".8"/>
-      <ellipse cx="1150" cy="130" rx="60" ry="16" fill="#fff" opacity=".6"/>
+    <circle cx="180" cy="140" r="110" fill="url(#sunGlow)"/>
+    <circle cx="180" cy="140" r="48" fill="#ffe066"/>
+    <circle cx="180" cy="140" r="40" fill="#fff8dc"/>
+    <g opacity=".6">
+      <ellipse cx="480" cy="115" rx="80" ry="22" fill="#fff"/>
+      <ellipse cx="500" cy="102" rx="60" ry="16" fill="#fff"/>
+      <ellipse cx="820" cy="165" rx="90" ry="20" fill="#fff" opacity=".8"/>
+      <ellipse cx="840" cy="150" rx="65" ry="14" fill="#fff" opacity=".9"/>
+      <ellipse cx="1130" cy="125" rx="70" ry="18" fill="#fff" opacity=".7"/>
+      <ellipse cx="1350" cy="160" rx="60" ry="14" fill="#fff" opacity=".5"/>
     </g>
-    <g opacity=".15" fill="#fff">
-      <circle cx="200" cy="80" r="1"/><circle cx="350" cy="60" r=".8"/><circle cx="600" cy="90" r="1.2"/><circle cx="750" cy="50" r=".6"/><circle cx="950" cy="100" r="1"/><circle cx="1100" cy="70" r=".7"/><circle cx="1300" cy="85" r=".9"/>
+    <g opacity=".08" fill="#fff">
+      <circle cx="200" cy="80" r="1.5"/><circle cx="350" cy="60" r="1"/><circle cx="600" cy="90" r="1.8"/><circle cx="750" cy="50" r=".8"/><circle cx="950" cy="100" r="1.5"/><circle cx="1100" cy="70" r="1"/><circle cx="1300" cy="85" r="1.3"/>
     </g>
-    <path d="M0 520 Q150 480 280 500 Q400 520 500 490 Q580 470 650 500 Q750 540 900 490 Q1050 460 1200 500 Q1350 530 1440 490 L1440 900 L0 900 Z" fill="#7a9a5a" opacity=".15"/>
-    <path d="M0 550 Q200 520 380 540 Q500 555 620 530 Q750 510 880 540 Q1050 570 1200 530 Q1350 510 1440 550 L1440 900 L0 900 Z" fill="#6a8a4a" opacity=".2"/>
-    <path d="M0 580 Q180 550 340 565 Q500 580 650 560 Q800 540 950 570 Q1150 600 1300 560 Q1400 550 1440 570 L1440 900 L0 900 Z" fill="#5a7a3a" opacity=".25"/>
+    <g opacity=".12" fill="#4a6a3a">
+      <circle cx="140" cy="720" r="2"/><circle cx="280" cy="750" r="1.8"/><circle cx="420" cy="730" r="2.2"/><circle cx="580" cy="760" r="1.5"/><circle cx="720" cy="740" r="2"/><circle cx="860" cy="770" r="1.8"/><circle cx="1020" cy="730" r="2.2"/><circle cx="1160" cy="750" r="1.5"/><circle cx="1300" cy="760" r="2"/><circle cx="1400" cy="740" r="1.8"/><circle cx="180" cy="780" r="1.5"/><circle cx="520" cy="790" r="2"/><circle cx="900" cy="780" r="1.5"/>
+    </g>
+    <g opacity=".12" fill="#c94b4b">
+      <circle cx="160" cy="730" r="1.5"/><circle cx="340" cy="760" r="1.2"/><circle cx="500" cy="740" r="1.8"/><circle cx="660" cy="770" r="1.3"/><circle cx="800" cy="750" r="1.5"/><circle cx="960" cy="780" r="1.2"/><circle cx="1120" cy="740" r="1.8"/><circle cx="1280" cy="770" r="1.3"/><circle cx="1360" cy="750" r="1.5"/>
+    </g>
+    <path d="M0 520 Q150 480 280 500 Q400 520 500 490 Q580 470 650 500 Q750 540 900 490 Q1050 460 1200 500 Q1350 530 1440 490 L1440 900 L0 900 Z" fill="#7a9a5a" opacity=".18"/>
+    <path d="M0 550 Q200 520 380 540 Q500 555 620 530 Q750 510 880 540 Q1050 570 1200 530 Q1350 510 1440 550 L1440 900 L0 900 Z" fill="#6a8a4a" opacity=".25"/>
+    <path d="M0 580 Q180 550 340 565 Q500 580 650 560 Q800 540 950 570 Q1150 600 1300 560 Q1400 550 1440 570 L1440 900 L0 900 Z" fill="#5a7a3a" opacity=".3"/>
     <g class="mountains">
-      <path d="M0 620 L80 420 L160 480 L220 400 L300 460 L360 380 L440 440 L520 520 L400 580 L300 560 L200 590 L100 580 Z" fill="#4a6a3a" opacity=".4"/>
-      <path d="M50 580 L140 380 L220 440 L300 350 L380 420 L440 390 L500 470 L420 540 L300 520 L200 540 Z" fill="#3a5a2a" opacity=".35"/>
-      <path d="M-20 560 L60 340 L140 400 L200 320 L280 380 L340 340 L400 450 L300 500 L200 480 Z" fill="#2a4a1a" opacity=".3"/>
+      <path d="M0 620 L80 420 L160 480 L220 400 L300 460 L360 380 L440 440 L520 520 L400 580 L300 560 L200 590 L100 580 Z" fill="#4a6a3a" opacity=".45"/>
+      <path d="M50 580 L140 380 L220 440 L300 350 L380 420 L440 390 L500 470 L420 540 L300 520 L200 540 Z" fill="#3a5a2a" opacity=".4"/>
+      <path d="M-20 560 L60 340 L140 400 L200 320 L280 380 L340 340 L400 450 L300 500 L200 480 Z" fill="#2a4a1a" opacity=".35"/>
     </g>
     <g class="trees">
       <rect x="620" y="550" width="8" height="30" fill="#4a3520"/><circle cx="624" cy="540" r="18" fill="#3a7a2a"/><circle cx="624" cy="530" r="14" fill="#4a8a3a"/>
@@ -705,8 +725,14 @@ button:disabled,.btn:disabled{cursor:not-allowed;opacity:.4;filter:grayscale(.3)
         <circle cx="1230" cy="510" r="3" fill="#2a1a0a"/><line x1="1230" y1="513" x2="1230" y2="525" stroke="#2a1a0a" stroke-width="1.5"/><line x1="1230" y1="517" x2="1223" y2="523" stroke="#2a1a0a" stroke-width="1"/>
         <circle cx="1210" cy="508" r="2.5" fill="#2a1a0a"/><line x1="1210" y1="511" x2="1210" y2="523" stroke="#2a1a0a" stroke-width="1.5"/>
       </g>
+      <g class="birds-day" opacity=".35" fill="none" stroke="#1a1a0a" stroke-width="1.2">
+        <path d="M330 180 Q336 174 342 180 Q348 174 354 180"/>
+        <path d="M360 160 Q365 155 370 160 Q375 155 380 160"/>
+        <path d="M300 200 Q304 196 308 200 Q312 196 316 200"/>
+        <path d="M390 175 Q393 172 396 175 Q399 172 402 175"/>
+      </g>
     </g>
-    <path d="M1000 540 Q1050 510 1100 530 Q1150 520 1200 530 Q1260 510 1320 530 Q1380 540 1440 520 L1440 900 L1000 900 Z" fill="#7a8a5a" opacity=".3"/>
+    <path d="M1000 540 Q1050 510 1100 530 Q1150 520 1200 530 Q1260 510 1320 530 Q1380 540 1440 520 L1440 900 L1000 900 Z" fill="#7a8a5a" opacity=".35"/>
   </g>
   <g class="night-scene">
     <rect width="1440" height="900" fill="none"/>
@@ -804,6 +830,7 @@ button:disabled,.btn:disabled{cursor:not-allowed;opacity:.4;filter:grayscale(.3)
     <path d="M1000 540 Q1050 510 1100 530 Q1150 520 1200 530 Q1260 510 1320 530 Q1380 540 1440 520 L1440 900 L1000 900 Z" fill="#1a2a1a" opacity=".35"/>
   </g>
 </svg></div>
+<div id="toast-container"></div>
 <div class="top-bar">
   <div class="logo-text">Re.<span style="color:var(--primary)">Claim</span></div>
   <div style="display:flex;gap:8px">
@@ -1825,7 +1852,7 @@ function plantHTML() {
   // Plant stem/seed � only show if active
   if (isActive) {
     var plantH = (stage===0?24:(stage*18+30));
-    h += '<div class="plant-grow" style="width:'+(60*scale)+'px;height:'+(plantH*scale)+'px">';
+    h += '<div class="plant-grow'+(stage>=6?' glow':'')+'" style="width:'+(60*scale)+'px;height:'+(plantH*scale)+'px">';
     h += plantStageHTML(stage, scale);
     h += '</div>';
   } else {
@@ -3179,7 +3206,7 @@ var ROUTINE_POOLS = {
 function artDailyRoutineHTML() {
   var today = new Date().toDateString();
   if (D._artRoutineDate === today && D._artRoutine) return D._artRoutine;
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:16px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="14" height="14" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div><h3 style="margin:0;font-size:15px">Arthur\'s Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
+  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div><h3 style="margin:0;font-size:15px">Arthur\'s Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
   if (!D.journal.length) {
     h += '<div class="empty-state">Write in your journal so Arthur can create a personalized daily routine for you.</div></div>';
     return h;
@@ -3975,7 +4002,7 @@ function reflectHTML() {
   var goal = D.journalWordGoal || 50;
   var jStreak = calcJournalStreak();
   var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Reflect')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid #5b21b6;padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:16px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Arthur is here to help you reflect. Every entry sharpens the map of your recovery.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Arthur is here to help you reflect. Every entry sharpens the map of your recovery.</div></div></div>';
   if (jStreak > 0) {
     h += '<div style="text-align:center;padding:8px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px">';
     h += '<span style="font-size:28px">&#128293;</span><div><div style="font-weight:700;font-size:18px">' + jStreak + ' '+t('Day Journal Streak')+'</div><div style="font-size:11px;opacity:.9">'+t('Keep it going! Write today to maintain your streak.')+'</div></div></div>';
@@ -4319,7 +4346,7 @@ var DEFAULT_COPING = [
 
 function copingHTML() {
   var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Coping Cards</h2>';
-  h += '<div class="card" style="border-left:3px solid #2d5a5a;padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:16px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">Gertrude has your back. These cards are tools for your kit — use them when the battle is hard.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">Gertrude has your back. These cards are tools for your kit — use them when the battle is hard.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Tap a card to expand. Use these when you need support.</p>';
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="margin-bottom:8px">Breathing Exercise</button>';
   var cards = DEFAULT_COPING.concat(D.customCopingCards || []);
@@ -5136,6 +5163,7 @@ function runClimbPhase(overlay) {
     '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#9968; Streak Mountain</div>' +
     '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:8px">'+(atop?'&#x265B; Summit celebration!':'The climb continues...')+'</div>' +
     '<div style="position:relative;height:280px;border-radius:16px;overflow:hidden;margin-bottom:6px;border:1px solid var(--border);box-shadow:inset 0 0 40px rgba(0,0,0,.5)">' +
+    '<div style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(0deg,rgba(255,180,50,.08),transparent);z-index:1"></div>' +
     '<div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(180deg,rgba(74,144,196,.4),transparent);z-index:1"></div>' +
     '<div class="mtn-scroll-bg" style="position:absolute;inset:-40px 0;background:linear-gradient(180deg,#3d2b1f,#2a1f15,#3d2b1f,#2a1f15);background-size:100% 80px"></div>' +
     '<div class="mtn-scroll-bg2" style="position:absolute;inset:-40px 0;background:repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(0,0,0,.06) 16px,rgba(0,0,0,.06) 17px),repeating-linear-gradient(90deg,transparent,transparent 35px,rgba(255,255,255,.015) 35px,rgba(255,255,255,.015) 36px)"></div>' +
@@ -7238,7 +7266,7 @@ function characterGreetingHTML() {
        "Another day, another victory. You don't need to win every fight — just this one.",
        "I've seen your strength. You are more resilient than whatever faces you today."
      ]},
-    {name:'Oswald',color:'linear-gradient(135deg,#4338ca,#6366f1)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><circle cx="8" cy="8" r="2" fill="rgba(255,255,255,.6)"/></svg>',
+     {name:'Oswald',color:'var(--avatar-oswald)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><circle cx="8" cy="8" r="2" fill="rgba(255,255,255,.6)"/></svg>',
      msgs:[
        "The path ahead may twist, but you've already walked through shadow and emerged. Trust your steps.",
        "Every day of recovery adds to your power. You're weaving strength stronger than any darkness.",
@@ -7342,6 +7370,19 @@ function pushToggleRowHTML() {
       if (perm === "granted") subscribePush();
     });
   }
+}
+function showToast(text, type) {
+  type = type || 'info';
+  var c = document.getElementById('toast-container');
+  if (!c) return;
+  var t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.textContent = text;
+  c.appendChild(t);
+  setTimeout(function() {
+    t.className += ' toast-out';
+    setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 260);
+  }, 3200);
 }
 function swNotify(title, body, icon, tag) {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
@@ -8044,7 +8085,7 @@ function relapsePlanHTML() {
   var h = '';
   var rp = D.relapsePlan;
   h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Relapse Plan</h2>';
-  h += '<div class="card" style="border-left:3px solid #4338ca;padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:16px;background:linear-gradient(135deg,#4338ca,#6366f1);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><circle cx="8" cy="8" r="2" fill="rgba(255,255,255,.6)"/></svg></div><div style="font-size:12px;color:var(--muted)">Oswald is with you. This plan is your staff and your compass — forged through preparation, ready when called upon.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-oswald);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><circle cx="8" cy="8" r="2" fill="rgba(255,255,255,.6)"/></svg></div><div style="font-size:12px;color:var(--muted)">Oswald is with you. This plan is your staff and your compass — forged through preparation, ready when called upon.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Guided by Oswald � your relapse prevention coach.</p>';
   if (rp && rp.triggers && rp.triggers.length) {
     h += '<div class="card" style="border-left:3px solid var(--accent)">';
