@@ -12,7 +12,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="icon-180.png">
 <link rel="apple-touch-startup-image" href="icon-512.png">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cinzel+Decorative:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=MedievalSharp&display=swap" rel="stylesheet">
 <title>Re.Claim</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -24,9 +24,7 @@
 [theme=rose]{--primary:#b83280;--primary-dark:#702459;--primary-light:#fed7e2;--grad-primary:linear-gradient(135deg,#b83280,#702459);--focus-ring:0 0 0 3px rgba(184,50,128,.15)}
 [theme=teal]{--primary:#2c7a7b;--primary-dark:#234e52;--primary-light:#b2f5ea;--grad-primary:linear-gradient(135deg,#2c7a7b,#234e52);--focus-ring:0 0 0 3px rgba(44,122,123,.15)}
 /* ===== DARK FANTASY THEME ===== */
-body{font-family:'Cinzel',serif;background:var(--bg);color:var(--text);min-height:100vh;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232d6a4f' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");transition:background .35s ease,color .35s ease;line-height:1.65;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility}
-body.dark .app{text-shadow:0 1px 2px rgba(0,0,0,.15)}
-h1,h2,h3,h4,h5,h6,.logo,.logo-text,.section-title,.si-title{font-family:'Cinzel Decorative',serif;font-weight:700;letter-spacing:.5px}
+body{font-family:'Cinzel',serif;background:var(--bg);color:var(--text);min-height:100vh;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%232d6a4f' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");transition:background .35s ease,color .35s ease}
 body.dark{--bg:#0b0814;--card:#14101e;--text:#e4dccd;--text-light:#a89bb8;--muted:#7a6d8c;--border:#2d223a;--primary:#34d399;--primary-dark:#6ee7b7;--primary-light:#0f1a14;--danger-bg:#2a0a0a;--grad-primary:linear-gradient(135deg,#34d399,#059669);--grad-accent:#34d399;--gold:#d4a84b;--gold-light:#1a140a;--shadow-card:0 1px 3px rgba(0,0,0,.25),0 4px 16px rgba(0,0,0,.35);--shadow-btn:0 2px 8px rgba(0,0,0,.35);--shadow-hover:0 6px 24px rgba(0,0,0,.45);--focus-ring:0 0 0 3px rgba(52,211,153,.2);--scrollbar-thumb:#2d223a;--scrollbar-track:transparent}
 body.dark{background-image:url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2334d399' fill-opacity='0.02'%3E%3Ccircle cx='20' cy='20' r='1.2'/%3E%3Ccircle cx='60' cy='10' r='0.8'/%3E%3Ccircle cx='100' cy='30' r='1'/%3E%3Ccircle cx='140' cy='15' r='0.6'/%3E%3Ccircle cx='40' cy='50' r='0.7'/%3E%3Ccircle cx='80' cy='70' r='1.2'/%3E%3Ccircle cx='120' cy='55' r='0.9'/%3E%3Ccircle cx='30' cy='90' r='1.1'/%3E%3Ccircle cx='70' cy='100' r='0.6'/%3E%3Ccircle cx='110' cy='90' r='1'/%3E%3Ccircle cx='45' cy='130' r='0.8'/%3E%3Ccircle cx='85' cy='145' r='1.1'/%3E%3Ccircle cx='130' cy='120' r='0.7'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
 /* ===== SCROLLBAR ===== */
@@ -73,11 +71,11 @@ body.dark .logo span{text-shadow:0 1px 6px rgba(52,211,153,.2)}
 .card{position:relative;overflow:hidden;background:var(--card);border-radius:var(--radius);padding:16px;margin:10px 0;box-shadow:var(--shadow-card)}
 .card h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--primary-dark)}
 body.dark .card h3{color:var(--primary-dark)}
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;width:100%;letter-spacing:.5px}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;width:100%}
 .btn-primary{background:var(--grad-primary);color:#fff;box-shadow:var(--shadow-btn);transition:all .2s}
 .btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:var(--shadow-hover)}
 .btn-primary:active{transform:translateY(0);filter:brightness(.95)}
-.btn-outline{background:var(--primary-light);color:var(--primary-dark);border:1.5px solid var(--primary);transition:all .2s;letter-spacing:.5px}
+.btn-outline{background:var(--primary-light);color:var(--primary-dark);border:1.5px solid var(--primary);transition:all .2s}
 body.dark .btn-outline{background:rgba(52,211,153,.06);color:var(--primary-dark)}
 .btn-outline:hover{background:var(--grad-primary);color:#fff;transform:translateY(-1px);box-shadow:var(--shadow-btn)}
 body.dark .btn-outline:hover{background:var(--grad-primary);color:#fff}
@@ -91,7 +89,7 @@ body.dark .tabs{box-shadow:0 -4px 24px rgba(0,0,0,.4)}
 .tab.active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:24px;height:3px;background:var(--grad-primary);border-radius:2px;opacity:.8}
 .tab svg{width:22px;height:22px;transition:transform .2s}
 .tab:hover svg{transform:translateY(-1px)}
-input,textarea,select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--card);color:var(--text);margin:6px 0;outline:none;box-shadow:inset 0 1.5px 4px rgba(0,0,0,.04);transition:border-color .2s,box-shadow .2s;letter-spacing:.3px}
+input,textarea,select{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--card);color:var(--text);margin:6px 0;outline:none;box-shadow:inset 0 1.5px 4px rgba(0,0,0,.04);transition:border-color .2s,box-shadow .2s}
 input:focus,textarea:focus{border-color:var(--primary);box-shadow:var(--focus-ring),inset 0 1.5px 4px rgba(0,0,0,.04)}
 input::placeholder,textarea::placeholder{color:var(--muted);opacity:.7}
 textarea{resize:vertical;min-height:80px}
