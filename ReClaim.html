@@ -1288,8 +1288,7 @@ function showLockScreen() {
   app.innerHTML =
     '<div class="si-bg">' +
     '<div class="si-card">' +
-    '<img src="Re.Claim Logo take 2.png" alt="Re.Claim" style="width:160px;max-width:70%;height:auto;margin:0 auto 16px;display:block">' +
-    '<div class="si-sub">'+t('Enter your passcode to unlock')+'</div>' +
+    '<div class="si-sub" style="margin-top:8px">'+t('Enter your passcode to unlock')+'</div>' +
     '<input class="si-input" type="password" id="lock-pin-input" placeholder="'+t('Enter passcode')+'" inputmode="numeric" maxlength="6" style="text-align:center;font-size:24px;letter-spacing:8px;font-weight:700" onkeydown="if(event.key===\'Enter\')unlockApp()">' +
     '<button class="si-btn" onclick="unlockApp()">'+t('Unlock')+'</button>' +
     '<div id="lock-error" style="font-size:12px;color:var(--danger);margin-top:4px"></div>' +
@@ -1558,7 +1557,6 @@ function showSignIn() {
   app.innerHTML =
     '<div class="si-bg">' +
     '<div class="si-card">' +
-    '<img src="Re.Claim Logo take 2.png" alt="Re.Claim" style="width:180px;max-width:80%;height:auto;margin:0 auto 12px;display:block">' +
     '<div class="si-title" style="display:none">Re.<span>Claim</span></div>' +
     '<div class="si-sub">'+t('Your recovery &amp; wellness journey starts here.')+'<br>'+t('Track moods, journal, build habits, and grow.')+'</div>' +
     '<div class="si-toggle" style="display:flex;gap:0;margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)">' +
