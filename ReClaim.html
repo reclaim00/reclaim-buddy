@@ -45,18 +45,21 @@ body.dark select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://w
 body:not(.dark) select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239c9284' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")}
 body.dark .card,body.dark .overlay-content,body.dark .sub-item,body.dark .entry-item,body.dark .habit-item,body.dark .report-section,body.dark .chat-msg.art{color:var(--text)}
 /* ===== DECORATIVE DIVIDER ===== */
-.deco-divider{text-align:center;margin:16px 0;font-size:14px;color:var(--primary);opacity:.35;letter-spacing:6px;user-select:none}
-body:not(.dark) .deco-divider::before{content:'\2618'}  /* ? */
-body.dark .deco-divider::before{content:'\2726'}         /* ? */
+.deco-divider{text-align:center;margin:16px 0;font-size:14px;color:var(--primary);opacity:.4;letter-spacing:8px;user-select:none}
+body:not(.dark) .deco-divider::before{content:'\269C \00A0 \2618 \00A0 \269C'}  /* ? ? ? */
+body.dark .deco-divider::before{content:'\2726 \00A0 \269C \00A0 \2726'}         /* ? ? ? */
 /* ===== BORDER ACCENTS ===== */
 .card,.overlay-content,.si-card,.coping-card,.buddy-card,.milestone,.music-item,.chat-box,.sub-item{border:1px solid var(--border)}
-/* ===== SUBTLE TOP ACCENT ===== */
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-primary);opacity:.3;pointer-events:none}
-body.dark .card::before{opacity:.5}
+/* ===== ORNATE CARD TOP ACCENT ===== */
+.card::before{content:'';position:absolute;top:0;left:8px;right:8px;height:3px;background:var(--grad-primary);opacity:.35;border-radius:0 0 2px 2px;pointer-events:none}
+body.dark .card::before{opacity:.55}
+/* ===== ORNATE CARD CORNER DECORATION ===== */
+.card::after{content:'\269C';position:absolute;bottom:6px;right:8px;font-size:11px;color:var(--primary);opacity:.12;pointer-events:none;line-height:1}
+body.dark .card::after{color:var(--gold);opacity:.15}
 /* ===== SERIF ACCENT HEADINGS ===== */
 .section-title{font-size:17px;font-weight:700;color:var(--primary-dark);text-align:center;position:relative;padding:10px 0 12px;letter-spacing:.5px}
 body.dark .section-title{color:var(--gold)}
-.section-title::before,.section-title::after{content:'';position:absolute;top:50%;width:28%;height:1px;background:linear-gradient(to right,transparent,var(--primary))}
+.section-title::before,.section-title::after{content:'';position:absolute;top:50%;width:26%;height:1px;background:linear-gradient(to right,transparent,var(--primary))}
 .section-title::before{left:0}
 .section-title::after{right:0;background:linear-gradient(to left,transparent,var(--primary))}
 body.dark .section-title::before{background:linear-gradient(to right,transparent,var(--gold))}
@@ -70,8 +73,10 @@ body.dark .badge-gold{background:rgba(122,106,90,.15);color:var(--gold);border:1
 .app{max-width:480px;margin:0 auto;padding:16px 16px 90px;min-height:100vh;background:rgba(242,239,232,.3)}
 body.dark .app{background:rgba(21,18,24,.15)}
 body.logged-in .app{padding-top:0}
-.header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 16px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 16px;border-bottom:1px solid var(--border);margin-bottom:8px;position:relative}
 body.dark .header{border-bottom-color:#3a2a4a}
+.header-deco{text-align:center;font-size:9px;color:var(--primary);opacity:.15;letter-spacing:12px;margin-bottom:4px;pointer-events:none;user-select:none}
+body.dark .header-deco{color:var(--gold);opacity:.2}
 .logo{font-size:24px;font-weight:800;letter-spacing:-1px}
 .logo span{color:var(--primary);text-shadow:0 1px 3px rgba(45,106,79,.15)}
 body.dark .logo span{text-shadow:0 1px 6px rgba(138,122,154,.2)}
@@ -89,6 +94,8 @@ body.dark .btn-outline:hover{background:var(--grad-primary);color:#fff}
 .btn-danger{background:var(--danger-bg);color:var(--danger)}
 .btn-sm{padding:8px 16px;font-size:12px;width:auto;border-radius:8px}
 .tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;background:var(--card);display:flex;border-top:1.5px solid var(--border);padding:4px 0;padding-bottom:20px;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,.06);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.tabs::before{content:'\269C \00A0 \269C \00A0 \269C';position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--primary);opacity:.12;letter-spacing:8px;pointer-events:none;white-space:nowrap}
+body.dark .tabs::before{color:var(--gold);opacity:.18}
 body.dark .tabs{box-shadow:0 -4px 24px rgba(0,0,0,.4)}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border:none;background:none;font-size:10px;color:var(--muted);cursor:pointer;font-weight:500;position:relative;transition:color .2s}
 .tab:hover{color:var(--text)}
@@ -148,8 +155,8 @@ body.dark .buddy-card{background:rgba(138,122,154,.04);border-color:rgba(138,122
 .goal-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px}
 .goal-item.done{text-decoration:line-through;color:var(--muted)}
 .sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
-.sub-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 12px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-card);cursor:pointer;border:1.5px solid var(--border);font-size:13px;font-weight:600;color:var(--text);text-align:center;transition:all .25s}
-.sub-item:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+.sub-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 12px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow-card);cursor:pointer;border:1.5px solid var(--border);font-size:13px;font-weight:600;color:var(--text);text-align:center;position:relative;transition:all .25s}
+.sub-item:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:var(--shadow-hover),inset 0 0 0 1px var(--card)}
 @keyframes oswaldBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes oswaldShield{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
 @keyframes oswaldFadeUp{0%{transform:translateY(12px);opacity:0}100%{transform:translateY(0);opacity:1}}
@@ -595,12 +602,16 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 /* ===== NATURE THEME FLOATING LEAVES (light) ===== */
 body:not(.dark) .leaf-accent{position:fixed;width:24px;height:24px;pointer-events:none;z-index:0;opacity:.06;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232d6a4f'%3E%3Cpath d='M12 2C8 6 4 10 2 14c2 2 5 3 8 3 3 0 6-1 8-3-2-4-4-8-6-12z'/%3E%3C/svg%3E") no-repeat center;background-size:contain}
 /* ===== DARK FANTASY ORNATE BORDERS ===== */
-body.dark .ornate-border{position:relative}
-body.dark .ornate-border::after{content:'\2726';position:absolute;top:-8px;right:-8px;font-size:10px;color:var(--gold);opacity:.4}
+.ornate-border{position:relative}
+.ornate-border::after{content:'\269C';position:absolute;top:-8px;right:-8px;font-size:10px;color:var(--primary);opacity:.25}
+body.dark .ornate-border::after{color:var(--gold);opacity:.4}
+/* ===== ORNATE CARD DOUBLE BORDER ===== */
+.card{box-shadow:var(--shadow-card),0 0 0 1px var(--border),inset 0 0 0 1px var(--card)}
+body.dark .card{box-shadow:var(--shadow-card),0 0 0 1px #2a2630,inset 0 0 0 1px #1a1824}
 /* ===== QUILL/DECORATIVE SEPARATOR ===== */
-.deco-sep{text-align:center;margin:16px 0;font-size:14px;color:var(--muted);letter-spacing:6px;user-select:none}
-body:not(.dark) .deco-sep::before{content:'\273E \273E \273E'}
-body.dark .deco-sep::before{content:'\2726 \2726 \2726';color:var(--gold)}
+.deco-sep{text-align:center;margin:16px 0;font-size:14px;color:var(--muted);letter-spacing:8px;user-select:none}
+body:not(.dark) .deco-sep::before{content:'\2618 \269C \2618'}
+body.dark .deco-sep::before{content:'\2726 \269C \2726';color:var(--gold)}
 /* ===== GOLDEN DARK FANTASY ACCENTS ===== */
 body.dark .gold-text{color:var(--gold)}
 body.dark .glow-gold{box-shadow:0 0 16px rgba(138,122,154,.15)}
