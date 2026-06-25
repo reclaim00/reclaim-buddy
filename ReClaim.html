@@ -8458,7 +8458,7 @@ function pardonGrant(btn) {
   h += '<rect x="100" y="176" width="80" height="8" rx="2" fill="#2a1f15" stroke="#6a5a3a" stroke-width=".5"/>';
 
   // Arthur seated - scaled down standing figure positioned on throne
-  h += '<g id="pardon-arthur" transform="translate(140,148) scale(1.8) translate(-15,-26)" style="animation:pardonArthurIn .8s ease .3s both">';
+  h += '<g transform="translate(140,148) scale(1.8) translate(-15,-26)"><g id="pardon-arthur" style="animation:pardonArthurIn .8s ease .3s both">';
   // Body (robe)
   h += '<path d="M10.5 12 Q9 20 8 28 L8 38 Q8 40 9 41 L9 42 L21 42 L21 41 Q22 40 22 38 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9"/>';
   // Belt
@@ -8503,7 +8503,7 @@ function pardonGrant(btn) {
   h += '</g>';
   // Right arm (resting on armrest)
   h += '<path d="M15 17 L19 20 L22 22" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round" fill="none"/>';
-  h += '</g>';
+  h += '</g></g>';
 
   // ---- Phase 2: Floating scroll that Arthur hands over ----
   h += '<g id="pardon-floating-scroll" style="transform-origin:140px 120px;opacity:0">';
@@ -8541,21 +8541,25 @@ function pardonGrant(btn) {
 
   // Phase 1: Throne already animating via CSS
 
-  // Phase 2: After writing stops, glow the scroll on lap (2800ms)
+  // Phase 2: Writing stops, arm extends forward with scroll (3000ms)
   timers.push(setTimeout(function(){
     var lapScroll = document.querySelector('#pardon-lap-scroll');
-    if (lapScroll) { lapScroll.style.transition = 'opacity .4s'; lapScroll.style.opacity = '0'; }
+    if (lapScroll) { lapScroll.style.transition = 'opacity .3s'; lapScroll.style.opacity = '0'; }
     var writeArm = document.getElementById('pardon-write-arm');
-    if (writeArm) { writeArm.style.animation = 'none'; writeArm.style.transition = 'transform .6s cubic-bezier(.34,1.2,.64,1)'; }
-  }, 2800));
-
-  // Phase 3: Hand extends forward (3200ms)
-  timers.push(setTimeout(function(){
-    var writeArm = document.getElementById('pardon-write-arm');
-    if (writeArm) { writeArm.style.transform = 'rotate(-40deg) translateX(20px)'; }
+    if (writeArm) {
+      writeArm.style.animation = 'none';
+      writeArm.style.transition = 'transform .7s cubic-bezier(.34,1.2,.64,1)';
+      void writeArm.offsetHeight;
+      writeArm.style.transform = 'rotate(-40deg) translateX(20px)';
+    }
     var floatingScroll = document.getElementById('pardon-floating-scroll');
-    if (floatingScroll) { floatingScroll.style.opacity = '1'; floatingScroll.style.transition = 'opacity .5s, transform .8s cubic-bezier(.34,1.2,.64,1)'; floatingScroll.style.transform = 'translateY(-8px)'; }
-  }, 3200));
+    if (floatingScroll) {
+      floatingScroll.style.opacity = '1';
+      floatingScroll.style.transition = 'opacity .5s, transform .9s cubic-bezier(.34,1.2,.64,1)';
+      void floatingScroll.offsetHeight;
+      floatingScroll.style.transform = 'translateY(-8px)';
+    }
+  }, 3000));
 
   // Phase 4: Scroll glows + text appears (4000ms)
   timers.push(setTimeout(function(){
