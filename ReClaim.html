@@ -1706,16 +1706,16 @@ function plantStageInfo() {
 
 // ====== SOBER LEVEL-UP ======
 var SOBER_LEVELS = [
-  {level:1, minDays:0, title:'Seed', icon:'??', desc:'Your journey has begun'},
-  {level:2, minDays:3, title:'Sprout', icon:'??', desc:'New growth is appearing'},
-  {level:3, minDays:7, title:'Seedling', icon:'??', desc:'Roots are getting stronger'},
-  {level:4, minDays:14, title:'Growing', icon:'??', desc:'You are blooming'},
-  {level:5, minDays:30, title:'Young Tree', icon:'??', desc:'Building resilience'},
-  {level:6, minDays:90, title:'Strong Tree', icon:'??', desc:'Deep roots, steady growth'},
-  {level:7, minDays:180, title:'Guardian', icon:'???', desc:'Protecting your recovery'},
-  {level:8, minDays:365, title:'Sage', icon:'??', desc:'A year of wisdom'},
-  {level:9, minDays:730, title:'Legend', icon:'??', desc:'Two years  incredible'},
-  {level:10, minDays:1825, title:'Immortal', icon:'??', desc:'Five years  you are unbreakable'}
+  {level:1, minDays:0, title:'Seed', icon:'🌱', desc:'Your journey has begun'},
+  {level:2, minDays:3, title:'Sprout', icon:'🌿', desc:'New growth is appearing'},
+  {level:3, minDays:7, title:'Seedling', icon:'🌱', desc:'Roots are getting stronger'},
+  {level:4, minDays:14, title:'Growing', icon:'🌻', desc:'You are blooming'},
+  {level:5, minDays:30, title:'Young Tree', icon:'🌳', desc:'Building resilience'},
+  {level:6, minDays:90, title:'Strong Tree', icon:'🌲', desc:'Deep roots, steady growth'},
+  {level:7, minDays:180, title:'Guardian', icon:'🛡️', desc:'Protecting your recovery'},
+  {level:8, minDays:365, title:'Sage', icon:'🧠', desc:'A year of wisdom'},
+  {level:9, minDays:730, title:'Legend', icon:'🌟', desc:'Two years — incredible'},
+  {level:10, minDays:1825, title:'Immortal', icon:'👑', desc:'Five years — you are unbreakable'}
 ];
 
 function soberLevel() {
@@ -2744,11 +2744,11 @@ function deleteHabit(idx) {
 
 // ====== MOOD ======
 var MOODS = [
-  {val:1, emoji:'??', label:'Terrible'},
-  {val:2, emoji:'??', label:'Bad'},
-  {val:3, emoji:'??', label:'Okay'},
-  {val:4, emoji:'??', label:'Good'},
-  {val:5, emoji:'??', label:'Great'}
+  {val:1, emoji:'😞', label:'Terrible'},
+  {val:2, emoji:'😕', label:'Bad'},
+  {val:3, emoji:'😐', label:'Okay'},
+  {val:4, emoji:'🙂', label:'Good'},
+  {val:5, emoji:'😄', label:'Great'}
 ];
 
 // ====== RECOVERY TIMELINE ======
@@ -5499,7 +5499,7 @@ function reportsHTML() {
   var breatheCount = D.breatheCount || 0;
   var moodChart = '';
   if (periodMoods.length) {
-    var moodEmojis = ['??','??','??','??','??'];
+    var moodEmojis = ['😞','😕','😐','🙂','😄'];
     moodChart = '<div style="display:flex;align-items:flex-end;gap:4px;height:60px;margin:8px 0">';
     var maxVal = 5;
     for (var mi=0;mi<periodMoods.length;mi++) {
@@ -6548,186 +6548,186 @@ function cravingCardHTML() {
 // ====== MONTHLY CHALLENGE ======
 var ADDICTION_CHALLENGES = {
   'Alcohol': [
-    {month:0, title:'Log 15 sober days', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal every craving', icon:'??', target:'journal', count:20},
-    {month:2, title:'Replace drinking  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal your triggers', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days alcohol-free', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days this month', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 coping habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End sober  20 sober days', icon:'??', target:'sober', count:20}
+    {month:0, title:'Log 15 sober days', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal every craving', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Replace drinking  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal your triggers', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days alcohol-free', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days this month', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 coping habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End sober  20 sober days', icon:'🎯', target:'sober', count:20}
   ],
   'Drugs (prescription/illicit)': [
-    {month:0, title:'15 clean days', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal when urges hit', icon:'??', target:'journal', count:20},
-    {month:2, title:'Build routine  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal your progress', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days substance-free', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 healthy habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End clean  20 clean days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 clean days', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal when urges hit', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Build routine  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal your progress', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days substance-free', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 healthy habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End clean  20 clean days', icon:'🎯', target:'sober', count:20}
   ],
   'Pornography': [
-    {month:0, title:'15 days clean', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal when triggered', icon:'??', target:'journal', count:20},
-    {month:2, title:'Replace urge  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Reflect on triggers', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days porn-free', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Build 25 healthy habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End clean  20 clean days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 days clean', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal when triggered', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Replace urge  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Reflect on triggers', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days porn-free', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Build 25 healthy habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End clean  20 clean days', icon:'🎯', target:'sober', count:20}
   ],
   'Gambling': [
-    {month:0, title:'15 days gamble-free', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal every urge', icon:'??', target:'journal', count:20},
-    {month:2, title:'Replace gambling  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal money saved', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days gamble-free', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End gamble-free  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 days gamble-free', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal every urge', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Replace gambling  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal money saved', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days gamble-free', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End gamble-free  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Smoking/Nicotine': [
-    {month:0, title:'15 days smoke-free', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal each craving', icon:'??', target:'journal', count:20},
-    {month:2, title:'Replace smoking  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal your triggers', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days nicotine-free', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End smoke-free  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 days smoke-free', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal each craving', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Replace smoking  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal your triggers', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days nicotine-free', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End smoke-free  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Caffeine': [
-    {month:0, title:'Cut caffeine  15 days', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal energy levels', icon:'??', target:'journal', count:20},
-    {month:2, title:'Replace coffee  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Track sleep quality', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days caffeine-free', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End caffeine-free  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'Cut caffeine  15 days', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal energy levels', icon:'📝', target:'journal', count:20},
+    {month:2, title:'Replace coffee  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Track sleep quality', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days caffeine-free', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End caffeine-free  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Sex/Love': [
-    {month:0, title:'15 days of boundaries', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal when triggered', icon:'??', target:'journal', count:20},
-    {month:2, title:'Build 20 healthy habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Reflect on patterns', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days of recovery', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End strong  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 days of boundaries', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal when triggered', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Build 20 healthy habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Reflect on patterns', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days of recovery', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End strong  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Shopping': [
-    {month:0, title:'15 no-spend days', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal every urge', icon:'??', target:'journal', count:20},
-    {month:2, title:'Replace shopping  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal money saved', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 no-spend days', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End no-spend  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 no-spend days', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal every urge', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Replace shopping  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal money saved', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 no-spend days', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End no-spend  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Social Media': [
-    {month:0, title:'15 days of limits', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal screen time', icon:'??', target:'journal', count:20},
-    {month:2, title:'Replace scrolling  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal offline activities', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days of limits', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End with limits  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 days of limits', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal screen time', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Replace scrolling  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal offline activities', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days of limits', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End with limits  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Gaming': [
-    {month:0, title:'15 days of limits', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal gaming urges', icon:'??', target:'journal', count:20},
-    {month:2, title:'Replace gaming  20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal offline hobbies', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days of limits', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End with limits  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 days of limits', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal gaming urges', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Replace gaming  20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal offline hobbies', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days of limits', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End with limits  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Eating/Food': [
-    {month:0, title:'15 days of balance', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal food feelings', icon:'??', target:'journal', count:20},
-    {month:2, title:'Build 20 healthy habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal your wins', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days of balance', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End balanced  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 days of balance', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal food feelings', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Build 20 healthy habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal your wins', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days of balance', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End balanced  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Self-Harm': [
-    {month:0, title:'15 days of safety', icon:'??', target:'sober', count:15},
-    {month:1, title:'Journal every feeling', icon:'??', target:'journal', count:20},
-    {month:2, title:'Build 20 coping habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Reflect on growth', icon:'??', target:'journal', count:18},
-    {month:5, title:'30 days of safety', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End safe  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'15 days of safety', icon:'📝', target:'sober', count:15},
+    {month:1, title:'Journal every feeling', icon:'💭', target:'journal', count:20},
+    {month:2, title:'Build 20 coping habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Reflect on growth', icon:'✨', target:'journal', count:18},
+    {month:5, title:'30 days of safety', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End safe  20 days', icon:'🎯', target:'sober', count:20}
   ],
   'Other': [
-    {month:0, title:'Journal 15 days', icon:'??', target:'journal', count:15},
-    {month:1, title:'Log mood every day', icon:'??', target:'mood', count:28},
-    {month:2, title:'Complete 20 habits', icon:'?', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'??', target:'checkin', count:20},
-    {month:4, title:'Journal 15 days', icon:'??', target:'journal', count:15},
-    {month:5, title:'Stay sober all month', icon:'??', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'??', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'?', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'??', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'??', target:'journal', count:20},
-    {month:11, title:'End strong  20 days', icon:'??', target:'sober', count:20}
+    {month:0, title:'Journal 15 days', icon:'📝', target:'journal', count:15},
+    {month:1, title:'Log mood every day', icon:'💭', target:'mood', count:28},
+    {month:2, title:'Complete 20 habits', icon:'✅', target:'habit', count:20},
+    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
+    {month:4, title:'Journal 15 days', icon:'✨', target:'journal', count:15},
+    {month:5, title:'Stay sober all month', icon:'🌿', target:'sober', count:30},
+    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
+    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
+    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
+    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
+    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
+    {month:11, title:'End strong  20 days', icon:'🎯', target:'sober', count:20}
   ]
 };
 var DEFAULT_CHALLENGES = ADDICTION_CHALLENGES['Other'];
@@ -7855,7 +7855,7 @@ function showMilestoneParty(days) {
   ];
   var label = days + ' Day' + (days !== 1 ? 's' : '') + ' Sober';
   var subtitle = days >= 365 ? 'ONE YEAR! Incredible!' : days >= 90 ? 'Quarter of a year - massive!' : days >= 30 ? 'One month strong!' : days >= 7 ? 'One week down!' : 'Amazing start!';
-  var emojis = ['??','??','??','?','??','??','??','??','??','??'];
+  var emojis = ['⭐','✨','🎉','🎊','🌟','🌈','🎈','✨','⭐','🎊'];
   overlay.innerHTML =
     '<div class="overlay-content" style="background:linear-gradient(135deg,#0f0f1a 0%,#1a0a2e 100%);border:2px solid rgba(255,215,0,.3);padding:14px;overflow:hidden;text-align:center;max-width:460px">' +
     '<div style="font-size:13px;font-weight:700;color:#ffd700;margin-bottom:2px;text-shadow:0 0 20px rgba(255,215,0,.4)">?? ' + label + '! ??</div>' +
