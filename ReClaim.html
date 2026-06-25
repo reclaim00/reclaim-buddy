@@ -653,12 +653,17 @@ button:disabled,.btn:disabled{cursor:not-allowed;opacity:.4;filter:grayscale(.3)
 .card,.buddy-card,.milestone,.coping-card,.music-item{animation:cardIn .35s ease both}
 @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 /* ===== ROYAL PARDON CEREMONY ===== */
-@keyframes pardonFlash{0%{opacity:0}8%{opacity:.6;background:rgba(255,215,0,.5)}20%{opacity:0}35%{opacity:.4;background:rgba(255,215,0,.3)}48%{opacity:0}100%{opacity:0}}
-@keyframes pardonCrownDrop{0%{transform:translateY(-80px) scale(0.5);opacity:0}50%{transform:translateY(8px) scale(1.15);opacity:1}75%{transform:translateY(-4px) scale(0.95);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
-@keyframes pardonScrollUnfurl{0%{transform:scaleY(0);opacity:0}30%{transform:scaleY(0.3);opacity:0}50%{transform:scaleY(0.7);opacity:.5}100%{transform:scaleY(1);opacity:1}}
-@keyframes pardonParticle{0%{transform:translate(0,0) scale(0) rotate(0deg);opacity:1}100%{transform:translate(var(--px),var(--py)) scale(0.5) rotate(360deg);opacity:0}}
-@keyframes pardonSeal{0%{transform:scale(0) rotate(-180deg);opacity:0}60%{transform:scale(1.3) rotate(10deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
-@keyframes pardonReveal{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes pardonThroneIn{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes pardonArthurIn{0%{transform:translateY(40px) scale(0.6);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes pardonWriteArm{0%,100%{transform:rotate(0deg)}30%{transform:rotate(12deg)}60%{transform:rotate(-4deg)}}
+@keyframes pardonQuill{0%{transform:rotate(0deg) translateX(0)}30%{transform:rotate(8deg) translateX(3px)}60%{transform:rotate(-6deg) translateX(-2px)}100%{transform:rotate(2deg) translateX(1px)}}
+@keyframes pardonScrollGlow{0%,100%{opacity:.6;filter:drop-shadow(0 0 4px rgba(255,215,0,.3))}50%{opacity:1;filter:drop-shadow(0 0 16px rgba(255,215,0,.7))}}
+@keyframes pardonScrollRise{0%{transform:translateY(20px) scale(0.8);opacity:0}60%{transform:translateY(-4px) scale(1.05);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes pardonHandOver{0%{transform:rotate(0deg) translateX(0)}40%{transform:rotate(-30deg) translateX(16px)}100%{transform:rotate(-40deg) translateX(24px)}}
+@keyframes pardonScrollFloat{0%{transform:translateY(0) scale(1);opacity:1}40%{transform:translateY(-20px) scale(1.1);opacity:1}100%{transform:translateY(-60px) scale(1.4);opacity:0}}
+@keyframes pardonTextReveal{0%{opacity:0;transform:scaleY(0)}100%{opacity:1;transform:scaleY(1)}}
+@keyframes pardonCrownBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes pardonAmbient{0%,100%{opacity:.3}50%{opacity:.5}}
 </style>
 </head>
 <body>
@@ -8419,56 +8424,174 @@ function pardonGrant(btn) {
   D.royalPardons.push({ date: dateEl.value, forgive: forgive, commit: commit, grantedAt: Date.now() });
   saveData(); render();
 
-  // Ceremony overlay
+  // ===== ROYAL PARDON CEREMONY - Throne Scene =====
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.id = 'pardon-ceremony';
-  overlay.style.background = 'rgba(10,6,2,.85)';
+  overlay.style.background = '#0d0a06';
   overlay.style.zIndex = '1000';
-  overlay.style.animation = 'pardonFlash 2.8s ease';
-  var h = '<div style="max-width:400px;margin:0 auto;padding:60px 20px;text-align:center">';
 
+  var sceneW = 280, sceneH = 240;
+  var h = '<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(139,119,60,.12),transparent 70%);animation:pardonAmbient 3s ease-in-out infinite"></div>';
+  h += '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px">';
+
+  // ---- Phase 1: Throne + Arthur scene ----
+  h += '<div id="pardon-scene" style="position:relative;width:' + sceneW + 'px;height:' + sceneH + 'px;animation:pardonThroneIn 1s cubic-bezier(.34,1.56,.64,1) both">';
+
+  // Throne SVG
+  h += '<svg viewBox="0 0 ' + sceneW + ' ' + sceneH + '" style="position:absolute;inset:0;width:100%;height:100%">';
+  // Ambient glow behind throne
+  h += '<ellipse cx="140" cy="130" rx="80" ry="40" fill="rgba(255,215,0,.08)" filter="url(#throneGlow)"/>';
+  // Throne back
+  h += '<path d="M100 40 L100 170 L180 170 L180 40 Q140 20 100 40 Z" fill="#4a3728" stroke="#8a7a5a" stroke-width="2"/>';
+  h += '<path d="M104 44 L104 166 L176 166 L176 44 Q140 26 104 44 Z" fill="#5c4834"/>';
+  // Throne armrests
+  h += '<rect x="88" y="120" width="18" height="50" rx="4" fill="#4a3728" stroke="#8a7a5a" stroke-width="1.5"/>';
+  h += '<rect x="174" y="120" width="18" height="50" rx="4" fill="#4a3728" stroke="#8a7a5a" stroke-width="1.5"/>';
+  // Throne top ornament
+  h += '<path d="M120 28 L130 10 L140 24 L150 10 L160 28" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round"/>';
+  h += '<circle cx="140" cy="12" r="5" fill="#ffd700"/>';
+  // Throne cushion
+  h += '<ellipse cx="140" cy="160" rx="32" ry="8" fill="#6d28d9"/>';
+  // Step
+  h += '<rect x="108" y="170" width="64" height="6" rx="2" fill="#3d2b1f" stroke="#8a7a5a" stroke-width=".5"/>';
+  h += '<rect x="100" y="176" width="80" height="8" rx="2" fill="#2a1f15" stroke="#6a5a3a" stroke-width=".5"/>';
+
+  // Arthur seated - scaled down standing figure positioned on throne
+  h += '<g id="pardon-arthur" transform="translate(140,148) scale(1.8) translate(-15,-26)" style="animation:pardonArthurIn .8s ease .3s both">';
+  // Body (robe)
+  h += '<path d="M10.5 12 Q9 20 8 28 L8 38 Q8 40 9 41 L9 42 L21 42 L21 41 Q22 40 22 38 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9"/>';
+  // Belt
+  h += '<rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/>';
+  h += '<circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/>';
+  // Legs (seated, short)
+  h += '<path d="M11 38 L8 46 L11 46 L13 42 Z" fill="#4a1d96"/>';
+  h += '<path d="M19 38 L22 46 L19 46 L17 42 Z" fill="#4a1d96"/>';
+  // Boots
+  h += '<rect x="7" y="44" width="5" height="3" rx="1" fill="#3d2b1f"/>';
+  h += '<rect x="18" y="44" width="5" height="3" rx="1" fill="#3d2b1f"/>';
+  // Head
+  h += '<ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/>';
+  // Hair
+  h += '<path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/>';
+  // Beard
+  h += '<path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/>';
   // Crown
-  h += '<div style="font-size:72px;animation:pardonCrownDrop 1.2s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:8px">&#128081;</div>';
+  h += '<path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/>';
+  h += '<rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3" id="pardon-crown"/>';
+  // Eyes
+  h += '<circle cx="12.5" cy="6.5" r=".8" fill="#222"/>';
+  h += '<circle cx="17.5" cy="6.5" r=".8" fill="#222"/>';
+  // Nose
+  h += '<path d="M14.5 8 L15 10 L15.5 8" fill="none" stroke="#c4916a" stroke-width=".5"/>';
+  // Writing ARM (left arm, holding quill)
+  h += '<g id="pardon-write-arm" style="transform-origin:15px 17px;animation:pardonWriteArm 1.4s ease-in-out .8s 2 both">';
+  h += '<path d="M15 17 L11 20" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round" fill="none"/>';
+  // Quill
+  h += '<g id="pardon-quill" style="transform-origin:11px 20px;animation:pardonQuill 1.4s ease-in-out .8s 2 both">';
+  h += '<path d="M11 20 L9 16" stroke="#e8b88a" stroke-width="1.5" stroke-linecap="round" fill="none"/>';
+  h += '<path d="M9 16 L7 12 L9 10 L10 14 Z" fill="#d4c8a0" stroke="#8a7a5a" stroke-width=".3"/>';
+  h += '<path d="M7 12 L5 11" stroke="#444" stroke-width=".4"/>';
+  h += '</g></g>';
+  // Scroll on lap (stationary)
+  h += '<g id="pardon-lap-scroll">';
+  h += '<rect x="10" y="30" width="10" height="7" rx="1" fill="#f5e6c8" stroke="#8a7a5a" stroke-width=".3" opacity=".7"/>';
+  h += '<line x1="12" y1="31" x2="12" y2="36" stroke="#666" stroke-width=".2" opacity=".3"/>';
+  h += '<line x1="14" y1="31" x2="14" y2="36" stroke="#666" stroke-width=".2" opacity=".3"/>';
+  h += '<line x1="16" y1="31" x2="16" y2="36" stroke="#666" stroke-width=".2" opacity=".3"/>';
+  h += '<line x1="18" y1="31" x2="18" y2="36" stroke="#666" stroke-width=".2" opacity=".3"/>';
+  h += '</g>';
+  // Right arm (resting on armrest)
+  h += '<path d="M15 17 L19 20 L22 22" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round" fill="none"/>';
+  h += '</g>';
 
-  // Particles
-  var particles = '';
-  var colors = ['#ffd700','#fff8dc','#daa520','#ffecb3','#fff'];
-  for (var pi=0;pi<24;pi++) {
-    var angle = Math.random() * 360;
-    var dist = 60 + Math.random() * 140;
-    var px = Math.cos(angle * Math.PI / 180) * dist;
-    var py = Math.sin(angle * Math.PI / 180) * dist;
-    var size = 3 + Math.random() * 8;
-    var delay = 0.3 + Math.random() * 1.2;
-    var color = colors[Math.floor(Math.random() * colors.length)];
-    particles += '<div style="position:absolute;top:50%;left:50%;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + color + ';--px:' + px + 'px;--py:' + py + 'px;animation:pardonParticle 1.6s ease-out ' + delay + 's both;pointer-events:none"></div>';
-  }
-  h += '<div style="position:relative;height:0">' + particles + '</div>';
-
-  // Title
-  h += '<div style="animation:pardonReveal .6s ease .6s both"><div style="font-size:13px;font-weight:700;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:2px">Royal Pardon</div>';
-  h += '<div style="font-size:10px;color:var(--gold);font-style:italic;opacity:.7;margin-bottom:12px">Know all who read these words...</div></div>';
-
-  // Scroll body
-  h += '<div style="background:linear-gradient(180deg,#fef9e7,#f5e6c8);border:2px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:10px;animation:pardonScrollUnfurl 0.8s cubic-bezier(.34,1.56,.64,1) .8s both;transform-origin:top center;overflow:hidden">';
-  h += '<div style="font-size:11px;line-height:1.6;color:#4a3728">';
-  h += '<p style="margin:0 0 8px">By the authority vested in me as your King and companion on this journey, I, <strong>King Arthur</strong>, do hereby grant this Royal Pardon to you, <strong>' + (D.name || 'Faithful Knight') + '</strong>.</p>';
-  h += '<p style="margin:0 0 8px;font-style:italic">"' + forgive + '"</p>';
-  if (commit) h += '<p style="margin:0 0 4px">&#9876; <strong>Vow:</strong> ' + commit + '</p>';
-  h += '<div style="border-top:1px solid var(--gold);margin:8px 0 4px;padding-top:6px;font-size:10px;opacity:.7">' + (new Date().toLocaleDateString()) + '</div>';
-  h += '</div></div>';
-
+  // ---- Phase 2: Floating scroll that Arthur hands over ----
+  h += '<g id="pardon-floating-scroll" style="transform-origin:140px 120px;opacity:0">';
+  h += '<rect x="100" y="64" width="80" height="50" rx="4" fill="#fef9e7" stroke="#8a7a5a" stroke-width="1" id="pardon-scroll-body"/>';
+  // Scroll roll top
+  h += '<ellipse cx="100" cy="64" rx="6" ry="5" fill="#f0d8a0" stroke="#8a7a5a" stroke-width=".8"/>';
+  h += '<ellipse cx="180" cy="64" rx="6" ry="5" fill="#f0d8a0" stroke="#8a7a5a" stroke-width=".8"/>';
+  // Scroll roll bottom
+  h += '<ellipse cx="100" cy="114" rx="6" ry="5" fill="#f0d8a0" stroke="#8a7a5a" stroke-width=".8"/>';
+  h += '<ellipse cx="180" cy="114" rx="6" ry="5" fill="#f0d8a0" stroke="#8a7a5a" stroke-width=".8"/>';
+  // Text on scroll
+  h += '<g id="pardon-scroll-text" style="opacity:0;transform-origin:140px 89px">';
+  h += '<text x="140" y="78" font-size="5" fill="#4a3728" font-weight="700" text-anchor="middle" font-family="serif">ROYAL PARDON</text>';
+  h += '<text x="140" y="86" font-size="3" fill="#6a5a3a" text-anchor="middle" font-family="serif" font-style="italic">Know all who read these words...</text>';
+  h += '<text x="140" y="94" font-size="3.5" fill="#4a3728" text-anchor="middle" font-family="serif">I, King Arthur, grant this pardon to</text>';
+  h += '<text x="140" y="100" font-size="4" fill="#6d28d9" font-weight="700" text-anchor="middle" font-family="serif">' + (D.name || 'Faithful Knight') + '</text>';
+  h += '</g>';
   // Seal
-  h += '<div style="font-size:40px;animation:pardonSeal 1s cubic-bezier(.34,1.56,.64,1) .9s both;margin-bottom:8px">&#9813;</div>';
-  h += '<div style="font-size:8px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;animation:pardonReveal .4s ease 1.6s both">Seal of King Arthur</div>';
+  h += '<circle cx="140" cy="110" r="4" fill="#6d28d9" stroke="#ffd700" stroke-width=".5" id="pardon-seal-icon" style="opacity:0"/>';
+  h += '<text x="140" y="112" font-size="3.5" fill="#fff" text-anchor="middle" font-weight="700" id="pardon-seal-text" style="opacity:0">A</text>';
+  h += '</g>';
 
-  // Dismiss
-  h += '<button class="btn btn-primary" onclick="document.getElementById(\'pardon-ceremony\').remove();goTo(\'royalpardon\')" style="animation:pardonReveal .4s ease 1.8s both;margin-top:4px">&#128081; I Accept This Pardon</button>';
+  h += '</div></div>'; // close scene + centering container
+
+  // ---- Phase 3: Button (appears after animation) ----
+  h += '<div id="pardon-accept-btn" style="opacity:0;margin-top:8px">';
+  h += '<button class="btn btn-primary" onclick="document.getElementById(\'pardon-ceremony\').remove();goTo(\'royalpardon\')">&#128081; I Accept This Pardon</button>';
   h += '</div>';
 
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
+
+  // ---- Animation sequence via JS timers ----
+  var timers = [];
+
+  // Phase 1: Throne already animating via CSS
+
+  // Phase 2: After writing stops, glow the scroll on lap (2800ms)
+  timers.push(setTimeout(function(){
+    var lapScroll = document.querySelector('#pardon-lap-scroll');
+    if (lapScroll) { lapScroll.style.transition = 'opacity .4s'; lapScroll.style.opacity = '0'; }
+    var writeArm = document.getElementById('pardon-write-arm');
+    if (writeArm) { writeArm.style.animation = 'none'; writeArm.style.transition = 'transform .6s cubic-bezier(.34,1.2,.64,1)'; }
+  }, 2800));
+
+  // Phase 3: Hand extends forward (3200ms)
+  timers.push(setTimeout(function(){
+    var writeArm = document.getElementById('pardon-write-arm');
+    if (writeArm) { writeArm.style.transform = 'rotate(-40deg) translateX(20px)'; }
+    var floatingScroll = document.getElementById('pardon-floating-scroll');
+    if (floatingScroll) { floatingScroll.style.opacity = '1'; floatingScroll.style.transition = 'opacity .5s, transform .8s cubic-bezier(.34,1.2,.64,1)'; floatingScroll.style.transform = 'translateY(-8px)'; }
+  }, 3200));
+
+  // Phase 4: Scroll glows + text appears (4000ms)
+  timers.push(setTimeout(function(){
+    var scrollBody = document.getElementById('pardon-scroll-body');
+    if (scrollBody) { scrollBody.style.animation = 'pardonScrollGlow 2s ease-in-out infinite'; }
+    var scrollText = document.getElementById('pardon-scroll-text');
+    if (scrollText) { scrollText.style.transition = 'opacity .8s ease'; scrollText.style.opacity = '1'; }
+  }, 4000));
+
+  // Phase 5: Seal appears (4800ms)
+  timers.push(setTimeout(function(){
+    var sealIcon = document.getElementById('pardon-seal-icon');
+    if (sealIcon) { sealIcon.style.transition = 'opacity .6s ease, transform .6s cubic-bezier(.34,1.56,.64,1)'; sealIcon.style.opacity = '1'; sealIcon.style.transform = 'scale(1.3)'; }
+    var sealText = document.getElementById('pardon-seal-text');
+    if (sealText) { sealText.style.transition = 'opacity .6s ease .1s'; sealText.style.opacity = '1'; }
+    var crown = document.getElementById('pardon-crown');
+    if (crown) { crown.style.transformOrigin = '15px 3px'; crown.style.animation = 'pardonCrownBob .5s ease 2'; }
+  }, 4800));
+
+  // Phase 6: Scroll floats up (5500ms)
+  timers.push(setTimeout(function(){
+    var floatingScroll = document.getElementById('pardon-floating-scroll');
+    if (floatingScroll) { floatingScroll.style.transition = 'transform 1.2s cubic-bezier(.34,1.2,.64,1), opacity .8s ease'; floatingScroll.style.transform = 'translateY(-40px) scale(1.15)'; }
+  }, 5500));
+
+  // Phase 7: Show button (6500ms)
+  timers.push(setTimeout(function(){
+    var btnEl = document.getElementById('pardon-accept-btn');
+    if (btnEl) { btnEl.style.transition = 'opacity .6s ease'; btnEl.style.opacity = '1'; }
+  }, 6500));
+
+  // Cleanup timers on dismiss
+  overlay._pardonTimers = timers;
+  overlay.addEventListener('remove', function(){
+    timers.forEach(function(t){ clearTimeout(t); });
+  });
 }
 
 var OSWALD_STEP = 0;
