@@ -7063,11 +7063,11 @@ function applyTheme() {
 }
 
 function updateTabLabels() {
-  var labels = {home:'Home',reflect:'Reflect',care:'Care',track:'Track',more:'Tools'};
+  var labels = {home:'Keep',reflect:'Scriptorium',care:'Heal',track:'Ledger',more:'Arsenal'};
   [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
-    if (span && labels[page]) span.textContent = t(labels[page]);
+    if (span && labels[page]) span.textContent = labels[page];
   });
 }
 
