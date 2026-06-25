@@ -873,7 +873,7 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 
 <div class="tabs" id="tabs">
     <button class="tab active" data-page="home">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="tab-label">Keep</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="tab-label">Home</span>
     </button>
     <button class="tab" data-page="reflect">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span class="tab-label">Scriptorium</span>
@@ -7063,7 +7063,7 @@ function applyTheme() {
 }
 
 function updateTabLabels() {
-  var labels = {home:'Keep',reflect:'Scriptorium',care:'Heal',track:'Ledger',more:'Arsenal'};
+  var labels = {home:'Home',reflect:'Scriptorium',care:'Heal',track:'Ledger',more:'Arsenal'};
   [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
