@@ -652,6 +652,13 @@ button:disabled,.btn:disabled{cursor:not-allowed;opacity:.4;filter:grayscale(.3)
 /* ===== CARD ENTRANCE ===== */
 .card,.buddy-card,.milestone,.coping-card,.music-item{animation:cardIn .35s ease both}
 @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* ===== ROYAL PARDON CEREMONY ===== */
+@keyframes pardonFlash{0%{opacity:0}8%{opacity:.6;background:rgba(255,215,0,.5)}20%{opacity:0}35%{opacity:.4;background:rgba(255,215,0,.3)}48%{opacity:0}100%{opacity:0}}
+@keyframes pardonCrownDrop{0%{transform:translateY(-80px) scale(0.5);opacity:0}50%{transform:translateY(8px) scale(1.15);opacity:1}75%{transform:translateY(-4px) scale(0.95);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes pardonScrollUnfurl{0%{transform:scaleY(0);opacity:0}30%{transform:scaleY(0.3);opacity:0}50%{transform:scaleY(0.7);opacity:.5}100%{transform:scaleY(1);opacity:1}}
+@keyframes pardonParticle{0%{transform:translate(0,0) scale(0) rotate(0deg);opacity:1}100%{transform:translate(var(--px),var(--py)) scale(0.5) rotate(360deg);opacity:0}}
+@keyframes pardonSeal{0%{transform:scale(0) rotate(-180deg);opacity:0}60%{transform:scale(1.3) rotate(10deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+@keyframes pardonReveal{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
@@ -8407,14 +8414,61 @@ function pardonGrant(btn) {
   if (!dateEl || !dateEl.value) { showToast('Please select a date.', 'error'); return; }
   if (!forgiveEl || !forgiveEl.value.trim()) { showToast('What do you forgive yourself for?', 'error'); return; }
   if (!D.royalPardons) D.royalPardons = [];
-  D.royalPardons.push({
-    date: dateEl.value,
-    forgive: forgiveEl.value.trim(),
-    commit: (commitEl ? commitEl.value.trim() : ''),
-    grantedAt: Date.now()
-  });
+  var forgive = forgiveEl.value.trim();
+  var commit = (commitEl ? commitEl.value.trim() : '');
+  D.royalPardons.push({ date: dateEl.value, forgive: forgive, commit: commit, grantedAt: Date.now() });
   saveData(); render();
-  showToast('Arthur has granted you a Royal Pardon. You are free to begin again.', 'success');
+
+  // Ceremony overlay
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'pardon-ceremony';
+  overlay.style.background = 'rgba(10,6,2,.85)';
+  overlay.style.zIndex = '1000';
+  overlay.style.animation = 'pardonFlash 2.8s ease';
+  var h = '<div style="max-width:400px;margin:0 auto;padding:60px 20px;text-align:center">';
+
+  // Crown
+  h += '<div style="font-size:72px;animation:pardonCrownDrop 1.2s cubic-bezier(.34,1.56,.64,1) both;margin-bottom:8px">&#128081;</div>';
+
+  // Particles
+  var particles = '';
+  var colors = ['#ffd700','#fff8dc','#daa520','#ffecb3','#fff'];
+  for (var pi=0;pi<24;pi++) {
+    var angle = Math.random() * 360;
+    var dist = 60 + Math.random() * 140;
+    var px = Math.cos(angle * Math.PI / 180) * dist;
+    var py = Math.sin(angle * Math.PI / 180) * dist;
+    var size = 3 + Math.random() * 8;
+    var delay = 0.3 + Math.random() * 1.2;
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    particles += '<div style="position:absolute;top:50%;left:50%;width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:' + color + ';--px:' + px + 'px;--py:' + py + 'px;animation:pardonParticle 1.6s ease-out ' + delay + 's both;pointer-events:none"></div>';
+  }
+  h += '<div style="position:relative;height:0">' + particles + '</div>';
+
+  // Title
+  h += '<div style="animation:pardonReveal .6s ease .6s both"><div style="font-size:13px;font-weight:700;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:2px">Royal Pardon</div>';
+  h += '<div style="font-size:10px;color:var(--gold);font-style:italic;opacity:.7;margin-bottom:12px">Know all who read these words...</div></div>';
+
+  // Scroll body
+  h += '<div style="background:linear-gradient(180deg,#fef9e7,#f5e6c8);border:2px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:10px;animation:pardonScrollUnfurl 0.8s cubic-bezier(.34,1.56,.64,1) .8s both;transform-origin:top center;overflow:hidden">';
+  h += '<div style="font-size:11px;line-height:1.6;color:#4a3728">';
+  h += '<p style="margin:0 0 8px">By the authority vested in me as your King and companion on this journey, I, <strong>King Arthur</strong>, do hereby grant this Royal Pardon to you, <strong>' + (D.name || 'Faithful Knight') + '</strong>.</p>';
+  h += '<p style="margin:0 0 8px;font-style:italic">"' + forgive + '"</p>';
+  if (commit) h += '<p style="margin:0 0 4px">&#9876; <strong>Vow:</strong> ' + commit + '</p>';
+  h += '<div style="border-top:1px solid var(--gold);margin:8px 0 4px;padding-top:6px;font-size:10px;opacity:.7">' + (new Date().toLocaleDateString()) + '</div>';
+  h += '</div></div>';
+
+  // Seal
+  h += '<div style="font-size:40px;animation:pardonSeal 1s cubic-bezier(.34,1.56,.64,1) .9s both;margin-bottom:8px">&#9813;</div>';
+  h += '<div style="font-size:8px;color:var(--gold);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;animation:pardonReveal .4s ease 1.6s both">Seal of King Arthur</div>';
+
+  // Dismiss
+  h += '<button class="btn btn-primary" onclick="document.getElementById(\'pardon-ceremony\').remove();goTo(\'royalpardon\')" style="animation:pardonReveal .4s ease 1.8s both;margin-top:4px">&#128081; I Accept This Pardon</button>';
+  h += '</div>';
+
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
 }
 
 var OSWALD_STEP = 0;
