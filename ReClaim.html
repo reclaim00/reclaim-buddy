@@ -1020,7 +1020,8 @@ function defaultData() {
     encryption: { enabled: false, salt: null, keyCheck: null },
     timeCapsules: [],
     recoveryPrograms: { active: null, programs: {} },
-    relapseRescue: { logs: [] }
+    relapseRescue: { logs: [] },
+    chivalryCode: { code: [], checkins: [] }
   };
 }
 
@@ -6276,6 +6277,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; Relapse Rescue</div>';
   h += '<div class="sub-item" onclick="goTo(\'insights\')" style="border-color:var(--primary)">&#128302; Insights</div>';
   h += '<div class="sub-item" onclick="goTo(\'accountability\')" style="border-color:var(--accent)">&#128170; Accountability</div>';
+  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; Chivalry Code</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
@@ -8039,7 +8041,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -8114,6 +8116,120 @@ function relapsePlanHTML() {
   }
   return h;
 }
+
+// ====== CHIVALRY CODE (Gertrude) ======
+function chivalryCodeHTML() {
+  var cc = D.chivalryCode || { code: [], checkins: [] };
+  var h = '';
+  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#9876; Chivalry Code</h2>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Gertrude says: <em>"A knight without a code is a wanderer. Define your principles, and every choice becomes clear."</em></div></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
+
+  // Code list
+  h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">&#128221; My Code</h3>';
+  if (!cc.code || !cc.code.length) {
+    h += '<div class="empty-state" style="font-size:12px">Your code is empty. Add your first principle below.</div>';
+  } else {
+    for (var ci=0;ci<cc.code.length;ci++) {
+      var item = cc.code[ci];
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">';
+      h += '<span style="font-size:20px">' + (item.icon || '&#9876;') + '</span>';
+      h += '<div style="flex:1;font-size:13px;font-weight:600">' + item.text + '</div>';
+      h += '<button class="btn btn-sm btn-outline" onclick="chivalryRemove(' + ci + ')" style="font-size:11px;padding:4px 8px;min-width:0;color:var(--danger)">&#10005;</button>';
+      h += '</div>';
+    }
+  }
+  h += '</div>';
+
+  // Add new principle
+  h += '<div class="card" id="chivalry-add-card"><h3 style="font-size:14px;margin-bottom:8px">&#10133; Add a Principle</h3>';
+  h += '<div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">';
+  var icons = ['&#9876;','&#128737;','&#9877;','&#9752;','&#10017;','&#9733;','&#9775;','&#9875;','&#9874;','&#10013;','&#9961;','&#127775;'];
+  for (var ii=0;ii<icons.length;ii++) {
+    h += '<span class="chiv-icon" onclick="document.getElementById(\'chiv-icon\').textContent=this.innerHTML;this.parentNode.querySelectorAll(\'.chiv-icon\').forEach(function(e){e.style.borderColor=\'transparent\'});this.style.borderColor=\'var(--primary)\'" style="font-size:22px;cursor:pointer;padding:4px 8px;border:2px solid transparent;border-radius:8px;transition:.15s">' + icons[ii] + '</span>';
+  }
+  h += '</div>';
+  h += '<input type="text" id="chiv-text" placeholder="e.g. I will be patient. I will tell the truth. I will show up." style="margin-bottom:6px">';
+  h += '<button class="btn btn-sm btn-primary" onclick="chivalryAdd()">Add to My Code</button>';
+  h += '<span id="chiv-icon" style="display:none">&#9876;</span>';
+  h += '</div>';
+
+  // Daily reflection
+  h += '<div class="card" style="border-left:3px solid var(--accent)"><h3 style="font-size:14px;margin-bottom:4px">&#128214; Today\'s Reflection</h3>';
+  var todayStr = new Date().toDateString();
+  var todayEntry = null;
+  if (cc.checkins) {
+    for (var ti=0;ti<cc.checkins.length;ti++) {
+      if (cc.checkins[ti].date === todayStr) { todayEntry = cc.checkins[ti]; break; }
+    }
+  }
+  if (todayEntry) {
+    h += '<div style="background:var(--primary-light);padding:10px;border-radius:10px;font-size:12px;line-height:1.5">';
+    h += '<div style="font-weight:600;margin-bottom:4px">Today you honored your code:</div>';
+    h += '<div style="color:var(--text)">' + todayEntry.note + '</div>';
+    var codesUsed = todayEntry.codes || [];
+    if (codesUsed.length) h += '<div style="margin-top:4px;font-size:11px;color:var(--muted)">Principles: ' + codesUsed.map(function(c){ return '"' + c + '"'; }).join(', ') + '</div>';
+    h += '</div>';
+  } else {
+    if (cc.code && cc.code.length) {
+      h += '<p style="font-size:12px;color:var(--muted);margin-bottom:6px">How did you live your code today? What principle guided you?</p>';
+      var codeOpts = '';
+      for (var ni=0;ni<cc.code.length;ni++) {
+        codeOpts += '<label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0"><input type="checkbox" class="chiv-code-cb" value="' + ni + '">' + (cc.code[ni].icon || '&#9876;') + ' ' + cc.code[ni].text + '</label>';
+      }
+      h += '<div style="margin-bottom:6px;padding:6px 0">' + codeOpts + '</div>';
+      h += '<textarea id="chiv-today" placeholder="Today I honored my code by..." style="min-height:60px;margin-bottom:6px"></textarea>';
+      h += '<button class="btn btn-sm btn-primary" onclick="chivalryCheckin()">Log Reflection</button>';
+    } else {
+      h += '<div class="empty-state">Define your code above, then reflect daily on how you lived it.</div>';
+    }
+  }
+  h += '</div>';
+
+  // History
+  if (cc.checkins && cc.checkins.length) {
+    h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">&#128214; Reflection History</h3>';
+    var recent = cc.checkins.slice().reverse().slice(0,10);
+    for (var hi=0;hi<recent.length;hi++) {
+      var ce = recent[hi];
+      h += '<div style="padding:6px 0;border-bottom:1px solid var(--border)">';
+      h += '<div style="font-size:11px;color:var(--muted)">' + ce.date + '</div>';
+      h += '<div style="font-size:12px;margin-top:2px">' + ce.note + '</div>';
+      if (ce.codes && ce.codes.length) h += '<div style="font-size:11px;color:var(--primary);margin-top:2px">' + ce.codes.join(', ') + '</div>';
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+  return h;
+}
+function chivalryAdd() {
+  var text = document.getElementById('chiv-text');
+  if (!text || !text.value.trim()) return;
+  var iconEl = document.getElementById('chiv-icon');
+  var icon = iconEl ? iconEl.textContent : '&#9876;';
+  if (!D.chivalryCode) D.chivalryCode = { code: [], checkins: [] };
+  if (D.chivalryCode.code.length >= 5) { showToast('Maximum 5 principles in your code. Remove one first.', 'error'); return; }
+  D.chivalryCode.code.push({ icon: icon, text: text.value.trim() });
+  saveData(); render();
+}
+function chivalryRemove(idx) {
+  if (!D.chivalryCode || !D.chivalryCode.code) return;
+  D.chivalryCode.code.splice(idx, 1);
+  saveData(); render();
+}
+function chivalryCheckin() {
+  var note = document.getElementById('chiv-today');
+  if (!note || !note.value.trim()) return;
+  var cbs = document.querySelectorAll('.chiv-code-cb:checked');
+  var codes = [];
+  cbs.forEach(function(cb){ var v = parseInt(cb.value); if (!isNaN(v) && D.chivalryCode && D.chivalryCode.code[v]) codes.push(D.chivalryCode.code[v].text); });
+  if (!D.chivalryCode) D.chivalryCode = { code: [], checkins: [] };
+  if (!D.chivalryCode.checkins) D.chivalryCode.checkins = [];
+  D.chivalryCode.checkins.push({ date: new Date().toDateString(), note: note.value.trim(), codes: codes, timestamp: Date.now() });
+  saveData(); render();
+  showToast('Reflection logged. Gertrude nods in approval.', 'success');
+}
+
 var OSWALD_STEP = 0;
 var OSWALD_DATA = {};
 var TRIGGER_OPTIONS = ['Stress','Loneliness','Boredom','Anger','Social pressure','Celebration','Financial trouble','Relationship conflict','Insomnia','Physical pain','Certain places','Certain people','Alcohol/drug cues','Anniversary dates','Holidays'];
@@ -9089,7 +9205,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
