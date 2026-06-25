@@ -1022,7 +1022,8 @@ function defaultData() {
     recoveryPrograms: { active: null, programs: {} },
     relapseRescue: { logs: [] },
     chivalryCode: { code: [], checkins: [] },
-    relapseGraveyard: { graves: [] }
+    relapseGraveyard: { graves: [] },
+    royalPardons: []
   };
 }
 
@@ -4682,7 +4683,7 @@ function rescueRecommit() {
   D.streak = 0;
   scheduleFollowUp();
   saveData();
-  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove()" style="margin-top:6px">Keep going</button></div>';
+  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'royalpardon\')">&#128081; Accept Royal Pardon</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
 }
 
 function rescueSkip() {
@@ -6280,6 +6281,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'accountability\')" style="border-color:var(--accent)">&#128170; Accountability</div>';
   h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; Chivalry Code</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; Relapse Graveyard</div>';
+  h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; Royal Pardon</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
@@ -8043,7 +8045,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode','relapsegraveyard'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode','relapsegraveyard','royalpardon'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -8344,6 +8346,75 @@ function graveRandom() {
   ];
   var lessonEl = document.getElementById('grave-lesson');
   if (lessonEl) lessonEl.value = epitaphs[Math.floor(Math.random() * epitaphs.length)];
+}
+
+// ====== ROYAL PARDON (Arthur) ======
+function royalPardonHTML() {
+  var pardons = D.royalPardons || [];
+  var h = '';
+  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128081; Royal Pardon</h2>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)">King Arthur says: <em>"By the crown I carry and the realm we are building — you are pardoned. Rise and begin again with my blessing."</em></div></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Arthur grants you a Royal Pardon — not to erase what happened, but to sanctify your fresh start. This is your certificate of amnesty.</p>';
+
+  // Grant a new pardon
+  var lastRelapseDate = D.sobriety && D.sobriety.relapseDates && D.sobriety.relapseDates.length ? new Date(D.sobriety.relapseDates[D.sobriety.relapseDates.length-1]).toISOString().split('T')[0] : '';
+  h += '<div class="card" style="border:2px solid var(--primary);background:var(--primary-light)"><h3 style="font-size:14px;margin-bottom:6px;text-align:center">&#128081; Grant a New Pardon</h3>';
+  h += '<p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px">After a relapse, Arthur invites you to accept his pardon and begin again with honor.</p>';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Date of relapse</label>';
+  h += '<input type="date" id="pardon-date" value="' + lastRelapseDate + '" style="margin-bottom:6px">';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What do you forgive yourself for?</label>';
+  h += '<textarea id="pardon-forgive" placeholder="e.g. I forgive myself for giving in to the craving. I forgive myself for the shame I carried after." style="min-height:50px;margin-bottom:6px"></textarea>';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What do you commit to going forward?</label>';
+  h += '<textarea id="pardon-commit" placeholder="e.g. I commit to reaching out before the urge wins. I commit to showing up for myself tomorrow." style="min-height:50px;margin-bottom:6px"></textarea>';
+  h += '<button class="btn btn-primary btn-sm" onclick="pardonGrant(this)" style="width:100%">&#128081; Accept Royal Pardon</button>';
+  h += '</div>';
+
+  // Existing pardons
+  if (pardons.length) {
+    h += '<h3 style="font-size:15px;font-weight:700;margin:12px 0 6px">&#128220; Pardon Records</h3>';
+    for (var pi=pardons.length-1;pi>=0;pi--) {
+      var p = pardons[pi];
+      h += pardonCertificateHTML(p);
+    }
+  }
+  return h;
+}
+function pardonCertificateHTML(p) {
+  var dateStr = p.date ? new Date(p.date).toLocaleDateString() : 'Unknown';
+  var grantedStr = p.grantedAt ? new Date(p.grantedAt).toLocaleDateString() : dateStr;
+  return '<div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:16px;margin-bottom:10px;text-align:center;position:relative;box-shadow:0 2px 12px rgba(138,122,106,.15)">' +
+    '<div style="position:absolute;top:8px;left:12px;font-size:18px;opacity:.3">&#9876;</div>' +
+    '<div style="position:absolute;top:8px;right:12px;font-size:18px;opacity:.3">&#9876;</div>' +
+    '<div style="font-size:32px;margin-bottom:2px">&#128081;</div>' +
+    '<div style="font-size:14px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Royal Pardon</div>' +
+    '<div style="font-size:10px;color:var(--gold);margin-bottom:8px;font-style:italic">Know all who read these words...</div>' +
+    '<div style="border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:8px 4px;margin-bottom:6px">' +
+    (p.forgive ? '<div style="font-size:12px;line-height:1.5;margin-bottom:4px"><em>"' + p.forgive + '"</em></div>' : '') +
+    (p.commit ? '<div style="font-size:11px;color:var(--text-light)">&#9876; <strong>Vow:</strong> ' + p.commit + '</div>' : '') +
+    '</div>' +
+    '<div style="display:flex;justify-content:center;gap:12px;font-size:10px;color:var(--muted)">' +
+    '<span>Relapse: ' + dateStr + '</span>' +
+    '<span>Pardoned: ' + grantedStr + '</span>' +
+    '</div>' +
+    '<div style="margin-top:6px;font-size:16px">&#9813;</div>' +
+    '<div style="font-size:9px;color:var(--muted);letter-spacing:2px">SEAL OF KING ARTHUR</div>' +
+    '</div>';
+}
+function pardonGrant(btn) {
+  var dateEl = document.getElementById('pardon-date');
+  var forgiveEl = document.getElementById('pardon-forgive');
+  var commitEl = document.getElementById('pardon-commit');
+  if (!dateEl || !dateEl.value) { showToast('Please select a date.', 'error'); return; }
+  if (!forgiveEl || !forgiveEl.value.trim()) { showToast('What do you forgive yourself for?', 'error'); return; }
+  if (!D.royalPardons) D.royalPardons = [];
+  D.royalPardons.push({
+    date: dateEl.value,
+    forgive: forgiveEl.value.trim(),
+    commit: (commitEl ? commitEl.value.trim() : ''),
+    grantedAt: Date.now()
+  });
+  saveData(); render();
+  showToast('Arthur has granted you a Royal Pardon. You are free to begin again.', 'success');
 }
 
 var OSWALD_STEP = 0;
@@ -9321,7 +9392,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
