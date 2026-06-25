@@ -331,6 +331,15 @@ body.dark .music-item .platforms a:hover{background:var(--primary);color:#fff}
 body.dark .badge-green{background:rgba(138,122,154,.15);color:var(--primary-dark)}
 .badge-gold{background:var(--gold-light);color:#6b5d4e}
 body.dark .badge-gold{background:rgba(122,106,90,.2);color:var(--gold)}
+.comrade-msg{background:var(--card);border:1px solid var(--stone-border);border-left:3px solid var(--primary);border-radius:4px;padding:8px 12px;margin:4px 0;position:relative;font-size:13px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.comrade-msg::before{content:'\u269C';position:absolute;top:-1px;right:4px;font-size:8px;color:var(--muted);opacity:.3}
+.comrade-msg.me{background:var(--primary-light);border-left-color:var(--accent);text-align:right}
+.comrade-msg .msg-date{font-size:10px;color:var(--muted);margin-top:2px}
+.comrade-msg .msg-author{font-size:10px;font-weight:700;color:var(--primary);margin-bottom:1px}
+#comrade-msg-input{font-family:'Cinzel',serif;font-size:13px;background:var(--card);border:1px solid var(--stone-border);border-bottom:2px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--text);margin:0;flex:1;outline:none;transition:border-color .2s}
+#comrade-msg-input:focus{border-color:var(--primary);border-bottom-color:var(--primary-dark)}
+.comrade-scroll{border:1px solid var(--stone-border);border-radius:4px;padding:10px;background:var(--card);margin-bottom:8px;max-height:220px;overflow-y:auto;position:relative}
+.comrade-scroll::after{content:'\u269C \u00A0 \u269C \u00A0 \u269C';display:block;text-align:center;font-size:10px;color:var(--muted);opacity:.3;padding-top:4px}
 .progress-bar{height:16px;background:var(--stone-base);border-radius:3px;overflow:hidden;margin:8px 0;border:1px solid var(--stone-border);box-shadow:inset 0 2px 4px rgba(0,0,0,.2);position:relative}
 .progress-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.08));pointer-events:none;z-index:1}
 .progress-bar .fill{height:100%;background:var(--grad-primary);border-radius:2px;transition:width .4s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;box-shadow:inset 0 1px 3px rgba(255,255,255,.12)}
@@ -865,7 +874,7 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
   <div class="logo-text">Re.<span style="color:var(--primary)">Claim</span></div>
   <div style="display:flex;gap:8px">
     <button class="sos-btn-float" onclick="showSOS()" title="SOS - Get help now" style="font-size:12px;font-weight:900;letter-spacing:1px">SOS</button>
-    <button class="profile-btn-float" onclick="goTo('profile')" title="Profile">&#128100;</button>
+    <button class="profile-btn-float" onclick="goTo('profile')" title="Profile"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 6.5 4.5 10.5 9 12 4.5-1.5 9-5.5 9-12V5z"/><path d="M8 10c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z"/><path d="M8 10c0 2.2 1.8 4 4 4s4-1.8 4-4"/></svg></button>
   </div>
 </div>
 
@@ -1102,7 +1111,7 @@ var TRANS = {
 'Lock':{es:'Bloquear',fr:'Verrouiller',de:'Sperren',it:'Blocca',pt:'Bloquear','tr':'Kilit','nl':'Slot','pl':'Zamek','ja':'???','ru':'?????','zh-cn':'?',ko:'??',ar:'???',hi:'???',bn:'??',sv:'Ls',no:'Ls',da:'Ls',fi:'Lukitse',el:'??e?d?a',he:'???',th:'????',vi:'Kha',id:'Kunci',ms:'Kunci',sw:'Funga',tl:'Lock',ro:'Blocheaz\u0103',cs:'Zamknout',hu:'Z\u00e1r',uk:'\u0411\u043b\u043e\u043a\u0443\u0432\u0430\u0442\u0438'},
 'Unseal':{es:'Desbloquear',fr:'D\u00e9verrouiller',de:'Entsperren',it:'Sblocca',pt:'Desbloquear','tr':'Kilidi a+','nl':'Ontgrendelen','pl':'Odblokowa-','ja':'????????','ru':'??????????????','zh-cn':'??',ko:'?? ??',ar:'???',hi:'?????',bn:'????',sv:'Ls upp',no:'Ls opp',da:'Ls op',fi:'Avaa lukitus',el:'?e??e?d?a',he:'???',th:'???????',vi:'M? kha',id:'Buka kunci',ms:'Buka kunci',sw:'Fungua',tl:'I-unlock',ro:'Deblocheaz\u0103',cs:'Odemknout',hu:'Felold\u00e1s',uk:'\u0420\u043e\u0437\u0431\u043b\u043e\u043a\u0443\u0432\u0430\u0442\u0438'},
 'Reset':{es:'Restablecer',fr:'R\u00e9initialiser',de:'Zur\u00fccksetzen',it:'Ripristina',pt:'Redefinir','tr':'S-f-rla','nl':'Opnieuw instellen','pl':'Nastawi-','ja':'????','ru':'?????????????','zh-cn':'??',ko:'???',ar:'????? ?????',hi:'?????',bn:'?????',sv:'terstll',no:'Tilbakestill',da:'Nulstil',fi:'Palauta',el:'?pa?af???',he:'?????',th:'??????',vi:'?t l?i',id:'Atur ulang',ms:'Set semula',sw:'Weka upya',tl:'I-reset',ro:'Reseteaz\u0103',cs:'Resetovat',hu:'Vissza\u00e1ll\u00edt\u00e1s',uk:'\u0421\u043a\u0438\u043d\u0443\u0442\u0438'},
-'Name':{es:'Nombre',fr:'Nom',de:'Name',it:'Nome',pt:'Nome','tr':'-sim','nl':'Naam','pl':'Nazwa','ja':'??','ru':'???','zh-cn':'??',ko:'??',ar:'?????',hi:'???',bn:'???',sv:'Namn',no:'Navn',da:'Navn',fi:'Nimi',el:'???a',he:'??',th:'????',vi:'Tn',id:'Nama',ms:'Nama',sw:'Jina',tl:'Pangalan',ro:'Nume',cs:'Jm\u00e9no',hu:'N\u00e9v',uk:'\u0406\u043c\u02bc\u044f'},
+'Title':{es:'Nombre',fr:'Nom',de:'Name',it:'Nome',pt:'Nome','tr':'-sim','nl':'Naam','pl':'Nazwa','ja':'??','ru':'???','zh-cn':'??',ko:'??',ar:'?????',hi:'???',bn:'???',sv:'Namn',no:'Navn',da:'Navn',fi:'Nimi',el:'???a',he:'??',th:'????',vi:'Tn',id:'Nama',ms:'Nama',sw:'Jina',tl:'Pangalan',ro:'Nume',cs:'Jm\u00e9no',hu:'N\u00e9v',uk:'\u0406\u043c\u02bc\u044f'},
 'Tongue':{es:'Idioma',fr:'Langue',de:'Sprache',it:'Lingua',pt:'Idioma','tr':'Dil','nl':'Taal','pl':'J-zyk','ja':'??','ru':'????','zh-cn':'??',ko:'??',ar:'?????',hi:'????',bn:'????',sv:'Sprk',no:'Sprk',da:'Sprog',fi:'Kieli',el:'G??ssa',he:'???',th:'????',vi:'Ngn ng?',id:'Bahasa',ms:'Bahasa',sw:'Lugha',tl:'Wika',ro:'Limb\u0103',cs:'Jazyk',hu:'Nyelv',uk:'\u041c\u043e\u0432\u0430'},
 'Date':{es:'Fecha',fr:'Date',de:'Datum',it:'Data',pt:'Data','tr':'Tarih','nl':'Datum','pl':'Data','ja':'??','ru':'????','zh-cn':'??',ko:'??',ar:'???????',hi:'?????',bn:'?????',sv:'Datum',no:'Dato',da:'Dato',fi:'Pivmr',el:'?e?????a',he:'?????',th:'??????',vi:'Ngy',id:'Tanggal',ms:'Tarikh',sw:'Tarehe',tl:'Petsa',ro:'Dat\u0103',cs:'Datum',hu:'D\u00e1tum',uk:'\u0414\u0430\u0442\u0430'},
 'Repeat':{es:'Repetir',fr:'R\u00e9p\u00e9ter',de:'Wiederholen',it:'Ripeti',pt:'Repetir','tr':'Tekrarlamak','nl':'Herhalen','pl':'Powtarza-','ja':'????','ru':'?????????','zh-cn':'??',ko:'??',ar:'?????',hi:'???????',bn:'???????????',sv:'Upprepa',no:'Gjenta',da:'Gentag',fi:'Toista',el:'?pa??????',he:'????',th:'?????',vi:'L?p l?i',id:'Ulangi',ms:'Ulang',sw:'Rudia',tl:'Ulitin',ro:'Repet\u0103',cs:'Opakovat',hu:'Ism\u00e9tl\u00e9s',uk:'\u041f\u043e\u0432\u0442\u043e\u0440\u0438\u0442\u0438'},
@@ -1191,8 +1200,8 @@ var TRANS = {
 'Recovery':{es:'Recuperaci\u00f3n',fr:'R\u00e9tablissement',de:'Genesung',it:'Recupero',pt:'Recupera\u00e7\u00e3o','tr':'-yile+mek','nl':'Herstel','pl':'Powr+t do zdrowia','ja':'??','ru':'??????????????','zh-cn':'??',ko:'??',ar:'???????',hi:'??????',bn:'??????????',sv:'terhmtning',no:'Bedring',da:'Bedring',fi:'Toipuminen',el:'??????s?',he:'?????',th:'??????????',vi:'Ph?c h?i',id:'Pemulihan',ms:'Pemulihan',sw:'Nafuu',tl:'Pagbangon',ro:'Recuperare',cs:'Uzdraven\u00ed',hu:'Gy\u00f3gyul\u00e1s',uk:'\u041e\u0434\u043e\u043b\u0435\u043d\u043d\u044f'},
 'Resources':{es:'Recursos',fr:'Ressources',de:'Ressourcen',it:'Risorse',pt:'Recursos','tr':'Kaynaklar','nl':'Bronnen','pl':'Zasoby','ja':'????','ru':'???????','zh-cn':'??',ko:'???',ar:'???????',hi:'??????',bn:'?????',sv:'Resurser',no:'Ressurser',da:'Ressourcer',fi:'Resurssit',el:'?????',he:'??????',th:'????????',vi:'Ti nguyn',id:'Sumber Daya',ms:'Sumber',sw:'Rasilimali',tl:'Mga Mapagkukunan',ro:'Resurse',cs:'Zdroje',hu:'Forr\u00e1sok',uk:'\u0420\u0435\u0441\u0443\u0440\u0441\u0438'},
 'Screenshot this card to share your progress.':{es:'Captura esta tarjeta para compartir tu progreso.',fr:'Capturez cette carte pour partager votre progression.',de:'Mach einen Screenshot dieser Karte, um deinen Fortschritt zu teilen.',it:'Fai uno screenshot di questa scheda per condividere i tuoi progressi.',pt:'Fa\u00e7a uma captura de tela deste cart\u00e3o para compartilhar seu progresso.','tr':'-lerlemenizi payla+mak i+in bu kart-n ekran g+r++nt++s++n++ al-n.','nl':'Maak een screenshot van deze kaart om uw voortgang te delen.','pl':'Zr+b zrzut ekranu tej karty, aby podzieli- si- swoimi post-pami.','ja':'?????????????????????????????????','ru':'???????? ?????? ?????? ? ???? ?????????, ????? ?????????? ????? ??????????.','zh-cn':'?????????????',ko:'? ??? ?????? ?? ??? ?????.',ar:'????? ???? ???? ???? ??????? ??????? ?????.',hi:'???? ?????? ???? ???? ?? ??? ?? ????? ?? ?????????? ????',bn:'????? ??????? ?????? ???? ?? ??????? ????????? ????',sv:'Ta en skrmbild av kortet fr att dela dina framsteg.',no:'Ta et skjermbilde av dette kortet for  dele fremgangen din.',da:'Tag et skrmbillede af dette kort for at dele dine fremskridt.',fi:'Ota kuvakaappaus tst kortista jakaaksesi edistymisesi.',el:'??a??te ??a st????t?p? ?????? a?t?? t?? ???ta? ??a ?a ?????p???sete t?? p???d? sa?.',he:'??? ??? ?? ????? ?? ??? ???? ?? ???????? ???.',th:'??????????????????????????????????????????????',vi:'Ch?p ?nh mn hnh th? ny d? chia s? ti?n trnh c?a b?n.',id:'Tangkapan layar kartu ini untuk membagikan kemajuan Anda.',ms:'Tangkap skrin kad ini untuk berkongsi kemajuan anda.',sw:'Chukua picha ya skrini ya kadi hii kushiriki maendeleo yako.',tl:'I-screenshot ang card na ito upang ibahagi ang iyong pag-unlad.',ro:'F\u0103 o captur\u0103 de ecran a acestui card pentru a distribui progresul.',cs:'Po\u0159i\u010fte sn\u00edmek obrazovky t\u00e9to karty a sd\u00edlejte sv\u016fj pokrok.',hu:'K\u00e9sz\u00edtsen k\u00e9perny\u0151k\u00e9pet err\u0151l a k\u00e1rty\u00e1r\u00f3l, \u00e9s ossza meg el\u0151rehalad\u00e1s\u00e1t.',uk:'\u0417\u0440\u043e\u0431\u0456\u0442\u044c \u0441\u043a\u0440\u0456\u043d\u0448\u043e\u0442 \u0446\u0456\u0454\u0457 \u043a\u0430\u0440\u0442\u043a\u0438, \u0449\u043e\u0431 \u043f\u043e\u0434\u0456\u043b\u0438\u0442\u0438\u0441\u044f \u0441\u0432\u043e\u0457\u043c \u043f\u0440\u043e\u0433\u0440\u0435\u0441\u043e\u043c.'},
-'Phone (optional)':{es:'Tel\u00e9fono (opcional)',fr:'T\u00e9l\u00e9phone (facultatif)',de:'Telefon (optional)',it:'Telefono (opzionale)',pt:'Telefone (opcional)','tr':'Telefon (iste-e ba-l-)','nl':'Telefoon (optioneel)','pl':'Telefon (opcjonalnie)','ja':'??(?????)','ru':'??????? (?????????????)','zh-cn':'??(??)',ko:'???? (????)',ar:'?????? (???????)',hi:'???? (????????)',bn:'??? (??????)',sv:'Telefon (valfritt)',no:'Telefon (valgfritt)',da:'Telefon (valgfrit)',fi:'Puhelin (valinnainen)',el:'????f??? (p??a??et???)',he:'????? (?????????)',th:'???????? (?????????)',vi:'i?n tho?i (khng b?t bu?c)',id:'Telepon (opsional)',ms:'Telefon (pilihan)',sw:'Simu (si lazima)',tl:'Telepono (opsyonal)',ro:'Telefon (op\u021bional)',cs:'Telefon (voliteln\u00fd)',hu:'Telefon (opcion\u00e1lis)',uk:'\u0422\u0435\u043b\u0435\u0444\u043e\u043d (\u043d\u0435\u043e\u0431\u043e\u0432\u02bc\u044f\u0437\u043a\u043e\u0432\u043e)'},
-'Accent Color':{es:'Color de Acento',fr:'Couleur d\'Accent',de:'Akzentfarbe',it:'Colore Accento',pt:'Cor de Destaque','tr':'Vurgu Rengi','nl':'Accentkleur','pl':'Kolor akcentuj-cy','ja':'????????','ru':'????????? ????','zh-cn':'???',ko:'?? ??',ar:'??? ???????',hi:'??????? ???',bn:'?????????? ??',sv:'Accentfrg',no:'Aksentfarge',da:'Accentfarve',fi:'Korostusvri',el:'???a ?fas??',he:'??? ???',th:'??????',vi:'Mu nh?n',id:'Warna Aksen',ms:'Warna Aksen',sw:'Rangi ya lafudhi',tl:'Kulay ng Accent',ro:'Culoare de accent',cs:'Akcentov\u00e1 barva',hu:'Akcentus sz\u00edn',uk:'\u0410\u043a\u0446\u0435\u043d\u0442\u043d\u0438\u0439 \u043a\u043e\u043b\u0456\u0440'},
+'Messenger (optional)':{es:'Tel\u00e9fono (opcional)',fr:'T\u00e9l\u00e9phone (facultatif)',de:'Telefon (optional)',it:'Telefono (opzionale)',pt:'Telefone (opcional)','tr':'Telefon (iste-e ba-l-)','nl':'Telefoon (optioneel)','pl':'Telefon (opcjonalnie)','ja':'??(?????)','ru':'??????? (?????????????)','zh-cn':'??(??)',ko:'???? (????)',ar:'?????? (???????)',hi:'???? (????????)',bn:'??? (??????)',sv:'Telefon (valfritt)',no:'Telefon (valgfritt)',da:'Telefon (valgfrit)',fi:'Puhelin (valinnainen)',el:'????f??? (p??a??et???)',he:'????? (?????????)',th:'???????? (?????????)',vi:'i?n tho?i (khng b?t bu?c)',id:'Telepon (opsional)',ms:'Telefon (pilihan)',sw:'Simu (si lazima)',tl:'Telepono (opsyonal)',ro:'Telefon (op\u021bional)',cs:'Telefon (voliteln\u00fd)',hu:'Telefon (opcion\u00e1lis)',uk:'\u0422\u0435\u043b\u0435\u0444\u043e\u043d (\u043d\u0435\u043e\u0431\u043e\u0432\u02bc\u044f\u0437\u043a\u043e\u0432\u043e)'},
+'Heraldic Colours':{es:'Color de Acento',fr:'Couleur d\'Accent',de:'Akzentfarbe',it:'Colore Accento',pt:'Cor de Destaque','tr':'Vurgu Rengi','nl':'Accentkleur','pl':'Kolor akcentuj-cy','ja':'????????','ru':'????????? ????','zh-cn':'???',ko:'?? ??',ar:'??? ???????',hi:'??????? ???',bn:'?????????? ??',sv:'Accentfrg',no:'Aksentfarge',da:'Accentfarve',fi:'Korostusvri',el:'???a ?fas??',he:'??? ???',th:'??????',vi:'Mu nh?n',id:'Warna Aksen',ms:'Warna Aksen',sw:'Rangi ya lafudhi',tl:'Kulay ng Accent',ro:'Culoare de accent',cs:'Akcentov\u00e1 barva',hu:'Akcentus sz\u00edn',uk:'\u0410\u043a\u0446\u0435\u043d\u0442\u043d\u0438\u0439 \u043a\u043e\u043b\u0456\u0440'},
 'Night Watch':{es:'Modo Oscuro',fr:'Mode Sombre',de:'Dunkelmodus',it:'Modalit\u00e0 Scura',pt:'Modo Escuro','tr':'Karanl-k Mod','nl':'Donkere modus','pl':'Tryb ciemny','ja':'??????','ru':'?????? ?????','zh-cn':'????',ko:'?? ??',ar:'????? ??????',hi:'????? ???',bn:'????? ???',sv:'Mrkt lge',no:'Mrk modus',da:'Mrk tilstand',fi:'Tumma tila',el:'S??te??? ?e?t?????a',he:'??? ???',th:'???????',vi:'Ch? d? t?i',id:'Mode Gelap',ms:'Mod Gelap',sw:'Hali ya giza',tl:'Dark Mode',ro:'Mod \u00eentunecat',cs:'Tmav\u00fd re\u017eim',hu:'S\u00f6t\u00e9t m\u00f3d',uk:'\u0422\u0435\u043c\u043d\u0438\u0439 \u0440\u0435\u0436\u0438\u043c'},
 'Craving Check-In':{es:'Registro de Antojos',fr:'Point sur les Fringales',de:'Craving-Check-in',it:'Check-in dei Desideri',pt:'Check-in de Desejos','tr':'+zlem Check-in','nl':'Verlangen naar inchecken','pl':'Pragnienie zameldowania','ja':'??????????','ru':'????? ???????????','zh-cn':'????????',ko:'?? ???',ar:'??? ??????',hi:'????? ????',bn:'????? ???-??',sv:'Sug-incheckning',no:'Trang-innsjekking',da:'Trang-check-in',fi:'Himo-check-in',el:'??e???? ?a?t??a?',he:'???-??? ?????',th:'???????????????',vi:'Ki?m tra con thm',id:'Check-in Keinginan',ms:'Check-in Keinginan',sw:'Ukaguzi wa hamu',tl:'Check-In ng Pagnanasa',ro:'Check-in poft\u0103',cs:'Kontrola chut\u011b',hu:'S\u00f3v\u00e1gy ellen\u0151rz\u00e9s',uk:'\u041f\u0435\u0440\u0435\u0432\u0456\u0440\u043a\u0430 \u0442\u044f\u0433\u0438'},
 'Journal Prompt':{es:'Indicaci\u00f3n del Diario',fr:'Invitation au Journal',de:'Tagebuchaufforderung',it:'Spunto per il Diario',pt:'Sugest\u00e3o para o Di\u00e1rio','tr':'G++nl++k -stemi','nl':'Journaalprompt','pl':'Podpowied+ dziennika','ja':'??????????','ru':'????????? ???????','zh-cn':'????',ko:'?? ????',ar:'???? ????????',hi:'????? ?????',bn:'??????? ???????',sv:'Dagboksfrga',no:'Dagboksoppfordring',da:'Dagbogsopfordring',fi:'Pivkirjakehote',el:'???t??p? ?e????????',he:'????? ?????',th:'?????????????',vi:'G?i  nh?t k',id:'Prompt Jurnal',ms:'Prom Jurnal',sw:'Kichocheo cha jarida',tl:'Prompt ng Journal',ro:'Sugestie jurnal',cs:'V\u00fdzva den\u00edku',hu:'Napl\u00f3 \u00f6szt\u00f6nz\u0151',uk:'\u041f\u0456\u0434\u043a\u0430\u0437\u043a\u0430 \u0436\u0443\u0440\u043d\u0430\u043b\u0443'},
@@ -6369,28 +6378,28 @@ function profileHTML() {
   h += '<div style="font-size:12px;color:var(--muted)">Sober ' + soberDays() + ' days</div>';
   h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
   h += '</div></div>';
-  h += '<div class="card"><h3>'+t('Settings')+'</h3>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Name')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Phone (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+  h += '<div class="card"><h3>'+t('Armoury')+'</h3>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Title')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Messenger (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveData();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Accent Color')+'</span><div style="display:flex;gap:4px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Heraldic Colours')+'</span><div style="display:flex;gap:4px">';
   var colorOpts = {green:'#34d399',blue:'#60a5fa',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
   for (var co in colorOpts) {
     h += '<div style="width:28px;height:28px;border-radius:14px;background:'+colorOpts[co]+';cursor:pointer;border:'+(D.accentColor===co?'3px solid var(--text)':'2px solid transparent')+'" onclick="D.accentColor=\''+co+'\';saveData();applyTheme();render()"></div>';
   }
   h += '</div></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Night Watch')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveData();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Addiction Targets')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Arthur creates safety plans based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Your Quests')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Arthur creates safety plans based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
   var addictions = D.targetAddictions || [];
   for (var ati=0;ati<ADDICTION_TYPES.length;ati++) {
     var sel = addictions.indexOf(ADDICTION_TYPES[ati]) >= 0;
     h += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleTargetAddiction(\''+ADDICTION_TYPES[ati]+'\')" style="font-size:10px;padding:6px">' + ADDICTION_TYPES[ati] + '</button>';
   }
   h += '</div></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Journal Settings')+'</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">'+t('Daily word goal')+'</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveData()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Privacy Lock')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.')+'</p>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t("The Scribe's Tome")+'</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">'+t('Scroll length')+'</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveData()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('The Vault')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.')+'</p>';
   if (isLockSet()) {
     var bioReady = !!localStorage.getItem('rc_bio_cred');
     h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="var p=prompt(\''+t('Enter current passcode to change:')+'\');if(p&&p.trim()){checkPin(p.trim()).then(function(v){if(v){var np=prompt(\''+t('Enter new 4-6 digit passcode:')+'\');if(np&&np.trim().length>=4&&np.trim().length<=6){enableLock(np.trim());alert(\''+t('Passcode updated!')+'\');render()}else{alert(\''+t('Passcode must be 4-6 digits.')+'\')}}else{alert(\''+t('Incorrect current passcode.')+'\')}})})" style="font-size:11px">'+t('Forge New Key')+'</button>';
@@ -6401,22 +6410,22 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   }
   h += '</div>';
   var notif = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',checkinReminder:false,checkinReminderTime:'18:00',buddyCheckin:false,streakMilestone:false};
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'+t('Notifications')+'</h3></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'+t("The Herald's Call")+'</h3></div>';
   h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0">';
   h += pushToggleRowHTML();
-  h += notifRowHTML('morning', '🌅', t('Morning'), t('Set your intention'));
-  h += notifRowHTML('evening', '🌙', t('Evening'), t('Reflect on your day'));
+  h += notifRowHTML('morning', '🌅', 'Dawn', t('Set your intention'));
+  h += notifRowHTML('evening', '🌙', 'Dusk', t('Reflect on your day'));
   h += notifRowHTML('craving', '&#x2694;', t('Craving Check-In'), t('Log & manage cravings'));
   h += notifRowHTML('journal', '&#x2712;', t('Journal Prompt'), t('Write about your day'));
   h += notifRowHTML('breathe', '&#x2726;', t('Breathing Exercise'), t('Take a mindful moment'));
-  h += notifRowHTML('checkinReminder', '&#x2713;', t('Check-In Reminder'), t('Remind if you haven\'t checked in'));
-  h += notifToggleHTML('buddyCheckin', '&#x2618;', t('Comrade Check-In'), t('Remind to Check in with your comrade'));
-  h += notifToggleHTML('streakMilestone', '&#x265B;', t('Streak Milestones'), t('Celebrate hitting milestones'));
+  h += notifRowHTML('checkinReminder', '&#x2713;', 'Presence Reminder', t('Remind if you haven\'t checked in'));
+  h += notifToggleHTML('buddyCheckin', '&#x2618;', 'Comrade Reminder', t('Remind to send word to your comrade'));
+  h += notifToggleHTML('streakMilestone', '&#x265B;', 'Saga Milestones', t('Celebrate hitting milestones'));
   h += reminderNotifRowHTML();
   h += '</div>';
   // Encryption settings
   var enc = D.encryption || {};
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+t('Journal Encryption')+'</h3></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+t('The Sealed Tome')+'</h3></div>';
   h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0;font-size:13px;line-height:1.5">';
   if (!enc.enabled) {
     h += '<p style="color:var(--muted);margin-bottom:8px">'+t('Encrypt your journal entries with a passphrase. Your data is encrypted before being saved.')+'</p>';
@@ -7135,19 +7144,23 @@ function buddySendMessage() {
 
 function buddyMessagesHTML() {
   var buddyEmail = D.buddy ? D.buddy.contact : '';
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:18px">&#128172;</div><h3 style="margin:0">Messages</h3></div><div id="comrade-messages-list">';
+  var buddyName = D.buddy ? D.buddy.name : 'Comrade';
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#x1F4DC;</div><h3 style="margin:0">Scroll of Letters</h3></div><div id="comrade-messages-list">';
   var localMsgs = (D.messages||[]).filter(function(m){return m.from === buddyEmail || m.to === buddyEmail}).slice(-20);
   if (!localMsgs.length) {
     h += '<div class="empty-state">Loading messages...</div>';
   } else {
-    h += '<div style="max-height:200px;overflow-y:auto;margin-bottom:8px">';
+    h += '<div class="comrade-scroll" id="buddy-messages-list">';
     for (var mi=0;mi<localMsgs.length;mi++) {
       var isMe = localMsgs[mi].from === AUTH_EMAIL;
-      h += '<div style="padding:6px 10px;border-radius:10px;margin:4px 0;background:' + (isMe ? 'var(--primary-light)' : 'var(--card)') + ';text-align:' + (isMe ? 'right' : 'left') + ';font-size:13px"><div>' + safe(localMsgs[mi].text) + '</div><div style="font-size:10px;color:var(--muted)">' + safe(localMsgs[mi].date) + ' ' + safe(localMsgs[mi].time) + '</div></div>';
+      h += '<div class="comrade-msg' + (isMe ? ' me' : '') + '">';
+      if (!isMe) h += '<div class="msg-author">' + safe(buddyName) + '</div>';
+      h += '<div>' + safe(localMsgs[mi].text) + '</div>';
+      h += '<div class="msg-date">' + safe(localMsgs[mi].date) + ' ' + safe(localMsgs[mi].time) + '</div></div>';
     }
     h += '</div>';
   }
-  h += '</div><div style="display:flex;gap:6px"><input type="text" id="comrade-msg-input" placeholder="Type a message..." style="flex:1;margin:0"><button class="btn btn-sm btn-primary" onclick="comradeSendMessage()" style="width:auto">Send</button></div></div>';
+  h += '</div><div style="display:flex;gap:6px"><input type="text" id="comrade-msg-input" placeholder="Write thy message..." style="flex:1;margin:0"><button class="btn btn-sm btn-primary" onclick="comradeSendMessage()" style="width:auto">Send Raven</button></div></div>';
   // Fetch messages from Firestore (two simple queries  no composite index needed)
   if (buddyEmail) {
     setTimeout(function(){
@@ -7178,13 +7191,15 @@ function buddyMessagesHTML() {
         all.sort(function(a,b){ return (a.timestamp||0) - (b.timestamp||0); });
         all = all.slice(-20);
         if (!all.length) {
-          el.innerHTML = '<div class="empty-state">Send a message to ' + safe(D.buddy?D.buddy.name:'your comrade') + '!</div>';
+          el.innerHTML = '<div class="empty-state">Send a raven to ' + safe(D.buddy?D.buddy.name:'your comrade') + '!</div>';
           return;
         }
-        var html = '<div style="max-height:200px;overflow-y:auto;margin-bottom:8px">';
+        var html = '<div class="comrade-scroll">';
         for (var i=0;i<all.length;i++) {
           var me = all[i].from === AUTH_EMAIL;
-          html += '<div style="padding:6px 10px;border-radius:10px;margin:4px 0;background:' + (me ? 'var(--primary-light)' : 'var(--card)') + ';text-align:' + (me ? 'right' : 'left') + ';font-size:13px"><div>' + safe(all[i].text) + '</div><div style="font-size:10px;color:var(--muted)">' + safe(all[i].date) + ' ' + safe(all[i].time) + '</div></div>';
+          html += '<div class="comrade-msg' + (me ? ' me' : '') + '">';
+          if (!me) html += '<div class="msg-author">' + safe(D.buddy?D.buddy.name:'Comrade') + '</div>';
+          html += '<div>' + safe(all[i].text) + '</div><div class="msg-date">' + safe(all[i].date) + ' ' + safe(all[i].time) + '</div></div>';
         }
         html += '</div>';
         el.innerHTML = html;
