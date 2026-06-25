@@ -1021,7 +1021,8 @@ function defaultData() {
     timeCapsules: [],
     recoveryPrograms: { active: null, programs: {} },
     relapseRescue: { logs: [] },
-    chivalryCode: { code: [], checkins: [] }
+    chivalryCode: { code: [], checkins: [] },
+    relapseGraveyard: { graves: [] }
   };
 }
 
@@ -6278,6 +6279,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'insights\')" style="border-color:var(--primary)">&#128302; Insights</div>';
   h += '<div class="sub-item" onclick="goTo(\'accountability\')" style="border-color:var(--accent)">&#128170; Accountability</div>';
   h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; Chivalry Code</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; Relapse Graveyard</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
@@ -8041,7 +8043,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode','relapsegraveyard'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -8228,6 +8230,120 @@ function chivalryCheckin() {
   D.chivalryCode.checkins.push({ date: new Date().toDateString(), note: note.value.trim(), codes: codes, timestamp: Date.now() });
   saveData(); render();
   showToast('Reflection logged. Gertrude nods in approval.', 'success');
+}
+
+// ====== RELAPSE GRAVEYARD ======
+function relapseGraveyardHTML() {
+  var rg = D.relapseGraveyard || { graves: [] };
+  var h = '';
+  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#9904; Relapse Graveyard</h2>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(42,42,42,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Every fallen knight teaches the next how to stand. Honor the dead, keep walking."</em></div></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Past relapses are not failures — they are fallen comrades who taught you something. Mark them here with respect, and carry their lesson forward.</p>';
+
+  // Import existing relapse dates
+  var existingDates = D.sobriety && D.sobriety.relapseDates ? D.sobriety.relapseDates : [];
+  var importedCount = 0;
+  if (existingDates.length && (!rg.graves || !rg.graves.length)) {
+    rg.graves.forEach(function(g){ if (existingDates.indexOf(g.date) >= 0) importedCount++; });
+    var unimported = existingDates.filter(function(d){ return !rg.graves.some(function(g){ return g.date === d; }); });
+    if (unimported.length) {
+      h += '<div class="card" style="border:2px solid var(--accent);background:var(--primary-light);text-align:center;padding:12px">';
+      h += '<div style="font-size:13px;margin-bottom:6px">&#128161; Found ' + unimported.length + ' relapse date' + (unimported.length > 1 ? 's' : '') + ' in your record. Add ' + (unimported.length > 1 ? 'them' : 'it') + ' to the graveyard?</div>';
+      h += '<button class="btn btn-sm btn-primary" onclick="graveImport(' + unimported.length + ')">Import to Graveyard</button>';
+      h += '</div>';
+    }
+  }
+
+  // Grave grid
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px" id="grave-grid">';
+  if (!rg.graves || !rg.graves.length) {
+    h += '<div style="grid-column:1/-1" class="empty-state">No graves yet. Past relapses can be laid to rest here — with honor, not shame.</div>';
+  } else {
+    for (var gi=0;gi<rg.graves.length;gi++) {
+      var g = rg.graves[gi];
+      h += graveTombstoneHTML(g, gi);
+    }
+  }
+  h += '</div>';
+
+  // Add new grave
+  h += '<div class="card"><h3 style="font-size:14px;margin-bottom:6px">&#9963; Lay a Relapse to Rest</h3>';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Date of relapse</label>';
+  h += '<input type="date" id="grave-date" style="margin-bottom:6px">';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What triggered it?</label>';
+  h += '<input type="text" id="grave-trigger" placeholder="e.g. stress, social pressure, loneliness" style="margin-bottom:6px">';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What did it teach you?</label>';
+  h += '<textarea id="grave-lesson" placeholder="e.g. I need to call someone before the urge peaks. Isolation is my enemy." style="min-height:60px;margin-bottom:6px"></textarea>';
+  h += '<div style="display:flex;gap:6px"><button class="btn btn-sm btn-primary" onclick="graveAdd()">&#9963; Lay to Rest</button><button class="btn btn-sm btn-outline" onclick="graveRandom()">&#127922; Random Epitaph</button></div>';
+  h += '</div>';
+
+  // Epitaph inspiration
+  h += '<div class="card" style="border-left:3px solid var(--border);padding:10px;font-size:11px;color:var(--muted);line-height:1.6">';
+  h += '<strong style="font-size:12px">Epitaph ideas:</strong><br>';
+  h += '"Here lies a lesson I will not unlearn." &bull; "Fell so I could rise stronger." &bull; "This grave marks where shame dies." &bull; "Not my end — my teacher." &bull; "I carried this stone so others won\'t have to."';
+  h += '</div>';
+
+  return h;
+}
+function graveTombstoneHTML(g, idx) {
+  var epitaph = g.epitaph || g.lesson || 'Here lies a lesson.';
+  var dateLabel = g.date ? new Date(g.date).toLocaleDateString() : 'Unknown';
+  return '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px 12px 8px 8px;padding:10px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.06)">' +
+    '<div style="font-size:28px;margin-bottom:2px;opacity:.5">&#9904;</div>' +
+    '<div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:2px">' + dateLabel + '</div>' +
+    (g.trigger ? '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">' + g.trigger + '</div>' : '') +
+    '<div style="font-size:11px;font-style:italic;color:var(--text);line-height:1.4;padding:4px;background:var(--primary-light);border-radius:6px;min-height:32px;display:flex;align-items:center;justify-content:center">"' + epitaph + '"</div>' +
+    '<button class="btn btn-sm btn-outline" onclick="graveRemove(' + idx + ')" style="position:absolute;top:4px;right:4px;font-size:10px;padding:2px 6px;min-width:0;color:var(--danger);border-color:transparent">&#10005;</button>' +
+    '<div style="font-size:10px;color:var(--muted);margin-top:4px;opacity:.6">&#127801; rest in peace</div></div>';
+}
+function graveAdd() {
+  var dateEl = document.getElementById('grave-date');
+  var triggerEl = document.getElementById('grave-trigger');
+  var lessonEl = document.getElementById('grave-lesson');
+  if (!dateEl || !dateEl.value) { showToast('Please select a date.', 'error'); return; }
+  if (!lessonEl || !lessonEl.value.trim()) { showToast('Every grave needs a lesson. What did you learn?', 'error'); return; }
+  if (!D.relapseGraveyard) D.relapseGraveyard = { graves: [] };
+  D.relapseGraveyard.graves.push({
+    date: dateEl.value,
+    trigger: (triggerEl ? triggerEl.value.trim() : ''),
+    lesson: lessonEl.value.trim(),
+    epitaph: lessonEl.value.trim().slice(0,80)
+  });
+  saveData(); render();
+  showToast('Laid to rest. The lesson stays with you.', 'info');
+}
+function graveRemove(idx) {
+  if (!D.relapseGraveyard || !D.relapseGraveyard.graves) return;
+  D.relapseGraveyard.graves.splice(idx, 1);
+  saveData(); render();
+  showToast('Grave removed. The lesson remains.', 'info');
+}
+function graveImport(count) {
+  var existingDates = D.sobriety && D.sobriety.relapseDates ? D.sobriety.relapseDates : [];
+  if (!D.relapseGraveyard) D.relapseGraveyard = { graves: [] };
+  existingDates.forEach(function(d){
+    if (!D.relapseGraveyard.graves.some(function(g){ return g.date === d; })) {
+      D.relapseGraveyard.graves.push({ date: d, trigger: '', lesson: 'A past relapse marked for remembrance.', epitaph: 'Fell so I could rise stronger.' });
+    }
+  });
+  saveData(); render();
+  showToast('Imported ' + count + ' relapse' + (count > 1 ? 's' : '') + ' into the graveyard.', 'success');
+}
+function graveRandom() {
+  var epitaphs = [
+    'Here lies a lesson I will not unlearn.',
+    'Fell so I could rise stronger.',
+    'This grave marks where shame died.',
+    'Not my end — my teacher.',
+    'I carried this stone so others won\'t have to.',
+    'A stumble, not a fall.',
+    'This day broke me. I rebuilt.',
+    'I lost a battle to win the war.',
+    'I am not what happened to me.',
+    'From this ash, something grew.'
+  ];
+  var lessonEl = document.getElementById('grave-lesson');
+  if (lessonEl) lessonEl.value = epitaphs[Math.floor(Math.random() * epitaphs.length)];
 }
 
 var OSWALD_STEP = 0;
@@ -9205,7 +9321,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
