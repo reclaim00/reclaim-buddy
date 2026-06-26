@@ -75,17 +75,23 @@ body.dark ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8a7
 @keyframes kingdomGlow{0%{filter:brightness(1) saturate(1)}30%{filter:brightness(1.25) saturate(1.15)}60%{filter:brightness(1.08)}100%{filter:brightness(1) saturate(1)}}
 body.dark .kingdom-scene{box-shadow:0 1px 6px rgba(0,0,0,.3),0 4px 20px rgba(0,0,0,.2)}
 .k-stars{display:none}body.dark .k-stars{display:block}body.dark .k-stars circle{fill:#fff}
-body.dark .kingdom-scene.tier-0 .k-stars circle{opacity:.06}body.dark .kingdom-scene.tier-1 .k-stars circle{opacity:.12}
-body.dark .kingdom-scene.tier-2 .k-stars circle{opacity:.2}body.dark .kingdom-scene.tier-3 .k-stars circle{opacity:.3}
-body.dark .kingdom-scene.tier-4 .k-stars circle{opacity:.45}body.dark .kingdom-scene.tier-5 .k-stars circle{opacity:.6}
-body.dark .kingdom-scene.tier-6 .k-stars circle{opacity:.8}
+body.dark .kingdom-scene.tier-0 .k-stars circle{opacity:.06}body.dark .kingdom-scene.tier-1 .k-stars circle{opacity:.09}
+body.dark .kingdom-scene.tier-2 .k-stars circle{opacity:.12}body.dark .kingdom-scene.tier-3 .k-stars circle{opacity:.16}
+body.dark .kingdom-scene.tier-4 .k-stars circle{opacity:.22}body.dark .kingdom-scene.tier-5 .k-stars circle{opacity:.3}
+body.dark .kingdom-scene.tier-6 .k-stars circle{opacity:.4}body.dark .kingdom-scene.tier-7 .k-stars circle{opacity:.5}
+body.dark .kingdom-scene.tier-8 .k-stars circle{opacity:.6}body.dark .kingdom-scene.tier-9 .k-stars circle{opacity:.7}
+body.dark .kingdom-scene.tier-10 .k-stars circle{opacity:.8}
 body.dark .kingdom-scene.tier-0{--sky-c:#050510;--ground-c:#080812;--hill-c:#080818}
-body.dark .kingdom-scene.tier-1{--sky-c:#080820;--ground-c:#101020;--hill-c:#101020}
-body.dark .kingdom-scene.tier-2{--sky-c:#101030;--ground-c:#181828;--hill-c:#181830}
-body.dark .kingdom-scene.tier-3{--sky-c:#181838;--ground-c:#202038;--hill-c:#202038}
-body.dark .kingdom-scene.tier-4{--sky-c:#202050;--ground-c:#282848;--hill-c:#282848}
-body.dark .kingdom-scene.tier-5{--sky-c:#282860;--ground-c:#303058;--hill-c:#303058}
-body.dark .kingdom-scene.tier-6{--sky-c:#303070;--ground-c:#383868;--hill-c:#383868}
+body.dark .kingdom-scene.tier-1{--sky-c:#060618;--ground-c:#0c0c1a;--hill-c:#0c0c1c}
+body.dark .kingdom-scene.tier-2{--sky-c:#080820;--ground-c:#101020;--hill-c:#101020}
+body.dark .kingdom-scene.tier-3{--sky-c:#0c0c28;--ground-c:#141428;--hill-c:#141428}
+body.dark .kingdom-scene.tier-4{--sky-c:#101030;--ground-c:#181828;--hill-c:#181830}
+body.dark .kingdom-scene.tier-5{--sky-c:#141438;--ground-c:#1c1c30;--hill-c:#1c1c34}
+body.dark .kingdom-scene.tier-6{--sky-c:#181838;--ground-c:#202038;--hill-c:#202038}
+body.dark .kingdom-scene.tier-7{--sky-c:#202050;--ground-c:#282848;--hill-c:#282848}
+body.dark .kingdom-scene.tier-8{--sky-c:#282860;--ground-c:#303058;--hill-c:#303058}
+body.dark .kingdom-scene.tier-9{--sky-c:#303070;--ground-c:#383868;--hill-c:#383868}
+body.dark .kingdom-scene.tier-10{--sky-c:#303070;--ground-c:#383868;--hill-c:#383868}
 body.dark .kingdom-scene .k-sun{display:none}
 body.dark .kingdom-scene .k-window{fill:#ff8833;animation:lanternGlow 2s ease-in-out infinite}
 body.dark .kingdom-scene .k-clouds ellipse{opacity:.06}
@@ -7573,12 +7579,16 @@ function characterGreetingHTML() {
 
 function kingdomLevel(days) {
   if (days <= 0) return 0;
-  if (days <= 6) return 1;
-  if (days <= 13) return 2;
-  if (days <= 29) return 3;
-  if (days <= 89) return 4;
-  if (days <= 364) return 5;
-  return 6;
+  if (days <= 2) return 1;
+  if (days <= 5) return 2;
+  if (days <= 8) return 3;
+  if (days <= 12) return 4;
+  if (days <= 16) return 5;
+  if (days <= 21) return 6;
+  if (days <= 30) return 7;
+  if (days <= 60) return 8;
+  if (days <= 180) return 9;
+  return 10;
 }
 function kingdomHTML() {
   var days = soberDays();
@@ -7591,8 +7601,8 @@ function kingdomHTML() {
   var sp = [[50,30],[120,20],[200,45],[310,25],[400,40],[460,30],[80,70],[160,55],[250,65],[340,50],[430,60],[40,100],[140,90],[230,80],[320,95],[410,85],[480,90],[100,120],[190,110],[280,125],[370,115],[450,120],[60,140],[170,135],[260,145],[350,130],[440,140]];
   for (var si = 0; si < sp.length; si++) h += '<circle cx="' + sp[si][0] + '" cy="' + sp[si][1] + '" r="1.2"/>';
   h += '</g>';
-  if (level >= 3) h += '<circle cx="410" cy="50" r="18" class="k-sun"/>';
-  if (level >= 2) h += '<g class="k-clouds"><ellipse cx="100" cy="42" rx="30" ry="10"/><ellipse cx="120" cy="38" rx="20" ry="8"/><ellipse cx="360" cy="35" rx="25" ry="8"/><ellipse cx="380" cy="30" rx="18" ry="7"/></g>';
+  if (level >= 5) h += '<circle cx="410" cy="50" r="18" class="k-sun"/>';
+  if (level >= 5) h += '<g class="k-clouds"><ellipse cx="100" cy="42" rx="30" ry="10"/><ellipse cx="120" cy="38" rx="20" ry="8"/><ellipse cx="360" cy="35" rx="25" ry="8"/><ellipse cx="380" cy="30" rx="18" ry="7"/></g>';
   h += '<path d="M0,195 Q80,155 180,190 Q250,165 320,185 Q400,160 500,190 L500,198 L0,198 Z" class="k-hills"/>';
   h += '<rect y="196" width="500" height="84" class="k-ground"/>';
   h += '<g class="k-castle-group">';
@@ -7602,47 +7612,61 @@ function kingdomHTML() {
     h += '<circle cx="178" cy="192" r="6" class="k-rubble"/><circle cx="184" cy="186" r="4" class="k-rubble"/><circle cx="315" cy="190" r="5" class="k-rubble"/><circle cx="322" cy="184" r="3" class="k-rubble"/>';
   } else {
     h += '<rect x="195" y="105" width="110" height="93" class="k-keep"/>';
-    if (level >= 1) h += '<polygon points="190,105 250,70 310,105" class="k-roof"/>';
-    if (level >= 3) h += '<g class="k-cren"><rect x="195" y="97" width="11" height="9"/><rect x="211" y="97" width="11" height="9"/><rect x="227" y="97" width="11" height="9"/><rect x="243" y="97" width="11" height="9"/><rect x="259" y="97" width="11" height="9"/><rect x="275" y="97" width="11" height="9"/><rect x="291" y="97" width="11" height="9"/></g>';
+    if (level >= 2) h += '<polygon points="190,105 250,70 310,105" class="k-roof"/>';
+    else if (level === 1) h += '<polygon points="195,140 250,120 305,140" class="k-roof" opacity=".5"/>';
+    if (level >= 6) h += '<g class="k-cren"><rect x="195" y="97" width="11" height="9"/><rect x="211" y="97" width="11" height="9"/><rect x="227" y="97" width="11" height="9"/><rect x="243" y="97" width="11" height="9"/><rect x="259" y="97" width="11" height="9"/><rect x="275" y="97" width="11" height="9"/><rect x="291" y="97" width="11" height="9"/></g>';
   }
-  if (level >= 2) {
+  // Left tower
+  if (level >= 4) {
     h += '<rect x="150" y="125" width="43" height="73" class="k-tower"/>';
     h += '<polygon points="145,125 171.5,100 198,125" class="k-tower-roof"/>';
-    if (level >= 3) h += '<g><rect x="150" y="117" width="10" height="9" class="k-tower"/><rect x="164" y="117" width="10" height="9" class="k-tower"/><rect x="178" y="117" width="10" height="9" class="k-tower"/></g>';
+    if (level >= 7) h += '<g><rect x="150" y="117" width="10" height="9" class="k-tower"/><rect x="164" y="117" width="10" height="9" class="k-tower"/><rect x="178" y="117" width="10" height="9" class="k-tower"/></g>';
+  } else if (level >= 2) {
+    h += '<rect x="155" y="140" width="35" height="58" class="k-tower" opacity=".7"/>';
   } else if (level === 1) {
-    h += '<rect x="158" y="148" width="30" height="50" class="k-tower"/>';
+    h += '<rect x="160" y="155" width="25" height="43" class="k-tower" opacity=".4"/>';
   }
-  if (level >= 3) {
+  // Right tower
+  if (level >= 5) {
     h += '<rect x="307" y="125" width="43" height="73" class="k-tower"/>';
     h += '<polygon points="302,125 328.5,100 355,125" class="k-tower-roof"/>';
-    h += '<g><rect x="307" y="117" width="10" height="9" class="k-tower"/><rect x="321" y="117" width="10" height="9" class="k-tower"/><rect x="335" y="117" width="10" height="9" class="k-tower"/></g>';
+    if (level >= 7) h += '<g><rect x="307" y="117" width="10" height="9" class="k-tower"/><rect x="321" y="117" width="10" height="9" class="k-tower"/><rect x="335" y="117" width="10" height="9" class="k-tower"/></g>';
+  } else if (level === 4) {
+    h += '<rect x="312" y="145" width="30" height="53" class="k-tower" opacity=".5"/>';
   }
-  if (level >= 2) h += '<path d="M 235,198 L 235,163 Q 250,153 265,163 L 265,198 Z" class="k-door"/>';
-  else h += '<path d="M 235,198 L 235,178 Q 250,170 265,178 L 265,198 Z" class="k-door" opacity=".4"/>';
-  if (level >= 2) {
-    var wo = level >= 3 ? '1' : '.5';
+  // Door
+  if (level >= 3) h += '<path d="M 235,198 L 235,163 Q 250,153 265,163 L 265,198 Z" class="k-door"/>';
+  else if (level >= 1) h += '<path d="M 235,198 L 235,178 Q 250,170 265,178 L 265,198 Z" class="k-door" opacity=".4"/>';
+  // Windows
+  if (level >= 4) {
+    var wo = level >= 6 ? '1' : '.4';
     h += '<g class="k-windows"><rect x="212" y="132" width="12" height="16" rx="6" class="k-window" opacity="' + wo + '"/><rect x="276" y="132" width="12" height="16" rx="6" class="k-window" opacity="' + wo + '"/></g>';
   }
   h += '</g>';
-  if (level >= 2) {
+  // Flags
+  if (level >= 4) {
     h += '<g class="k-flags"><line x1="171.5" y1="100" x2="171.5" y2="68" stroke-width="2" class="k-flagpole"/><polygon points="171.5,68 190,73 171.5,78" class="k-flag-l"/>';
-    if (level >= 3) h += '<line x1="328.5" y1="100" x2="328.5" y2="68" stroke-width="2" class="k-flagpole"/><polygon points="328.5,68 347,73 328.5,78" class="k-flag-r"/>';
+    if (level >= 5) h += '<line x1="328.5" y1="100" x2="328.5" y2="68" stroke-width="2" class="k-flagpole"/><polygon points="328.5,68 347,73 328.5,78" class="k-flag-r"/>';
     h += '</g>';
   }
+  // Trees
+  var tr = Math.min(22, 14 + level * 1.5);
   h += '<g class="k-trees">';
   if (level === 0) h += '<rect x="87" y="178" width="6" height="20" class="k-tree-trunk"/><path d="M 87,173 L 93,178 L 81,178 Z" class="k-tree" opacity=".4"/>';
-  else h += '<rect x="85" y="173" width="8" height="25" class="k-tree-trunk"/><circle cx="89" cy="158" r="' + (18 + level) + '" class="k-tree"/>';
-  if (level >= 2) h += '<rect x="402" y="173" width="8" height="25" class="k-tree-trunk"/><circle cx="406" cy="158" r="' + (14 + level) + '" class="k-tree"/>';
+  else h += '<rect x="85" y="173" width="8" height="25" class="k-tree-trunk"/><circle cx="89" cy="158" r="' + tr + '" class="k-tree"/>';
+  if (level >= 4) h += '<rect x="402" y="173" width="8" height="25" class="k-tree-trunk"/><circle cx="406" cy="158" r="' + Math.max(8, tr-4) + '" class="k-tree"/>';
   h += '</g>';
-  if (level >= 2) h += '<path d="M 235,198 Q 220,222 200,248 Q 230,238 250,198" class="k-path" opacity=".35"/>';
-  if (level >= 3) {
+  if (level >= 4) h += '<path d="M 235,198 Q 220,222 200,248 Q 230,238 250,198" class="k-path" opacity=".35"/>';
+  if (level >= 5) {
     h += '<g class="k-flowers">';
     var fc = ['#ff7788','#ff99aa','#ffbb44','#ee77cc'];
-    var fp = level >= 5 ? [[118,215],[124,212],[140,225],[175,222],[318,220],[324,217],[360,215],[366,212],[130,228],[310,228]] : [[120,215],[125,212],[175,222],[320,220],[325,217],[360,215]];
-    for (var fi = 0; fi < fp.length; fi++) h += '<circle cx="' + fp[fi][0] + '" cy="' + fp[fi][1] + '" r="' + (level >= 5 ? 3.5 : 3) + '" fill="' + fc[fi % fc.length] + '"/>';
+    var fp = level >= 8 ? [[118,215],[124,212],[140,225],[175,222],[318,220],[324,217],[360,215],[366,212],[130,228],[310,228],[145,230],[350,230]] :
+      level >= 6 ? [[120,215],[125,212],[175,222],[320,220],[325,217],[360,215],[130,228],[310,228]] :
+      [[120,215],[125,212],[175,222],[320,220],[325,217]];
+    for (var fi = 0; fi < fp.length; fi++) h += '<circle cx="' + fp[fi][0] + '" cy="' + fp[fi][1] + '" r="' + (level >= 6 ? 3.5 : 3) + '" fill="' + fc[fi % fc.length] + '"/>';
     h += '</g>';
   }
-  if (level >= 4) h += '<g class="k-birds"><path d="M 60,80 Q 65,76 70,80 Q 75,76 80,80"/><path d="M 90,70 Q 95,66 100,70 Q 105,66 110,70"/><path d="M 440,85 Q 445,81 450,85 Q 455,81 460,85"/></g>';
+  if (level >= 7) h += '<g class="k-birds"><path d="M 60,80 Q 65,76 70,80 Q 75,76 80,80"/><path d="M 90,70 Q 95,66 100,70 Q 105,66 110,70"/>' + (level>=9?'<path d="M 440,85 Q 445,81 450,85 Q 455,81 460,85"/>':'') + '</g>';
   h += '<rect width="500" height="280" class="k-damage-overlay" opacity="0"/>';
   h += '</svg></div>';
   return h;
@@ -7663,12 +7687,13 @@ function kingdomTrackerHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
   var isActive = D.sobriety.startDate ? true : false;
-  var levelNames = ['Ruins','Foundation','Village','Town','City','Kingdom','Empire'];
+  var levelNames = ['Ruins','Foundation','Camp','Village','Hamlet','Town','Borough','City','Realm','Kingdom','Empire'];
+  var levelDescs = ['A new beginning','First stones laid','Taking shape','Walls are rising','Growing settlement','A proper town','Walls secured','Thriving city','A proud realm','A mighty kingdom','A legendary empire'];
   var h = kingdomHTML();
   h += '<div class="card" style="text-align:center;margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:10px 14px 12px">';
   if (isActive) {
     h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:2px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">days sober</span></div>';
-    h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + levelNames[level] + ' &mdash; ' + (level===0?'A new beginning':level===1?'Building from the ground':level===2?'Walls are rising':level===3?'A thriving settlement':level===4?'Strong and prosperous':level===5?'A realm to be proud of':'A legendary kingdom') + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + levelNames[Math.min(level,10)] + ' &mdash; ' + (levelDescs[Math.min(level,10)]||'') + '</div>';
     h += soberTimerHTML();
     h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
     h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
