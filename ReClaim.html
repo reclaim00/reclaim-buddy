@@ -7559,42 +7559,80 @@ function kingdomHTML() {
   if (level >= 5) h += '<g class="k-clouds"><ellipse cx="100" cy="42" rx="30" ry="10"/><ellipse cx="120" cy="38" rx="20" ry="8"/><ellipse cx="360" cy="35" rx="25" ry="8"/><ellipse cx="380" cy="30" rx="18" ry="7"/></g>';
   h += '<path d="M0,195 Q80,155 180,190 Q250,165 320,185 Q400,160 500,190 L500,198 L0,198 Z" class="k-hills"/>';
   h += '<rect y="196" width="500" height="84" class="k-ground"/>';
+  h += '<defs><pattern id="stone" width="16" height="12" patternUnits="userSpaceOnUse"><path d="M0,6 L16,6 M8,0 L8,6 M0,6 L0,12 M0,12 L16,12" stroke="rgba(0,0,0,.07)" stroke-width=".5" fill="none"/></pattern></defs>';
   h += '<g class="k-castle-group">';
   if (level === 0) {
     h += '<path d="M195,198 L195,148 L205,158 L215,142 L225,153 L235,140 L245,152 L255,144 L265,157 L275,147 L285,154 L295,150 L305,198 Z" class="k-keep"/>';
     h += '<path d="M200,198 L200,162 L210,172 L220,158 L230,168 L240,158 L250,170 L260,158 L270,168 L280,161 L290,170 L300,198 Z" class="k-keep" opacity=".45"/>';
     h += '<circle cx="178" cy="192" r="6" class="k-rubble"/><circle cx="184" cy="186" r="4" class="k-rubble"/><circle cx="315" cy="190" r="5" class="k-rubble"/><circle cx="322" cy="184" r="3" class="k-rubble"/>';
   } else {
+    // Keep wall
     h += '<rect x="195" y="105" width="110" height="93" class="k-keep"/>';
-    if (level >= 2) h += '<polygon points="190,105 250,70 310,105" class="k-roof"/>';
-    else if (level === 1) h += '<polygon points="195,140 250,120 305,140" class="k-roof" opacity=".5"/>';
-    if (level >= 6) h += '<g class="k-cren"><rect x="195" y="97" width="11" height="9"/><rect x="211" y="97" width="11" height="9"/><rect x="227" y="97" width="11" height="9"/><rect x="243" y="97" width="11" height="9"/><rect x="259" y="97" width="11" height="9"/><rect x="275" y="97" width="11" height="9"/><rect x="291" y="97" width="11" height="9"/></g>';
-  }
-  // Left tower
-  if (level >= 4) {
-    h += '<rect x="150" y="125" width="43" height="73" class="k-tower"/>';
-    h += '<polygon points="145,125 171.5,100 198,125" class="k-tower-roof"/>';
-    if (level >= 7) h += '<g><rect x="150" y="117" width="10" height="9" class="k-tower"/><rect x="164" y="117" width="10" height="9" class="k-tower"/><rect x="178" y="117" width="10" height="9" class="k-tower"/></g>';
-  } else if (level >= 2) {
-    h += '<rect x="155" y="140" width="35" height="58" class="k-tower" opacity=".7"/>';
-  } else if (level === 1) {
-    h += '<rect x="160" y="155" width="25" height="43" class="k-tower" opacity=".4"/>';
-  }
-  // Right tower
-  if (level >= 5) {
-    h += '<rect x="307" y="125" width="43" height="73" class="k-tower"/>';
-    h += '<polygon points="302,125 328.5,100 355,125" class="k-tower-roof"/>';
-    if (level >= 7) h += '<g><rect x="307" y="117" width="10" height="9" class="k-tower"/><rect x="321" y="117" width="10" height="9" class="k-tower"/><rect x="335" y="117" width="10" height="9" class="k-tower"/></g>';
-  } else if (level === 4) {
-    h += '<rect x="312" y="145" width="30" height="53" class="k-tower" opacity=".5"/>';
-  }
-  // Door
-  if (level >= 3) h += '<path d="M 235,198 L 235,163 Q 250,153 265,163 L 265,198 Z" class="k-door"/>';
-  else if (level >= 1) h += '<path d="M 235,198 L 235,178 Q 250,170 265,178 L 265,198 Z" class="k-door" opacity=".4"/>';
-  // Windows
-  if (level >= 4) {
-    var wo = level >= 6 ? '1' : '.4';
-    h += '<g class="k-windows"><rect x="212" y="132" width="12" height="16" rx="6" class="k-window" opacity="' + wo + '"/><rect x="276" y="132" width="12" height="16" rx="6" class="k-window" opacity="' + wo + '"/></g>';
+    h += '<rect x="195" y="105" width="110" height="93" fill="url(#stone)"/>';
+    h += '<rect x="278" y="105" width="27" height="93" fill="rgba(0,0,0,.1)"/>';
+    h += '<rect x="193" y="186" width="114" height="12" class="k-keep" opacity=".7"/><rect x="193" y="186" width="114" height="12" fill="url(#stone)" opacity=".7"/>';
+    // Roof
+    if (level >= 2) {
+      h += '<polygon points="190,105 250,70 310,105" class="k-roof"/><polygon points="190,105 250,70 310,105" fill="url(#stone)"/>';
+      h += '<polygon points="244,72 250,68 256,72" class="k-roof" opacity=".8"/>';
+    } else if (level === 1) h += '<polygon points="195,140 250,120 305,140" class="k-roof" opacity=".5"/>';
+    // Battlements on keep (level 2+)
+    if (level >= 2) {
+      h += '<g class="k-cren">';
+      for (var ci = 0; ci < 8; ci++) h += '<rect x="' + (195 + ci * 14) + '" y="95" width="10" height="10"/>';
+      h += '</g>';
+    }
+    // Left tower
+    if (level >= 4) {
+      h += '<rect x="150" y="125" width="43" height="73" class="k-tower"/><rect x="150" y="125" width="43" height="73" fill="url(#stone)"/>';
+      h += '<rect x="175" y="125" width="18" height="73" fill="rgba(0,0,0,.08)"/>';
+      h += '<rect x="148" y="186" width="47" height="12" class="k-tower" opacity=".7"/>';
+      h += '<polygon points="145,125 171.5,100 198,125" class="k-tower-roof"/>';
+      // Arrow slit
+      h += '<rect x="169" y="145" width="3" height="12" rx="1" fill="rgba(0,0,0,.35)"/>';
+      h += '<rect x="170" y="148" width="2" height="2" fill="rgba(255,255,255,.12)"/>';
+      // Tower battlements (level 7+)
+      if (level >= 7) {
+        h += '<g><rect x="150" y="115" width="10" height="10" class="k-tower"/><rect x="164" y="115" width="10" height="10" class="k-tower"/><rect x="178" y="115" width="10" height="10" class="k-tower"/></g>';
+      }
+    } else if (level >= 2) {
+      h += '<rect x="155" y="140" width="35" height="58" class="k-tower" opacity=".7"/>';
+    } else if (level === 1) {
+      h += '<rect x="160" y="155" width="25" height="43" class="k-tower" opacity=".4"/>';
+    }
+    // Right tower
+    if (level >= 5) {
+      h += '<rect x="307" y="125" width="43" height="73" class="k-tower"/><rect x="307" y="125" width="43" height="73" fill="url(#stone)"/>';
+      h += '<rect x="333" y="125" width="17" height="73" fill="rgba(0,0,0,.08)"/>';
+      h += '<rect x="305" y="186" width="47" height="12" class="k-tower" opacity=".7"/>';
+      h += '<polygon points="302,125 328.5,100 355,125" class="k-tower-roof"/>';
+      h += '<rect x="327" y="145" width="3" height="12" rx="1" fill="rgba(0,0,0,.35)"/>';
+      h += '<rect x="328" y="148" width="2" height="2" fill="rgba(255,255,255,.12)"/>';
+      if (level >= 7) {
+        h += '<g><rect x="307" y="115" width="10" height="10" class="k-tower"/><rect x="321" y="115" width="10" height="10" class="k-tower"/><rect x="335" y="115" width="10" height="10" class="k-tower"/></g>';
+      }
+    } else if (level === 4) {
+      h += '<rect x="312" y="145" width="30" height="53" class="k-tower" opacity=".5"/>';
+    }
+    // Door with portcullis
+    if (level >= 3) {
+      h += '<path d="M 235,198 L 235,163 Q 250,153 265,163 L 265,198 Z" class="k-door"/>';
+      h += '<line x1="241" y1="164" x2="241" y2="198" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/><line x1="247" y1="160" x2="247" y2="198" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/><line x1="253" y1="160" x2="253" y2="198" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/><line x1="259" y1="164" x2="259" y2="198" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/>';
+    } else if (level >= 1) h += '<path d="M 235,198 L 235,178 Q 250,170 265,178 L 265,198 Z" class="k-door" opacity=".4"/>';
+    // Gothic arched windows
+    if (level >= 4) {
+      var wo = level >= 6 ? '1' : '.45';
+      h += '<g class="k-windows">';
+      h += '<path d="M211,148 L211,133 Q217,125 223,133 L223,148 Z" class="k-window" opacity="' + wo + '"/>';
+      h += '<path d="M211,133 Q217,125 223,133" class="k-window" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="1" opacity="' + wo + '"/>';
+      h += '<line x1="217" y1="127" x2="217" y2="148" stroke="rgba(0,0,0,.12)" stroke-width=".8" opacity="' + wo + '"/>';
+      h += '<line x1="211" y1="140" x2="223" y2="140" stroke="rgba(0,0,0,.12)" stroke-width=".8" opacity="' + wo + '"/>';
+      h += '<path d="M275,148 L275,133 Q281,125 287,133 L287,148 Z" class="k-window" opacity="' + wo + '"/>';
+      h += '<path d="M275,133 Q281,125 287,133" class="k-window" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="1" opacity="' + wo + '"/>';
+      h += '<line x1="281" y1="127" x2="281" y2="148" stroke="rgba(0,0,0,.12)" stroke-width=".8" opacity="' + wo + '"/>';
+      h += '<line x1="275" y1="140" x2="287" y2="140" stroke="rgba(0,0,0,.12)" stroke-width=".8" opacity="' + wo + '"/>';
+      h += '</g>';
+    }
   }
   h += '</g>';
   // Flags
