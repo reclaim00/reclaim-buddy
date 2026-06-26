@@ -25,10 +25,9 @@ body.dark #moon-overlay{opacity:1}
 #moon-overlay svg{width:clamp(60px,15vw,140px);height:auto;display:block;filter:drop-shadow(0 0 20px rgba(255,248,238,.3))}
 #village-overlay{position:fixed;right:3%;bottom:0;z-index:1;pointer-events:none;width:clamp(140px,30vw,260px);transition:opacity .6s}
 #village-overlay svg{width:100%;height:auto;display:block;opacity:.7}
-#village-overlay .village-day{display:block}
-#village-overlay .village-night{display:none}
-body.dark #village-overlay .village-day{display:none}
-body.dark #village-overlay .village-night{display:block}
+#village-overlay.damage{animation:villageShake .5s ease-in-out}
+@keyframes villageShake{0%,100%{transform:translateX(0)}10%{transform:translateX(-4px)}20%{transform:translateX(3px)}30%{transform:translateX(-2px)}50%{transform:translateX(1px)}70%{transform:translateX(-1px)}}
+body.dark #village-overlay svg{opacity:.5}
 @media(max-width:480px){#village-overlay{right:1%}#moon-overlay{left:2%;top:4px}}
 .day-scene{opacity:.5}
 .night-scene{display:none}
@@ -887,101 +886,7 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
   <circle cx="90" cy="58" r="4" fill="#d8c8b0" opacity=".1"/>
 </svg>
 </div>
-<!-- Village overlay (always visible, day/night colors via CSS) -->
-<div id="village-overlay">
-<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg">
-  <g class="village-day">
-    <!-- Ground -->
-    <rect x="0" y="100" width="220" height="60" fill="#5a8a3a" opacity=".3"/>
-    <rect x="0" y="120" width="220" height="40" fill="#4a7a2a" opacity=".2"/>
-    <!-- Path -->
-    <path d="M100,120 Q95,130 90,140 Q85,150 80,160" stroke="#8a7a5a" stroke-width="6" fill="none" opacity=".4" stroke-linecap="round"/>
-    <!-- Cottage 1 (left) -->
-    <rect x="12" y="78" width="44" height="42" rx="2" fill="#a08a72"/>
-    <polygon points="5,78 34,55 63,78" fill="#7a5a3a"/>
-    <rect x="30" y="100" width="10" height="20" rx="1" fill="#5a4a3a"/>
-    <rect x="17" y="88" width="8" height="8" rx="4" fill="#6a5a4a"/>
-    <rect x="42" y="88" width="8" height="8" rx="4" fill="#6a5a4a"/>
-    <!-- Cottage 2 (center-right, larger) -->
-    <rect x="82" y="68" width="56" height="52" rx="2" fill="#b09a82"/>
-    <polygon points="76,68 110,38 144,68" fill="#8a6a4a"/>
-    <rect x="105" y="100" width="12" height="20" rx="1" fill="#6a5a4a"/>
-    <rect x="88" y="80" width="9" height="9" rx="4" fill="#7a6a5a"/>
-    <rect x="122" y="80" width="9" height="9" rx="4" fill="#7a6a5a"/>
-    <rect x="105" y="82" width="8" height="6" rx="2" fill="#5a4a3a"/>
-    <!-- Cottage 3 (right) -->
-    <rect x="164" y="84" width="40" height="36" rx="2" fill="#907a62"/>
-    <polygon points="158,84 184,64 210,84" fill="#6a4a2a"/>
-    <rect x="182" y="102" width="8" height="18" rx="1" fill="#4a3a2a"/>
-    <rect x="170" y="92" width="7" height="7" rx="3" fill="#5a4a3a"/>
-    <!-- Tree between cottage 1 and 2 -->
-    <rect x="70" y="88" width="4" height="28" fill="#5a3a1a"/>
-    <circle cx="72" cy="76" r="13" fill="#4a8a3a"/>
-    <circle cx="78" cy="80" r="10" fill="#3a7a2a"/>
-    <!-- Fence posts -->
-    <rect x="62" y="100" width="2" height="16" fill="#6a5a3a"/>
-    <rect x="72" y="102" width="2" height="14" fill="#6a5a3a"/>
-    <rect x="82" y="100" width="2" height="16" fill="#6a5a3a"/>
-    <line x1="62" y1="106" x2="84" y2="106" stroke="#6a5a3a" stroke-width="1.5"/>
-    <line x1="62" y1="112" x2="84" y2="112" stroke="#6a5a3a" stroke-width="1.5"/>
-    <!-- Smoke from chimney -->
-    <circle cx="120" cy="30" r="4" fill="#ccc" opacity=".2"/>
-    <circle cx="125" cy="22" r="3" fill="#ccc" opacity=".15"/>
-    <circle cx="130" cy="16" r="2" fill="#ccc" opacity=".1"/>
-  </g>
-  <g class="village-night">
-    <!-- Ground -->
-    <rect x="0" y="100" width="220" height="60" fill="#1a2a1a" opacity=".3"/>
-    <rect x="0" y="120" width="220" height="40" fill="#1a2a1a" opacity=".2"/>
-    <!-- Path -->
-    <path d="M100,120 Q95,130 90,140 Q85,150 80,160" stroke="#3a3a2a" stroke-width="6" fill="none" opacity=".3" stroke-linecap="round"/>
-    <!-- Cottage 1 -->
-    <rect x="12" y="78" width="44" height="42" rx="2" fill="#3a3a42"/>
-    <polygon points="5,78 34,55 63,78" fill="#2a1a1a"/>
-    <rect x="30" y="100" width="10" height="20" rx="1" fill="#2a2a32"/>
-    <g filter="url(#glow)">
-      <rect x="17" y="88" width="8" height="8" rx="4" fill="#ffd700" opacity=".8"/>
-      <rect x="42" y="88" width="8" height="8" rx="4" fill="#ffd700" opacity=".6"/>
-    </g>
-    <!-- Cottage 2 -->
-    <rect x="82" y="68" width="56" height="52" rx="2" fill="#4a4a52"/>
-    <polygon points="76,68 110,38 144,68" fill="#3a2a22"/>
-    <rect x="105" y="100" width="12" height="20" rx="1" fill="#3a3a42"/>
-    <g filter="url(#glow)">
-      <rect x="88" y="80" width="9" height="9" rx="4" fill="#ffd700" opacity=".9"/>
-      <rect x="122" y="80" width="9" height="9" rx="4" fill="#ffd700" opacity=".7"/>
-      <rect x="105" y="82" width="8" height="6" rx="2" fill="#ffcc44" opacity=".6"/>
-    </g>
-    <!-- Cottage 3 -->
-    <rect x="164" y="84" width="40" height="36" rx="2" fill="#3a3a42"/>
-    <polygon points="158,84 184,64 210,84" fill="#2a1a1a"/>
-    <rect x="182" y="102" width="8" height="18" rx="1" fill="#2a2a32"/>
-    <g filter="url(#glow)">
-      <rect x="170" y="92" width="7" height="7" rx="3" fill="#ffd700" opacity=".7"/>
-    </g>
-    <!-- Tree -->
-    <rect x="70" y="88" width="4" height="28" fill="#2a1a0a"/>
-    <circle cx="72" cy="76" r="13" fill="#1a3a1a"/>
-    <circle cx="78" cy="80" r="10" fill="#1a3a1a"/>
-    <!-- Fence -->
-    <rect x="62" y="100" width="2" height="16" fill="#3a3a2a"/>
-    <rect x="72" y="102" width="2" height="14" fill="#3a3a2a"/>
-    <rect x="82" y="100" width="2" height="16" fill="#3a3a2a"/>
-    <line x1="62" y1="106" x2="84" y2="106" stroke="#3a3a2a" stroke-width="1.5"/>
-    <line x1="62" y1="112" x2="84" y2="112" stroke="#3a3a2a" stroke-width="1.5"/>
-    <!-- Stars above village -->
-    <circle cx="30" cy="20" r="1" fill="#fff" opacity=".6"/>
-    <circle cx="60" cy="10" r="1.2" fill="#fff" opacity=".5"/>
-    <circle cx="100" cy="15" r="1" fill="#fff" opacity=".4"/>
-    <circle cx="150" cy="8" r="1.3" fill="#fff" opacity=".6"/>
-    <circle cx="190" cy="22" r="1" fill="#fff" opacity=".5"/>
-    <circle cx="45" cy="35" r=".8" fill="#fff" opacity=".4"/>
-    <circle cx="135" cy="28" r=".8" fill="#fff" opacity=".3"/>
-    <circle cx="205" cy="15" r="1" fill="#fff" opacity=".4"/>
-    <!-- Window glow filter has glow effect -->
-  </g>
-</svg>
-</div>
+<div id="village-overlay"></div>
 <div id="toast-container"></div>
 <div class="top-bar">
   <div class="logo-text">Re.<span style="color:var(--primary)">Claim</span></div>
@@ -1451,6 +1356,7 @@ function saveData() {
   applyTheme();
   _pageCache = {};
   render();
+  setTimeout(updateVillage, 50);
 }
 function safe(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function validateData(d) {
@@ -2079,6 +1985,7 @@ function recordRelapse() {
   D.sobriety.startDate = Date.now();
   saveData();
   setTimeout(kingdomDamage, 150);
+  setTimeout(villageDamage, 200);
   showRelapseRecovery();
 }
 
@@ -4997,6 +4904,7 @@ function rescueRecommit() {
   scheduleFollowUp();
   saveData();
   setTimeout(kingdomDamage, 150);
+  setTimeout(villageDamage, 200);
   document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'royalpardon\')">&#128081; Royal Pardon</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
 }
 
@@ -7744,6 +7652,126 @@ function kingdomTrackerHTML() {
   h += '</div>';
   return h;
 }
+function villageLevel(days) {
+  if (days <= 0) return 0;
+  if (days <= 6) return 1;
+  if (days <= 13) return 2;
+  if (days <= 29) return 3;
+  if (days <= 89) return 4;
+  if (days <= 180) return 5;
+  return 6;
+}
+function villageHTML() {
+  var days = soberDays();
+  var level = villageLevel(days);
+  var isNight = document.body.classList.contains('dark');
+  var h = '<svg viewBox="0 0 220 160" xmlns="http://www.w3.org/2000/svg">';
+  if (!isNight) {
+    // DAY
+    h += '<rect x="0" y="100" width="220" height="60" fill="#5a8a3a" opacity=".3"/><rect x="0" y="120" width="220" height="40" fill="#4a7a2a" opacity=".2"/>';
+    if (level >= 2) h += '<path d="M100,120 Q95,130 90,140 Q85,150 80,160" stroke="#8a7a5a" stroke-width="6" fill="none" opacity=".4" stroke-linecap="round"/>';
+    // Cottage 1 (left) - appears at level 1+
+    if (level >= 1) {
+      if (level === 1) {
+        h += '<rect x="14" y="86" width="36" height="34" rx="2" fill="#8a7a62"/><polygon points="8,86 32,68 56,86" fill="#6a4a2a"/><rect x="28" y="104" width="8" height="16" rx="1" fill="#4a3a2a"/>';
+      } else {
+        h += '<rect x="12" y="78" width="44" height="42" rx="2" fill="#a08a72"/><polygon points="5,78 34,55 63,78" fill="#7a5a3a"/><rect x="30" y="100" width="10" height="20" rx="1" fill="#5a4a3a"/>';
+        if (level >= 2) h += '<rect x="17" y="88" width="8" height="8" rx="4" fill="#6a5a4a"/><rect x="42" y="88" width="8" height="8" rx="4" fill="#6a5a4a"/>';
+      }
+    }
+    // Cottage 2 (center, larger) - appears at level 2+
+    if (level >= 2) {
+      if (level === 2) {
+        h += '<rect x="86" y="76" width="48" height="44" rx="2" fill="#9a8a72"/><polygon points="80,76 110,50 140,76" fill="#7a5a3a"/><rect x="106" y="102" width="10" height="18" rx="1" fill="#5a4a3a"/>';
+      } else {
+        h += '<rect x="82" y="68" width="56" height="52" rx="2" fill="#b09a82"/><polygon points="76,68 110,38 144,68" fill="#8a6a4a"/><rect x="105" y="100" width="12" height="20" rx="1" fill="#6a5a4a"/>';
+        if (level >= 3) h += '<rect x="88" y="80" width="9" height="9" rx="4" fill="#7a6a5a"/><rect x="122" y="80" width="9" height="9" rx="4" fill="#7a6a5a"/>';
+        if (level >= 2) h += '<rect x="105" y="82" width="8" height="6" rx="2" fill="#5a4a3a"/>';
+      }
+    }
+    // Cottage 3 (right) - appears at level 2+
+    if (level >= 2) {
+      if (level === 2) {
+        h += '<rect x="168" y="88" width="34" height="32" rx="2" fill="#8a7a62"/><polygon points="162,88 185,70 208,88" fill="#6a4a2a"/><rect x="182" y="104" width="7" height="16" rx="1" fill="#4a3a2a"/>';
+      } else {
+        h += '<rect x="164" y="84" width="40" height="36" rx="2" fill="#907a62"/><polygon points="158,84 184,64 210,84" fill="#6a4a2a"/><rect x="182" y="102" width="8" height="18" rx="1" fill="#4a3a2a"/>';
+        if (level >= 3) h += '<rect x="170" y="92" width="7" height="7" rx="3" fill="#5a4a3a"/>';
+      }
+    }
+    // Tree
+    if (level >= 2) {
+      var tr = Math.min(16, 10 + level);
+      h += '<rect x="70" y="88" width="4" height="28" fill="#5a3a1a"/><circle cx="72" cy="' + (77 - level) + '" r="' + tr + '" fill="#4a8a3a"/><circle cx="78" cy="' + (81 - level) + '" r="' + (tr-3) + '" fill="#3a7a2a"/>';
+    }
+    if (level === 1) h += '<rect x="70" y="92" width="3" height="24" fill="#5a3a1a"/><circle cx="71" cy="84" r="7" fill="#3a6a2a" opacity=".6"/>';
+    // Fence (level 3+)
+    if (level >= 3) {
+      h += '<rect x="62" y="100" width="2" height="16" fill="#6a5a3a"/><rect x="72" y="102" width="2" height="14" fill="#6a5a3a"/><rect x="82" y="100" width="2" height="16" fill="#6a5a3a"/>';
+      h += '<line x1="62" y1="106" x2="84" y2="106" stroke="#6a5a3a" stroke-width="1.5"/><line x1="62" y1="112" x2="84" y2="112" stroke="#6a5a3a" stroke-width="1.5"/>';
+    }
+    // Chimney smoke (level 3+)
+    if (level >= 3) {
+      h += '<circle cx="120" cy="30" r="4" fill="#ccc" opacity=".2"/><circle cx="125" cy="22" r="3" fill="#ccc" opacity=".15"/><circle cx="130" cy="16" r="2" fill="#ccc" opacity=".1"/>';
+      if (level >= 4) h += '<circle cx="44" cy="34" r="3" fill="#ccc" opacity=".15"/><circle cx="48" cy="27" r="2.5" fill="#ccc" opacity=".1"/>';
+    }
+    // Flowers (level 4+)
+    if (level >= 4) {
+      h += '<circle cx="55" cy="106" r="2" fill="#ff7788"/><circle cx="140" cy="108" r="2" fill="#ff99aa"/><circle cx="155" cy="104" r="2" fill="#ffbb44"/>';
+      if (level >= 5) h += '<circle cx="50" cy="112" r="1.5" fill="#ee77cc"/><circle cx="148" cy="112" r="1.5" fill="#ff7788"/>';
+    }
+    // Extra decoration (level 5+)
+    if (level >= 5) h += '<rect x="92" y="64" width="6" height="4" fill="#8a6a4a" rx="1"/><polygon points="92,64 95,60 98,64" fill="#aa3a2a"/>';
+    if (level >= 6) h += '<rect x="178" y="80" width="5" height="4" fill="#7a5a3a" rx="1"/><polygon points="178,80 180.5,76 183,80" fill="#aa3a2a"/>';
+  } else {
+    // NIGHT
+    h += '<rect x="0" y="100" width="220" height="60" fill="#1a2a1a" opacity=".3"/><rect x="0" y="120" width="220" height="40" fill="#1a2a1a" opacity=".2"/>';
+    if (level >= 2) h += '<path d="M100,120 Q95,130 90,140 Q85,150 80,160" stroke="#3a3a2a" stroke-width="6" fill="none" opacity=".3" stroke-linecap="round"/>';
+    if (level >= 1) {
+      if (level === 1) h += '<rect x="14" y="86" width="36" height="34" rx="2" fill="#2a2a32"/><polygon points="8,86 32,68 56,86" fill="#1a0a0a"/>';
+      else h += '<rect x="12" y="78" width="44" height="42" rx="2" fill="#3a3a42"/><polygon points="5,78 34,55 63,78" fill="#2a1a1a"/><rect x="30" y="100" width="10" height="20" rx="1" fill="#2a2a32"/>';
+      if (level >= 3) h += '<g filter="url(#glow)"><rect x="17" y="88" width="8" height="8" rx="4" fill="#ffd700" opacity=".8"/><rect x="42" y="88" width="8" height="8" rx="4" fill="#ffd700" opacity=".6"/></g>';
+      else if (level >= 2) h += '<rect x="17" y="88" width="8" height="8" rx="4" fill="#ffd700" opacity=".15"/><rect x="42" y="88" width="8" height="8" rx="4" fill="#ffd700" opacity=".1"/>';
+    }
+    if (level >= 2) {
+      if (level === 2) h += '<rect x="86" y="76" width="48" height="44" rx="2" fill="#3a3a42"/><polygon points="80,76 110,50 140,76" fill="#2a1a1a"/>';
+      else h += '<rect x="82" y="68" width="56" height="52" rx="2" fill="#4a4a52"/><polygon points="76,68 110,38 144,68" fill="#3a2a22"/><rect x="105" y="100" width="12" height="20" rx="1" fill="#3a3a42"/>';
+      if (level >= 3) h += '<g filter="url(#glow)"><rect x="88" y="80" width="9" height="9" rx="4" fill="#ffd700" opacity=".9"/><rect x="122" y="80" width="9" height="9" rx="4" fill="#ffd700" opacity=".7"/></g><rect x="105" y="82" width="8" height="6" rx="2" fill="#ffcc44" opacity=".4"/>';
+      else h += '<rect x="88" y="80" width="9" height="9" rx="4" fill="#ffd700" opacity=".12"/><rect x="122" y="80" width="9" height="9" rx="4" fill="#ffd700" opacity=".08"/>';
+    }
+    if (level >= 2) {
+      if (level === 2) h += '<rect x="168" y="88" width="34" height="32" rx="2" fill="#2a2a32"/><polygon points="162,88 185,70 208,88" fill="#1a0a0a"/>';
+      else h += '<rect x="164" y="84" width="40" height="36" rx="2" fill="#3a3a42"/><polygon points="158,84 184,64 210,84" fill="#2a1a1a"/><rect x="182" y="102" width="8" height="18" rx="1" fill="#2a2a32"/>';
+      if (level >= 3) h += '<g filter="url(#glow)"><rect x="170" y="92" width="7" height="7" rx="3" fill="#ffd700" opacity=".7"/></g>';
+    }
+    if (level >= 2) {
+      var tr = Math.min(14, 8 + level);
+      h += '<rect x="70" y="88" width="4" height="28" fill="#2a1a0a"/><circle cx="72" cy="' + (77 - level) + '" r="' + tr + '" fill="#1a3a1a"/><circle cx="78" cy="' + (81 - level) + '" r="' + (tr-3) + '" fill="#1a3a1a"/>';
+    }
+    if (level === 1) h += '<rect x="70" y="92" width="3" height="24" fill="#1a0a0a"/><circle cx="71" cy="84" r="7" fill="#0a2a0a" opacity=".6"/>';
+    if (level >= 3) {
+      h += '<rect x="62" y="100" width="2" height="16" fill="#3a3a2a"/><rect x="72" y="102" width="2" height="14" fill="#3a3a2a"/><rect x="82" y="100" width="2" height="16" fill="#3a3a2a"/>';
+      h += '<line x1="62" y1="106" x2="84" y2="106" stroke="#3a3a2a" stroke-width="1.5"/><line x1="62" y1="112" x2="84" y2="112" stroke="#3a3a2a" stroke-width="1.5"/>';
+    }
+    // Stars
+    var starCount = level * 3 + 2;
+    for (var si = 0; si < starCount; si++) {
+      h += '<circle cx="' + (10 + (si * 29) % 200) + '" cy="' + (8 + (si * 17) % 40) + '" r="' + (0.5 + (si % 3) * 0.3) + '" fill="#fff" opacity="' + (0.15 + level * 0.1) + '"/>';
+    }
+  }
+  h += '</svg>';
+  return h;
+}
+function updateVillage() {
+  var el = document.getElementById('village-overlay');
+  if (!el) return;
+  el.innerHTML = villageHTML();
+}
+function villageDamage() {
+  var el = document.getElementById('village-overlay');
+  if (!el) return;
+  el.className = el.className.replace(/ damage/g, '') + ' damage';
+  setTimeout(function() { if (el) el.className = el.className.replace(' damage', ''); }, 600);
+}
 function homeHTML() {
   var h = '';
 
@@ -10074,6 +10102,7 @@ setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
 if (AUTH_USER && !isLockSet()) {
   document.body.classList.add('logged-in');
   render();
+  setTimeout(updateVillage, 100);
   loadFromFirestore(function(cloudData) {
     if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
   });
