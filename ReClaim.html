@@ -196,6 +196,7 @@ body.dark .overlay{background:rgba(0,0,0,.65)}
 @keyframes overlayFade{from{opacity:0}to{opacity:1}}
 .overlay-content{background:var(--card);width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px;max-height:85vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.12);animation:overlaySlide .3s cubic-bezier(.22,1,.36,1)}
 @keyframes overlaySlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes schillingPop{0%{transform:scale(.5) translateY(20px);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1) translateY(0);opacity:1}}
 .quote{font-style:italic;font-size:14px;line-height:1.6;color:var(--text);padding:14px 16px;background:var(--primary-light);border-radius:12px;margin:10px 0;border-left:3px solid var(--primary)}
 body.dark .quote{border-left-color:var(--gold);background:rgba(138,122,154,.04)}
 .sos-btn{font-size:48px;font-weight:900;color:#fff;background:linear-gradient(135deg,#dc2626,#991b1b);border:none;width:100%;padding:24px;border-radius:16px;cursor:pointer;margin:8px 0;box-shadow:0 4px 24px rgba(220,38,38,.35);letter-spacing:4px;transition:all .2s}
@@ -1373,11 +1374,27 @@ function saveData() {
 function updateSchillings() {
   D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
   var days = soberDays();
-  var entries = (D.journal || []).length;
   var lastDay = D.warchest.lastDayCounted || 0;
-  var lastEntry = D.warchest.lastEntryCount || 0;
   if (days > lastDay) { D.warchest.schillings += (days - lastDay) * 5; D.warchest.lastDayCounted = days; }
-  if (entries > lastEntry) { D.warchest.schillings += (entries - lastEntry) * 5; D.warchest.lastEntryCount = entries; }
+  D.warchest.lastEntryCount = (D.journal || []).length;
+}
+function earnSchillings(amount, reason) {
+  D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
+  var before = D.warchest.schillings || 0;
+  D.warchest.schillings = before + amount;
+  D.warchest.lastEntryCount = (D.journal || []).length;
+  D.warchest.lastDayCounted = soberDays();
+  showSchillingCutscene(amount, reason, D.warchest.schillings);
+}
+function showSchillingCutscene(amount, reason, total) {
+  var existing = document.getElementById('schilling-cutscene');
+  if (existing) existing.remove();
+  var ov = document.createElement('div');
+  ov.id = 'schilling-cutscene';
+  ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);animation:overlayFade .3s ease';
+  ov.innerHTML = '<div style="background:linear-gradient(135deg,#d4a017,#f0c030);border-radius:20px;padding:24px 32px;text-align:center;max-width:280px;width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.2);animation:schillingPop .5s cubic-bezier(.22,1,.36,1)"><div style="font-size:48px;margin-bottom:4px">&#128176;</div><div style="font-size:28px;font-weight:800;color:#2a1a00">+' + amount + '</div><div style="font-size:13px;color:#4a3a00;margin:2px 0">' + reason + '</div><div style="width:40px;height:2px;background:rgba(0,0,0,.15);margin:8px auto"></div><div style="font-size:12px;color:#4a3a00;opacity:.7">Total: ' + total + ' schillings</div></div>';
+  document.body.appendChild(ov);
+  setTimeout(function() { var e = document.getElementById('schilling-cutscene'); if (e) e.remove(); }, 2500);
 }
 function safe(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function validateData(d) {
@@ -3088,6 +3105,7 @@ function saveJournal(btn) {
   };
   var saveIt = function() {
     D.journal.push(entry);
+    earnSchillings(5, 'Journal entry');
     saveData();
     overlay.remove();
     if (checkCrisis(txt)) { showCrisisAlert(txt); }
@@ -4186,6 +4204,7 @@ function saveQuickMood() {
   var entry = {text:txt, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'), mood:mood, type:'quick'};
   var saveIt = function() {
     D.journal.push(entry);
+    earnSchillings(5, 'Journal entry');
     if (!D.moods) D.moods = [];
     D.moods.push({val:mood, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
     saveData();
@@ -4220,6 +4239,7 @@ function saveRefJournal() {
   };
   var saveIt = function() {
     D.journal.push(entry);
+    earnSchillings(5, 'Journal entry');
     text.value = '';
     var idx = D.journal.length - 1;
     saveData();
@@ -5370,8 +5390,7 @@ function submitCheckin() {
   D.checkins = D.checkins || [];
   D.checkins.push({date:today,time:new Date().toLocaleTimeString(),mood:mood,win:win,intent:intent});
   D.streak = (D.streak || 0) + 1;
-  D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
-  D.warchest.schillings = (D.warchest.schillings || 0) + 1;
+  earnSchillings(1, 'Daily check-in');
   saveData();
   if (window._cmOverlay) window._cmOverlay.remove();
   showCheckinReaction(mood);
