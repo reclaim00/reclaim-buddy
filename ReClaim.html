@@ -7659,14 +7659,31 @@ function kingdomFlourish() {
   el.className = el.className.replace(/ damage| flourish/g, '') + ' flourish';
   setTimeout(function() { if (el) el.className = el.className.replace(' flourish', ''); }, 1400);
 }
+function kingdomTrackerHTML() {
+  var days = soberDays();
+  var level = kingdomLevel(days);
+  var isActive = D.sobriety.startDate ? true : false;
+  var levelNames = ['Ruins','Foundation','Village','Town','City','Kingdom','Empire'];
+  var h = kingdomHTML();
+  h += '<div class="card" style="text-align:center;margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:10px 14px 12px">';
+  if (isActive) {
+    h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:2px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">days sober</span></div>';
+    h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + levelNames[level] + ' &mdash; ' + (level===0?'A new beginning':level===1?'Building from the ground':level===2?'Walls are rising':level===3?'A thriving settlement':level===4?'Strong and prosperous':level===5?'A realm to be proud of':'A legendary kingdom') + '</div>';
+    h += soberTimerHTML();
+    h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
+  } else {
+    h += '<div style="font-size:14px;color:var(--muted);margin-bottom:6px">Your kingdom awaits</div>';
+    h += '<button class="btn btn-primary btn-sm" onclick="startSobriety()">Begin Your Reign</button>';
+  }
+  h += '</div>';
+  return h;
+}
 function homeHTML() {
   var h = '';
 
-  // Kingdom visualization at top
-  h += kingdomHTML();
-
-  // Sobriety plant + timer at top
-  h += plantHTML();
+  // Kingdom tracker (castle + sobriety info)
+  h += kingdomTrackerHTML();
 
   h += characterGreetingHTML();
 
