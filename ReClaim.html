@@ -1085,7 +1085,7 @@ function defaultData() {
     chivalryCode: { code: [], checkins: [] },
     relapseGraveyard: { graves: [] },
     royalPardons: [],
-    warchest: { dailyRate: 10 }
+    warchest: { dailyRate: 10, shields: 0 }
   };
 }
 
@@ -1989,7 +1989,8 @@ function recordRelapse() {
   if (!confirm(t('This records a relapse date. Remember: recovery is not linear. Every day is a fresh start.'))) return;
   if (!D.sobriety.relapseDates) D.sobriety.relapseDates = [];
   D.sobriety.relapseDates.push(Date.now());
-  D.sobriety.startDate = Date.now();
+  D.warchest = D.warchest || { dailyRate: 10, shields: 0 };
+  D.warchest.shields = (D.warchest.shields || 0) + 1;
   saveData();
   setTimeout(kingdomDamage, 150);
   setTimeout(villageDamage, 200);
@@ -1999,7 +2000,9 @@ function recordRelapse() {
 function showRelapseRecovery() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">??</div><h3 style="font-size:20px;font-weight:700;color:var(--danger);margin:0">Relapse Recovery Mode</h3><p style="font-size:13px;color:var(--muted);margin-top:4px">You pressed reset, not restart. Here\'s your plan forward.</p></div>';
+  var shields = (D.warchest && D.warchest.shields) || 0;
+  var shieldLine = shields > 0 ? '<div style="font-size:13px;color:var(--gold);margin-bottom:6px">&#128737; Your streak is protected by ' + shields + ' shield' + (shields!==1?'s':'') + '</div>' : '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">&#128737; Your next relapse will earn a shield to protect your streak</div>';
+  var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#128737;</div><h3 style="font-size:20px;font-weight:700;color:var(--danger);margin:0">Relapse Recorded</h3><p style="font-size:13px;color:var(--muted);margin-top:4px">Your streak continues — a shield absorbed the impact</p>' + shieldLine + '</div>';
   // Next 1 hour
   h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#9200; Next 1 Hour</div><div style="font-size:13px;color:var(--text);line-height:1.5">Breathe. You are not back to square one — you have all the tools you\'ve built. Drink water, wash your face, step outside. Call or text your comrade or a crisis line if you need to talk. Delete the means of access. Write one sentence about what happened without judgment.</div></div>';
   // Next 24 hours
@@ -7686,7 +7689,10 @@ function kingdomTrackerHTML() {
   var h = kingdomHTML();
   h += '<div class="card" style="text-align:center;margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:10px 14px 12px">';
   if (isActive) {
-    h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:2px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">days sober</span></div>';
+    h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:2px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">days sober</span>';
+    var sh = (D.warchest && D.warchest.shields) || 0;
+    if (sh > 0) h += '<span style="font-size:13px;color:var(--gold);margin-left:2px" title="' + sh + ' shield' + (sh!==1?'s':'') + ' protecting your streak">&#128737;' + sh + '</span>';
+    h += '</div>';
     h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + levelNames[Math.min(level,10)] + ' &mdash; ' + (levelDescs[Math.min(level,10)]||'') + '</div>';
     h += soberTimerHTML();
     h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
@@ -7814,8 +7820,9 @@ function updateVillage() {
 }
 function warchestHTML() {
   var days = soberDays();
-  D.warchest = D.warchest || { dailyRate: 10 };
+  D.warchest = D.warchest || { dailyRate: 10, shields: 0 };
   var rate = D.warchest.dailyRate || 10;
+  var shields = D.warchest.shields || 0;
   var coins = Math.max(0, days);
   var saved = (coins * rate).toLocaleString();
   var isActive = D.sobriety.startDate ? true : false;
@@ -7827,17 +7834,13 @@ function warchestHTML() {
   // Chest SVG
   h += '<div style="max-width:200px;margin:0 auto 8px">';
   h += '<svg viewBox="0 0 200 160">';
-  // Chest body
   h += '<rect x="30" y="70" width="140" height="70" rx="4" fill="#6a4a2a" stroke="#4a2a0a" stroke-width="2"/>';
   h += '<rect x="30" y="70" width="140" height="70" rx="4" fill="url(#warchest-stone)" opacity=".5"/>';
-  // Metal bands
   h += '<rect x="42" y="70" width="8" height="70" rx="2" fill="#8a7a5a"/><rect x="150" y="70" width="8" height="70" rx="2" fill="#8a7a5a"/>';
   h += '<rect x="95" y="70" width="10" height="70" rx="2" fill="#8a7a5a"/>';
-  // Coins inside (based on fullness)
   if (isActive && coins > 0) {
     var ch = Math.round(8 + fullness * 40);
     h += '<rect x="40" y="' + (130 - ch) + '" width="120" height="' + ch + '" rx="2" fill="#d4a017"/>';
-    // Coin circles on top
     for (var ci = 0; ci < coinRows && ci < 8; ci++) {
       var cy = 128 - ci * 5;
       for (var cj = 0; cj < 6 - (ci % 2); cj++) {
@@ -7847,37 +7850,35 @@ function warchestHTML() {
       }
     }
   }
-  // Lid (open if active)
   if (isActive) {
     h += '<path d="M 32,68 L 100,38 L 168,68" fill="#7a5a3a" stroke="#4a2a0a" stroke-width="2" stroke-linejoin="round"/>';
     h += '<rect x="32" y="66" width="136" height="4" rx="2" fill="#8a6a4a"/>';
     h += '<rect x="92" y="63" width="16" height="8" rx="2" fill="#d4a017" opacity=".6"/>';
-    // Lock (open)
     h += '<rect x="95" y="72" width="10" height="8" rx="1" fill="#8a7a5a"/>';
     h += '<circle cx="100" cy="76" r="2" fill="#4a2a0a"/>';
   } else {
-    // Closed/locked chest for inactive
     h += '<rect x="30" y="64" width="140" height="8" rx="3" fill="#5a3a1a" stroke="#3a1a00" stroke-width="1.5"/>';
     h += '<rect x="95" y="66" width="10" height="8" rx="1" fill="#8a7a5a"/>';
     h += '<circle cx="100" cy="70" r="2.5" fill="#4a2a0a"/>';
   }
-  // Shadow under chest
   h += '<ellipse cx="100" cy="142" rx="75" ry="6" fill="rgba(0,0,0,.08)"/>';
   h += '</svg>';
   h += '</div>';
-  // Stats
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0">';
-  h += '<div style="background:var(--primary-light);border-radius:10px;padding:10px"><div style="font-size:24px;font-weight:700;color:var(--primary)">' + coins + '</div><div style="font-size:11px;color:var(--muted)">Gold Coins</div></div>';
-  h += '<div style="background:var(--primary-light);border-radius:10px;padding:10px"><div style="font-size:20px;font-weight:700;color:var(--primary)">$' + saved + '</div><div style="font-size:11px;color:var(--muted)">Money Saved</div></div>';
+  // Stats grid
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0">';
+  h += '<div style="background:var(--primary-light);border-radius:10px;padding:8px"><div style="font-size:20px;font-weight:700;color:var(--primary)">' + coins + '</div><div style="font-size:10px;color:var(--muted)">Gold Coins</div></div>';
+  h += '<div style="background:var(--primary-light);border-radius:10px;padding:8px"><div style="font-size:18px;font-weight:700;color:var(--primary)">$' + saved + '</div><div style="font-size:10px;color:var(--muted)">Money Saved</div></div>';
+  h += '<div style="background:var(--primary-light);border-radius:10px;padding:8px"><div style="font-size:20px;font-weight:700;color:var(--primary)">' + shields + '</div><div style="font-size:10px;color:var(--muted)">Shields</div></div>';
   h += '</div>';
   if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your reign to fill the War Chest</div>';
+  // Shield explanation
+  if (shields > 0) h += '<div style="font-size:11px;color:var(--gold);background:rgba(255,215,0,.08);border-radius:8px;padding:6px 10px;margin-bottom:8px">&#128737; You have ' + shields + ' shield' + (shields !== 1 ? 's' : '') + ' protecting your streak. Each relapse earned one.</div>';
   // Rate setting
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--muted)">';
   h += '<span>Daily rate: $<input type="number" id="warchest-rate" value="' + rate + '" min="1" max="1000" step="1" style="width:60px;padding:4px 6px;font-size:12px;text-align:center;display:inline-block" onchange="D.warchest.dailyRate=parseInt(this.value)||10;saveData();render()"></span>';
   h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'more\')" style="margin-top:8px">Back to Arsenal</button>';
   h += '</div>';
-  // Add stone pattern defs if not already present
   h = h.replace('<svg', '<svg><defs><pattern id="warchest-stone" width="12" height="10" patternUnits="userSpaceOnUse"><path d="M0,5 L12,5 M6,0 L6,5 M0,5 L0,10 M0,10 L12,10" stroke="rgba(0,0,0,.08)" stroke-width=".4" fill="none"/></pattern></defs>');
   return h;
 }
@@ -7909,10 +7910,11 @@ function homeHTML() {
   var wcCoins = Math.max(0, wcDays);
   var wcRate = (D.warchest && D.warchest.dailyRate) || 10;
   var wcSaved = (wcCoins * wcRate).toLocaleString();
+  var wcShields = (D.warchest && D.warchest.shields) || 0;
   h += '<div class="card" style="text-align:center;padding:12px;cursor:pointer" onclick="goTo(\'warchest\')">';
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px">';
   h += '<span style="font-size:28px">&#128176;</span>';
-  h += '<div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:700;color:var(--primary)">War Chest</div><div style="font-size:11px;color:var(--muted)">' + wcCoins + ' gold coins &middot; $' + wcSaved + ' saved</div></div>';
+  h += '<div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:700;color:var(--primary)">War Chest</div><div style="font-size:11px;color:var(--muted)">' + wcCoins + ' gold &middot; $' + wcSaved + ' saved' + (wcShields > 0 ? ' &middot; ' + wcShields + ' &#128737;' : '') + '</div></div>';
   h += '<span style="font-size:14px;color:var(--muted)">&#8594;</span>';
   h += '</div></div>';
 
