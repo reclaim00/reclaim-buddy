@@ -7691,7 +7691,7 @@ function kingdomTrackerHTML() {
   if (isActive) {
     h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:2px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">days sober</span>';
     var sh = (D.warchest && D.warchest.shields) || 0;
-    if (sh > 0) h += '<span style="font-size:13px;color:var(--gold);margin-left:2px" title="' + sh + ' shield' + (sh!==1?'s':'') + ' protecting your streak">&#128737;' + sh + '</span>';
+    if (sh > 0) h += '<span style="font-size:13px;color:var(--accent);margin-left:2px" title="' + sh + ' shield' + (sh!==1?'s':'') + ' protecting your streak">&#128737;</span>';
     h += '</div>';
     h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + levelNames[Math.min(level,10)] + ' &mdash; ' + (levelDescs[Math.min(level,10)]||'') + '</div>';
     h += soberTimerHTML();
@@ -7833,7 +7833,7 @@ function warchestHTML() {
   h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:10px">Every day of sobriety adds to your treasury</div>';
   // Chest SVG
   h += '<div style="max-width:200px;margin:0 auto 8px">';
-  h += '<svg viewBox="0 0 200 160">';
+  h += '<svg viewBox="0 0 200 160"><defs><pattern id="warchest-stone" width="12" height="10" patternUnits="userSpaceOnUse"><path d="M0,5 L12,5 M6,0 L6,5 M0,5 L0,10 M0,10 L12,10" stroke="rgba(0,0,0,.08)" stroke-width=".4" fill="none"/></pattern></defs>';
   h += '<rect x="30" y="70" width="140" height="70" rx="4" fill="#6a4a2a" stroke="#4a2a0a" stroke-width="2"/>';
   h += '<rect x="30" y="70" width="140" height="70" rx="4" fill="url(#warchest-stone)" opacity=".5"/>';
   h += '<rect x="42" y="70" width="8" height="70" rx="2" fill="#8a7a5a"/><rect x="150" y="70" width="8" height="70" rx="2" fill="#8a7a5a"/>';
@@ -7879,7 +7879,6 @@ function warchestHTML() {
   h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'more\')" style="margin-top:8px">Back to Arsenal</button>';
   h += '</div>';
-  h = h.replace('<svg', '<svg><defs><pattern id="warchest-stone" width="12" height="10" patternUnits="userSpaceOnUse"><path d="M0,5 L12,5 M6,0 L6,5 M0,5 L0,10 M0,10 L12,10" stroke="rgba(0,0,0,.08)" stroke-width=".4" fill="none"/></pattern></defs>');
   return h;
 }
 function villageDamage() {
@@ -7908,9 +7907,10 @@ function homeHTML() {
   // War Chest card
   var wcDays = soberDays();
   var wcCoins = Math.max(0, wcDays);
-  var wcRate = (D.warchest && D.warchest.dailyRate) || 10;
+  var wcWar = D.warchest || {};
+  var wcRate = wcWar.dailyRate || 10;
   var wcSaved = (wcCoins * wcRate).toLocaleString();
-  var wcShields = (D.warchest && D.warchest.shields) || 0;
+  var wcShields = wcWar.shields || 0;
   h += '<div class="card" style="text-align:center;padding:12px;cursor:pointer" onclick="goTo(\'warchest\')">';
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px">';
   h += '<span style="font-size:28px">&#128176;</span>';
