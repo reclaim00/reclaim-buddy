@@ -4190,7 +4190,7 @@ function saveRefJournal() {
     text.value = '';
     var idx = D.journal.length - 1;
     saveData();
-    try { showJournalLetter(idx); } catch(e) {}
+    try { showBoxingMatch(function() { showJournalLetter(idx); }); } catch(e) {}
   };
   if (isEncryptionEnabled() && ENC_KEY) {
     encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
