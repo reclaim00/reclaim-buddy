@@ -1380,13 +1380,19 @@ function updateSchillings() {
   if (days > lastDay) { D.warchest.schillings += (days - lastDay) * 5; D.warchest.lastDayCounted = days; }
   D.warchest.lastEntryCount = (D.journal || []).length;
 }
+var _pendingSchill = null;
 function earnSchillings(amount, reason) {
   D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
   var before = D.warchest.schillings || 0;
   D.warchest.schillings = before + amount;
   D.warchest.lastEntryCount = (D.journal || []).length;
   D.warchest.lastDayCounted = soberDays();
-  showSchillingCutscene(amount, reason, D.warchest.schillings);
+  _pendingSchill = { amount: amount, reason: reason };
+}
+function showSchillingNotification() {
+  if (!_pendingSchill) return;
+  showSchillingCutscene(_pendingSchill.amount, _pendingSchill.reason, D.warchest.schillings);
+  _pendingSchill = null;
 }
 function showSchillingCutscene(amount, reason, total) {
   var existing = document.getElementById('schilling-cutscene');
@@ -3110,6 +3116,7 @@ function saveJournal(btn) {
     earnSchillings(5, 'Journal entry');
     saveData();
     overlay.remove();
+    setTimeout(showSchillingNotification, 800);
     if (checkCrisis(txt)) { showCrisisAlert(txt); }
   };
   if (isEncryptionEnabled() && ENC_KEY) {
@@ -4223,6 +4230,7 @@ function saveQuickMood() {
     D.moods.push({val:mood, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
     saveData();
     render();
+    setTimeout(showSchillingNotification, 800);
   };
   if (isEncryptionEnabled() && ENC_KEY) {
     encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
@@ -4393,6 +4401,7 @@ function showJournalLetter(idx) {
                 if (closing) closing.style.display = 'block';
                 var closeBtn = document.getElementById('letter-close');
                 if (closeBtn) closeBtn.style.display = 'inline-block';
+                setTimeout(showSchillingNotification, 800);
                 return;
               }
               stEl.innerHTML += '<span>' + sWords[swi] + '</span>';
@@ -4405,12 +4414,14 @@ function showJournalLetter(idx) {
             if (closing) closing.style.display = 'block';
             var closeBtn = document.getElementById('letter-close');
             if (closeBtn) closeBtn.style.display = 'inline-block';
+            setTimeout(showSchillingNotification, 800);
           }
         } else {
           var closing = document.getElementById('letter-closing');
           if (closing) closing.style.display = 'block';
           var closeBtn = document.getElementById('letter-close');
           if (closeBtn) closeBtn.style.display = 'inline-block';
+          setTimeout(showSchillingNotification, 800);
         }
         return;
       }
@@ -5408,6 +5419,7 @@ function submitCheckin() {
   saveData();
   if (window._cmOverlay) window._cmOverlay.remove();
   showCheckinReaction(mood);
+  setTimeout(showSchillingNotification, 800);
 }
 function showCheckinReaction(mood) {
   var chars = ['Arthur','Gertrude','Oswald'];
