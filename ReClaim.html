@@ -5366,6 +5366,8 @@ function submitCheckin() {
   D.checkins = D.checkins || [];
   D.checkins.push({date:today,time:new Date().toLocaleTimeString(),mood:mood,win:win,intent:intent});
   D.streak = (D.streak || 0) + 1;
+  D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
+  D.warchest.schillings = (D.warchest.schillings || 0) + 1;
   saveData();
   if (window._cmOverlay) window._cmOverlay.remove();
   showCheckinReaction(mood);
