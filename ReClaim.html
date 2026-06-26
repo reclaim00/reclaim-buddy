@@ -28,7 +28,7 @@ body.dark #moon-overlay{opacity:1}
 #village-overlay.damage{animation:villageShake .5s ease-in-out}
 @keyframes villageShake{0%,100%{transform:translateX(0)}10%{transform:translateX(-4px)}20%{transform:translateX(3px)}30%{transform:translateX(-2px)}50%{transform:translateX(1px)}70%{transform:translateX(-1px)}}
 body.dark #village-overlay svg{opacity:.5}
-@media(max-width:480px){#village-overlay{right:1%}#moon-overlay{left:2%;top:4px}}
+@media(max-width:600px){#village-overlay{width:50vw;right:2%;bottom:0}}@media(max-width:480px){#village-overlay{width:55vw;right:1%}#moon-overlay{left:2%;top:4px}}
 .day-scene{opacity:.5}
 .night-scene{display:none}
 .app,.top-bar,.tabs{position:relative;z-index:1}
@@ -7772,11 +7772,23 @@ function villageDamage() {
   el.className = el.className.replace(/ damage/g, '') + ' damage';
   setTimeout(function() { if (el) el.className = el.className.replace(' damage', ''); }, 600);
 }
+function showVillageModal() {
+  var days = soberDays();
+  var level = villageLevel(days);
+  var lnames = ['Abandoned','Fledgling','Growing','Thriving','Flourishing','Prosperous','Legendary'];
+  var ldescs = ['A desolate ruin...','A single cottage, just beginning','A small settlement taking shape','A thriving community','A beautiful village in full bloom','A prosperous town of renown','A legendary village of song and story'];
+  var ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.id = 'village-modal';
+  ov.innerHTML = '<div class="overlay-content" style="max-width:480px;text-align:center;padding:20px"><div style="font-size:13px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">Your Village</div><div style="font-size:22px;font-weight:700;color:var(--primary);margin-bottom:2px">' + lnames[Math.min(level,6)] + '</div><div style="font-size:12px;color:var(--text-light);margin-bottom:8px">' + (ldescs[Math.min(level,6)]||'') + '</div>' + (days > 0 ? '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">' + days + ' day' + (days!==1?'s':'') + ' of growth</div>' : '') + '<div style="max-width:360px;margin:0 auto 10px">' + villageHTML() + '</div><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'village-modal\').remove()">Close</button></div>';
+  document.body.appendChild(ov);
+}
 function homeHTML() {
   var h = '';
 
   // Kingdom tracker (castle + sobriety info)
   h += kingdomTrackerHTML();
+  h += '<div style="text-align:center;margin-top:-6px;margin-bottom:6px"><button class="btn btn-outline btn-sm" onclick="showVillageModal()" style="font-size:11px;padding:4px 12px">&#127961; See My Village</button></div>';
 
   h += characterGreetingHTML();
 
