@@ -17,7 +17,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 /* ===== PARCHMENT & INK (light) ===== */
-:root{--bg:#b5dff5;--card:#f2efe8;--primary:#7a1a1a;--primary-dark:#a83030;--primary-light:#f5ece8;--text:#1a1612;--text-light:#5a564c;--muted:#8a867a;--border:#c4c0b4;--radius:16px;--radius-sm:10px;--accent:#2d5a5a;--danger:#b91c1c;--danger-bg:#fce8e8;--purple:#5b21b6;--purple-light:#ede9fe;--blue:#1e3a5f;--blue-light:#dbeafe;--rose:#9f1239;--rose-light:#ffe4e6;--gold:#8a7a6a;--gold-light:#ece6de;--shadow-card:0 1px 3px rgba(26,22,18,.06),0 4px 16px rgba(26,22,18,.04);--shadow-btn:0 2px 8px rgba(26,22,18,.1);--shadow-hover:0 6px 24px rgba(26,22,18,.12);--focus-ring:0 0 0 3px rgba(122,26,26,.15);--grad-primary:linear-gradient(135deg,#7a1a1a,#a83030);--grad-accent:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-buddy:linear-gradient(135deg,#7a1a1a,#a83030);--avatar-gertrude:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-arthur:linear-gradient(135deg,#5b21b6,#7c3aed);--avatar-oswald:linear-gradient(135deg,#4338ca,#6366f1);--scrollbar-thumb:#c4c0b4;--scrollbar-track:transparent;--stone-base:#d4cabc;--stone-border:#a89888}
+:root{--bg:#b5dff5;--card:#f2efe8;--primary:#7a1a1a;--primary-dark:#a83030;--primary-light:#f5ece8;--text:#1a1612;--text-light:#5a564c;--muted:#8a867a;--border:#c4c0b4;--radius:16px;--radius-sm:10px;--accent:#2d5a5a;--danger:#b91c1c;--danger-bg:#fce8e8;--purple:#5b21b6;--purple-light:#ede9fe;--blue:#1e3a5f;--blue-light:#dbeafe;--rose:#9f1239;--rose-light:#ffe4e6;--gold:#8a7a6a;--gold-light:#ece6de;--shadow-card:0 1px 3px rgba(26,22,18,.06),0 4px 16px rgba(26,22,18,.04);--shadow-btn:0 2px 8px rgba(26,22,18,.1);--shadow-hover:0 6px 24px rgba(26,22,18,.12);--focus-ring:0 0 0 3px rgba(122,26,26,.15);--grad-primary:linear-gradient(135deg,#7a1a1a,#a83030);--grad-accent:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-buddy:linear-gradient(135deg,#7a1a1a,#a83030);--avatar-gertrude:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-arthur:linear-gradient(135deg,#5b21b6,#7c3aed);--avatar-oswald:linear-gradient(135deg,#4338ca,#6366f1);--scrollbar-thumb:#c4c0b4;--scrollbar-track:transparent;--stone-base:#d4cabc;--stone-border:#a89888;--parchment-bg:#f5f0e8}
 #landscape-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 #landscape-bg svg{width:100%;height:100%;display:block}
 #moon-overlay{position:fixed;top:8px;left:5%;z-index:1;pointer-events:none;opacity:0;transition:opacity .6s}
@@ -40,7 +40,7 @@ body.dark #castle-overlay .castle-night{display:block}
 [theme=teal]{--primary:#1e3f3f;--primary-dark:#2c7a7b;--primary-light:#ccfbf1;--grad-primary:linear-gradient(135deg,#1e3f3f,#2c7a7b);--focus-ring:0 0 0 3px rgba(30,63,63,.15)}
 /* ===== CANDLELIGHT & STONE (dark) ===== */
 body{font-family:'Cinzel','Segoe UI Symbol',serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .35s ease,color .35s ease}
-body.dark{--bg:#0d0b18;--card:#151218;--text:#ccc8be;--text-light:#8a867c;--muted:#5a564e;--border:#2a2630;--primary:#8a7a9a;--primary-dark:#a89aba;--primary-light:#1e1825;--danger-bg:#2a0a0a;--grad-primary:linear-gradient(135deg,#8a7a9a,#6a5a7a);--grad-accent:#8a7a9a;--gold:#7a6a5a;--gold-light:#1a1612;--shadow-card:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.4);--shadow-btn:0 2px 8px rgba(0,0,0,.4);--shadow-hover:0 6px 24px rgba(0,0,0,.5);--focus-ring:0 0 0 3px rgba(138,122,154,.2);--scrollbar-thumb:#2a2630;--scrollbar-track:transparent;--stone-base:#1e1a24;--stone-border:#3a3640}
+body.dark{--bg:#0d0b18;--card:#151218;--text:#ccc8be;--text-light:#8a867c;--muted:#5a564e;--border:#2a2630;--primary:#8a7a9a;--primary-dark:#a89aba;--primary-light:#1e1825;--danger-bg:#2a0a0a;--grad-primary:linear-gradient(135deg,#8a7a9a,#6a5a7a);--grad-accent:#8a7a9a;--gold:#7a6a5a;--gold-light:#1a1612;--shadow-card:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.4);--shadow-btn:0 2px 8px rgba(0,0,0,.4);--shadow-hover:0 6px 24px rgba(0,0,0,.5);--focus-ring:0 0 0 3px rgba(138,122,154,.2);--scrollbar-thumb:#2a2630;--scrollbar-track:transparent;--stone-base:#1e1a24;--stone-border:#3a3640;--parchment-bg:#1f1a15}
 body.dark .night-scene{display:block}
 body.dark .day-scene{display:none}
 /* ===== SCROLLBAR ===== */
@@ -618,7 +618,7 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 #ta-gertrude.victory .tb-arm-g{transform:rotate(-30deg)}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
 .boxing-progress .fill{height:100%;background:var(--primary);border-radius:2px;width:0%;transition:width .5s linear}
-.journal-letter{background:var(--parchment-bg);max-width:440px;width:92%;margin:0 auto;padding:28px 22px 18px;border-radius:4px;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.15),0 8px 32px rgba(0,0,0,.12),inset 0 0 0 1px rgba(255,248,235,.15);max-height:80vh;overflow-y:auto}
+.journal-letter{background:var(--parchment-bg);max-width:440px;width:92%;margin:0 auto;padding:28px 22px 18px;border-radius:4px;position:relative;box-shadow:0 1px 4px rgba(0,0,0,.1),0 4px 16px rgba(0,0,0,.08),0 12px 48px rgba(0,0,0,.06),inset 0 0 0 1px rgba(255,248,235,.25),inset 0 1px 0 rgba(255,248,235,.4);max-height:80vh;overflow-y:auto;background-image:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(139,26,26,.04) 28px,rgba(139,26,26,.04) 29px)}
 .journal-letter .letter-seal{position:absolute;top:-18px;right:18px;width:44px;height:44px;z-index:3;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));transform:rotate(8deg)}
 .journal-letter .letter-header{text-align:center;margin-bottom:14px;border-bottom:1px solid rgba(139,26,26,.15);padding-bottom:10px}
 .journal-letter .letter-date{font-size:11px;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.5px;margin-bottom:6px}
@@ -629,6 +629,10 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 .journal-letter .letter-signature{font-size:19px;font-weight:600;color:var(--primary);font-family:'Caveat',serif;margin-top:2px}
 .journal-letter .letter-time{font-size:10px;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:.3px;margin-top:4px}
 body.dark .journal-letter{box-shadow:0 2px 8px rgba(0,0,0,.4),0 8px 32px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,248,235,.06)}
+.journal-letter .letter-section{padding:8px 0 4px;border-top:1px dashed rgba(139,26,26,.12);margin-top:4px}
+.journal-letter .letter-section-label{font-size:10px;color:var(--muted);font-family:'Cinzel',serif;letter-spacing:1px;margin-bottom:4px}
+.journal-letter .letter-section-text{font-family:'Caveat',serif;font-size:16px;line-height:1.5;color:var(--text-light);margin-bottom:4px}
+.journal-letter .letter-song-info{font-weight:600;font-size:14px;color:var(--text);font-family:'Caveat',serif}
 @keyframes cmSlideUp{0%{transform:translateY(30px);opacity:0}100%{transform:translateY(0);opacity:1}}
 @keyframes cmSlideLeft{0%{transform:translateX(60px);opacity:0}100%{transform:translateX(0);opacity:1}}
 @keyframes cmExplode{0%{transform:scale(1);opacity:1}30%{transform:scale(1.4) rotate(15deg);opacity:1}100%{transform:scale(0) rotate(45deg);opacity:0}}
@@ -4209,7 +4213,25 @@ function showJournalLetter(idx) {
   if (!entry) return;
   var entryText = getEntryText(entry);
   if (checkCrisis(entryText)) { showCrisisAlert(entryText); return; }
+  var result = detectMood(entryText);
+  var mood = result.primary;
+  var scores = result.scores;
+  var suggestions = buildSuggestions(entry, mood, D.journal, idx);
+  var song = getSong(entryText, mood);
+  var dayCount = soberDays();
+  var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
+  var totalEntries = D.journal.length;
+  var streak = D.streak || 0;
+  var moodColors = {sad:'#60a5fa',angry:'#ef4444',anxious:'#f59e0b',happy:'#34d399',grateful:'#a78bfa',reflective:'#818cf8',hopeful:'#fbbf24',mixed:'#94a3b8'};
+  var moodLabels = {sad:'Sad',angry:'Angry',anxious:'Anxious',happy:'Happy',grateful:'Grateful',reflective:'Reflective',hopeful:'Hopeful',mixed:'Mixed'};
+  var mc = moodColors[mood] || '#94a3b8';
+
+  var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
   var entryNum = idx + 1;
+  var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour);
+  var mot = getMotivation(mood);
+  var songDesc = {sad:'A song that understands', angry:'A track to match the fire', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space'};
+
   var now = new Date();
   var dateStr = now.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
   var timeStr = entry.time || now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
@@ -4218,6 +4240,8 @@ function showJournalLetter(idx) {
   overlay.className = 'overlay';
   overlay.style.background = 'rgba(0,0,0,.65)';
   overlay.style.alignItems = 'center';
+
+  var safe = function(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
 
   var h = '<div class="journal-letter" id="journal-letter">';
   // Wax seal
@@ -4229,13 +4253,42 @@ function showJournalLetter(idx) {
   h += '</div>';
   // Letter body (where text appears)
   h += '<div class="letter-body" id="letter-body"></div>';
-  // Letter closing
+  // After-entry content (summary, insights, song - shown after typing finishes)
+  h += '<div id="letter-after" style="display:none">';
+  // Summary
+  if (summaryText) {
+    h += '<div class="letter-section" id="letter-summary"><div class="letter-section-label">A Thought on Your Entry</div><div class="letter-section-text" id="letter-summary-text"></div></div>';
+  }
+  // Suggestions / Insights
+  if (suggestions && suggestions.length > 0) {
+    h += '<div class="letter-section" id="letter-insights"><div class="letter-section-label">Gentle Suggestions</div><div class="letter-section-text">';
+    for (var si = 0; si < Math.min(suggestions.length, 3); si++) {
+      h += '<div style="margin:3px 0;padding-left:12px;position:relative">&#9755; ' + safe(suggestions[si]) + '</div>';
+    }
+    h += '</div></div>';
+  }
+  // Quote / Insight
+  if (mot) {
+    h += '<div class="letter-section" id="letter-quote"><div class="letter-section-label">' + safe(mot.c) + '</div><div class="letter-section-text" style="font-style:italic">"' + safe(mot.q) + '"</div><details style="margin-top:4px"><summary style="font-size:11px;cursor:pointer;color:var(--muted)">Why this matters</summary><p style="font-size:12px;line-height:1.5;color:var(--text-light);margin-top:2px">' + safe(mot.t) + '</p></details></div>';
+  }
+  // Song
+  h += '<div class="letter-section" id="letter-song"><div class="letter-section-label">' + (songDesc[mood] || 'A song for you') + '</div>';
+  if (song) {
+    h += '<div class="letter-song-info">' + safe(song.title) + ' <span style="font-weight:400;color:var(--muted)">' + safe(song.artist) + '</span></div>';
+    h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">';
+    h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Spotify</a>';
+    h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; YouTube</a>';
+    h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a></div>';
+  } else {
+    h += '<div style="font-size:12px;color:var(--muted)">Finding the perfect song...</div>';
+  }
+  h += '</div>';
+  // Closing
   h += '<div class="letter-closing" id="letter-closing" style="display:none">';
   h += '<div class="letter-signoff">Yours in truth,</div>';
-  h += '<div class="letter-signature">' + (D.name || 'Me') + '</div>';
+  h += '<div class="letter-signature">' + safe(D.name || 'Me') + '</div>';
   h += '<div class="letter-time">' + timeStr + '</div>';
   h += '</div>';
-  // Close button
   h += '<button class="btn btn-outline btn-sm" id="letter-close" style="display:none;margin-top:10px">&#10003; Seal &amp; Close</button>';
   h += '</div>';
 
@@ -4246,7 +4299,7 @@ function showJournalLetter(idx) {
   var letter = document.getElementById('journal-letter');
   if (letter) letter.style.animation = 'letterAppear .6s cubic-bezier(.22,1,.36,1) forwards';
 
-  // Animate wax seal
+  // Wax seal pulse
   setTimeout(function(){
     var seal = document.getElementById('letter-seal');
     if (seal) seal.style.animation = 'waxSealPulse 1.5s ease-in-out infinite';
@@ -4256,23 +4309,50 @@ function showJournalLetter(idx) {
   setTimeout(function(){
     var body = document.getElementById('letter-body');
     if (!body || !entryText) return;
-
     var words = entryText.split(/(\s+)/);
     var wi = 0;
     var penDelay = 40;
 
     function typeWord() {
       if (wi >= words.length) {
-        // Show closing
-        var closing = document.getElementById('letter-closing');
-        if (closing) closing.style.display = 'block';
-        var closeBtn = document.getElementById('letter-close');
-        if (closeBtn) closeBtn.style.display = 'inline-block';
+        // Show after-entry sections
+        var after = document.getElementById('letter-after');
+        if (after) { after.style.display = 'block'; after.style.animation = 'letterAppear .5s ease both'; }
+        // Type summary text word by word
+        if (summaryText) {
+          var stEl = document.getElementById('letter-summary-text');
+          if (stEl) {
+            var sWords = summaryText.split(/(\s+)/);
+            var swi = 0;
+            function typeSummary() {
+              if (swi >= sWords.length) {
+                var closing = document.getElementById('letter-closing');
+                if (closing) closing.style.display = 'block';
+                var closeBtn = document.getElementById('letter-close');
+                if (closeBtn) closeBtn.style.display = 'inline-block';
+                return;
+              }
+              stEl.innerHTML += sWords[swi];
+              swi++;
+              setTimeout(typeSummary, penDelay + (sWords[swi-1].trim().endsWith('.')||sWords[swi-1].trim().endsWith('!')||sWords[swi-1].trim().endsWith('?')?200:0));
+            }
+            typeSummary();
+          } else {
+            var closing = document.getElementById('letter-closing');
+            if (closing) closing.style.display = 'block';
+            var closeBtn = document.getElementById('letter-close');
+            if (closeBtn) closeBtn.style.display = 'inline-block';
+          }
+        } else {
+          var closing = document.getElementById('letter-closing');
+          if (closing) closing.style.display = 'block';
+          var closeBtn = document.getElementById('letter-close');
+          if (closeBtn) closeBtn.style.display = 'inline-block';
+        }
         return;
       }
       body.innerHTML += words[wi];
       wi++;
-      // Scroll to bottom
       body.scrollTop = body.scrollHeight;
       setTimeout(typeWord, penDelay + (words[wi-1].trim().endsWith('.')||words[wi-1].trim().endsWith('!')||words[wi-1].trim().endsWith('?')?200:0) + (words[wi-1].trim().endsWith(',')||words[wi-1].trim().endsWith(';')?80:0));
     }
@@ -4285,7 +4365,6 @@ function showJournalLetter(idx) {
   };
 
   D.reflectionCount = (D.reflectionCount || 0) + 1;
-  var dayCount = soberDays();
   if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || (dayCount > 365 && dayCount % 365 === 0)) setTimeout(confetti, 300);
   } catch(e) { alert('Could not show journal: ' + e.message); }
 }
