@@ -59,13 +59,19 @@ body.dark ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8a7
 .kingdom-scene.tier-4{--sky-c:#7aaad4;--ground-c:#7aba6a;--hill-c:#6a8a6a;--keep-c:#9a8a7a;--roof-c:#9a6a4a;--tower-c:#9a8a7a;--tower-roof-c:#9a6a4a;--door-c:#5a4a3a;--flag-c:#cc3a3a;--tree-c:#6aaa5a;--tree-trunk-c:#5a4a3a;--window-c:#ffdd88cc;--sun-c:#ffee88;--cloud-c:#bbc8d0;--bird-c:#4a4a5a;--path-c:#aa9a8a;--flagpole-c:#7a6a5a}
 .kingdom-scene.tier-5{--sky-c:#8ac0e0;--ground-c:#8aca7a;--hill-c:#7a9a7a;--keep-c:#aa9a8a;--roof-c:#aa7a5a;--tower-c:#aa9a8a;--tower-roof-c:#aa7a5a;--door-c:#6a5a4a;--flag-c:#dd4a4a;--tree-c:#7aba6a;--tree-trunk-c:#6a5a4a;--window-c:#ffdd88ee;--sun-c:#ffeeaa;--cloud-c:#ccd8e0;--bird-c:#5a5a6a;--path-c:#baaa9a;--flagpole-c:#8a7a6a}
 .kingdom-scene.tier-6{--sky-c:#5aa8ff;--ground-c:#8ada8a;--hill-c:#7aaa8a;--keep-c:#baaa9a;--roof-c:#ba8a6a;--tower-c:#baaa9a;--tower-roof-c:#ba8a6a;--door-c:#7a6a5a;--flag-c:#ee5a5a;--tree-c:#8aca7a;--tree-trunk-c:#7a6a5a;--window-c:#ffff88;--sun-c:#ffffcc;--cloud-c:#dde8f0;--bird-c:#6a6a7a;--path-c:#caaa9a;--flagpole-c:#9a8a7a}
-@keyframes flagWave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.1) translateX(-2px)}}
-.kingdom-scene .k-flag-l{animation:flagWave 1.8s ease-in-out infinite;transform-origin:171.5px 78px}
-.kingdom-scene .k-flag-r{animation:flagWave 1.8s ease-in-out infinite .3s;transform-origin:328.5px 78px}
-@keyframes birdFly{0%{transform:translateX(-40px)}100%{transform:translateX(60px)}}
-.kingdom-scene .k-birds{animation:birdFly 10s linear infinite}
-.kingdom-scene .k-birds path:nth-child(2){animation-delay:-3s}
-.kingdom-scene .k-birds path:nth-child(3){animation-delay:-7s}
+@keyframes flagFlap{0%,100%{transform:rotate(0deg) scaleX(1)}20%{transform:rotate(5deg) scaleX(1.07)}40%{transform:rotate(-3deg) scaleX(0.93)}60%{transform:rotate(6deg) scaleX(1.05)}80%{transform:rotate(-1deg) scaleX(0.98)}}
+.kingdom-scene .k-flag-l{animation:flagFlap 1.5s ease-in-out infinite;transform-origin:171.5px 78px}
+.kingdom-scene .k-flag-r{animation:flagFlap 1.5s ease-in-out infinite .4s;transform-origin:328.5px 78px}
+@keyframes birdFly{0%{transform:translateX(-40px) translateY(0)}25%{transform:translateX(-10px) translateY(-6px)}50%{transform:translateX(20px) translateY(0)}75%{transform:translateX(40px) translateY(-6px)}100%{transform:translateX(60px) translateY(0)}}
+.kingdom-scene .k-birds{animation:birdFly 8s ease-in-out infinite}
+@keyframes wingFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(-0.3)}}
+.kingdom-scene .k-bird{display:inline-block;transform-origin:center}
+@keyframes treeSway{0%,100%{transform:translateX(0)}50%{transform:translateX(2px)}}
+.kingdom-scene .k-trees{animation:treeSway 4s ease-in-out infinite;transform-origin:bottom center}
+@keyframes cloudDrift{0%{transform:translateX(0)}100%{transform:translateX(30px)}}
+.kingdom-scene .k-clouds{animation:cloudDrift 25s linear infinite}
+@keyframes sunPulse{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+.kingdom-scene .k-sun{transform-origin:410px 50px;animation:sunPulse 3s ease-in-out infinite}
 .kingdom-scene.damage{animation:kingdomShake .5s ease-in-out}
 .kingdom-scene.damage .k-damage-overlay{animation:kingdomFlash .5s ease forwards}
 .kingdom-scene.flourish{animation:kingdomGlow 1.2s ease}
@@ -7614,7 +7620,7 @@ function kingdomHTML() {
     for (var fi = 0; fi < fp.length; fi++) h += '<circle cx="' + fp[fi][0] + '" cy="' + fp[fi][1] + '" r="' + (level >= 6 ? 3.5 : 3) + '" fill="' + fc[fi % fc.length] + '"/>';
     h += '</g>';
   }
-  if (level >= 7) h += '<g class="k-birds"><path d="M 60,80 Q 65,76 70,80 Q 75,76 80,80"/><path d="M 90,70 Q 95,66 100,70 Q 105,66 110,70"/>' + (level>=9?'<path d="M 440,85 Q 445,81 450,85 Q 455,81 460,85"/>':'') + '</g>';
+  if (level >= 7) h += '<g class="k-birds"><g class="k-bird"><path d="M 60,80 Q 65,76 70,80 Q 75,76 80,80"><animate attributeName="d" dur="0.3s" repeatCount="indefinite" values="M 60,80 Q 65,76 70,80 Q 75,76 80,80;M 60,80 Q 65,84 70,80 Q 75,84 80,80;M 60,80 Q 65,76 70,80 Q 75,76 80,80"/></path></g><g class="k-bird"><path d="M 90,70 Q 95,66 100,70 Q 105,66 110,70"><animate attributeName="d" dur="0.25s" repeatCount="indefinite" values="M 90,70 Q 95,66 100,70 Q 105,66 110,70;M 90,70 Q 95,74 100,70 Q 105,74 110,70;M 90,70 Q 95,66 100,70 Q 105,66 110,70"/></path></g>' + (level>=9?'<g class="k-bird"><path d="M 440,85 Q 445,81 450,85 Q 455,81 460,85"><animate attributeName="d" dur="0.35s" repeatCount="indefinite" values="M 440,85 Q 445,81 450,85 Q 455,81 460,85;M 440,85 Q 445,89 450,85 Q 455,89 460,85;M 440,85 Q 445,81 450,85 Q 455,81 460,85"/></path></g>':'') + '</g>';
   h += '<rect width="500" height="280" class="k-damage-overlay" opacity="0"/>';
   h += '</svg></div>';
   return h;
