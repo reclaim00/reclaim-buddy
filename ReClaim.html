@@ -74,6 +74,23 @@ body.dark ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8a7
 @keyframes kingdomFlash{0%{opacity:0}15%{opacity:.35}40%{opacity:.15}100%{opacity:0}}
 @keyframes kingdomGlow{0%{filter:brightness(1) saturate(1)}30%{filter:brightness(1.25) saturate(1.15)}60%{filter:brightness(1.08)}100%{filter:brightness(1) saturate(1)}}
 body.dark .kingdom-scene{box-shadow:0 1px 6px rgba(0,0,0,.3),0 4px 20px rgba(0,0,0,.2)}
+.k-stars{display:none}body.dark .k-stars{display:block}body.dark .k-stars circle{fill:#fff}
+body.dark .kingdom-scene.tier-0 .k-stars circle{opacity:.06}body.dark .kingdom-scene.tier-1 .k-stars circle{opacity:.12}
+body.dark .kingdom-scene.tier-2 .k-stars circle{opacity:.2}body.dark .kingdom-scene.tier-3 .k-stars circle{opacity:.3}
+body.dark .kingdom-scene.tier-4 .k-stars circle{opacity:.45}body.dark .kingdom-scene.tier-5 .k-stars circle{opacity:.6}
+body.dark .kingdom-scene.tier-6 .k-stars circle{opacity:.8}
+body.dark .kingdom-scene.tier-0{--sky-c:#050510;--ground-c:#080812;--hill-c:#080818}
+body.dark .kingdom-scene.tier-1{--sky-c:#080820;--ground-c:#101020;--hill-c:#101020}
+body.dark .kingdom-scene.tier-2{--sky-c:#101030;--ground-c:#181828;--hill-c:#181830}
+body.dark .kingdom-scene.tier-3{--sky-c:#181838;--ground-c:#202038;--hill-c:#202038}
+body.dark .kingdom-scene.tier-4{--sky-c:#202050;--ground-c:#282848;--hill-c:#282848}
+body.dark .kingdom-scene.tier-5{--sky-c:#282860;--ground-c:#303058;--hill-c:#303058}
+body.dark .kingdom-scene.tier-6{--sky-c:#303070;--ground-c:#383868;--hill-c:#383868}
+body.dark .kingdom-scene .k-sun{display:none}
+body.dark .kingdom-scene .k-window{fill:#ff8833;animation:lanternGlow 2s ease-in-out infinite}
+body.dark .kingdom-scene .k-clouds ellipse{opacity:.06}
+body.dark .kingdom-scene .k-door{fill:#1a0800}
+@keyframes lanternGlow{0%,100%{opacity:.4}50%{opacity:1}}
 /* ===== FOCUS VISIBLE ===== */
 :focus-visible{outline:none;box-shadow:var(--focus-ring);border-color:var(--primary);border-radius:var(--radius-sm)}
 /* ===== SELECT DROPDOWN ARROWS ===== */
@@ -7569,6 +7586,11 @@ function kingdomHTML() {
   var h = '<div class="kingdom-scene tier-' + level + '" id="kingdom-scene">';
   h += '<svg viewBox="0 0 500 280">';
   h += '<rect width="500" height="280" class="k-sky"/>';
+  // Stars (hidden in day, visible at night via CSS)
+  h += '<g class="k-stars">';
+  var sp = [[50,30],[120,20],[200,45],[310,25],[400,40],[460,30],[80,70],[160,55],[250,65],[340,50],[430,60],[40,100],[140,90],[230,80],[320,95],[410,85],[480,90],[100,120],[190,110],[280,125],[370,115],[450,120],[60,140],[170,135],[260,145],[350,130],[440,140]];
+  for (var si = 0; si < sp.length; si++) h += '<circle cx="' + sp[si][0] + '" cy="' + sp[si][1] + '" r="1.2"/>';
+  h += '</g>';
   if (level >= 3) h += '<circle cx="410" cy="50" r="18" class="k-sun"/>';
   if (level >= 2) h += '<g class="k-clouds"><ellipse cx="100" cy="42" rx="30" ry="10"/><ellipse cx="120" cy="38" rx="20" ry="8"/><ellipse cx="360" cy="35" rx="25" ry="8"/><ellipse cx="380" cy="30" rx="18" ry="7"/></g>';
   h += '<path d="M0,195 Q80,155 180,190 Q250,165 320,185 Q400,160 500,190 L500,198 L0,198 Z" class="k-hills"/>';
