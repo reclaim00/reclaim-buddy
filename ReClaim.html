@@ -1084,7 +1084,8 @@ function defaultData() {
     relapseRescue: { logs: [] },
     chivalryCode: { code: [], checkins: [] },
     relapseGraveyard: { graves: [] },
-    royalPardons: []
+    royalPardons: [],
+    warchest: { dailyRate: 10 }
   };
 }
 
@@ -6511,6 +6512,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; Relapse Graveyard</div>';
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; Royal Pardon</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
+  h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; War Chest</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
@@ -7810,6 +7812,75 @@ function updateVillage() {
   if (!el) return;
   el.innerHTML = villageHTML();
 }
+function warchestHTML() {
+  var days = soberDays();
+  D.warchest = D.warchest || { dailyRate: 10 };
+  var rate = D.warchest.dailyRate || 10;
+  var coins = Math.max(0, days);
+  var saved = (coins * rate).toLocaleString();
+  var isActive = D.sobriety.startDate ? true : false;
+  var fullness = Math.min(1, coins / 365);
+  var coinRows = Math.min(8, Math.ceil(coins / 10));
+  var h = '<div class="card" style="text-align:center;padding:16px">';
+  h += '<div style="font-size:13px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">&#128176; The Royal War Chest</div>';
+  h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:10px">Every day of sobriety adds to your treasury</div>';
+  // Chest SVG
+  h += '<div style="max-width:200px;margin:0 auto 8px">';
+  h += '<svg viewBox="0 0 200 160">';
+  // Chest body
+  h += '<rect x="30" y="70" width="140" height="70" rx="4" fill="#6a4a2a" stroke="#4a2a0a" stroke-width="2"/>';
+  h += '<rect x="30" y="70" width="140" height="70" rx="4" fill="url(#warchest-stone)" opacity=".5"/>';
+  // Metal bands
+  h += '<rect x="42" y="70" width="8" height="70" rx="2" fill="#8a7a5a"/><rect x="150" y="70" width="8" height="70" rx="2" fill="#8a7a5a"/>';
+  h += '<rect x="95" y="70" width="10" height="70" rx="2" fill="#8a7a5a"/>';
+  // Coins inside (based on fullness)
+  if (isActive && coins > 0) {
+    var ch = Math.round(8 + fullness * 40);
+    h += '<rect x="40" y="' + (130 - ch) + '" width="120" height="' + ch + '" rx="2" fill="#d4a017"/>';
+    // Coin circles on top
+    for (var ci = 0; ci < coinRows && ci < 8; ci++) {
+      var cy = 128 - ci * 5;
+      for (var cj = 0; cj < 6 - (ci % 2); cj++) {
+        var cx = 50 + cj * 19 + (ci % 2) * 9;
+        h += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="6" ry="3" fill="#f0c030" stroke="#b8860b" stroke-width=".6"/>';
+        h += '<ellipse cx="' + cx + '" cy="' + (cy - 1) + '" rx="4" ry="2" fill="#ffd700" opacity=".6"/>';
+      }
+    }
+  }
+  // Lid (open if active)
+  if (isActive) {
+    h += '<path d="M 32,68 L 100,38 L 168,68" fill="#7a5a3a" stroke="#4a2a0a" stroke-width="2" stroke-linejoin="round"/>';
+    h += '<rect x="32" y="66" width="136" height="4" rx="2" fill="#8a6a4a"/>';
+    h += '<rect x="92" y="63" width="16" height="8" rx="2" fill="#d4a017" opacity=".6"/>';
+    // Lock (open)
+    h += '<rect x="95" y="72" width="10" height="8" rx="1" fill="#8a7a5a"/>';
+    h += '<circle cx="100" cy="76" r="2" fill="#4a2a0a"/>';
+  } else {
+    // Closed/locked chest for inactive
+    h += '<rect x="30" y="64" width="140" height="8" rx="3" fill="#5a3a1a" stroke="#3a1a00" stroke-width="1.5"/>';
+    h += '<rect x="95" y="66" width="10" height="8" rx="1" fill="#8a7a5a"/>';
+    h += '<circle cx="100" cy="70" r="2.5" fill="#4a2a0a"/>';
+  }
+  // Shadow under chest
+  h += '<ellipse cx="100" cy="142" rx="75" ry="6" fill="rgba(0,0,0,.08)"/>';
+  h += '</svg>';
+  h += '</div>';
+  // Stats
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0">';
+  h += '<div style="background:var(--primary-light);border-radius:10px;padding:10px"><div style="font-size:24px;font-weight:700;color:var(--primary)">' + coins + '</div><div style="font-size:11px;color:var(--muted)">Gold Coins</div></div>';
+  h += '<div style="background:var(--primary-light);border-radius:10px;padding:10px"><div style="font-size:20px;font-weight:700;color:var(--primary)">$' + saved + '</div><div style="font-size:11px;color:var(--muted)">Money Saved</div></div>';
+  h += '</div>';
+  if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your reign to fill the War Chest</div>';
+  // Rate setting
+  h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--muted)">';
+  h += '<span>Daily rate: $<input type="number" id="warchest-rate" value="' + rate + '" min="1" max="1000" step="1" style="width:60px;padding:4px 6px;font-size:12px;text-align:center;display:inline-block" onchange="D.warchest.dailyRate=parseInt(this.value)||10;saveData();render()"></span>';
+  h += '</div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'more\')" style="margin-top:8px">Back to Arsenal</button>';
+  h += '</div>';
+  // Add stone pattern defs if not already present
+  h = h.replace('<svg', '<svg><defs><pattern id="warchest-stone" width="12" height="10" patternUnits="userSpaceOnUse"><path d="M0,5 L12,5 M6,0 L6,5 M0,5 L0,10 M0,10 L12,10" stroke="rgba(0,0,0,.08)" stroke-width=".4" fill="none"/></pattern></defs>');
+  return h;
+}
 function villageDamage() {
   var el = document.getElementById('village-overlay');
   if (!el) return;
@@ -7833,6 +7904,17 @@ function homeHTML() {
   // Kingdom tracker (castle + sobriety info)
   h += kingdomTrackerHTML();
   h += '<div style="text-align:center;margin-top:-6px;margin-bottom:6px"><button class="btn btn-outline btn-sm" onclick="showVillageModal()" style="font-size:11px;padding:4px 12px">&#127961; See My Village</button></div>';
+  // War Chest card
+  var wcDays = soberDays();
+  var wcCoins = Math.max(0, wcDays);
+  var wcRate = (D.warchest && D.warchest.dailyRate) || 10;
+  var wcSaved = (wcCoins * wcRate).toLocaleString();
+  h += '<div class="card" style="text-align:center;padding:12px;cursor:pointer" onclick="goTo(\'warchest\')">';
+  h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px">';
+  h += '<span style="font-size:28px">&#128176;</span>';
+  h += '<div style="flex:1;text-align:left"><div style="font-size:13px;font-weight:700;color:var(--primary)">War Chest</div><div style="font-size:11px;color:var(--muted)">' + wcCoins + ' gold coins &middot; $' + wcSaved + ' saved</div></div>';
+  h += '<span style="font-size:14px;color:var(--muted)">&#8594;</span>';
+  h += '</div></div>';
 
   h += characterGreetingHTML();
 
@@ -8577,7 +8659,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode','relapsegraveyard','royalpardon'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode','relapsegraveyard','royalpardon','warchest'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -10093,7 +10175,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
