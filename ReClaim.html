@@ -661,6 +661,7 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 @keyframes shareCharPose{0%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-8px) rotate(-2deg)}50%{transform:translateY(0) rotate(0deg)}75%{transform:translateY(-4px) rotate(2deg)}100%{transform:translateY(0) rotate(0deg)}}
 @keyframes letterAppear{0%{opacity:0;transform:scale(.8) rotate(-3deg)}60%{opacity:1;transform:scale(1.02) rotate(.5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes inkBlot{0%{width:0;height:0;opacity:0}30%{opacity:1}100%{width:100%;height:100%;opacity:1}}
+@keyframes inkAppear{0%{opacity:0;transform:translateY(2px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes waxSealPulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
 #mp-arthur.celebrate .tb-arm-g{transform:rotate(-50deg)}#mp-oswald.celebrate .tb-arm-g{transform:rotate(-70deg) scaleX(-1)}#mp-gertrude.celebrate .tb-arm-g{transform:rotate(-60deg)}
@@ -682,6 +683,7 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 body.dark .journal-letter .letter-date{color:#b0a89a}
 body.dark .journal-letter .letter-salutation{color:#e8e4dc}
 .journal-letter .letter-body{font-family:'Caveat',serif;font-size:19px;line-height:1.65;color:#0a0806;font-weight:600;min-height:3em;max-height:50vh;overflow-y:auto;padding:4px 2px;position:relative;white-space:pre-wrap}
+.journal-letter .letter-body span{animation:inkAppear .15s ease}
 body.dark .journal-letter .letter-body{color:#e8e4dc}
 .journal-letter .letter-closing{margin-top:16px;text-align:right;border-top:1px solid rgba(139,26,26,.1);padding-top:12px;animation:letterAppear .5s ease both}
 .journal-letter .letter-signoff{font-size:15px;color:#0a0806;font-weight:600;font-family:'Caveat',serif}
@@ -4042,55 +4044,67 @@ function buildSummary(txt, mood, topics, dayCount, streak, entryHour) {
   var lines = [];
   var words = txt.trim().split(/\s+/).length;
   var mins = Math.ceil(words / 15);
-  lines.push('<b>Length:</b> ' + words + ' words' + (mins > 1 ? '  about <b>' + mins + ' minutes</b> of honest reflection' : '  a <b>short check-in</b>, but it counts') + '.');
 
-  if (dayCount > 0) lines.push('<b>Sobriety:</b> You\'re <b>' + dayCount + '</b> day' + (dayCount!==1?'s':'') + ' sober.');
-  if (streak > 3) lines.push('<b>Streak:</b> This is day <b>' + streak + '</b> of journaling  building <b>real momentum</b>.');
+  // Entry overview
+  lines.push('<b>Entry Overview:</b> <b>' + words + '</b> words' + (mins > 1 ? '  about <b>' + mins + ' minutes</b> of honest reflection' : '  a <b>short check-in</b> that still carries weight') + '.');
 
-  var timeOfDay = '';
-  if (entryHour >= 5 && entryHour < 12) timeOfDay = 'This <b>morning entry</b> sets a <b>strong tone</b> for the day ahead.';
-  else if (entryHour >= 12 && entryHour < 17) timeOfDay = '<b>Checking in mid-day</b> shows you\'re staying present through the <b>ups and downs</b>.';
-  else if (entryHour >= 17 && entryHour < 21) timeOfDay = '<b>Evening reflection</b> is a powerful way to <b>process and release</b> the day.';
-  else timeOfDay = '<b>Late-night thoughts</b> often carry the most <b>honesty</b>. The quiet hours bring <b>clarity</b>.';
+  // Sobriety context
+  if (dayCount > 0) lines.push('<b>Sobriety:</b> You\'re <b>' + dayCount + '</b> day' + (dayCount!==1?'s':'') + ' into this journey. Every day you hold this line, the foundation <b>deepens</b> and the voice of addiction <b>softens</b>.');
 
-  if (timeOfDay) lines.push(timeOfDay);
+  // Journal streak
+  if (streak > 3 && streak <= 7) lines.push('<b>Journal Streak:</b> <b>' + streak + '</b> days in a row. This is how habits are <b>forged</b>  one page at a time. You\'re building <b>proof</b> to yourself that you show up.');
+  else if (streak > 7 && streak <= 30) lines.push('<b>Journal Streak:</b> A <b>' + streak + '-day</b> streak means this is becoming <b>automatic</b>. You\'ve passed the hardest threshold  now it\'s <b>momentum</b>.');
+  else if (streak > 30 && streak <= 90) lines.push('<b>Journal Streak:</b> <b>' + streak + '</b> days. At this point, journaling isn\'t something you <b>do</b>  it\'s something you <b>are</b>. You\'ve rewired your brain to <b>process</b> rather than <b>suppress</b>.');
+  else if (streak > 90) lines.push('<b>Journal Streak:</b> <b>' + streak + '</b> days of uninterrupted journaling. This is <b>mastery-level</b> consistency. You are in the <b>top fraction</b> of people who sustain a practice this long.');
 
+  // Time of day analysis
+  var timeAnalysis = '';
+  if (entryHour >= 5 && entryHour < 12) {
+    timeAnalysis = '<b>Morning Pages:</b> Writing in the morning taps into your <b>fresh mind</b>  before the day\'s noise drowns out your inner voice. Morning entries tend to be more <b>honest, intuitive, and unguarded</b>. You\'re setting a <b>deliberate tone</b> for the hours ahead.';
+  } else if (entryHour >= 12 && entryHour < 17) {
+    timeAnalysis = '<b>Midday Pause:</b> You stopped in the <b>middle of the current</b> to check in with yourself. That takes <b>awareness</b>  most people push through without asking how they feel. This is a sign of <b>growing mindfulness</b>.';
+  } else if (entryHour >= 17 && entryHour < 21) {
+    timeAnalysis = '<b>Evening Reflection:</b> There\'s a reason the <b>evening review</b> is a cornerstone of every wisdom tradition  it lets you <b>digest the day</b> before sleep claims it. By writing now, you\'re <b>processing</b> instead of <b>carrying</b>.';
+  } else {
+    timeAnalysis = '<b>Night Writing:</b> Late-night entries arrive when the world is <b>quiet</b> and the mind is <b>unfiltered</b>. These pages often hold the <b>deepest truths</b>  the thoughts we\'re too guarded to face in daylight. The stillness is <b>listening</b>.';
+  }
+  lines.push(timeAnalysis);
+
+  // Mood-specific deep analysis
+  var moodDepth = {
+    sad: 'Your words carry a <b>weight today</b>. Sadness is not your enemy  it\'s your <b>inner self telling you something matters</b>. The question isn\'t "how do I stop feeling sad?" but rather <b>"what is this sadness protecting?"</b> or <b>"what does it want me to see?"</b>. You have the <b>courage to feel it</b> rather than numb it  and that alone is a <b>victory</b> most people never claim.',
+    angry: '<b>Fire in your words.</b> Anger gets a bad name, but it\'s one of the most <b>honest emotions</b> we have. It signals that a <b>boundary has been crossed</b> or a <b>value is being threatened</b>. The key is not to <b>suppress</b> the fire but to <b>aim it wisely</b>. Ask yourself: <b>what does this anger want to protect?</b> Behind almost every anger is a <b>hurt that needs attention</b>.',
+    anxious: '<b>Anxiety is a loud room.</b> Your words show the <b>restlessness</b> of a mind trying to <b>solve every problem at once</b>. Here\'s what helps: <b>ground yourself in the present moment</b>. Name one thing you can <b>see, hear, and feel</b> right now. Anxiety lives in the <b>future</b>  bring yourself back to <b>right now</b>, where you are actually <b>safe and in control</b>. You showed up to write despite the noise  that is <b>true courage</b>.',
+    happy: 'There\'s a <b>lightness</b> in your words today. Don\'t rush past it  <b>happiness is a visitor that deserves your full attention</b>. Notice what\'s different about today. What <b>contributed</b> to this feeling? Who or what are you <b>grateful</b> for right now? <b>Savoring</b> positive moments is a skill, and you\'re <b>practicing it</b> simply by writing about it. This moment is <b>earned</b>.',
+    grateful: 'Your words are filled with <b>appreciation</b>. This is one of the most <b>powerful recovery tools</b> there is  gratitude <b>rewires the brain</b> to notice what\'s <b>good</b> rather than what\'s <b>threatening</b>. Studies show that people who <b>regularly</b> practice gratitude have <b>better sleep, lower stress, and stronger relationships</b>. You\'re not being naive  you\'re <b>training your mind for resilience</b>.',
+    reflective: 'You\'re in a <b>quiet, contemplative space</b>. This is where <b>real growth happens</b>  not in the loud moments of crisis, but in the <b>still moments between</b> where you <b>make sense of things</b>. Reflection is how experience becomes <b>wisdom</b>. Keep asking questions. Keep <b>turning things over</b>. The answers don\'t come all at once  they come in <b>layers</b>, and you\'re <b>peeling them back</b>.',
+    hopeful: '<b>Hope radiates from your words.</b> This is precious. Hope is not naive optimism  it\'s the <b>evidence of your own strength</b> reflected back at you. You\'ve been through hard things and you\'re <b>still here, still writing, still believing</b> that things can get better. <b>Hold onto this hope</b> like a candle in a dark room. It\'s <b>real</b> and it\'s <b>yours</b>.',
+    mixed: 'Your entry holds <b>multiple threads</b>  joy and struggle, hope and fear, clarity and confusion. This is what it means to be <b>human in recovery</b>. You don\'t have to pick one feeling. The goal isn\'t to feel <b>only good things</b>  it\'s to feel <b>all of it</b> without letting any single feeling <b>take the wheel</b>. You\'re doing exactly that. <b>Keep holding the complexity.</b>'
+  };
+  if (moodDepth[mood]) lines.push(moodDepth[mood]);
+
+  // Advanced topic analysis
   if (topics && topics.length) {
-    var topicPhrases = [];
-    if (topics.indexOf('craving') !== -1) topicPhrases.push('you acknowledged a <b>craving</b>  awareness is the <b>first defense</b>');
-    if (topics.indexOf('work') !== -1) topicPhrases.push('your <b>work life</b> is on your mind');
-    if (topics.indexOf('relationships') !== -1) topicPhrases.push('your <b>relationships</b> are weighing on your heart');
-    if (topics.indexOf('health') !== -1) topicPhrases.push('you touched on your <b>health</b>');
-    if (topics.indexOf('wellness') !== -1) topicPhrases.push('<b>wellness and self-care</b> came up');
-    if (topics.indexOf('school') !== -1) topicPhrases.push('your <b>studies</b> are present in your thoughts');
-    if (topics.indexOf('finances') !== -1) topicPhrases.push('<b>financial stress</b> is real and heavy');
-    if (topics.indexOf('progress') !== -1) topicPhrases.push('you spoke about your <b>progress</b>  that takes <b>courage</b>');
-    if (topics.indexOf('loneliness') !== -1) topicPhrases.push('you opened up about <b>feeling alone</b>  thank you for <b>trusting the page</b>');
-    if (topicPhrases.length) lines.push('In your entry, ' + topicPhrases.join(', ') + '.');
-    else lines.push('You wrote about <b>what matters to you</b> today.');
+    var topicAnalysis = [];
+    if (topics.indexOf('craving') !== -1) topicAnalysis.push('You acknowledged a <b>craving</b>. This is a <b>critical skill</b>  cravings lose power the moment you <b>name them out loud</b>. What triggered it? What did you do instead? Each craving you survive <b>weakens the next one</b>.');
+    if (topics.indexOf('work') !== -1) topicAnalysis.push('Your <b>work life</b> is present in your thoughts. Work stress is one of the <b>most common relapse triggers</b>. Notice if there\'s a pattern: certain <b>times, people, or tasks</b> that activate your stress response. Awareness is the first step to <b>building boundaries</b>.');
+    if (topics.indexOf('relationships') !== -1) topicAnalysis.push('Your <b>relationships</b> are on your mind. The people in our lives can be our <b>greatest support or our biggest triggers</b>. Is there someone you need to <b>set a boundary</b> with? Or someone you could <b>reach out to</b> today? Connection is the <b>opposite of addiction</b>.');
+    if (topics.indexOf('health') !== -1) topicAnalysis.push('You wrote about your <b>health</b>. Recovery and physical health are <b>deeply connected</b>  when we care for our bodies, we <b>strengthen our minds</b>. What\'s one small thing you could do today to <b>honor your body</b>?');
+    if (topics.indexOf('loneliness') !== -1) topicAnalysis.push('You opened up about <b>feeling alone</b>. Loneliness is one of the <b>heaviest burdens</b> in recovery. Please know: <b>writing it down is a step toward connection</b>. You\'ve told the page  now consider telling <b>one trusted person</b>. You don\'t have to carry this alone.');
+    if (topics.indexOf('progress') !== -1) topicAnalysis.push('You reflected on your <b>progress</b>. This is <b>essential</b>  we often move forward so fast that we forget to <b>look back at how far we\'ve come</b>. The distance between where you were and where you are now is <b>real, measurable, and meaningful</b>. You earned this moment of recognition.');
+    if (topics.indexOf('finances') !== -1) topicAnalysis.push('<b>Financial stress</b> came up. Money worries are <b>real and valid</b>. They can feel overwhelming, but you don\'t have to solve everything today. What\'s <b>one small step</b> you could take this week? Even <b>looking at your numbers</b> is an act of courage, not avoidance.');
+    if (topics.indexOf('wellness') !== -1) topicAnalysis.push('You wrote about <b>wellness and self-care</b>. This shows you\'re thinking about <b>what you need</b> to thrive, not just survive. What\'s one practice that\'s been working for you lately? <b>Double down on what works.</b>');
+    if (topicAnalysis.length) {
+      lines.push('<b>Deeper Themes:</b>');
+      topicAnalysis.forEach(function(ta) { lines.push('&#9755; ' + ta); });
+    }
   }
 
-  // Mood insight
-  var moodReflections = {
-    sad: 'Your heart feels <b>heavy</b> right now  <b>honoring your sadness</b> is part of healing.',
-    angry: 'There\'s <b>fire in your words</b> today. Anger is a <b>signal</b>  something matters deeply.',
-    anxious: '<b>Anxiety</b> is loud right now, but you <b>showed up anyway</b>. That takes real <b>courage</b>.',
-    happy: 'There\'s a <b>lightness</b> in your words. <b>Savor this moment</b>  you\'ve earned it.',
-    grateful: 'You\'re seeing the <b>good</b> even when it\'s hard. That\'s not denial  that\'s <b>strength</b>.',
-    reflective: 'You\'re in a <b>quiet, thoughtful space</b>. These moments are where <b>growth</b> happens.',
-    hopeful: 'There\'s <b>hope</b> in what you wrote. Hold onto it  it\'s <b>real</b> and it <b>matters</b>.'
-  };
-  if (moodReflections[mood]) lines.push(moodReflections[mood]);
-
-  // Weekly context
-  if (streak >= 7 && streak < 30) lines.push('You\'ve journaled <b>' + streak + ' days straight</b>  that\'s over a <b>full week</b> of showing up for yourself. <b>Consistency</b> like this changes everything.');
-  else if (streak >= 30 && streak < 90) lines.push('A <b>' + streak + '-day streak</b> is remarkable. You\'ve built a <b>habit</b> that most people never reach. <b>Keep going</b>.');
-  else if (streak >= 90) lines.push('<b>' + streak + ' days.</b> This isn\'t a streak anymore  it\'s <b>who you are</b>. You\'re <b>unrecognizable</b> from where you started.');
-
-  // Word count encouragement
-  if (words > 200) lines.push('You wrote <b>' + words + ' words</b>  that\'s a <b>deep session</b>. You\'re <b>digging</b> and it shows.');
-  else if (words > 100) lines.push('Over <b>' + words + ' words</b>  you\'re <b>opening up</b> and getting to the <b>real stuff</b>.');
-  else if (words > 30) lines.push('Every word counts. You showed up and that\'s the <b>hardest part</b>.');
+  // Overall sentiment synthesis
+  if (words > 200) lines.push('<b>Overall:</b> You wrote <b>' + words + ' words</b> today  this is a <b>deep session</b>. You\'re not just skimming the surface; you\'re <b>digging into the soil of your experience</b>. This level of honesty is <b>rare and powerful</b>. Whatever you\'re working through, you\'re doing it <b>right</b>.');
+  else if (words > 100) lines.push('<b>Overall:</b> Over <b>' + words + ' words</b>  you\'re <b>opening up</b> and getting to the <b>real material</b>. The first 100 words are often warm-up  after that, the <b>truth starts to emerge</b>. You pushed past the surface.');
+  else if (words > 50) lines.push('<b>Overall:</b> <b>' + words + ' words</b>  sometimes the <b>shortest entries carry the most weight</b>. You said what needed to be said. No filler. That\'s <b>efficiency of the heart</b>.');
+  else lines.push('<b>Overall:</b> Even a <b>short entry</b> is a <b>victory</b>  you showed up, you named something real, and you <b>chose honesty over silence</b>. That\'s what matters.');
 
   return lines.join('<br>');
 }
@@ -4360,7 +4374,7 @@ function showJournalLetter(idx) {
     if (!body || !entryText) return;
     var words = entryText.split(/(\s+)/);
     var wi = 0;
-    var penDelay = 40;
+    var penDelay = 80;
 
     function typeWord() {
       if (wi >= words.length) {
@@ -4381,9 +4395,9 @@ function showJournalLetter(idx) {
                 if (closeBtn) closeBtn.style.display = 'inline-block';
                 return;
               }
-              stEl.innerHTML += sWords[swi];
+              stEl.innerHTML += '<span>' + sWords[swi] + '</span>';
               swi++;
-              setTimeout(typeSummary, penDelay + (sWords[swi-1].trim().endsWith('.')||sWords[swi-1].trim().endsWith('!')||sWords[swi-1].trim().endsWith('?')?200:0));
+              setTimeout(typeSummary, penDelay + (sWords[swi-1].trim().endsWith('.')||sWords[swi-1].trim().endsWith('!')||sWords[swi-1].trim().endsWith('?')?300:0) + (sWords[swi-1].trim().endsWith(',')||sWords[swi-1].trim().endsWith(';')?120:0));
             }
             typeSummary();
           } else {
@@ -4400,10 +4414,10 @@ function showJournalLetter(idx) {
         }
         return;
       }
-      body.innerHTML += words[wi];
+      body.innerHTML += '<span>' + words[wi] + '</span>';
       wi++;
       body.scrollTop = body.scrollHeight;
-      setTimeout(typeWord, penDelay + (words[wi-1].trim().endsWith('.')||words[wi-1].trim().endsWith('!')||words[wi-1].trim().endsWith('?')?200:0) + (words[wi-1].trim().endsWith(',')||words[wi-1].trim().endsWith(';')?80:0));
+      setTimeout(typeWord, penDelay + (words[wi-1].trim().endsWith('.')||words[wi-1].trim().endsWith('!')||words[wi-1].trim().endsWith('?')?300:0) + (words[wi-1].trim().endsWith(',')||words[wi-1].trim().endsWith(';')?120:0));
     }
     typeWord();
   }, 800);
