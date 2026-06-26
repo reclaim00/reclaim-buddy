@@ -102,6 +102,9 @@ body.dark .kingdom-scene .k-window{fill:#ff8833;animation:lanternGlow 2s ease-in
 body.dark .kingdom-scene .k-clouds ellipse{opacity:.06}
 body.dark .kingdom-scene .k-door{fill:#1a0800}
 @keyframes lanternGlow{0%,100%{opacity:.4}50%{opacity:1}}
+.kingdom-scene.k-upgraded{box-shadow:0 0 20px rgba(255,215,0,.2),0 0 60px rgba(255,215,0,.08),0 1px 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04)}
+.kingdom-scene.k-upgraded .k-flag-l,.kingdom-scene.k-upgraded .k-flag-r{fill:#ffd700 !important;filter:drop-shadow(0 0 4px rgba(255,215,0,.5))}
+body.dark .kingdom-scene.k-upgraded{box-shadow:0 0 20px rgba(255,215,0,.15),0 0 60px rgba(255,215,0,.06),0 1px 6px rgba(0,0,0,.3),0 4px 20px rgba(0,0,0,.2)}
 /* ===== FOCUS VISIBLE ===== */
 :focus-visible{outline:none;box-shadow:var(--focus-ring);border-color:var(--primary);border-radius:var(--radius-sm)}
 /* ===== SELECT DROPDOWN ARROWS ===== */
@@ -1085,7 +1088,8 @@ function defaultData() {
     chivalryCode: { code: [], checkins: [] },
     relapseGraveyard: { graves: [] },
     royalPardons: [],
-    warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 }
+    warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
+    dailyQuests: { date: null, completed: [] }
   };
 }
 
@@ -7571,7 +7575,11 @@ function kingdomLevel(days) {
 function kingdomHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
-  var h = '<div class="kingdom-scene tier-' + level + '" id="kingdom-scene">';
+  // Daily quest upgrade check
+  var today = new Date().toDateString();
+  D.dailyQuests = D.dailyQuests || { date: null, completed: [] };
+  var isUpgraded = D.dailyQuests.date === today && D.dailyQuests.completed.length >= 3;
+  var h = '<div class="kingdom-scene tier-' + level + (isUpgraded ? ' k-upgraded' : '') + '" id="kingdom-scene">';
   h += '<svg viewBox="0 0 500 280">';
   h += '<rect width="500" height="280" class="k-sky"/>';
   // Stars (hidden in day, visible at night via CSS)
@@ -7883,6 +7891,61 @@ function buyShield() {
   D.warchest.schillings -= 30;
   D.warchest.shields = (D.warchest.shields || 0) + 1;
   saveData();
+}
+// ====== DAILY QUESTS ======
+var DAILY_QUESTS = [
+  { id:'journal', icon:'&#x2712;', label:'Write a journal entry', check:function(){var t=new Date().toDateString();return D.journal&&D.journal.some(function(e){return e.date===t});}},
+  { id:'checkin', icon:'&#128204;', label:'Complete daily check-in', check:function(){var t=new Date().toDateString();return D.checkins&&D.checkins.some(function(e){return e.date===t});}},
+  { id:'mood', icon:'&#128200;', label:'Log your mood', check:function(){var t=new Date().toDateString();return D.moods&&D.moods.some(function(e){return e.date===t});}},
+  { id:'habit', icon:'&#128170;', label:'Track a habit', check:function(){var t=new Date().toDateString();if(!D.habits)return false;for(var i=0;i<D.habits.length;i++){if(D.habits[i].logs&&D.habits[i].logs.indexOf(t)!==-1)return true}return false;}},
+  { id:'coping', icon:'&#127891;', label:'Use a coping card', check:function(){var t=new Date().toDateString();return D.journal&&D.journal.some(function(e){return e.date===t&&e.text&&e.text.indexOf('Coping:')===0});}},
+  { id:'goal', icon:'&#127919;', label:'Complete a recovery goal', check:function(){var t=new Date().toDateString();if(!D.recoveryGoals)return false;for(var i=0;i<D.recoveryGoals.length;i++){if(D.recoveryGoals[i].logs&&D.recoveryGoals[i].logs.indexOf(t)!==-1)return true}return false;}},
+];
+function questsCompletedToday() {
+  var today = new Date().toDateString();
+  if (!D.dailyQuests || D.dailyQuests.date !== today) return [];
+  return D.dailyQuests.completed || [];
+}
+function completeQuest(id) {
+  var today = new Date().toDateString();
+  D.dailyQuests = D.dailyQuests || { date: null, completed: [] };
+  if (D.dailyQuests.date !== today) { D.dailyQuests.date = today; D.dailyQuests.completed = []; }
+  if (D.dailyQuests.completed.indexOf(id) === -1) { D.dailyQuests.completed.push(id); }
+  saveData();
+}
+function dailyQuestsHTML() {
+  var today = new Date().toDateString();
+  D.dailyQuests = D.dailyQuests || { date: null, completed: [] };
+  if (D.dailyQuests.date !== today) { D.dailyQuests.date = today; D.dailyQuests.completed = []; }
+  var done = D.dailyQuests.completed || [];
+  var doneCount = done.length;
+  var upgradeActive = doneCount >= 3;
+  var h = '<div class="card" style="padding:12px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">';
+  h += '<div><span style="font-size:16px;font-weight:700;color:var(--primary)">&#127942; Daily Quests</span><span style="font-size:11px;color:var(--muted);margin-left:6px">' + doneCount + '/6</span></div>';
+  if (upgradeActive) h += '<span style="font-size:12px;color:var(--gold);font-weight:600">&#128081; Castle Upgraded!</span>';
+  else h += '<span style="font-size:11px;color:var(--muted)">' + (3 - doneCount) + ' more for castle upgrade</span>';
+  h += '</div>';
+  // Progress bar
+  var pct = Math.min(100, Math.round(doneCount / 3 * 100));
+  h += '<div class="progress-bar" style="height:6px;margin-bottom:8px;background:var(--border)"><div class="fill" style="width:' + pct + '%;height:100%;background:' + (upgradeActive ? 'var(--gold)' : 'var(--grad-primary)') + ';border-radius:3px;transition:width .4s"></div></div>';
+  // Quest items
+  for (var qi = 0; qi < DAILY_QUESTS.length; qi++) {
+    var q = DAILY_QUESTS[qi];
+    var isDone = done.indexOf(q.id) !== -1;
+    var taskDone = q.check();
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:' + (qi < DAILY_QUESTS.length - 1 ? '1px solid var(--border)' : 'none') + '">';
+    h += '<div style="width:20px;height:20px;border-radius:10px;background:' + (isDone ? 'var(--primary)' : (taskDone ? '#d4a017' : 'var(--border)')) + ';display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex-shrink:0">';
+    if (isDone) h += '&#10003;';
+    else if (taskDone) h += '&#9711;';
+    else h += '&#9711;';
+    h += '</div>';
+    h += '<span style="flex:1;font-size:13px;color:' + (isDone ? 'var(--muted)' : 'var(--text)') + '">' + q.icon + ' ' + q.label + '</span>';
+    if (!isDone && taskDone) h += '<button class="btn btn-sm btn-outline" onclick="completeQuest(\'' + q.id + '\')" style="font-size:10px;padding:2px 8px;width:auto">Claim</button>';
+    else if (isDone) h += '<span style="font-size:10px;color:var(--muted)">Done</span>';
+  }
+  h += '</div>';
+  return h;
 }
 function villageDamage() {
   var el = document.getElementById('village-overlay');
@@ -9624,7 +9687,9 @@ function timeCapsuleHTML() {
         h += '<div style="flex:1"><div style="font-weight:600;font-size:14px">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
         h += '<div style="font-size:11px;color:var(--muted)">' + (isReady ? '<span style="color:var(--accent);font-weight:600">Ready to open!</span>' : 'Opens ' + new Date(c.unlockAt).toLocaleDateString() + ' (' + daysLeft + ' days)') + '</div></div>';
         h += '<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();if(confirm(\'Delete this capsule?\')){D.timeCapsules.splice('+i+',1);saveData()}" style="padding:2px 6px;font-size:10px;width:auto">&#10005;</button>';
-        h += '</div></div>';
+  h += '</div></div>';
+  // Daily Quests
+  h += dailyQuestsHTML();
       }
     }
     if (opened.length) {
