@@ -5717,41 +5717,74 @@ function todayPrompt() {
 
 // ====== LIBRARY ======
 var LIB_ARTICLES = [
-  {title:'The Science of Habit Formation', desc:'How to build habits that stick', url:'https://jamesclear.com/habit-guide'},
-  {title:'Understanding Addiction & the Brain', desc:'Neuroscience of recovery', url:'https://nida.nih.gov/publications/drugs-brains-behavior-science-addiction'},
-  {title:'5 Types of Self-Care for Recovery', desc:'Holistic healing approaches', url:'https://www.psychologytoday.com/us/blog/click-help/202101/5-types-self-care-recovery'},
-  {title:'Mindfulness for Beginners', desc:'Start your meditation practice', url:'https://www.mindful.org/meditation/mindfulness-getting-started/'}
+  {title:'The Science of Habit Formation', desc:'James Clear guide on building lasting habits', url:'https://jamesclear.com/habit-guide'},
+  {title:'Understanding Addiction & the Brain', desc:'NIH neuroscience of addiction and recovery', url:'https://nida.nih.gov/publications/drugs-brains-behavior-science-addiction'},
+  {title:'5 Types of Self-Care for Recovery', desc:'Holistic healing approaches from Psychology Today', url:'https://www.psychologytoday.com/us/blog/click-help/202101/5-types-self-care-recovery'},
+  {title:'Mindfulness for Beginners', desc:'Start your meditation practice', url:'https://www.mindful.org/meditation/mindfulness-getting-started/'},
+  {title:'The Neuroscience of Addiction Recovery', desc:'Harvard Health on how the brain heals', url:'https://www.health.harvard.edu/blog/the-neuroscience-of-addiction-recovery-202410183157'},
+  {title:'Why Willpower Isnt Enough', desc:'Psychology Today on real change strategies', url:'https://www.psychologytoday.com/us/blog/the-mindful-self/202304/why-willpower-isnt-enough-to-change'},
+  {title:'The Benefits of Journaling for Mental Health', desc:'Research-backed writing practices', url:'https://positivepsychology.com/benefits-of-journaling/'},
+  {title:'Understanding Triggers and Cravings', desc:'Recovery Research Institute guide', url:'https://www.recoveryanswers.org/resource/understanding-triggers-and-cravings/'},
+  {title:'The Role of Exercise in Recovery', desc:'Healthline on movement and healing', url:'https://www.healthline.com/health/exercise-and-addiction-recovery'},
+  {title:'Self-Compassion in Recovery', desc:'Why being kind to yourself matters', url:'https://self-compassion.org/the-role-of-self-compassion-in-addiction-recovery/'},
+  {title:'Building a Support Network', desc:'SAMHSA guide to recovery support', url:'https://www.samhsa.gov/find-help/recovery-support-tools'},
+  {title:'Gratitude Practice and Mental Health', desc:'UC Berkeley Greater Good Science Center', url:'https://greatergood.berkeley.edu/article/item/how_gratitude_changes_you_and_your_brain'}
 ];
 var LIB_BOOKS = [
-  {title:'The Body Keeps the Score', desc:'Bessel van der Kolk', url:'https://www.barnesandnoble.com/s/The+Body+Keeps+the+Score'},
-  {title:'Atomic Habits', desc:'James Clear', url:'https://www.barnesandnoble.com/s/Atomic+Habits'},
-  {title:'In the Realm of Hungry Ghosts', desc:'Gabor Mat', url:'https://www.barnesandnoble.com/s/In+the+Realm+of+Hungry+Ghosts'},
-  {title:'Daring Greatly', desc:'Bren Brown', url:'https://www.barnesandnoble.com/s/Daring+Greatly'},
-  {title:'The Power of Habit', desc:'Charles Duhigg', url:'https://www.barnesandnoble.com/s/The+Power+of+Habit'},
-  {title:'The Gifts of Imperfection', desc:'Bren Brown', url:'https://www.barnesandnoble.com/s/The+Gifts+of+Imperfection'},
-  {title:'Feeling Good', desc:'David D. Burns', url:'https://www.barnesandnoble.com/s/Feeling+Good+David+Burns'},
-  {title:'Man\'s Search for Meaning', desc:'Viktor Frankl', url:'https://www.barnesandnoble.com/s/Man%27s+Search+for+Meaning'}
+  {title:'The Body Keeps the Score', desc:'Bessel van der Kolk', url:'https://www.amazon.com/s?k=The+Body+Keeps+the+Score+Bessel+van+der+Kolk', alt:'https://www.barnesandnoble.com/s/The+Body+Keeps+the+Score'},
+  {title:'Atomic Habits', desc:'James Clear', url:'https://www.amazon.com/s?k=Atomic+Habits+James+Clear', alt:'https://www.barnesandnoble.com/s/Atomic+Habits'},
+  {title:'In the Realm of Hungry Ghosts', desc:'Gabor Mat', url:'https://www.amazon.com/s?k=In+the+Realm+of+Hungry+Ghosts+Gabor+Mate', alt:'https://www.barnesandnoble.com/s/In+the+Realm+of+Hungry+Ghosts'},
+  {title:'Daring Greatly', desc:'Bren Brown', url:'https://www.amazon.com/s?k=Daring+Greatly+Brene+Brown', alt:'https://www.barnesandnoble.com/s/Daring+Greatly'},
+  {title:'The Power of Habit', desc:'Charles Duhigg', url:'https://www.amazon.com/s?k=The+Power+of+Habit+Charles+Duhigg', alt:'https://www.barnesandnoble.com/s/The+Power+of+Habit'},
+  {title:'The Gifts of Imperfection', desc:'Bren Brown', url:'https://www.amazon.com/s?k=The+Gifts+of+Imperfection+Brene+Brown', alt:'https://www.barnesandnoble.com/s/The+Gifts+of+Imperfection'},
+  {title:'Feeling Good', desc:'David D. Burns', url:'https://www.amazon.com/s?k=Feeling+Good+David+Burns', alt:'https://www.barnesandnoble.com/s/Feeling+Good+David+Burns'},
+  {title:'Mans Search for Meaning', desc:'Viktor Frankl', url:'https://www.amazon.com/s?k=Mans+Search+for+Meaning+Viktor+Frankl', alt:'https://www.barnesandnoble.com/s/Man%27s+Search+for+Meaning'},
+  {title:'Dopamine Nation', desc:'Anna Lembke on pleasure and pain', url:'https://www.amazon.com/s?k=Dopamine+Nation+Anna+Lembke', alt:'https://www.barnesandnoble.com/s/Dopamine+Nation'},
+  {title:'Unwinding Anxiety', desc:'Judson Brewer on habit change', url:'https://www.amazon.com/s?k=Unwinding+Anxiety+Judson+Brewer', alt:'https://www.barnesandnoble.com/s/Unwinding+Anxiety'},
+  {title:'The Craving Mind', desc:'Judson Brewer on addiction and mindfulness', url:'https://www.amazon.com/s?k=The+Craving+Mind+Judson+Brewer', alt:'https://www.barnesandnoble.com/s/The+Craving+Mind'},
+  {title:'Recovery The Sacred Art', desc:'Rami Shapiro on spiritual recovery', url:'https://www.amazon.com/s?k=Recovery+The+Sacred+Art+Rami+Shapiro', alt:'https://www.barnesandnoble.com/s/Recovery+The+Sacred+Art'},
+  {title:'Clean', desc:'David Sheff on overcoming addiction', url:'https://www.amazon.com/s?k=Clean+Overcoming+Addiction+David+Sheff', alt:'https://www.barnesandnoble.com/s/Clean+David+Sheff'},
+  {title:'Never Enough', desc:'Judith Grisel on the neuroscience of addiction', url:'https://www.amazon.com/s?k=Never+Enough+Judith+Grisel', alt:'https://www.barnesandnoble.com/s/Never+Enough+Judith+Grisel'},
+  {title:'The Recovery Book', desc:'Al J. Mooney - a practical recovery guide', url:'https://www.amazon.com/s?k=The+Recovery+Book+Al+Mooney', alt:'https://www.barnesandnoble.com/s/The+Recovery+Book+Mooney'},
+  {title:'Breaking the Cycle', desc:'George T. Collins on addiction recovery', url:'https://www.amazon.com/s?k=Breaking+the+Cycle+George+Collins', alt:'https://www.barnesandnoble.com/s/Breaking+the+Cycle+Collins+addiction'},
+  {title:'Addiction and Grace', desc:'Gerald May on spiritual healing', url:'https://www.amazon.com/s?k=Addiction+and+Grace+Gerald+May', alt:'https://www.barnesandnoble.com/s/Addiction+and+Grace+Gerald+May'}
 ];
 var LIB_PODCASTS = [
-  {title:'The Recovery Show', desc:'12-step based recovery stories', url:'https://www.recoveryshow.com/'},
-  {title:'Psychology Unplugged', desc:'Wellness insights', url:'https://psychologyunplugged.com/'},
-  {title:'The Happiness Lab', desc:'Science of wellbeing', url:'https://www.happinesslab.fm/'}
+  {title:'The Recovery Show', desc:'12-step based recovery stories and discussion', url:'https://www.recoveryshow.com/'},
+  {title:'The Happiness Lab', desc:'Dr. Laurie Santos on the science of wellbeing', url:'https://www.happinesslab.fm/'},
+  {title:'Recovery Happy Hour', desc:'Interviews with people in recovery', url:'https://www.recoveryhappyhour.com/'},
+  {title:'The SHAIR Recovery Podcast', desc:'Shair Lott shares addiction recovery stories', url:'https://shairpodcast.com/'},
+  {title:'Recovery Elevator', desc:'Sobriety, recovery and personal growth', url:'https://recoveryelevator.com/'},
+  {title:'The One You Feed', desc:'Eric Zimmer on habits and mental health', url:'https://www.oneyoufeed.net/'},
+  {title:'The Addiction Podcast', desc:'Clinical insights on substance use recovery', url:'https://theaddictionpodcast.com/'},
+  {title:'Sober Cast', desc:'12-step AA speaker meetings on demand', url:'https://sobercast.com/'},
+  {title:'The Life You Want', desc:'Glennon Doyle on brave living and recovery', url:'https://www.glennondoyle.com/podcast/'},
+  {title:'Being Well with Rick Hanson', desc:'Neuroscience-based wellbeing strategies', url:'https://www.rickhanson.com/podcast/'}
 ];
 var LIB_VIDEOS = [
-  {title:'How to Stop a Panic Attack', desc:'Grounding techniques', url:'https://www.youtube.com/results?search_query=panic+attack+grounding+techniques'},
-  {title:'The Power of Vulnerability', desc:'Bren Brown TED Talk', url:'https://www.ted.com/talks/brene_brown_the_power_of_vulnerability'},
-  {title:'Understanding Addiction', desc:'Kurzgesagt explainer', url:'https://www.youtube.com/results?search_query=addiction+kurzgesagt'}
+  {title:'The Power of Vulnerability', desc:'Bren Brown TED Talk on connection', url:'https://www.ted.com/talks/brene_brown_the_power_of_vulnerability'},
+  {title:'Understanding Addiction', desc:'Kurzgesagt animated explainer', url:'https://youtu.be/ao8L-6nDixg'},
+  {title:'Everything You Think You Know About Addiction Is Wrong', desc:'Johann Hari TED Talk', url:'https://www.ted.com/talks/johann_hari_everything_you_think_you_know_about_addiction_is_wrong'},
+  {title:'How Childhood Trauma Affects Health', desc:'Dr. Nadine Burke Harris TED Talk', url:'https://www.ted.com/talks/nadine_burke_harris_how_childhood_trauma_affects_health_across_a_lifetime'},
+  {title:'Why You Need to Stop Chasing Happiness', desc:'Pursuit of Wonder on fulfillment', url:'https://youtu.be/B2Gk12WbgNc'},
+  {title:'How to Practice Mindfulness', desc:'Jon Kabat-Zinn on mindfulness basics', url:'https://youtu.be/3nwwKbM_vJc'},
+  {title:'The Science of Habits', desc:'Atomic Habits summary and insights', url:'https://youtu.be/PZ7lDrwYdZc'},
+  {title:'How to Heal from Trauma', desc:'Tim Fletcher recovery series', url:'https://youtu.be/BGUy7FEgz3w'},
+  {title:'The Wall', desc:'A short film on resilience and not giving up', url:'https://youtu.be/ORn3E4WfgMQ'}
 ];
 
 function libraryHTML() {
   var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Library</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Curated resources to support your recovery journey.</p>';
   h += '<div class="card"><h3>Articles</h3>';
   for (var i=0;i<LIB_ARTICLES.length;i++) {
     h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_ARTICLES[i].title+'</div><div class="desc">'+LIB_ARTICLES[i].desc+'</div><a class="link" href="'+LIB_ARTICLES[i].url+'" target="_blank">Read</a></div></div>';
   }
   h += '</div><div class="card"><h3>Books</h3>';
   for (var i=0;i<LIB_BOOKS.length;i++) {
-    h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_BOOKS[i].title+'</div><div class="desc">'+LIB_BOOKS[i].desc+'</div><a class="link" href="'+LIB_BOOKS[i].url+'" target="_blank">Buy at Barnes &amp; Noble</a></div></div>';
+    h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_BOOKS[i].title+'</div><div class="desc">'+LIB_BOOKS[i].desc+'</div><a class="link" href="'+LIB_BOOKS[i].url+'" target="_blank">Amazon</a>';
+    if (LIB_BOOKS[i].alt) h += ' <span style="color:var(--muted);font-size:10px">|</span> <a class="link" href="'+LIB_BOOKS[i].alt+'" target="_blank">Barnes &amp; Noble</a>';
+    h += '</div></div>';
   }
   h += '</div><div class="card"><h3>Podcasts</h3>';
   for (var i=0;i<LIB_PODCASTS.length;i++) {
