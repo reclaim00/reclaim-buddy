@@ -16,6 +16,7 @@
 <title>Re.Claim</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 /* ===== PARCHMENT & INK (light) ===== */
 :root{--bg:#b5dff5;--card:#f2efe8;--primary:#7a1a1a;--primary-dark:#a83030;--primary-light:#f5ece8;--text:#1a1612;--text-light:#5a564c;--muted:#8a867a;--border:#c4c0b4;--radius:16px;--radius-sm:10px;--accent:#2d5a5a;--danger:#b91c1c;--danger-bg:#fce8e8;--purple:#5b21b6;--purple-light:#ede9fe;--blue:#1e3a5f;--blue-light:#dbeafe;--rose:#9f1239;--rose-light:#ffe4e6;--gold:#8a7a6a;--gold-light:#ece6de;--shadow-card:0 1px 3px rgba(26,22,18,.06),0 4px 16px rgba(26,22,18,.04);--shadow-btn:0 2px 8px rgba(26,22,18,.1);--shadow-hover:0 6px 24px rgba(26,22,18,.12);--focus-ring:0 0 0 3px rgba(122,26,26,.15);--grad-primary:linear-gradient(135deg,#7a1a1a,#a83030);--grad-accent:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-buddy:linear-gradient(135deg,#7a1a1a,#a83030);--avatar-gertrude:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-arthur:linear-gradient(135deg,#5b21b6,#7c3aed);--avatar-oswald:linear-gradient(135deg,#4338ca,#6366f1);--scrollbar-thumb:#c4c0b4;--scrollbar-track:transparent;--stone-base:#d4cabc;--stone-border:#a89888;--parchment-bg:#f5f0e8}
 #landscape-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
@@ -137,7 +138,7 @@ body.dark .section-title::after{background:linear-gradient(to left,transparent,v
 [theme=rose] body.dark{--primary-light:#2e1420;--primary-dark:#fecdd3}
 [theme=teal] body.dark{--primary-light:#142420;--primary-dark:#99f6e4}
 body.dark .badge-gold{background:rgba(122,106,90,.15);color:var(--gold);border:1px solid rgba(122,106,90,.2)}
-.app{max-width:480px;margin:0 auto;padding:16px 16px 90px;min-height:100vh;background:rgba(242,239,232,.3)}
+.app{max-width:480px;margin:0 auto;padding:16px 16px 90px;min-height:100vh;background:rgba(242,239,232,.3);transition:opacity .12s;overscroll-behavior:contain}
 body.dark .app{background:rgba(21,18,24,.15)}
 body.logged-in .app{padding-top:0}
 .header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 16px;border-bottom:1px solid var(--border);margin-bottom:8px;position:relative}
@@ -194,6 +195,8 @@ body.dark .entry-item:hover{background:rgba(138,122,154,.02)}
 .overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:200;display:flex;align-items:center;justify-content:center;animation:overlayFade .2s ease}
 body.dark .overlay{background:rgba(0,0,0,.65)}
 @keyframes overlayFade{from{opacity:0}to{opacity:1}}
+.overlay.fade-out{animation:overlayFade .12s ease reverse both;pointer-events:none}
+.overlay.fade-out .overlay-content{animation:overlaySlide .15s ease reverse both}
 .overlay-content{background:var(--card);width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px;max-height:85vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.12);animation:overlaySlide .3s cubic-bezier(.22,1,.36,1)}
 @keyframes overlaySlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes schillingPop{0%{transform:scale(.5) translateY(20px);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1) translateY(0);opacity:1}}
@@ -779,6 +782,7 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 .loading-pulse{animation:pulse 1.5s ease-in-out infinite}
 /* ===== CARD ENTRANCE ===== */
 .card,.buddy-card,.milestone,.coping-card,.music-item{animation:cardIn .35s ease both}
+.card:nth-child(2){animation-delay:.06s!important}.card:nth-child(3){animation-delay:.12s!important}.card:nth-child(4){animation-delay:.18s!important}.card:nth-child(5){animation-delay:.24s!important}.card:nth-child(6){animation-delay:.30s!important}
 @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 /* ===== ROYAL PARDON CEREMONY ===== */
 @keyframes pardonThroneIn{0%{transform:scale(0.3);opacity:0}50%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
@@ -10332,30 +10336,47 @@ function render() {
     var fn = pages[pg];
     try { _pageCache[pg] = fn ? fn() : (pg = 'home', homeHTML()); } catch(e) { _pageCache[pg] = '<div class="card"><h3>Could not load page</h3><p style="font-size:12px;color:var(--muted)">' + e.message + '</p></div>'; }
   }
-  app.innerHTML = _pageCache[pg];
-  if (pg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
-
-  [].forEach.call(document.querySelectorAll('.tab'),function(t){
-    var tp = t.getAttribute('data-page');
-    t.classList.toggle('active', tp === pg || (tp === 'more' && MORE_SUB_PAGES.indexOf(pg) !== -1) || (tp === 'reflect' && REFLECT_SUB_PAGES.indexOf(pg) !== -1));
-  });
-  document.getElementById('tabs').style.display = 'flex';
-  var tb = document.querySelector('.top-bar');
-  if (tb) tb.style.display = 'flex';
-  applyTheme();
-  updateTabLabels();
-  // Time capsule badge
-  var tbEl = document.getElementById('tools-badge');
-  if (tbEl && D.timeCapsules) {
-    var ready = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked}).length;
-    tbEl.textContent = ready;
-    tbEl.style.display = ready ? 'block' : 'none';
+  var curPg = pg;
+  function doRender() {
+    if (pg !== curPg) return;
+    app.innerHTML = _pageCache[curPg];
+    if (curPg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
+    [].forEach.call(document.querySelectorAll('.tab'),function(t){
+      var tp = t.getAttribute('data-page');
+      t.classList.toggle('active', tp === curPg || (tp === 'more' && MORE_SUB_PAGES.indexOf(curPg) !== -1) || (tp === 'reflect' && REFLECT_SUB_PAGES.indexOf(curPg) !== -1));
+    });
+    document.getElementById('tabs').style.display = 'flex';
+    var tb = document.querySelector('.top-bar');
+    if (tb) tb.style.display = 'flex';
+    applyTheme();
+    updateTabLabels();
+    var tbEl = document.getElementById('tools-badge');
+    if (tbEl && D.timeCapsules) {
+      var ready = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked}).length;
+      tbEl.textContent = ready;
+      tbEl.style.display = ready ? 'block' : 'none';
+    }
+    if (curPg === 'home') { setTimeout(function(){ checkMilestone(); }, 500); }
+    app.style.opacity = '1';
+    app._renderTO = null;
   }
-  if (pg === 'home') { setTimeout(function(){ checkMilestone(); }, 500); }
+  if (app._renderTO) { clearTimeout(app._renderTO); app._renderTO = null; }
+  if (app.innerHTML === '') {
+    doRender();
+  } else {
+    app.style.opacity = '0';
+    app._renderTO = setTimeout(doRender, 130);
+  }
+}
+
+function animateCloseOverlay(el) {
+  if (!el || el.classList.contains('fade-out')) return;
+  el.classList.add('fade-out');
+  setTimeout(function(){ if (el.parentNode) el.remove(); }, 150);
 }
 
 function goTo(p) {
-  [].forEach.call(document.querySelectorAll('[id$="-ov"],.overlay'),function(el){el.remove()});
+  [].forEach.call(document.querySelectorAll('[id$="-ov"],.overlay'),function(el){animateCloseOverlay(el)});
   pg = p;
   render();
 }
@@ -10363,7 +10384,7 @@ function goTo(p) {
 document.getElementById('tabs').addEventListener('click', function(e) {
   var tab = e.target.closest('.tab');
   if (tab) {
-    [].forEach.call(document.querySelectorAll('.overlay'),function(el){el.remove()});
+    [].forEach.call(document.querySelectorAll('.overlay'),function(el){animateCloseOverlay(el)});
     var tp = tab.getAttribute('data-page');
     subPg = '';
     if (tp === 'more' && MORE_SUB_PAGES.indexOf(pg) !== -1) { pg = 'more'; render(); return; }
