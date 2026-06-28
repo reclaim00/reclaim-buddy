@@ -662,7 +662,6 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 @keyframes letterAppear{0%{opacity:0;transform:scale(.8) rotate(-3deg)}60%{opacity:1;transform:scale(1.02) rotate(.5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
 @keyframes inkBlot{0%{width:0;height:0;opacity:0}30%{opacity:1}100%{width:100%;height:100%;opacity:1}}
 @keyframes inkAppear{0%{opacity:0;transform:translateY(2px)}100%{opacity:1;transform:translateY(0)}}
-@keyframes waxSealPulse{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
 .tb-arm-g{transition:transform .3s ease}.tb-weapon{transition:transform .3s ease}.tb-muzzle{transition:opacity .2s ease}
 #mp-arthur.celebrate .tb-arm-g{transform:rotate(-50deg)}#mp-oswald.celebrate .tb-arm-g{transform:rotate(-70deg) scaleX(-1)}#mp-gertrude.celebrate .tb-arm-g{transform:rotate(-60deg)}
 #ta-arthur.fight .tb-arm-g{animation:fistPound .6s ease forwards}
@@ -675,24 +674,24 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 #ta-gertrude.victory .tb-arm-g{transform:rotate(-30deg)}
 .boxing-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin:4px 0 8px}
 .boxing-progress .fill{height:100%;background:var(--primary);border-radius:2px;width:0%;transition:width .5s linear}
-.journal-letter{background:var(--parchment-bg);max-width:440px;width:92%;margin:0 auto;padding:28px 22px 18px;border-radius:4px;position:relative;box-shadow:0 1px 4px rgba(0,0,0,.1),0 4px 16px rgba(0,0,0,.08),0 12px 48px rgba(0,0,0,.06),inset 0 0 0 1px rgba(255,248,235,.25),inset 0 1px 0 rgba(255,248,235,.4);max-height:80vh;overflow-y:auto;background-image:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(139,26,26,.04) 28px,rgba(139,26,26,.04) 29px)}
-.journal-letter .letter-seal{position:absolute;top:-18px;right:18px;width:44px;height:44px;z-index:3;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));transform:rotate(8deg)}
-.journal-letter .letter-header{text-align:center;margin-bottom:14px;border-bottom:1px solid rgba(139,26,26,.15);padding-bottom:10px}
-.journal-letter .letter-date{font-size:11px;color:#4a3a2a;font-family:'Cinzel',serif;letter-spacing:.5px;margin-bottom:6px}
-.journal-letter .letter-salutation{font-size:18px;font-weight:700;color:#0a0806;font-family:'Caveat','Cinzel',serif}
-body.dark .journal-letter .letter-date{color:#b0a89a}
-body.dark .journal-letter .letter-salutation{color:#e8e4dc}
+.journal-letter{background:var(--parchment-bg);max-width:440px;width:92%;margin:0 auto;padding:32px 24px 24px;border-radius:0;position:relative;box-shadow:0 1px 4px rgba(0,0,0,.1),0 4px 16px rgba(0,0,0,.08),0 12px 48px rgba(0,0,0,.06),inset 0 0 0 1px rgba(255,248,235,.25);max-height:80vh;overflow-y:auto;border-left:3px solid #b8a898;border-right:3px solid #b8a898;background-image:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(139,26,26,.02) 18px,rgba(139,26,26,.02) 20px),repeating-linear-gradient(0deg,transparent,transparent 26px,rgba(139,26,26,.03) 26px,rgba(139,26,26,.03) 27px)}
+.journal-letter::before{content:'';position:absolute;top:0;left:-8px;right:-8px;height:14px;background:linear-gradient(180deg,#5a3a1a,#8a6a3a,#5a3a1a);border-radius:4px;box-shadow:0 2px 6px rgba(0,0,0,.2)}.journal-letter::after{content:'';position:absolute;bottom:0;left:-8px;right:-8px;height:14px;background:linear-gradient(0deg,#5a3a1a,#8a6a3a,#5a3a1a);border-radius:4px;box-shadow:0 -2px 6px rgba(0,0,0,.2)}
+body.dark .journal-letter::before{background:linear-gradient(180deg,#3a2a1a,#5a4a3a,#3a2a1a)}body.dark .journal-letter::after{background:linear-gradient(0deg,#3a2a1a,#5a4a3a,#3a2a1a)}
+.journal-letter .scroll-header{text-align:center;margin-bottom:14px;padding:6px 0 10px;position:relative}
+.journal-letter .scroll-header::after{content:'\2767';display:block;font-size:16px;color:#8a7a5a;opacity:.4;margin-top:6px}
+.journal-letter .scroll-date{font-size:11px;color:#4a3a2a;font-family:'Cinzel',serif;letter-spacing:1px;margin-bottom:4px;text-transform:uppercase}
+.journal-letter .scroll-title{font-size:16px;font-weight:700;color:#0a0806;font-family:'Cinzel',serif;letter-spacing:.5px}
+body.dark .journal-letter .scroll-date{color:#b0a89a}body.dark .journal-letter .scroll-title{color:#e8e4dc}
 .journal-letter .letter-body{font-family:'Caveat',serif;font-size:19px;line-height:1.65;color:#0a0806;font-weight:600;min-height:3em;max-height:50vh;overflow-y:auto;padding:4px 2px;position:relative;white-space:pre-wrap}
 .journal-letter .letter-body span{animation:inkAppear .15s ease}
 body.dark .journal-letter .letter-body{color:#e8e4dc}
-.journal-letter .letter-closing{margin-top:16px;text-align:right;border-top:1px solid rgba(139,26,26,.1);padding-top:12px;animation:letterAppear .5s ease both}
-.journal-letter .letter-signoff{font-size:15px;color:#0a0806;font-weight:600;font-family:'Caveat',serif}
-.journal-letter .letter-signature{font-size:21px;font-weight:700;color:#5a1010;font-family:'Caveat',serif;margin-top:2px}
-.journal-letter .letter-time{font-size:11px;color:#4a3a2a;font-family:'Cinzel',serif;letter-spacing:.3px;margin-top:4px}
-body.dark .journal-letter .letter-signoff{color:#e8e4dc}
-body.dark .journal-letter .letter-signature{color:#c8a09a}
-body.dark .journal-letter .letter-time{color:#b0a89a}
-body.dark .journal-letter{box-shadow:0 2px 8px rgba(0,0,0,.4),0 8px 32px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,248,235,.06)}
+.journal-letter .scroll-closing{margin-top:16px;text-align:right;padding-top:10px;animation:letterAppear .5s ease both;position:relative}
+.journal-letter .scroll-closing::before{content:'\2767';display:block;text-align:center;font-size:14px;color:#8a7a5a;opacity:.3;margin-bottom:8px}
+.journal-letter .scroll-signoff{font-size:14px;color:#0a0806;font-weight:600;font-family:'Cinzel',serif;letter-spacing:.5px}
+.journal-letter .scroll-signature{font-size:20px;font-weight:700;color:#5a1010;font-family:'Caveat',serif;margin-top:2px}
+.journal-letter .scroll-time{font-size:10px;color:#4a3a2a;font-family:'Cinzel',serif;letter-spacing:.5px;margin-top:4px}
+body.dark .journal-letter .scroll-signoff{color:#e8e4dc}body.dark .journal-letter .scroll-signature{color:#c8a09a}body.dark .journal-letter .scroll-time{color:#b0a89a}
+body.dark .journal-letter{box-shadow:0 2px 8px rgba(0,0,0,.4),0 8px 32px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,248,235,.06);border-left-color:#4a3a2a;border-right-color:#4a3a2a}
 .journal-letter .letter-section{padding:8px 0 4px;border-top:1px dashed rgba(139,26,26,.12);margin-top:4px}
 .journal-letter .letter-section-label{font-size:10px;color:#4a3a2a;font-family:'Cinzel',serif;letter-spacing:1px;margin-bottom:4px}
 body.dark .journal-letter .letter-section-label{color:#b0a89a}
@@ -4342,14 +4341,12 @@ function showJournalLetter(idx) {
   var safe = function(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
 
   var h = '<div class="journal-letter" id="journal-letter">';
-  // Wax seal
-  h += '<div class="letter-seal" id="letter-seal"><svg viewBox="0 0 40 40" width="40" height="40"><circle cx="20" cy="20" r="18" fill="#8b1a1a" stroke="#5a1010" stroke-width="1.5"/><text x="20" y="22" text-anchor="middle" fill="#d4a050" font-size="16" font-weight="bold" font-family="serif">R</text></svg></div>';
-  // Letter header
-  h += '<div class="letter-header">';
-  h += '<div class="letter-date">' + dateStr + '</div>';
-  h += '<div class="letter-salutation">My Dearest Journal,</div>';
+  // Scroll header (no wax seal)
+  h += '<div class="scroll-header">';
+  h += '<div class="scroll-date">' + dateStr + '</div>';
+  h += '<div class="scroll-title">Chronicle Entry</div>';
   h += '</div>';
-  // Letter body (where text appears)
+  // Scroll body (where text appears)
   h += '<div class="letter-body" id="letter-body"></div>';
   // After-entry content (summary, insights, song - shown after typing finishes)
   h += '<div id="letter-after" style="display:none">';
@@ -4382,12 +4379,12 @@ function showJournalLetter(idx) {
   }
   h += '</div>';
   // Closing
-  h += '<div class="letter-closing" id="letter-closing" style="display:none">';
-  h += '<div class="letter-signoff">Yours in truth,</div>';
-  h += '<div class="letter-signature">' + safe(D.name || 'Me') + '</div>';
-  h += '<div class="letter-time">' + timeStr + '</div>';
+  h += '<div class="scroll-closing" id="letter-closing" style="display:none">';
+  h += '<div class="scroll-signoff">Thus recorded,</div>';
+  h += '<div class="scroll-signature">' + safe(D.name || 'Me') + '</div>';
+  h += '<div class="scroll-time">' + timeStr + '</div>';
   h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" id="letter-close" style="display:none;margin-top:10px">&#10003; Seal &amp; Close</button>';
+  h += '<button class="btn btn-outline btn-sm" id="letter-close" style="display:none;margin-top:10px">&#10003; Close Scroll</button>';
   h += '</div>';
 
   overlay.innerHTML = h;
@@ -4396,12 +4393,6 @@ function showJournalLetter(idx) {
   // Animate letter appearance
   var letter = document.getElementById('journal-letter');
   if (letter) letter.style.animation = 'letterAppear .6s cubic-bezier(.22,1,.36,1) forwards';
-
-  // Wax seal pulse
-  setTimeout(function(){
-    var seal = document.getElementById('letter-seal');
-    if (seal) seal.style.animation = 'waxSealPulse 1.5s ease-in-out infinite';
-  }, 300);
 
   // Word-by-word typewriter for entry text
   setTimeout(function(){
