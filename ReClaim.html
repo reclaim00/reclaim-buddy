@@ -23,12 +23,12 @@
 #moon-overlay{position:fixed;top:8px;left:5%;z-index:1;pointer-events:none;opacity:0;transition:opacity .6s}
 body.dark #moon-overlay{opacity:1}
 #moon-overlay svg{width:clamp(60px,15vw,140px);height:auto;display:block;filter:drop-shadow(0 0 20px rgba(255,248,238,.3))}
-#village-overlay{position:fixed;right:-2%;bottom:0;z-index:1;pointer-events:none;width:min(58vw,760px);transition:opacity .6s}
-#village-overlay svg{width:100%;height:auto;display:block;opacity:.75}
+#village-overlay{position:fixed;right:-5%;bottom:0;z-index:1;pointer-events:none;width:min(85vw,1100px);transition:opacity .6s}
+#village-overlay svg{width:100%;height:auto;display:block;opacity:.8}
 #village-overlay.damage{animation:villageShake .5s ease-in-out}
 @keyframes villageShake{0%,100%{transform:translateX(0)}10%{transform:translateX(-4px)}20%{transform:translateX(3px)}30%{transform:translateX(-2px)}50%{transform:translateX(1px)}70%{transform:translateX(-1px)}}
-body.dark #village-overlay svg{opacity:.55}
-@media(max-width:600px){#village-overlay{width:85vw;right:-4%;bottom:0}}@media(max-width:480px){#village-overlay{width:92vw;right:-6%}#moon-overlay{left:2%;top:4px}}
+body.dark #village-overlay svg{opacity:.6}
+@media(max-width:600px){#village-overlay{width:92vw;right:-6%;bottom:0}}@media(max-width:480px){#village-overlay{width:98vw;right:-8%}#moon-overlay{left:2%;top:4px}}
 .day-scene{opacity:.5}
 .night-scene{display:none}
 .app,.top-bar,.tabs{position:relative;z-index:1}
@@ -7810,7 +7810,8 @@ function villageLevel(days) {
   if (days <= 29) return 3;
   if (days <= 89) return 4;
   if (days <= 180) return 5;
-  return 6;
+  if (days <= 364) return 6;
+  return 7;
 }
 function villageHTML() {
   var days = soberDays();
@@ -7825,7 +7826,7 @@ function villageHTML() {
     bg:'#8a7a20', sp:'#3a3a42', wi:'#ffd700',
     pt:'#2a2a2a', dr:'#1a0a00', tw:'#3a3a42',
     fl:'#aa5577', sm:'rgba(200,200,200,',
-    wg:'#ffd700', mg:'#2a3a2a'
+    wg:'#ffd700', mg:'#2a3a2a', ft:'#3a3a4a'
   } : {
     g1:'#5a9a4a', g2:'#4a8a3a', sky:'#87ceeb',
     st:'#9a9aa2', sd:'#7a7a82', sl:'#b0b0b8',
@@ -7835,179 +7836,126 @@ function villageHTML() {
     bg:'#d4a017', sp:'#7a7a82', wi:'#88bbdd',
     pt:'#9a8a7a', dr:'#5a3a2a', tw:'#8a8a92',
     fl:'#ff7788', sm:'rgba(180,180,180,',
-    wg:'#88bbdd', mg:'#5a7a4a'
+    wg:'#88bbdd', mg:'#5a7a4a', ft:'#d4c8b8'
   };
+  function r(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="1" fill="';}
+  function p(pts,c){return '<polygon points="'+pts+'" fill="'+c+'"/>';}
+  function l(x1,y1,x2,y2,c,w){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+c+'" stroke-width="'+w+'"/>';}
+  function px(pts,c){return '<polygon points="'+pts+'" fill="'+c+'" stroke="'+c.tm+'" stroke-width=".8"/>';}
+  function tf(x,y,w,h,clr){var s='';s+=r(x,y,w,h)+clr+'"/>';s+=l(x,y,x,y+h,c.tm,1.5);s+=l(x+w-2,y,x+w-2,y+h,c.tm,1.5);s+=l(x,y+Math.round(h*.55),x+w,y+Math.round(h*.55),c.tm,1.2);return s;}
+  function thr(x,y,w,h){return p((x-5)+','+(y)+' '+(x+w/2-2)+','+(y-h)+' '+(x+w-2)+','+(y),c.th);}
   var h = '<svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg">';
-  if (!isNight) {
-    h += '<rect x="0" y="0" width="360" height="200" fill="'+c.sky+'" opacity=".04"/>';
-  }
-  h += '<rect x="0" y="140" width="360" height="60" fill="'+c.g1+'" opacity=".35"/>';
-  h += '<rect x="0" y="158" width="360" height="42" fill="'+c.g2+'" opacity=".3"/>';
-  h += '<path d="M0,152 Q60,134 120,147 Q180,128 240,142 Q300,124 360,147 L360,200 L0,200Z" fill="'+c.mg+'" opacity=".15"/>';
+  if (!isNight) h += '<rect x="0" y="0" width="360" height="200" fill="'+c.sky+'" opacity=".06"/>';
+  h += '<rect x="0" y="138" width="360" height="62" fill="'+c.g1+'" opacity=".4"/>';
+  h += '<rect x="0" y="156" width="360" height="44" fill="'+c.g2+'" opacity=".35"/>';
+  h += '<path d="M0,150 Q60,130 120,144 Q180,124 240,138 Q300,120 360,144 L360,200 L0,200Z" fill="'+c.mg+'" opacity=".2"/>';
+  // L1: Ruins + campfire
   if (level >= 1) {
-    // Ruined foundation
-    h += '<rect x="155" y="140" width="50" height="20" rx="1" fill="'+c.sd+'" opacity=".45"/>';
-    h += '<rect x="160" y="132" width="8" height="28" rx="1" fill="'+c.st+'" opacity=".35"/>';
-    h += '<rect x="192" y="134" width="8" height="26" rx="1" fill="'+c.st+'" opacity=".35"/>';
-    if (level < 2) {
-      h += '<g opacity=".5"><rect x="176" y="156" width="4" height="2" fill="#8a4a1a"/>';
-      h += '<polygon points="176,156 180,156 178,152" fill="#cc6633"/>';
-      h += '<circle cx="178" cy="150" r="3" fill="#ff8833" opacity=".35"/></g>';
-    }
+    h += r(140,138,60,22,c.sd)+'" opacity=".4"/>'+r(148,130,8,30,c.st)+'" opacity=".35"/>'+r(184,132,8,28,c.st)+'" opacity=".35"/>'+r(155,128,6,6,c.sd)+'" opacity=".45"/>'+r(179,128,6,6,c.sd)+'" opacity=".45"/>';
+    if (level < 2) h += '<g opacity=".5"><rect x="168" y="156" width="6" height="3" fill="#8a4a1a"/><polygon points="167,156 175,156 171,150" fill="#cc6633"/><circle cx="171" cy="146" r="4" fill="#ff8833" opacity=".3"/></g>';
   }
+  // L2: Cottage + well + tree
   if (level >= 2) {
-    h += '<path d="M175,200 Q178,178 182,158 Q186,148 190,142" stroke="'+c.pt+'" stroke-width="7" fill="none" opacity=".3" stroke-linecap="round"/>';
-    h += '<rect x="40" y="132" width="34" height="28" rx="1" fill="'+c.wl+'"/>';
-    h += '<line x1="42" y1="132" x2="42" y2="160" stroke="'+c.tm+'" stroke-width="1.5"/>';
-    h += '<line x1="72" y1="132" x2="72" y2="160" stroke="'+c.tm+'" stroke-width="1.5"/>';
-    h += '<line x1="40" y1="146" x2="74" y2="146" stroke="'+c.tm+'" stroke-width="1.2"/>';
-    h += '<polygon points="35,132 57,112 79,132" fill="'+c.th+'" stroke="'+c.tm+'" stroke-width=".8"/>';
-    h += '<rect x="54" y="146" width="8" height="14" rx="1" fill="'+c.dr+'"/>';
-    h += '<rect x="43" y="140" width="5" height="5" rx="1" fill="'+c.wi+'" opacity=".4"/>';
+    h += '<path d="M175,200 Q178,176 182,156 Q186,146 190,140" stroke="'+c.pt+'" stroke-width="8" fill="none" opacity=".3" stroke-linecap="round"/>';
+    h += tf(30,130,36,30,c.wl)+r(49,146,8,14,1)+'" fill="'+c.dr+'"/>'+r(33,139,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>'+px('25,130 48,108 71,130',c.th);
+    h += r(84,148,12,12,1)+'" fill="'+c.sd+'" opacity=".5"/>'+r(85,147,10,2,1)+'" fill="'+c.sd+'"/>';
+    h += r(72,134,3,26,c.tk)+'/><circle cx="73" cy="126" r="8" fill="'+c.tr+'" opacity=".6"/>';
   }
+  // L3: Church + second cottage + cart
   if (level >= 3) {
-    h += '<rect x="100" y="122" width="32" height="38" rx="1" fill="'+c.st+'"/>';
-    h += '<polygon points="97,122 116,96 135,122" fill="'+c.rf+'"/>';
-    h += '<polygon points="113,96 116,72 119,96" fill="'+c.sp+'"/>';
-    h += '<line x1="116" y1="72" x2="116" y2="66" stroke="'+(isNight?c.wg:'#8a6a3a')+'" stroke-width="1.5"/>';
-    h += '<line x1="113" y1="69" x2="119" y2="69" stroke="'+(isNight?c.wg:'#8a6a3a')+'" stroke-width="1.5"/>';
-    h += '<path d="M112,160 Q116,150 120,160" fill="'+c.dr+'"/>';
-    h += '<circle cx="116" cy="134" r="4" fill="'+c.wi+'" opacity=".5"/>';
-    h += '<rect x="250" y="134" width="32" height="26" rx="1" fill="'+c.wd+'"/>';
-    h += '<line x1="252" y1="134" x2="252" y2="160" stroke="'+c.tm+'" stroke-width="1.5"/>';
-    h += '<line x1="280" y1="134" x2="280" y2="160" stroke="'+c.tm+'" stroke-width="1.5"/>';
-    h += '<line x1="250" y1="147" x2="282" y2="147" stroke="'+c.tm+'" stroke-width="1.2"/>';
-    h += '<polygon points="245,134 266,116 287,134" fill="'+c.th+'" stroke="'+c.tm+'" stroke-width=".8"/>';
-    h += '<rect x="262" y="146" width="8" height="14" rx="1" fill="'+c.dr+'"/>';
+    h += r(108,120,34,40,c.st)+'" opacity=".9"/>'+p('105,120 125,92 145,120',c.rf);
+    h += p('122,92 125,66 128,92',c.sp)+l(125,66,125,60,isNight?c.wg:'#8a6a3a',1.5)+l(122,63,128,63,isNight?c.wg:'#8a6a3a',1.5);
+    h += '<path d="M121,160 Q125,148 129,160" fill="'+c.dr+'"/>'+'<circle cx="125" cy="134" r="5" fill="'+c.wi+'" opacity=".5"/>';
+    h += tf(250,132,34,28,c.wd)+r(263,146,8,14,1)+'" fill="'+c.dr+'"/>'+px('245,132 267,112 289,132',c.th);
+    h += r(210,148,16,10,1)+'" fill="'+c.sd+'" opacity=".35"/>'+'<circle cx="218" cy="148" r="5" fill="'+c.sd+'" opacity=".3"/><circle cx="212" cy="148" r="5" fill="'+c.sd+'" opacity=".3"/>';
+    h += r(82,150,2,10,c.tm)+r(90,150,2,10,c.tm)+l(82,153,92,153,c.tm,1.2)+l(82,157,92,157,c.tm,1.2);
   }
+  // L4: Stone wall sections, third house, banner
   if (level >= 4) {
-    h += '<rect x="20" y="128" width="22" height="32" rx="1" fill="'+c.sd+'" opacity=".5"/>';
-    h += '<rect x="20" y="124" width="6" height="6" fill="'+c.sd+'" opacity=".6"/>';
-    h += '<rect x="31" y="124" width="6" height="6" fill="'+c.sd+'" opacity=".6"/>';
-    h += '<rect x="146" y="126" width="28" height="34" rx="1" fill="'+c.wd+'"/>';
-    h += '<polygon points="143,126 160,104 177,126" fill="'+c.rf+'"/>';
-    h += '<rect x="156" y="146" width="7" height="14" rx="1" fill="'+c.dr+'"/>';
-    h += '<rect x="148" y="136" width="5" height="5" rx="1" fill="'+c.wi+'" opacity=".4"/>';
-    h += '<rect x="168" y="114" width="5" height="12" rx="1" fill="'+c.st+'"/>';
-    if (!isNight) {
-      h += '<circle cx="170" cy="110" r="2" fill="#ccc" opacity=".15"/>';
-      h += '<circle cx="173" cy="106" r="1.5" fill="#ccc" opacity=".1"/>';
-    }
-    h += '<line x1="295" y1="100" x2="295" y2="155" stroke="'+c.tm+'" stroke-width="2"/>';
-    h += '<polygon points="295,100 317,106 295,112" fill="'+c.bn+'" opacity=".8"/>';
+    h += r(12,126,24,34,c.sd)+'" opacity=".5"/>'+r(12,122,7,6,c.sd)+'" opacity=".6"/>'+r(25,122,7,6,c.sd)+'" opacity=".6"/>';
+    h += r(145,124,30,36,c.wd)+'" opacity=".9"/>'+p('142,124 160,100 178,124',c.rf)+r(157,146,7,14,1)+'" fill="'+c.dr+'"/>'+r(148,134,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += r(170,112,6,12,c.st)+'" opacity=".8"/>';
+    if (!isNight) h += '<circle cx="173" cy="108" r="3" fill="#ccc" opacity=".12"/><circle cx="176" cy="103" r="2" fill="#ccc" opacity=".08"/>';
+    h += l(300,98,300,155,c.tm,2)+p('300,98 324,105 300,112',c.bn);
+    h += r(196,148,8,8,c.sd)+'" opacity=".4"/>'+'<circle cx="200" cy="152" r="5" fill="'+c.wi+'" opacity=".2"/>';
   }
+  // L5: Manor + gate tower + full wall
   if (level >= 5) {
-    h += '<rect x="182" y="106" width="44" height="54" rx="1" fill="'+c.st+'"/>';
-    h += '<polygon points="178,106 204,74 230,106" fill="'+c.rf+'"/>';
-    h += '<rect x="199" y="88" width="10" height="18" fill="'+c.st+'"/>';
-    h += '<polygon points="197,88 204,72 211,88" fill="'+c.rf+'"/>';
-    h += '<line x1="204" y1="72" x2="204" y2="64" stroke="'+c.tm+'" stroke-width="1.2"/>';
-    h += '<polygon points="204,64 218,68 204,72" fill="'+c.bn+'" opacity=".9"/>';
-    h += '<path d="M200,160 Q204,148 208,160" fill="'+c.dr+'"/>';
-    h += '<rect x="188" y="118" width="4" height="6" rx="1" fill="'+c.wi+'" opacity=".5"/>';
-    h += '<rect x="216" y="118" width="4" height="6" rx="1" fill="'+c.wi+'" opacity=".5"/>';
-    h += '<rect x="226" y="116" width="74" height="44" rx="1" fill="'+c.sd+'" opacity=".35"/>';
-    for (var bw=0; bw<10; bw++) {
-      h += '<rect x="'+(230+bw*7)+'" y="113" width="4" height="5" fill="'+c.sd+'" opacity=".5"/>';
-    }
-    h += '<rect x="10" y="112" width="18" height="48" rx="1" fill="'+c.st+'"/>';
-    h += '<polygon points="7,112 19,90 31,112" fill="'+c.rf+'"/>';
-    h += '<rect x="15" y="146" width="8" height="14" rx="1" fill="'+c.dr+'"/>';
-    h += '<line x1="19" y1="90" x2="19" y2="82" stroke="'+c.tm+'" stroke-width="1.2"/>';
-    h += '<polygon points="19,82 31,86 19,90" fill="'+c.bg+'" opacity=".8"/>';
-    h += '<rect x="315" y="128" width="3" height="32" fill="'+c.tk+'"/>';
-    h += '<circle cx="316" cy="120" r="10" fill="'+c.tr+'" opacity=".7"/>';
-    h += '<circle cx="323" cy="124" r="8" fill="'+c.tr+'" opacity=".6"/>';
-    if (level >= 6) {
-      h += '<rect x="172" y="82" width="64" height="78" rx="1" fill="'+c.st+'"/>';
-      for (var k=0; k<9; k++) {
-        h += '<rect x="'+(174+k*8)+'" y="78" width="5" height="6" fill="'+c.sl+'" opacity=".65"/>';
-      }
-      h += '<polygon points="168,82 204,50 240,82" fill="'+c.rf+'"/>';
-      h += '<rect x="158" y="94" width="18" height="66" rx="1" fill="'+c.tw+'"/>';
-      h += '<polygon points="155,94 167,72 179,94" fill="'+c.rf+'"/>';
-      h += '<rect x="228" y="94" width="18" height="66" rx="1" fill="'+c.tw+'"/>';
-      h += '<polygon points="225,94 237,72 249,94" fill="'+c.rf+'"/>';
-      for (var t=0; t<3; t++) {
-        h += '<rect x="'+(160+t*7)+'" y="91" width="5" height="5" fill="'+c.sl+'" opacity=".6"/>';
-        h += '<rect x="'+(230+t*7)+'" y="91" width="5" height="5" fill="'+c.sl+'" opacity=".6"/>';
-      }
-      h += '<rect x="200" y="102" width="8" height="14" rx="2" fill="'+c.wi+'" opacity=".5"/>';
-      h += '<rect x="195" y="122" width="5" height="7" rx="1" fill="'+c.wi+'" opacity=".4"/>';
-      h += '<rect x="208" y="122" width="5" height="7" rx="1" fill="'+c.wi+'" opacity=".4"/>';
-      h += '<path d="M200,160 Q204,146 208,160" fill="'+c.dr+'"/>';
-      h += '<line x1="202" y1="150" x2="202" y2="160" stroke="'+(isNight?'#666':'#999')+'" stroke-width=".8"/>';
-      h += '<line x1="204" y1="150" x2="204" y2="160" stroke="'+(isNight?'#666':'#999')+'" stroke-width=".8"/>';
-      h += '<line x1="206" y1="150" x2="206" y2="160" stroke="'+(isNight?'#666':'#999')+'" stroke-width=".8"/>';
-      h += '<line x1="200" y1="154" x2="208" y2="154" stroke="'+(isNight?'#666':'#999')+'" stroke-width=".8"/>';
-      h += '<line x1="204" y1="50" x2="204" y2="40" stroke="'+c.tm+'" stroke-width="1.5"/>';
-      h += '<polygon points="204,40 224,46 204,52" fill="'+c.bn+'" opacity=".9"/>';
-      h += '<line x1="167" y1="72" x2="167" y2="64" stroke="'+c.tm+'" stroke-width="1"/>';
-      h += '<polygon points="167,64 181,68 167,72" fill="'+c.bg+'" opacity=".8"/>';
-      h += '<line x1="237" y1="72" x2="237" y2="64" stroke="'+c.tm+'" stroke-width="1"/>';
-      h += '<polygon points="237,64 251,68 237,72" fill="'+c.bg+'" opacity=".8"/>';
-      h += '<rect x="95" y="114" width="36" height="46" rx="1" fill="'+c.st+'"/>';
-      h += '<polygon points="91,114 113,84 135,114" fill="'+c.rf+'"/>';
-      h += '<polygon points="110,84 113,52 116,84" fill="'+c.sp+'"/>';
-      h += '<line x1="113" y1="52" x2="113" y2="44" stroke="'+(isNight?c.wg:'#8a6a3a')+'" stroke-width="1.5"/>';
-      h += '<line x1="109" y1="48" x2="117" y2="48" stroke="'+(isNight?c.wg:'#8a6a3a')+'" stroke-width="1.5"/>';
-      h += '<circle cx="113" cy="132" r="6" fill="'+c.wi+'" opacity=".5"/>';
-      h += '<path d="M109,160 Q113,148 117,160" fill="'+c.dr+'"/>';
-      h += '<rect x="88" y="120" width="10" height="40" rx="1" fill="'+c.sd+'"/>';
-      h += '<polygon points="85,120 93,102 101,120" fill="'+c.rf+'"/>';
-      h += '<rect x="90" y="126" width="6" height="7" rx="1" fill="'+c.wi+'" opacity=".3"/>';
-      h += '<rect x="5" y="116" width="83" height="44" rx="1" fill="'+c.sd+'" opacity=".35"/>';
-      for (var w=0; w<13; w++) {
-        h += '<rect x="'+(7+w*7)+'" y="113" width="4" height="5" fill="'+c.sd+'" opacity=".5"/>';
-      }
-      h += '<rect x="254" y="112" width="101" height="48" rx="1" fill="'+c.sd+'" opacity=".35"/>';
-      for (var wr=0; wr<15; wr++) {
-        h += '<rect x="'+(256+wr*7)+'" y="109" width="4" height="5" fill="'+c.sd+'" opacity=".5"/>';
-      }
-      h += '<rect x="35" y="130" width="24" height="30" rx="1" fill="'+c.wl+'"/>';
-      h += '<polygon points="31,130 47,110 63,130" fill="'+c.th+'"/>';
-      h += '<rect x="44" y="146" width="6" height="14" fill="'+c.dr+'"/>';
-      h += '<rect x="270" y="126" width="26" height="34" rx="1" fill="'+c.wd+'"/>';
-      h += '<polygon points="267,126 283,106 299,126" fill="'+c.rf+'"/>';
-      h += '<rect x="277" y="146" width="6" height="14" fill="'+c.dr+'"/>';
-      h += '<rect x="272" y="136" width="4" height="4" rx="1" fill="'+c.wi+'" opacity=".4"/>';
-      h += '<rect x="308" y="132" width="20" height="28" rx="1" fill="'+c.wl+'"/>';
-      h += '<polygon points="305,132 318,114 331,132" fill="'+c.th+'"/>';
-      h += '<rect x="314" y="148" width="6" height="12" fill="'+c.dr+'"/>';
-      h += '<rect x="335" y="126" width="3" height="34" fill="'+c.tk+'"/>';
-      h += '<circle cx="336" cy="117" r="12" fill="'+c.tr+'" opacity=".7"/>';
-      h += '<circle cx="345" cy="122" r="9" fill="'+c.tr+'" opacity=".6"/>';
-      h += '<circle cx="328" cy="121" r="8" fill="'+c.tr+'" opacity=".5"/>';
-      h += '<rect x="3" y="124" width="3" height="36" fill="'+c.tk+'"/>';
-      h += '<circle cx="4" cy="115" r="11" fill="'+c.tr+'" opacity=".7"/>';
-      h += '<circle cx="12" cy="119" r="8" fill="'+c.tr+'" opacity=".6"/>';
-    }
+    h += r(180,104,48,56,c.st)+'" opacity=".9"/>'+p('176,104 204,70 232,104',c.rf);
+    h += r(198,86,12,18,c.st)+'" opacity=".9"/>'+p('196,86 204,68 212,86',c.rf);
+    h += l(204,68,204,58,c.tm,1.5)+p('204,58 220,63 204,68',c.bn);
+    h += '<path d="M199,160 Q204,146 209,160" fill="'+c.dr+'"/>'+r(187,118,5,7,1)+'" fill="'+c.wi+'" opacity=".5"/>'+r(216,118,5,7,1)+'" fill="'+c.wi+'" opacity=".5"/>';
+    h += r(220,114,80,46,c.sd)+'" opacity=".35"/>';
+    for (var bw=0;bw<12;bw++) h += r(224+bw*7,110,5,6,c.sd)+'" opacity=".5"/>';
+    h += r(8,108,20,52,c.st)+'" opacity=".9"/>'+p('5,108 18,84 31,108',c.rf)+r(15,146,8,14,1)+'" fill="'+c.dr+'"/>'+l(18,84,18,74,c.tm,1.5)+p('18,74 32,78 18,82',c.bg);
   }
+  // L6: Castle
+  if (level >= 6) {
+    h += r(168,78,72,82,c.st)+'" opacity=".9"/>';
+    for (var k=0;k<11;k++) h += r(170+k*7,74,5,6,c.sl)+'" opacity=".6"/>';
+    h += p('164,78 204,42 244,78',c.rf);
+    h += r(152,90,22,70,c.tw)+'" opacity=".9"/>'+p('149,90 163,66 177,90',c.rf);
+    h += r(234,90,22,70,c.tw)+'" opacity=".9"/>'+p('231,90 245,66 259,90',c.rf);
+    for (var t=0;t<4;t++) h += r(154+t*6,87,5,5,c.sl)+'" opacity=".55"/>'+r(236+t*6,87,5,5,c.sl)+'" opacity=".55"/>';
+    h += r(200,98,8,16,2)+'" fill="'+c.wi+'" opacity=".5"/>'+r(193,122,6,8,1)+'" fill="'+c.wi+'" opacity=".4"/>'+r(209,122,6,8,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += '<path d="M200,160 Q204,144 208,160" fill="'+c.dr+'"/>';
+    h += l(202,150,202,160,'#666',.8)+l(204,150,204,160,'#666',.8)+l(206,150,206,160,'#666',.8)+l(200,154,208,154,'#666',.8);
+    h += l(204,42,204,32,c.tm,1.5)+p('204,32 228,38 204,44',c.bn);
+    h += l(163,66,163,56,c.tm,1.2)+p('163,56 179,60 163,64',c.bg);
+    h += l(245,66,245,56,c.tm,1.2)+p('245,56 261,60 245,64',c.bg);
+    // Cathedral
+    h += r(90,112,40,48,c.st)+'" opacity=".9"/>'+p('86,112 110,78 134,112',c.rf);
+    h += p('107,78 110,42 113,78',c.sp)+l(110,42,110,34,isNight?c.wg:'#8a6a3a',1.5)+l(106,38,114,38,isNight?c.wg:'#8a6a3a',1.5);
+    h += '<circle cx="110" cy="132" r="7" fill="'+c.wi+'" opacity=".5"/>'+'<path d="M106,160 Q110,146 114,160" fill="'+c.dr+'"/>';
+    h += r(82,118,12,42,c.sd)+'" opacity=".8"/>'+p('79,118 88,98 97,118',c.rf)+r(84,126,8,8,1)+'" fill="'+c.wi+'" opacity=".3"/>';
+    // Fortified walls
+    h += r(2,114,88,46,c.sd)+'" opacity=".4"/>';
+    for (var w=0;w<14;w++) h += r(4+w*7,110,5,6,c.sd)+'" opacity=".5"/>';
+    h += r(260,110,98,50,c.sd)+'" opacity=".4"/>';
+    for (var wr=0;wr<15;wr++) h += r(262+wr*7,107,5,6,c.sd)+'" opacity=".5"/>';
+    // Right gate tower
+    h += r(290,106,18,54,c.st)+'" opacity=".9"/>'+p('287,106 299,86 311,106',c.rf)+r(296,146,8,14,1)+'" fill="'+c.dr+'"/>'+l(299,86,299,78,c.tm,1.2)+p('299,78 311,82 299,86',c.bn);
+    // Houses
+    h += tf(30,128,26,32,c.wl)+r(39,148,7,12,1)+'" fill="'+c.dr+'"/>'+px('26,128 43,106 60,128',c.th);
+    h += tf(268,124,30,36,c.wd)+r(279,148,7,12,1)+'" fill="'+c.dr+'"/>'+r(271,136,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>'+px('264,124 283,102 302,124',c.rf);
+    h += r(310,130,22,30,c.wl)+'" opacity=".9"/>'+px('306,130 321,110 336,130',c.th)+r(316,148,6,12,1)+'" fill="'+c.dr+'"/>';
+    if (level >= 7) {
+      // L7: Extra towers + more houses + fountain
+      h += r(130,86,22,52,c.tw)+'" opacity=".9"/>'+p('127,86 141,62 155,86',c.rf);
+      for (var t2=0;t2<4;t2++) h += r(132+t2*5,83,4,5,c.sl)+'" opacity=".55"/>';
+      h += l(141,62,141,54,c.tm,1.2)+p('141,54 153,58 141,62',c.bg);
+      h += r(225,114,22,46,c.sd)+'" opacity=".5"/>'+r(225,110,22,6,c.sd)+'" opacity=".6"/>';
+      h += tf(40,132,24,28,c.wl)+r(48,147,6,13,1)+'" fill="'+c.dr+'"/>'+px('36,132 52,112 68,132',c.th);
+      h += r(44,108,5,14,c.st)+'" opacity=".8"/>';
+      h += '<circle cx="160" cy="148" r="8" fill="'+c.st+'" opacity=".7"/><circle cx="160" cy="148" r="6" fill="'+c.wi+'" opacity=".15"/>';
+      h += l(155,149,165,149,c.sd,2)+l(160,144,160,154,c.sd,2);
+      h += r(340,124,3,36,c.tk)+'<circle cx="341" cy="114" r="14" fill="'+c.tr+'" opacity=".7"/><circle cx="350" cy="120" r="10" fill="'+c.tr+'" opacity=".6"/>';
+      h += r(2,122,3,38,c.tk)+'<circle cx="3" cy="112" r="13" fill="'+c.tr+'" opacity=".7"/><circle cx="11" cy="117" r="9" fill="'+c.tr+'" opacity=".6"/>';
+    }
+    h += r(340,126,3,34,c.tk)+'<circle cx="341" cy="118" r="11" fill="'+c.tr+'" opacity=".7"/><circle cx="349" cy="122" r="8" fill="'+c.tr+'" opacity=".6"/><circle cx="333" cy="120" r="7" fill="'+c.tr+'" opacity=".5"/>';
+    h += r(2,124,3,36,c.tk)+'<circle cx="3" cy="116" r="10" fill="'+c.tr+'" opacity=".7"/><circle cx="11" cy="120" r="8" fill="'+c.tr+'" opacity=".6"/>';
+  }
+  // Stars
   if (isNight && level >= 2) {
-    var sc = level * 4;
-    for (var si=0; si<sc; si++) {
-      h += '<circle cx="'+(5+(si*31)%350)+'" cy="'+(4+(si*19)%50)+'" r="'+(0.4+(si%3)*0.3)+'" fill="#fff" opacity="'+(0.1+level*0.05)+'"/>';
-    }
+    for (var si=0;si<level*5;si++) h += '<circle cx="'+(5+(si*29)%350)+'" cy="'+(3+(si*17)%55)+'" r="'+(0.3+(si%3)*0.4)+'" fill="#fff" opacity="'+(0.08+level*0.04)+'"/>';
   }
+  // Night window glow
   if (isNight && level >= 4) {
     h += '<g filter="url(#glow)">';
-    h += '<rect x="43" y="140" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".4"/>';
-    if (level >= 5) {
-      h += '<rect x="148" y="136" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".4"/>';
-      h += '<rect x="272" y="136" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".4"/>';
-    }
+    h += '<rect x="33" y="139" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>';
+    if (level >= 5) { h += '<rect x="148" y="134" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>'; h += '<rect x="271" y="136" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>'; }
     if (level >= 6) {
-      h += '<rect x="195" y="122" width="5" height="7" rx="1" fill="'+c.wg+'" opacity=".6"/>';
-      h += '<rect x="208" y="122" width="5" height="7" rx="1" fill="'+c.wg+'" opacity=".6"/>';
-      h += '<rect x="90" y="126" width="6" height="7" rx="1" fill="'+c.wg+'" opacity=".4"/>';
+      h += '<rect x="193" y="122" width="6" height="8" rx="1" fill="'+c.wg+'" opacity=".7"/>';
+      h += '<rect x="209" y="122" width="6" height="8" rx="1" fill="'+c.wg+'" opacity=".7"/>';
+      h += '<rect x="84" y="126" width="8" height="8" rx="1" fill="'+c.wg+'" opacity=".5"/>';
+      h += '<circle cx="160" cy="148" r="6" fill="'+c.wg+'" opacity=".15"/>';
     }
+    if (level >= 7) h += '<rect x="48" y="139" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>';
     h += '</g>';
   }
+  // Flowers
   if (!isNight && level >= 4) {
-    h += '<circle cx="45" cy="164" r="1.5" fill="#ff7788"/>';
-    h += '<circle cx="140" cy="166" r="1.5" fill="#ff99aa"/>';
-    h += '<circle cx="225" cy="162" r="1.5" fill="#ffbb44"/>';
-    h += '<circle cx="295" cy="165" r="1.5" fill="#ee77cc"/>';
+    h += '<circle cx="50" cy="164" r="2" fill="'+c.fl+'"/><circle cx="135" cy="166" r="2" fill="#ff99aa"/><circle cx="260" cy="163" r="2" fill="#ffbb44"/><circle cx="300" cy="165" r="2" fill="#ee77cc"/>';
   }
   h += '</svg>';
   return h;
@@ -8128,12 +8076,13 @@ function villageDamage() {
 function showVillageModal() {
   var days = soberDays();
   var level = villageLevel(days);
-  var lnames = ['Abandoned','Fledgling','Growing','Thriving','Flourishing','Prosperous','Legendary'];
-  var ldescs = ['A desolate ruin...','A single cottage, just beginning','A small settlement taking shape','A thriving community','A beautiful village in full bloom','A prosperous town of renown','A legendary village of song and story'];
+  var lnames = ['Abandoned','Fledgling','Growing','Thriving','Flourishing','Prosperous','Legendary','Mythical'];
+  var ldescs = ['A desolate ruin...','A single cottage, just beginning','A small settlement taking shape','A thriving community','A beautiful village in full bloom','A prosperous town of renown','A legendary city of song and story','A mythical capital of endless glory'];
+  var maxL = lnames.length - 1;
   var ov = document.createElement('div');
   ov.className = 'overlay';
   ov.id = 'village-modal';
-  ov.innerHTML = '<div class="overlay-content" style="max-width:480px;text-align:center;padding:20px"><div style="font-size:13px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">Your Village</div><div style="font-size:22px;font-weight:700;color:var(--primary);margin-bottom:2px">' + lnames[Math.min(level,6)] + '</div><div style="font-size:12px;color:var(--text-light);margin-bottom:8px">' + (ldescs[Math.min(level,6)]||'') + '</div>' + (days > 0 ? '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">' + days + ' day' + (days!==1?'s':'') + ' of growth</div>' : '') + '<div style="max-width:360px;margin:0 auto 10px">' + villageHTML() + '</div><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'village-modal\').remove()">Close</button></div>';
+  ov.innerHTML = '<div class="overlay-content" style="max-width:480px;text-align:center;padding:20px"><div style="font-size:13px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">Your Village</div><div style="font-size:22px;font-weight:700;color:var(--primary);margin-bottom:2px">' + lnames[Math.min(level,maxL)] + '</div><div style="font-size:12px;color:var(--text-light);margin-bottom:8px">' + (ldescs[Math.min(level,maxL)]||'') + '</div>' + (days > 0 ? '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">' + days + ' day' + (days!==1?'s':'') + ' of growth</div>' : '') + '<div style="max-width:360px;margin:0 auto 10px">' + villageHTML() + '</div><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'village-modal\').remove()">Close</button></div>';
   document.body.appendChild(ov);
 }
 function homeHTML() {
