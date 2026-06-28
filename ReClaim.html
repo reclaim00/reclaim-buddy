@@ -23,7 +23,7 @@
 #moon-overlay{position:fixed;top:8px;left:5%;z-index:1;pointer-events:none;opacity:0;transition:opacity .6s}
 body.dark #moon-overlay{opacity:1}
 #moon-overlay svg{width:clamp(60px,15vw,140px);height:auto;display:block;filter:drop-shadow(0 0 20px rgba(255,248,238,.3))}
-#village-overlay{position:fixed;right:-5%;bottom:0;z-index:1;pointer-events:none;width:min(85vw,1100px);transition:opacity .6s}
+#village-overlay{position:fixed;right:-3%;bottom:0;z-index:1;pointer-events:none;width:min(72vw,850px);transition:opacity .6s}
 #village-overlay svg{width:100%;height:auto;display:block;opacity:.8}
 #village-overlay.damage{animation:villageShake .5s ease-in-out}
 @keyframes villageShake{0%,100%{transform:translateX(0)}10%{transform:translateX(-4px)}20%{transform:translateX(3px)}30%{transform:translateX(-2px)}50%{transform:translateX(1px)}70%{transform:translateX(-1px)}}
@@ -7818,144 +7818,123 @@ function villageHTML() {
   var level = villageLevel(days);
   var isNight = document.body.classList.contains('dark');
   var c = isNight ? {
-    g1:'#1a2a1a', g2:'#152015', sky:'#0a0a1a',
+    g1:'#1a2a1a', g2:'#152015',
     st:'#3a3a42', sd:'#2a2a32', sl:'#4a4a52',
-    rf:'#3a2010', rt:'#4a2a1a', th:'#3a2a18',
+    rf:'#3a2010', th:'#3a2a18',
     tm:'#1a0a00', wl:'#d4c8b0', wd:'#c8b898',
     tr:'#0a2a0a', tk:'#1a0a00', bn:'#8a1a1a',
     bg:'#8a7a20', sp:'#3a3a42', wi:'#ffd700',
-    pt:'#2a2a2a', dr:'#1a0a00', tw:'#3a3a42',
-    fl:'#aa5577', sm:'rgba(200,200,200,',
-    wg:'#ffd700', mg:'#2a3a2a', ft:'#3a3a4a'
+    pt:'#2a2a2a', dr:'#1a0a00',
+    wg:'#ffd700', mg:'#2a3a2a'
   } : {
-    g1:'#5a9a4a', g2:'#4a8a3a', sky:'#87ceeb',
+    g1:'#5a9a4a', g2:'#4a8a3a',
     st:'#9a9aa2', sd:'#7a7a82', sl:'#b0b0b8',
-    rf:'#8a4a2a', rt:'#9a5a3a', th:'#9a7a4a',
+    rf:'#8a4a2a', th:'#9a7a4a',
     tm:'#6a3a1a', wl:'#f0e0c8', wd:'#d4c4a8',
     tr:'#4a8a3a', tk:'#5a3a1a', bn:'#cc2a2a',
     bg:'#d4a017', sp:'#7a7a82', wi:'#88bbdd',
-    pt:'#9a8a7a', dr:'#5a3a2a', tw:'#8a8a92',
-    fl:'#ff7788', sm:'rgba(180,180,180,',
-    wg:'#88bbdd', mg:'#5a7a4a', ft:'#d4c8b8'
+    pt:'#9a8a7a', dr:'#5a3a2a',
+    wg:'#88bbdd', mg:'#5a7a4a'
   };
-  function r(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="1" fill="';}
-  function p(pts,c){return '<polygon points="'+pts+'" fill="'+c+'"/>';}
-  function l(x1,y1,x2,y2,c,w){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+c+'" stroke-width="'+w+'"/>';}
-  function px(pts,c){return '<polygon points="'+pts+'" fill="'+c+'" stroke="'+c.tm+'" stroke-width=".8"/>';}
-  function tf(x,y,w,h,clr){var s='';s+=r(x,y,w,h)+clr+'"/>';s+=l(x,y,x,y+h,c.tm,1.5);s+=l(x+w-2,y,x+w-2,y+h,c.tm,1.5);s+=l(x,y+Math.round(h*.55),x+w,y+Math.round(h*.55),c.tm,1.2);return s;}
-  function thr(x,y,w,h){return p((x-5)+','+(y)+' '+(x+w/2-2)+','+(y-h)+' '+(x+w-2)+','+(y),c.th);}
+  function rx(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="1" fill="';}
+  function pg(pts,c){return '<polygon points="'+pts+'" fill="'+c+'"/>';}
+  function ln(x1,y1,x2,y2,c,w){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+c+'" stroke-width="'+w+'"/>';}
+  function hut(x,y,w,h,clr,dx,dy){
+    var s=rx(x,y,w,h)+clr+'"/>';
+    s+=ln(x,y,x,y+h,c.tm,1.5)+ln(x+w-2,y,x+w-2,y+h,c.tm,1.5);
+    s+=ln(x,y+Math.round(h*.55),x+w,y+Math.round(h*.55),c.tm,1.2);
+    s+=pg((x-4)+','+y+' '+(x+w/2-1)+','+(y-h+4)+' '+(x+w-3)+','+y,c.th);
+    s+=rx(x+dx,y+dy,Math.round(w*.28),Math.round(h*.46),1)+'" fill="'+c.dr+'"/>';
+    return s;
+  }
   var h = '<svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg">';
-  if (!isNight) h += '<rect x="0" y="0" width="360" height="200" fill="'+c.sky+'" opacity=".06"/>';
   h += '<rect x="0" y="138" width="360" height="62" fill="'+c.g1+'" opacity=".4"/>';
   h += '<rect x="0" y="156" width="360" height="44" fill="'+c.g2+'" opacity=".35"/>';
   h += '<path d="M0,150 Q60,130 120,144 Q180,124 240,138 Q300,120 360,144 L360,200 L0,200Z" fill="'+c.mg+'" opacity=".2"/>';
-  // L1: Ruins + campfire
+  // L1: Ruins
   if (level >= 1) {
-    h += r(140,138,60,22,c.sd)+'" opacity=".4"/>'+r(148,130,8,30,c.st)+'" opacity=".35"/>'+r(184,132,8,28,c.st)+'" opacity=".35"/>'+r(155,128,6,6,c.sd)+'" opacity=".45"/>'+r(179,128,6,6,c.sd)+'" opacity=".45"/>';
-    if (level < 2) h += '<g opacity=".5"><rect x="168" y="156" width="6" height="3" fill="#8a4a1a"/><polygon points="167,156 175,156 171,150" fill="#cc6633"/><circle cx="171" cy="146" r="4" fill="#ff8833" opacity=".3"/></g>';
+    h += rx(155,136,50,24,c.sd)+'" opacity=".4"/>'+rx(162,128,8,30,c.st)+'" opacity=".35"/>'+rx(190,130,8,28,c.st)+'" opacity=".35"/>';
+    if (level < 2) h += '<g opacity=".5"><rect x="176" y="156" width="4" height="2" fill="#8a4a1a"/><polygon points="175,156 181,156 178,150" fill="#cc6633"/><circle cx="178" cy="146" r="3" fill="#ff8833" opacity=".3"/></g>';
   }
-  // L2: Cottage + well + tree
+  // L2: 1 cottage, well, tree, path
   if (level >= 2) {
-    h += '<path d="M175,200 Q178,176 182,156 Q186,146 190,140" stroke="'+c.pt+'" stroke-width="8" fill="none" opacity=".3" stroke-linecap="round"/>';
-    h += tf(30,130,36,30,c.wl)+r(49,146,8,14,1)+'" fill="'+c.dr+'"/>'+r(33,139,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>'+px('25,130 48,108 71,130',c.th);
-    h += r(84,148,12,12,1)+'" fill="'+c.sd+'" opacity=".5"/>'+r(85,147,10,2,1)+'" fill="'+c.sd+'"/>';
-    h += r(72,134,3,26,c.tk)+'/><circle cx="73" cy="126" r="8" fill="'+c.tr+'" opacity=".6"/>';
+    h += '<path d="M175,200 Q178,176 182,156 Q186,146 190,140" stroke="'+c.pt+'" stroke-width="6" fill="none" opacity=".25" stroke-linecap="round"/>';
+    h += hut(30,132,34,28,c.wl,13,6)+rx(33,140,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += rx(85,148,10,12,c.sd)+'" opacity=".5"/>'+rx(86,147,8,2,c.sd)+'" opacity=".6"/>';
+    h += rx(74,136,3,24,c.tk)+'/><circle cx="75" cy="128" r="7" fill="'+c.tr+'" opacity=".6"/>';
   }
-  // L3: Church + second cottage + cart
+  // L3: +church, 2nd cottage, fence
   if (level >= 3) {
-    h += r(108,120,34,40,c.st)+'" opacity=".9"/>'+p('105,120 125,92 145,120',c.rf);
-    h += p('122,92 125,66 128,92',c.sp)+l(125,66,125,60,isNight?c.wg:'#8a6a3a',1.5)+l(122,63,128,63,isNight?c.wg:'#8a6a3a',1.5);
-    h += '<path d="M121,160 Q125,148 129,160" fill="'+c.dr+'"/>'+'<circle cx="125" cy="134" r="5" fill="'+c.wi+'" opacity=".5"/>';
-    h += tf(250,132,34,28,c.wd)+r(263,146,8,14,1)+'" fill="'+c.dr+'"/>'+px('245,132 267,112 289,132',c.th);
-    h += r(210,148,16,10,1)+'" fill="'+c.sd+'" opacity=".35"/>'+'<circle cx="218" cy="148" r="5" fill="'+c.sd+'" opacity=".3"/><circle cx="212" cy="148" r="5" fill="'+c.sd+'" opacity=".3"/>';
-    h += r(82,150,2,10,c.tm)+r(90,150,2,10,c.tm)+l(82,153,92,153,c.tm,1.2)+l(82,157,92,157,c.tm,1.2);
+    h += rx(108,120,32,40,c.st)+'" opacity=".9"/>'+pg('105,120 124,94 143,120',c.rf);
+    h += pg('121,94 124,70 127,94',c.sp)+ln(124,70,124,64,isNight?c.wg:'#8a6a3a',1.5)+ln(121,67,127,67,isNight?c.wg:'#8a6a3a',1.5);
+    h += '<path d="M120,160 Q124,150 128,160" fill="'+c.dr+'"/><circle cx="124" cy="134" r="4" fill="'+c.wi+'" opacity=".5"/>';
+    h += hut(245,134,32,26,c.wd,12,5)+rx(248,142,4,4,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += rx(206,148,14,10,c.sd)+'" opacity=".35"/><circle cx="213" cy="148" r="4.5" fill="'+c.sd+'" opacity=".3"/><circle cx="208" cy="148" r="4.5" fill="'+c.sd+'" opacity=".3"/>';
+    h += rx(72,150,2,10,c.tm)+rx(80,150,2,10,c.tm)+ln(72,153,82,153,c.tm,1.2)+ln(72,157,82,157,c.tm,1.2);
   }
-  // L4: Stone wall sections, third house, banner
+  // L4: +wall, 3rd cottage, banner, 2nd tree
   if (level >= 4) {
-    h += r(12,126,24,34,c.sd)+'" opacity=".5"/>'+r(12,122,7,6,c.sd)+'" opacity=".6"/>'+r(25,122,7,6,c.sd)+'" opacity=".6"/>';
-    h += r(145,124,30,36,c.wd)+'" opacity=".9"/>'+p('142,124 160,100 178,124',c.rf)+r(157,146,7,14,1)+'" fill="'+c.dr+'"/>'+r(148,134,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>';
-    h += r(170,112,6,12,c.st)+'" opacity=".8"/>';
-    if (!isNight) h += '<circle cx="173" cy="108" r="3" fill="#ccc" opacity=".12"/><circle cx="176" cy="103" r="2" fill="#ccc" opacity=".08"/>';
-    h += l(300,98,300,155,c.tm,2)+p('300,98 324,105 300,112',c.bn);
-    h += r(196,148,8,8,c.sd)+'" opacity=".4"/>'+'<circle cx="200" cy="152" r="5" fill="'+c.wi+'" opacity=".2"/>';
+    h += rx(10,126,22,34,c.sd)+'" opacity=".5"/>'+rx(10,122,6,6,c.sd)+'" opacity=".6"/>'+rx(22,122,6,6,c.sd)+'" opacity=".6"/>';
+    h += hut(145,126,28,34,c.wd,11,6)+rx(148,136,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += rx(168,114,5,12,c.st)+'" opacity=".8"/>';
+    if (!isNight) h += '<circle cx="170" cy="110" r="2" fill="#ccc" opacity=".12"/><circle cx="173" cy="105" r="1.5" fill="#ccc" opacity=".08"/>';
+    h += ln(300,100,300,155,c.tm,2)+pg('300,100 320,106 300,112',c.bn);
+    h += rx(70,132,3,24,c.tk)+'<circle cx="71" cy="124" r="7" fill="'+c.tr+'" opacity=".6"/>';
   }
-  // L5: Manor + gate tower + full wall
+  // L5: lots more
   if (level >= 5) {
-    h += r(180,104,48,56,c.st)+'" opacity=".9"/>'+p('176,104 204,70 232,104',c.rf);
-    h += r(198,86,12,18,c.st)+'" opacity=".9"/>'+p('196,86 204,68 212,86',c.rf);
-    h += l(204,68,204,58,c.tm,1.5)+p('204,58 220,63 204,68',c.bn);
-    h += '<path d="M199,160 Q204,146 209,160" fill="'+c.dr+'"/>'+r(187,118,5,7,1)+'" fill="'+c.wi+'" opacity=".5"/>'+r(216,118,5,7,1)+'" fill="'+c.wi+'" opacity=".5"/>';
-    h += r(220,114,80,46,c.sd)+'" opacity=".35"/>';
-    for (var bw=0;bw<12;bw++) h += r(224+bw*7,110,5,6,c.sd)+'" opacity=".5"/>';
-    h += r(8,108,20,52,c.st)+'" opacity=".9"/>'+p('5,108 18,84 31,108',c.rf)+r(15,146,8,14,1)+'" fill="'+c.dr+'"/>'+l(18,84,18,74,c.tm,1.5)+p('18,74 32,78 18,82',c.bg);
+    h += hut(184,128,30,32,c.wl,11,5)+rx(187,137,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += hut(260,130,30,30,c.wd,11,5)+rx(263,139,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += rx(310,132,28,28,c.wl,10,5)+pg('306,132 324,112 342,132',c.th);
+    h += rx(8,108,18,52,c.st)+'" opacity=".9"/>'+pg('5,108 17,86 29,108',c.rf)+rx(14,146,8,14,1)+'" fill="'+c.dr+'"/>'+ln(17,86,17,78,c.tm,1.5)+pg('17,78 29,82 17,86',c.bg);
+    h += rx(320,106,18,52,c.st)+'" opacity=".9"/>'+pg('317,106 329,86 341,106',c.rf)+rx(326,146,8,14,1)+'" fill="'+c.dr+'"/>'+ln(329,86,329,78,c.tm,1.5)+pg('329,78 341,82 329,86',c.bn);
+    h += rx(220,114,60,46,c.sd)+'" opacity=".35"/>';
+    for (var bw=0;bw<9;bw++) h += rx(224+bw*7,110,4,6,c.sd)+'" opacity=".5"/>';
+    h += rx(50,136,3,24,c.tk)+'<circle cx="51" cy="128" r="7" fill="'+c.tr+'" opacity=".6"/>';
   }
-  // L6: Castle
+  // L6: even more
   if (level >= 6) {
-    h += r(168,78,72,82,c.st)+'" opacity=".9"/>';
-    for (var k=0;k<11;k++) h += r(170+k*7,74,5,6,c.sl)+'" opacity=".6"/>';
-    h += p('164,78 204,42 244,78',c.rf);
-    h += r(152,90,22,70,c.tw)+'" opacity=".9"/>'+p('149,90 163,66 177,90',c.rf);
-    h += r(234,90,22,70,c.tw)+'" opacity=".9"/>'+p('231,90 245,66 259,90',c.rf);
-    for (var t=0;t<4;t++) h += r(154+t*6,87,5,5,c.sl)+'" opacity=".55"/>'+r(236+t*6,87,5,5,c.sl)+'" opacity=".55"/>';
-    h += r(200,98,8,16,2)+'" fill="'+c.wi+'" opacity=".5"/>'+r(193,122,6,8,1)+'" fill="'+c.wi+'" opacity=".4"/>'+r(209,122,6,8,1)+'" fill="'+c.wi+'" opacity=".4"/>';
-    h += '<path d="M200,160 Q204,144 208,160" fill="'+c.dr+'"/>';
-    h += l(202,150,202,160,'#666',.8)+l(204,150,204,160,'#666',.8)+l(206,150,206,160,'#666',.8)+l(200,154,208,154,'#666',.8);
-    h += l(204,42,204,32,c.tm,1.5)+p('204,32 228,38 204,44',c.bn);
-    h += l(163,66,163,56,c.tm,1.2)+p('163,56 179,60 163,64',c.bg);
-    h += l(245,66,245,56,c.tm,1.2)+p('245,56 261,60 245,64',c.bg);
-    // Cathedral
-    h += r(90,112,40,48,c.st)+'" opacity=".9"/>'+p('86,112 110,78 134,112',c.rf);
-    h += p('107,78 110,42 113,78',c.sp)+l(110,42,110,34,isNight?c.wg:'#8a6a3a',1.5)+l(106,38,114,38,isNight?c.wg:'#8a6a3a',1.5);
-    h += '<circle cx="110" cy="132" r="7" fill="'+c.wi+'" opacity=".5"/>'+'<path d="M106,160 Q110,146 114,160" fill="'+c.dr+'"/>';
-    h += r(82,118,12,42,c.sd)+'" opacity=".8"/>'+p('79,118 88,98 97,118',c.rf)+r(84,126,8,8,1)+'" fill="'+c.wi+'" opacity=".3"/>';
-    // Fortified walls
-    h += r(2,114,88,46,c.sd)+'" opacity=".4"/>';
-    for (var w=0;w<14;w++) h += r(4+w*7,110,5,6,c.sd)+'" opacity=".5"/>';
-    h += r(260,110,98,50,c.sd)+'" opacity=".4"/>';
-    for (var wr=0;wr<15;wr++) h += r(262+wr*7,107,5,6,c.sd)+'" opacity=".5"/>';
-    // Right gate tower
-    h += r(290,106,18,54,c.st)+'" opacity=".9"/>'+p('287,106 299,86 311,106',c.rf)+r(296,146,8,14,1)+'" fill="'+c.dr+'"/>'+l(299,86,299,78,c.tm,1.2)+p('299,78 311,82 299,86',c.bn);
-    // Houses
-    h += tf(30,128,26,32,c.wl)+r(39,148,7,12,1)+'" fill="'+c.dr+'"/>'+px('26,128 43,106 60,128',c.th);
-    h += tf(268,124,30,36,c.wd)+r(279,148,7,12,1)+'" fill="'+c.dr+'"/>'+r(271,136,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>'+px('264,124 283,102 302,124',c.rf);
-    h += r(310,130,22,30,c.wl)+'" opacity=".9"/>'+px('306,130 321,110 336,130',c.th)+r(316,148,6,12,1)+'" fill="'+c.dr+'"/>';
-    if (level >= 7) {
-      // L7: Extra towers + more houses + fountain
-      h += r(130,86,22,52,c.tw)+'" opacity=".9"/>'+p('127,86 141,62 155,86',c.rf);
-      for (var t2=0;t2<4;t2++) h += r(132+t2*5,83,4,5,c.sl)+'" opacity=".55"/>';
-      h += l(141,62,141,54,c.tm,1.2)+p('141,54 153,58 141,62',c.bg);
-      h += r(225,114,22,46,c.sd)+'" opacity=".5"/>'+r(225,110,22,6,c.sd)+'" opacity=".6"/>';
-      h += tf(40,132,24,28,c.wl)+r(48,147,6,13,1)+'" fill="'+c.dr+'"/>'+px('36,132 52,112 68,132',c.th);
-      h += r(44,108,5,14,c.st)+'" opacity=".8"/>';
-      h += '<circle cx="160" cy="148" r="8" fill="'+c.st+'" opacity=".7"/><circle cx="160" cy="148" r="6" fill="'+c.wi+'" opacity=".15"/>';
-      h += l(155,149,165,149,c.sd,2)+l(160,144,160,154,c.sd,2);
-      h += r(340,124,3,36,c.tk)+'<circle cx="341" cy="114" r="14" fill="'+c.tr+'" opacity=".7"/><circle cx="350" cy="120" r="10" fill="'+c.tr+'" opacity=".6"/>';
-      h += r(2,122,3,38,c.tk)+'<circle cx="3" cy="112" r="13" fill="'+c.tr+'" opacity=".7"/><circle cx="11" cy="117" r="9" fill="'+c.tr+'" opacity=".6"/>';
-    }
-    h += r(340,126,3,34,c.tk)+'<circle cx="341" cy="118" r="11" fill="'+c.tr+'" opacity=".7"/><circle cx="349" cy="122" r="8" fill="'+c.tr+'" opacity=".6"/><circle cx="333" cy="120" r="7" fill="'+c.tr+'" opacity=".5"/>';
-    h += r(2,124,3,36,c.tk)+'<circle cx="3" cy="116" r="10" fill="'+c.tr+'" opacity=".7"/><circle cx="11" cy="120" r="8" fill="'+c.tr+'" opacity=".6"/>';
+    h += hut(35,128,28,32,c.wd,10,6)+rx(38,138,4,4,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += hut(200,124,28,36,c.wl,10,6)+rx(203,135,4,4,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += hut(285,128,28,32,c.wd,10,6);
+    h += rx(96,112,38,48,c.st)+'" opacity=".9"/>'+pg('92,112 115,80 138,112',c.rf)+pg('112,80 115,48 118,80',c.sp);
+    h += ln(115,48,115,40,isNight?c.wg:'#8a6a3a',1.5)+ln(111,44,119,44,isNight?c.wg:'#8a6a3a',1.5);
+    h += '<circle cx="115" cy="132" r="5" fill="'+c.wi+'" opacity=".5"/><path d="M111,160 Q115,148 119,160" fill="'+c.dr+'"/>';
+    h += rx(84,118,12,42,c.sd)+'" opacity=".8"/>'+pg('81,118 90,98 99,118',c.rf)+rx(86,126,8,8,1)+'" fill="'+c.wi+'" opacity=".3"/>';
+    h += rx(336,134,3,26,c.tk)+'<circle cx="337" cy="126" r="8" fill="'+c.tr+'" opacity=".6"/><circle cx="344" cy="130" r="6" fill="'+c.tr+'" opacity=".5"/>';
+    h += rx(3,136,3,24,c.tk)+'<circle cx="4" cy="128" r="7" fill="'+c.tr+'" opacity=".6"/>';
+  }
+  // L7: full town
+  if (level >= 7) {
+    h += hut(130,124,28,36,c.wl,10,6)+rx(133,135,4,4,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += hut(160,122,28,38,c.wd,10,6)+rx(163,134,4,4,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += hut(230,126,28,34,c.wl,10,6);
+    h += hut(270,124,28,36,c.wd,10,6)+rx(273,135,4,4,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += rx(295,130,26,30,c.wl,9,5)+pg('291,130 308,112 325,130',c.th)+rx(300,142,5,5,1)+'" fill="'+c.wi+'" opacity=".4"/>';
+    h += rx(325,132,24,28,c.wd,8,5)+pg('321,132 337,114 353,132',c.th);
+    h += '<circle cx="170" cy="150" r="6" fill="'+c.st+'" opacity=".7"/><circle cx="170" cy="150" r="4" fill="'+c.wi+'" opacity=".12"/>';
+    h += ln(167,151,173,151,c.sd,2)+ln(170,148,170,154,c.sd,2);
+    h += rx(340,128,3,32,c.tk)+'<circle cx="341" cy="118" r="9" fill="'+c.tr+'" opacity=".7"/><circle cx="349" cy="122" r="7" fill="'+c.tr+'" opacity=".6"/>';
+    h += rx(3,130,3,30,c.tk)+'<circle cx="4" cy="120" r="9" fill="'+c.tr+'" opacity=".7"/><circle cx="11" cy="124" r="7" fill="'+c.tr+'" opacity=".6"/>';
   }
   // Stars
   if (isNight && level >= 2) {
     for (var si=0;si<level*5;si++) h += '<circle cx="'+(5+(si*29)%350)+'" cy="'+(3+(si*17)%55)+'" r="'+(0.3+(si%3)*0.4)+'" fill="#fff" opacity="'+(0.08+level*0.04)+'"/>';
   }
-  // Night window glow
-  if (isNight && level >= 4) {
+  // Night glow
+  if (isNight && level >= 3) {
     h += '<g filter="url(#glow)">';
-    h += '<rect x="33" y="139" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>';
-    if (level >= 5) { h += '<rect x="148" y="134" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>'; h += '<rect x="271" y="136" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>'; }
-    if (level >= 6) {
-      h += '<rect x="193" y="122" width="6" height="8" rx="1" fill="'+c.wg+'" opacity=".7"/>';
-      h += '<rect x="209" y="122" width="6" height="8" rx="1" fill="'+c.wg+'" opacity=".7"/>';
-      h += '<rect x="84" y="126" width="8" height="8" rx="1" fill="'+c.wg+'" opacity=".5"/>';
-      h += '<circle cx="160" cy="148" r="6" fill="'+c.wg+'" opacity=".15"/>';
-    }
-    if (level >= 7) h += '<rect x="48" y="139" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>';
+    h += '<rect x="33" y="140" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>';
+    if (level >= 4) h += '<rect x="148" y="136" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>';
+    if (level >= 5) h += '<rect x="188" y="137" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/><rect x="263" y="139" width="5" height="5" rx="1" fill="'+c.wg+'" opacity=".5"/>';
+    if (level >= 6) h += '<rect x="38" y="138" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/><rect x="203" y="135" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/><rect x="86" y="126" width="8" height="8" rx="1" fill="'+c.wg+'" opacity=".5"/>';
+    if (level >= 7) h += '<rect x="133" y="135" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/><rect x="163" y="134" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/><rect x="273" y="135" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/>';
     h += '</g>';
   }
   // Flowers
   if (!isNight && level >= 4) {
-    h += '<circle cx="50" cy="164" r="2" fill="'+c.fl+'"/><circle cx="135" cy="166" r="2" fill="#ff99aa"/><circle cx="260" cy="163" r="2" fill="#ffbb44"/><circle cx="300" cy="165" r="2" fill="#ee77cc"/>';
+    h += '<circle cx="55" cy="164" r="1.5" fill="#ff7788"/><circle cx="140" cy="166" r="1.5" fill="#ff99aa"/>';
+    h += '<circle cx="225" cy="163" r="1.5" fill="#ffbb44"/><circle cx="310" cy="165" r="1.5" fill="#ee77cc"/>';
   }
   h += '</svg>';
   return h;
