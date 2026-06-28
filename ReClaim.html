@@ -699,6 +699,14 @@ body.dark .journal-letter .letter-section-label{color:#b0a89a}
 body.dark .journal-letter .letter-section-text{color:#e8e4dc}
 .journal-letter .letter-song-info{font-weight:700;font-size:16px;color:#0a0806;font-family:'Caveat',serif}
 body.dark .journal-letter .letter-song-info{color:#e8e4dc}
+.journal-letter.rolled{max-height:52px!important;overflow:hidden!important;cursor:pointer;padding:0 24px!important}
+.journal-letter.rolled .scroll-header,.journal-letter.rolled .letter-body,.journal-letter.rolled #letter-after{display:none!important}
+.journal-letter .scroll-roll-hint{display:none}
+.journal-letter.rolled .scroll-roll-hint{display:flex;align-items:center;justify-content:center;height:52px;gap:10px;font-family:'Cinzel',serif;font-size:11px;color:#8a7a5a;letter-spacing:2px;text-transform:uppercase}
+.journal-letter.rolled .scroll-roll-hint .hint-line{display:inline-block;width:24px;height:1px;background:#8a7a5a;opacity:.4}
+body.dark .journal-letter.rolled .scroll-roll-hint{color:#b0a89a}
+body.dark .journal-letter.rolled .scroll-roll-hint .hint-line{background:#b0a89a}
+@keyframes scrollUnroll{0%{max-height:52px;opacity:.8}100%{max-height:80vh;opacity:1}}
 @keyframes cmSlideUp{0%{transform:translateY(30px);opacity:0}100%{transform:translateY(0);opacity:1}}
 @keyframes cmSlideLeft{0%{transform:translateX(60px);opacity:0}100%{transform:translateX(0);opacity:1}}
 @keyframes cmExplode{0%{transform:scale(1);opacity:1}30%{transform:scale(1.4) rotate(15deg);opacity:1}100%{transform:scale(0) rotate(45deg);opacity:0}}
@@ -4341,6 +4349,8 @@ function showJournalLetter(idx) {
   var safe = function(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
 
   var h = '<div class="journal-letter" id="journal-letter">';
+  // Rolled hint (visible only when rolled)
+  h += '<div class="scroll-roll-hint"><span class="hint-line"></span> Touch to unroll <span class="hint-line"></span></div>';
   // Scroll header (no wax seal)
   h += '<div class="scroll-header">';
   h += '<div class="scroll-date">' + dateStr + '</div>';
@@ -4390,12 +4400,21 @@ function showJournalLetter(idx) {
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 
-  // Animate letter appearance
+  // Start rolled up - click to unroll
   var letter = document.getElementById('journal-letter');
-  if (letter) letter.style.animation = 'letterAppear .6s cubic-bezier(.22,1,.36,1) forwards';
+  letter.classList.add('rolled');
+  letter.onclick = function(){
+    if (!letter.classList.contains('rolled')) return;
+    letter.classList.remove('rolled');
+    letter.style.animation = 'scrollUnroll .8s ease both';
+    setTimeout(function(){
+      letter.style.maxHeight = '';
+      startTypewriter();
+    }, 850);
+  };
 
-  // Word-by-word typewriter for entry text
-  setTimeout(function(){
+  // Word-by-word typewriter for entry text (starts after unroll)
+  function startTypewriter() {
     var body = document.getElementById('letter-body');
     if (!body || !entryText) return;
     var words = entryText.split(/(\s+)/);
@@ -4449,7 +4468,7 @@ function showJournalLetter(idx) {
       setTimeout(typeWord, penDelay + (words[wi-1].trim().endsWith('.')||words[wi-1].trim().endsWith('!')||words[wi-1].trim().endsWith('?')?300:0) + (words[wi-1].trim().endsWith(',')||words[wi-1].trim().endsWith(';')?120:0));
     }
     typeWord();
-  }, 800);
+  }
 
   // Close handler
   document.getElementById('letter-close').onclick = function(){
