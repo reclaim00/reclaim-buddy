@@ -148,9 +148,20 @@ body.dark .header-deco{color:var(--gold);opacity:.2}
 .logo{font-size:24px;font-weight:800;letter-spacing:-1px}
 .logo span{color:var(--primary);text-shadow:0 1px 3px rgba(45,106,79,.15)}
 body.dark .logo span{text-shadow:0 1px 6px rgba(138,122,154,.2)}
-.card{position:relative;overflow:hidden;background:var(--card);border-radius:var(--radius);padding:16px;margin:10px 0;box-shadow:var(--shadow-card)}
+.card{position:relative;overflow:hidden;background:var(--card);border-radius:var(--radius);padding:16px;margin:10px 0;box-shadow:var(--shadow-card);transition:box-shadow .25s,background .25s}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(122,26,26,.04));opacity:0;transition:opacity .25s;pointer-events:none;border-radius:inherit;mix-blend-mode:multiply}
+.card:hover::before{opacity:1}
+.card:hover{box-shadow:var(--shadow-hover)}
+.card::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;z-index:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");mix-blend-mode:multiply}
+.card>*{position:relative;z-index:1}
+body.dark .card::before{background:linear-gradient(135deg,transparent,rgba(138,122,154,.04))}
+body.dark .card::after{opacity:.5}
 .card h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--primary-dark)}
 body.dark .card h3{color:var(--primary-dark)}
+.page-title{font-size:20px;font-weight:700;margin:8px 0 12px;text-align:center;position:relative;padding:10px 16px;font-family:'Cinzel',serif;letter-spacing:.5px;color:var(--primary-dark);background:linear-gradient(90deg,transparent,var(--primary-light),transparent);border-top:1.5px solid var(--primary);border-bottom:1.5px solid var(--primary);overflow:hidden}
+.page-title::before{content:'\2767';margin-right:10px;font-size:14px;opacity:.35;display:inline-block}
+.page-title::after{content:'\2767';margin-left:10px;font-size:14px;opacity:.35;display:inline-block}
+body.dark .page-title{color:var(--primary-dark);border-top-color:var(--gold);border-bottom-color:var(--gold);background:linear-gradient(90deg,transparent,rgba(138,122,154,.08),transparent)}
 .btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;width:100%;position:relative;letter-spacing:.3px}
 .btn-primary{background:var(--grad-primary);color:#fff;box-shadow:var(--shadow-btn),inset 0 1px 0 rgba(255,255,255,.12);transition:all .2s}
 .btn-primary::before{content:'';position:absolute;top:-1px;left:12px;right:12px;height:2px;background:rgba(255,255,255,.2);border-radius:1px;pointer-events:none}
@@ -2268,7 +2279,7 @@ document.addEventListener('change', function(e){
 });
 
 function assessmentHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Addiction Assessment</h2>';
+  var h = '<h2 class="page-title">Addiction Assessment</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">This screening helps you understand your relationship with substances.</p>';
   if (D.assessmentTaken && D.assessmentResult) {
     var r = D.assessmentResult;
@@ -2476,7 +2487,7 @@ function screenerOptionsHTML(name, savedVal) {
 function screenerHTML() {
   if (!D.screenerPHQ9) { D.screenerPHQ9 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
   if (!D.screenerGAD7) { D.screenerGAD7 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Self-Check Screeners</h2>';
+  var h = '<h2 class="page-title">Self-Check Screeners</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">These brief questionnaires can help you check in on your well-being. Results are private and not a diagnosis.</p>';
 
   function screenerCard(key, title, icon, questions, data) {
@@ -2526,7 +2537,7 @@ function screenerRenderQuiz() {
   var data = screenerActive === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
   var total = questions.length;
   var title = screenerActive === 'phq9' ? 'PHQ-9' : 'GAD-7';
-  var h = '<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><button class="btn btn-sm btn-outline" onclick="screenerCancel()">&#8592; Back</button><h2 style="font-size:20px;font-weight:700;margin:0">' + title + '</h2></div>';
+  var h = '<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><button class="btn btn-sm btn-outline" onclick="screenerCancel()" style="width:auto">&#8592; Back</button><h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left">' + title + '</h2></div>';
   h += '<div class="card" id="squiz" data-type="' + screenerActive + '" data-idx="0">';
   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="sq-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + total + '</span><span class="sq-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
   h += '<div class="progress-bar" style="margin-bottom:10px"><div class="fill sq-bar" style="width:0%"></div></div>';
@@ -2670,7 +2681,7 @@ function programData(pid) {
 }
 
 function programsHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#127891; Recovery Programs</h2>';
+  var h = '<h2 class="page-title">&#127891; Recovery Programs</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Follow a structured program to guide your recovery journey step by step.</p>';
   if (!D.recoveryPrograms) { D.recoveryPrograms = { active: null, programs: {} }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
   var active = D.recoveryPrograms.active;
@@ -3045,7 +3056,7 @@ function viewStreakDetails(idx) {
 }
 
 function trackHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Track')+'</h2>';
+  var h = '<h2 class="page-title">'+t('Track')+'</h2>';
   // Streaks viewer
   h += streaksHTML();
 
@@ -4167,7 +4178,7 @@ function updateWordCount(el) {
 function reflectHTML() {
   var goal = D.journalWordGoal || 50;
   var jStreak = calcJournalStreak();
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Reflect')+'</h2>';
+  var h = '<h2 class="page-title">'+t('Reflect')+'</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Arthur is here to help you reflect. Every entry sharpens the map of your recovery.</div></div></div>';
   if (jStreak > 0) {
     h += '<div style="text-align:center;padding:8px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px">';
@@ -4682,7 +4693,7 @@ var DEFAULT_COPING = [
 ];
 
 function copingHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Coping Cards</h2>';
+  var h = '<h2 class="page-title">Coping Cards</h2>';
   h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">Gertrude has your back. These cards are tools for your kit — use them when the battle is hard.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Tap a card to expand. Use these when you need support.</p>';
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="margin-bottom:8px">Breathing Exercise</button>';
@@ -4761,7 +4772,7 @@ function addCopingCard() {
 
 // ====== CARE PAGE ======
 function careHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Care & Support')+'</h2>';
+  var h = '<h2 class="page-title">'+t('Care & Support')+'</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div class="breath-circle" style="width:80px;height:80px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);border-radius:50%;font-size:13px;color:var(--primary);font-weight:600">'+t('Breathe')+'</div>';
   h += '<h3 style="font-size:16px;font-weight:700">'+t('Mindful Breathing')+'</h3>';
@@ -5026,7 +5037,7 @@ function rescueSkip() {
 
 // ====== ACCOUNTABILITY CHECK-IN ======
 function accountabilityHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128170; Accountability Check-In</h2>';
+  var h = '<h2 class="page-title">&#128170; Accountability Check-In</h2>';
   if (!D.buddy || !D.buddy.name) {
     h += '<div class="card" style="text-align:center;padding:20px">';
     h += '<div style="font-size:32px;margin-bottom:8px">&#128104;&#8205;&#128104;</div>';
@@ -5172,7 +5183,7 @@ function accPendingHTML() {
 function relapseRescueHTML() {
   if (!D.relapseRescue) D.relapseRescue = { logs: [] };
   var logs = D.relapseRescue.logs || [];
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#129309; Relapse Recovery</h2>';
+  var h = '<h2 class="page-title">&#129309; Relapse Recovery</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">A place to process slips and re-commit to your journey.</p>';
 
   h += '<div class="card" style="border-left:3px solid var(--primary);text-align:center">';
@@ -5410,7 +5421,7 @@ function buildArthurInsights() {
 function insightsHTML() {
   var insights = buildArthurInsights();
   var risk = buildRiskAssessment();
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128302; Arthur\'s Insights</h2>';
+  var h = '<h2 class="page-title">&#128302; Arthur\'s Insights</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Pattern detection based on your journal, check-ins, cravings, and relapse history.</p>';
 
   // Risk assessment summary
@@ -5882,7 +5893,7 @@ var LIB_VIDEOS = [
 ];
 
 function libraryHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Library</h2>';
+  var h = '<h2 class="page-title">Library</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Curated resources to support your recovery journey.</p>';
   h += '<div class="card"><h3>Articles</h3>';
   for (var i=0;i<LIB_ARTICLES.length;i++) {
@@ -5924,7 +5935,7 @@ function saveToPlaylist(title, artist, spotify, apple) {
 }
 
 function musicHTML() {
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Music for Your Mood</h2>';
+  var h = '<h2 class="page-title">Music for Your Mood</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Curated suggestions to match how you\'re feeling. Open in your favorite platform.</p>';
   // Recovery playlist
   if (D.playlist && D.playlist.length) {
@@ -5953,7 +5964,7 @@ function reportsHTML() {
   var days = periods[REPORT_PERIOD] || 7;
   var periodLabel = REPORT_PERIOD === 'month' ? 'Monthly' : 'Weekly';
   var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0">';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:0">' + periodLabel + ' Report</h2>';
+  h += '<h2 class="page-title">' + periodLabel + ' Report</h2>';
   h += '<div style="display:flex;gap:4px">';
   h += '<button class="btn btn-sm ' + (REPORT_PERIOD==='week'?'btn-primary':'btn-outline') + '" onclick="REPORT_PERIOD=\'week\';render()" style="font-size:11px;padding:6px 10px">Week</button>';
   h += '<button class="btn btn-sm ' + (REPORT_PERIOD==='month'?'btn-primary':'btn-outline') + '" onclick="REPORT_PERIOD=\'month\';render()" style="font-size:11px;padding:6px 10px">Month</button>';
@@ -6210,7 +6221,7 @@ function findBuddyAuto() {
 function buddyHTML() {
   if (!D.buddy || !D.buddy.name) return setupBuddyHTML();
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Your Comrade</h2>';
+  h += '<h2 class="page-title">Your Comrade</h2>';
   h += '<div class="comrade-card"><div class="comrade-avatar">' + D.buddy.name[0].toUpperCase() + '</div><div><div style="font-weight:700;font-size:16px">' + D.buddy.name + '</div><div style="font-size:12px;color:var(--muted)">' + (D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + D.buddy.contact : '') + (D.buddy.language ? ' &middot; ' + D.buddy.language : '') + '</div></div></div>';
   h += '<div class="stat-grid" style="margin:8px 0">';
   h += '<div class="stat-card"><div class="num">' + buddyStreak() + '</div><div class="label">Buddy Streak</div></div>';
@@ -6331,7 +6342,7 @@ function newChallenge() {
 
 function setupBuddyHTML() {
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:16px 0 8px">Find Your Comrade</h2>';
+  h += '<h2 class="page-title" style="margin:16px 0 8px">Find Your Comrade</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:16px">An accountability partner helps you stay on track. Connect with someone who speaks your language anywhere in the world.</p>';
   h += '<div class="card"><h3>Add Buddy Manually</h3>';
   h += '<input type="text" id="comrade-name" placeholder="comrade\'s name">';
@@ -6522,7 +6533,7 @@ function calendarHTML() {
   var d = new Date(now.getFullYear(), now.getMonth() + CAL_MONTH_OFFSET, 1);
   var year = d.getFullYear(), month = d.getMonth();
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Streak Calendar')+'</h2>';
+  var h = '<h2 class="page-title">'+t('Streak Calendar')+'</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Color-coded view of your daily activity.')+'</p>';
   h += '<div class="card">';
   h += '<div class="cal-nav"><button onclick="CAL_MONTH_OFFSET--;render()">'+t('Prev')+'</button><span style="font-weight:700;font-size:15px">'+months[month]+' '+year+'</span><button onclick="CAL_MONTH_OFFSET++;render()">'+t('Next')+'</button></div>';
@@ -6604,7 +6615,7 @@ function showAddictionPrompt() {
 var REPEAT_OPTIONS = [{v:'none',l:'Never'},{v:'daily',l:'Daily'},{v:'weekly',l:'Weekly'},{v:'monthly',l:'Monthly'}];
 function remindersHTML() {
   var h = '';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0"><h2 style="font-size:20px;font-weight:700;margin:0">Reminders</h2><button class="btn btn-sm btn-primary" onclick="showNewReminder()" style="width:auto;padding:8px 16px">+ New</button></div>';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px"><h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left;font-size:18px;padding:8px 0">Reminders</h2><button class="btn btn-sm btn-primary" onclick="showNewReminder()" style="width:auto;padding:8px 16px">+ New</button></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Set reminders and add them to your device calendar.</p>';
   var reminders = D.reminders || [];
   if (reminders.length === 0) {
@@ -6740,7 +6751,7 @@ function exportReminderICS(id) {
 // ====== MORE PAGE ======
 function moreHTML() {
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Tools')+'</h2>';
+  h += '<h2 class="page-title">'+t('Tools')+'</h2>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Tracking')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
@@ -8958,7 +8969,7 @@ var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">'+t('Meetings')+'</h2>';
+  h += '<h2 class="page-title">'+t('Meetings')+'</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Online and local meetings to support your recovery.</p>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px">';
   h += '<div style="font-weight:700;font-size:14px;margin-bottom:8px">Meeting Directories</div>';
@@ -9000,7 +9011,7 @@ function meetingsHTML() {
 function relapsePlanHTML() {
   var h = '';
   var rp = D.relapsePlan;
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Relapse Plan</h2>';
+  h += '<h2 class="page-title">Relapse Plan</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-oswald);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg></div><div style="font-size:12px;color:var(--muted)">Oswald is with you. This plan is your staff and your compass — forged through preparation, ready when called upon.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Guided by Oswald  your relapse prevention coach.</p>';
   if (rp && rp.triggers && rp.triggers.length) {
@@ -9033,7 +9044,7 @@ function relapsePlanHTML() {
 function chivalryCodeHTML() {
   var cc = D.chivalryCode || { code: [], checkins: [] };
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#9876; Chivalry Code</h2>';
+  h += '<h2 class="page-title">&#9876; Chivalry Code</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Gertrude says: <em>"A knight without a code is a wanderer. Define your principles, and every choice becomes clear."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
 
@@ -9146,7 +9157,7 @@ function chivalryCheckin() {
 function relapseGraveyardHTML() {
   var rg = D.relapseGraveyard || { graves: [] };
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#9904; Relapse Graveyard</h2>';
+  h += '<h2 class="page-title">&#9904; Relapse Graveyard</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(42,42,42,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Every fallen knight teaches the next how to stand. Honor the dead, keep walking."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Past relapses are not failures — they are fallen comrades who taught you something. Mark them here with respect, and carry their lesson forward.</p>';
 
@@ -9260,7 +9271,7 @@ function graveRandom() {
 function royalPardonHTML() {
   var pardons = D.royalPardons || [];
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128081; Royal Pardon</h2>';
+  h += '<h2 class="page-title">&#128081; Royal Pardon</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)">King Arthur says: <em>"By the crown I carry and the realm we are building — you are pardoned. Rise and begin again with my blessing."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Arthur grants you a Royal Pardon — not to erase what happened, but to sanctify your fresh start. This is your certificate of amnesty.</p>';
 
@@ -9889,7 +9900,7 @@ function timeCapsuleHTML() {
   if (!D.timeCapsules) D.timeCapsules = [];
   var readyCount = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked}).length;
   var h = '';
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128230; Time Capsule</h2>';
+  h += '<h2 class="page-title">&#128230; Time Capsule</h2>';
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="font-size:36px;margin-bottom:6px">&#128230;</div>';
   h += '<p style="font-size:14px;line-height:1.6;color:var(--text)">Write a letter to your <strong>future self</strong>. Arthur will seal it away and remind you when it\'s time to open it. A message from your past  exactly when you need it most.</p>';
@@ -10380,7 +10391,7 @@ function renderGertrudeQuestion() {
 function safetyHTML() {
   var h = '';
   if (!D._safetyQuestionsDone) {
-    h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">Safety Plan</h2>';
+    h += '<h2 class="page-title">Safety Plan</h2>';
     h += '<div class="card" style="text-align:center;padding:24px">';
     h += '<div style="font-size:48px;margin-bottom:8px">&#128105;</div>';
     h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Gertrude</div>';
@@ -10389,7 +10400,7 @@ function safetyHTML() {
     h += '</div>';
     return h;
   }
-  h += '<h2 style="font-size:20px;font-weight:700;margin:8px 0">My Addiction Targets</h2>';
+  h += '<h2 class="page-title">My Addiction Targets</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. Gertrude will create a personalized safety plan for each one.</p>';
   h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div><h3 style="margin:0;font-size:15px">Safety Plans</h3></div></div>';
   var addictions = D.targetAddictions || [];
