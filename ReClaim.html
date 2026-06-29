@@ -8361,21 +8361,21 @@ function showVillageModal() {
 }
 function roundTableHTML() {
   var chars = [
-    {name:'Arthur',body:'#6d28d9',hat:'#4c1d95',msgs:[
+    {name:'Arthur',body:'#4a1570',skin:'#c89a6a',msgs:[
        "I've been watching your patterns. You're showing up more. That's the data that matters.",
        "I notice you've been logging regularly. Every entry sharpens the map of your recovery.",
        "Your consistency is building a reliable trend. Keep feeding me data and I'll keep finding insights.",
        "Journal entries are up. Mood tracking is steady. The numbers don't lie — you're putting in the work.",
        "I cross-referenced your check-ins and habits. There's a clear correlation: showing up daily builds momentum."
      ]},
-    {name:'Gertrude',body:'#2d5a5a',hat:'#1a3a3a',msgs:[
+    {name:'Gertrude',body:'#2a5a5a',skin:'#d4a574',msgs:[
        "Stand ready. Your shield is forged. Today, nothing gets past you.",
        "You've faced worse battles than this and held the line. Today is no different.",
        "Your safety plan is your armor. You've prepared for this. Trust your training.",
        "Another day, another victory. You don't need to win every fight — just this one.",
        "I've seen your strength. You are more resilient than whatever faces you today."
      ]},
-    {name:'Oswald',body:'#4338ca',hat:'#312e81',msgs:[
+    {name:'Oswald',body:'#2a1560',skin:'#c09a7a',msgs:[
        "The path ahead may twist, but you've already walked through shadow and emerged. Trust your steps.",
        "Every day of recovery adds to your power. You're weaving strength stronger than any darkness.",
        "Look back and see how far you've come. That is not luck — it is your own will, recognized and claimed.",
@@ -8415,55 +8415,144 @@ function roundTableHTML() {
     h += '<g class="npc-idle' + (i === 1 ? ' npc-idle-d1' : i === 2 ? ' npc-idle-d2' : '') + '">';
     // Active glow ring
     if (isActive) {
-      h += '<circle cx="' + cx + '" cy="28" r="18" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>';
+      h += '<circle cx="' + cx + '" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>';
     }
-    // Body (tunic) - longer robe
-    h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="26" rx="3" fill="' + c.body + '"/>';
-    // Collar / robe trim
-    h += '<path d="M' + (cx - 10) + ',24 L' + cx + ',20 L' + (cx + 10) + ',24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2"/>';
-    h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="3" rx="1.5" fill="rgba(255,255,255,.12)"/>';
-    // Robe front line
-    h += '<line x1="' + cx + '" y1="23" x2="' + cx + '" y2="46" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
-    // Belt
-    h += '<rect x="' + (cx - 10) + '" y="33" width="20" height="2" rx="1" fill="rgba(0,0,0,.25)"/>';
-    // Belt buckle
-    h += '<rect x="' + (cx - 2.5) + '" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
-    // Neck
-    h += '<rect x="' + (cx - 3) + '" y="14" width="6" height="5" rx="2" fill="#d4a574"/>';
-    // Head
-    h += '<circle cx="' + cx + '" cy="10" r="7.5" fill="#d4a574"/>';
-    // Eyes
-    h += '<circle cx="' + (cx - 3) + '" cy="9" r="1" fill="#333"/>';
-    h += '<circle cx="' + (cx + 3) + '" cy="9" r="1" fill="#333"/>';
-    // Eyebrows
-    h += '<path d="M' + (cx - 5) + ',7 Q' + (cx - 3) + ',6 ' + (cx - 1.5) + ',7" fill="none" stroke="' + c.hat + '" stroke-width=".7"/>';
-    h += '<path d="M' + (cx + 1.5) + ',7 Q' + (cx + 3) + ',6 ' + (cx + 5) + ',7" fill="none" stroke="' + c.hat + '" stroke-width=".7"/>';
-    // Hat / hood
-    h += '<path d="M' + (cx - 8) + ',7 Q' + cx + ',-2 ' + (cx + 8) + ',7" fill="' + c.hat + '"/>';
-    h += '<rect x="' + (cx - 7) + '" y="6" width="14" height="1.5" rx=".5" fill="rgba(255,255,255,.15)"/>';
-    // Hat brim
-    h += '<path d="M' + (cx - 9) + ',7 Q' + cx + ',10 ' + (cx + 9) + ',7" fill="none" stroke="' + c.hat + '" stroke-width="1.5"/>';
-    // Active indicator: small gold crown on hat
-    if (isActive) {
-      h += '<path d="M' + (cx - 4) + ',6 L' + cx + ',1 L' + (cx + 4) + ',6" fill="#ffd700"/>';
-    }
-    // Arms reaching to table
-    var side = i < 1 ? -1 : i > 1 ? 1 : 0;
-    if (i === 0) { // Arthur - left arm forward, right arm closer
-      h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 15) + ',40 L' + (cx - 14) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx - 14) + '" cy="47" rx="3" ry="2" fill="#d4a574"/>';
-      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 14) + ',38 L' + (cx + 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx + 13) + '" cy="47" rx="3" ry="2" fill="#d4a574"/>';
-    } else if (i === 2) { // Oswald - right arm forward, left arm closer
+
+    if (i === 0) {
+      // === ARTHUR — THE KING ===
+      // Royal mantle (cape behind)
+      h += '<path d="M' + (cx - 14) + ',20 L' + (cx - 14) + ',46 L' + (cx + 14) + ',46 L' + (cx + 14) + ',20 Z" fill="#3a0a50" opacity=".5" rx="2"/>';
+      // Royal robe
+      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="26" rx="3" fill="' + c.body + '"/>';
+      // Ermine trim (white fur with black tips)
+      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="4" rx="1.5" fill="#f0e8d0"/>';
+      h += '<rect x="' + (cx - 10) + '" y="43" width="20" height="3" rx="1" fill="#f0e8d0"/>';
+      for (var ei = 0; ei < 4; ei++) { h += '<rect x="' + (cx - 8 + ei * 5) + '" y="21" width="1.5" height="2" rx=".5" fill="#333" opacity=".4"/>'; }
+      // Robe front line
+      h += '<line x1="' + cx + '" y1="24" x2="' + cx + '" y2="46" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
+      // Gold chain across chest
+      h += '<path d="M' + (cx - 8) + ',28 Q' + cx + ',33 ' + (cx + 8) + ',28" fill="none" stroke="#d4a017" stroke-width="1.2" opacity=".7"/>';
+      h += '<circle cx="' + cx + '" cy="32" r="2" fill="#d4a017"/>';
+      // Belt
+      h += '<rect x="' + (cx - 10) + '" y="33" width="20" height="2" rx="1" fill="rgba(0,0,0,.25)"/>';
+      h += '<rect x="' + (cx - 2.5) + '" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
+      // Neck
+      h += '<rect x="' + (cx - 3) + '" y="14" width="6" height="5" rx="2" fill="' + c.skin + '"/>';
+      // Head
+      h += '<circle cx="' + cx + '" cy="10" r="7" fill="' + c.skin + '"/>';
+      // Eyes
+      h += '<circle cx="' + (cx - 2.5) + '" cy="9" r="1" fill="#333"/>';
+      h += '<circle cx="' + (cx + 2.5) + '" cy="9" r="1" fill="#333"/>';
+      // Eyebrows
+      h += '<path d="M' + (cx - 4.5) + ',7 Q' + (cx - 2.5) + ',6 ' + (cx - 1) + ',7" fill="none" stroke="#333" stroke-width=".6"/>';
+      h += '<path d="M' + (cx + 1) + ',7 Q' + (cx + 2.5) + ',6 ' + (cx + 4.5) + ',7" fill="none" stroke="#333" stroke-width=".6"/>';
+      // Gold crown
+      h += '<path d="M' + (cx - 7) + ',7 L' + (cx - 5) + ',0 L' + (cx - 2) + ',4 L' + cx + ',-1 L' + (cx + 2) + ',4 L' + (cx + 5) + ',0 L' + (cx + 7) + ',7 Z" fill="#d4a017" stroke="#b8860b" stroke-width=".5"/>';
+      // Crown jewels
+      h += '<circle cx="' + cx + '" cy="2" r="1.2" fill="#e04040"/>';
+      h += '<circle cx="' + (cx - 3.5) + '" cy="2" r=".8" fill="#4060e0"/>';
+      h += '<circle cx="' + (cx + 3.5) + '" cy="2" r=".8" fill="#40e060"/>';
+      // Crown base band
+      h += '<rect x="' + (cx - 7) + '" y="6" width="14" height="1.5" rx=".5" fill="#b8860b"/>';
+      // Arms
       h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 14) + ',38 L' + (cx - 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx - 13) + '" cy="47" rx="3" ry="2" fill="#d4a574"/>';
-      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 15) + ',40 L' + (cx + 14) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx + 14) + '" cy="47" rx="3" ry="2" fill="#d4a574"/>';
-    } else { // Gertrude (center) - both arms resting
-      h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 13) + ',38 L' + (cx - 12) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx - 12) + '" cy="47" rx="3.5" ry="2" fill="#d4a574"/>';
-      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 13) + ',38 L' + (cx + 12) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx + 12) + '" cy="47" rx="3.5" ry="2" fill="#d4a574"/>';
+      h += '<ellipse cx="' + (cx - 13) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
+      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 14) + ',38 L' + (cx + 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx + 13) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
+
+    } else if (i === 1) {
+      // === GERTRUDE — THE KNIGHT ===
+      // Chainmail hauberk (body)
+      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="26" rx="3" fill="#4a6a6a"/>';
+      // Chainmail pattern (horizontal lines)
+      for (var li = 0; li < 8; li++) {
+        h += '<line x1="' + (cx - 9) + '" y1="' + (23 + li * 3) + '" x2="' + (cx + 9) + '" y2="' + (23 + li * 3) + '" stroke="rgba(200,220,220,.15)" stroke-width=".5"/>';
+        h += '<line x1="' + (cx - 9 + 4) + '" y1="' + (24.5 + li * 3) + '" x2="' + (cx + 9 - 4) + '" y2="' + (24.5 + li * 3) + '" stroke="rgba(200,220,220,.1)" stroke-width=".5"/>';
+      }
+      // Surcoat (tabard over armor)
+      h += '<rect x="' + (cx - 8) + '" y="22" width="16" height="22" rx="2" fill="' + c.body + '" opacity=".85"/>';
+      // Surcoat cross emblem
+      h += '<path d="M' + (cx - 3) + ',26 L' + (cx + 3) + ',26 L' + (cx + 3) + ',28 L' + (cx + 5) + ',28 L' + (cx + 5) + ',34 L' + (cx + 3) + ',34 L' + (cx + 3) + ',40 L' + (cx + 3 + 0.5) + ',40 L' + (cx + 3) + ',42 L' + (cx - 3) + ',42 L' + (cx - 3) + ',40 L' + (cx - 3 - 0.5) + ',40 L' + (cx - 3) + ',34 L' + (cx - 5) + ',34 L' + (cx - 5) + ',28 L' + (cx - 3) + ',28 Z" fill="#d4a017" opacity=".8"/>';
+      // Belt over surcoat
+      h += '<rect x="' + (cx - 8) + '" y="33" width="16" height="2" rx="1" fill="#8B4513"/>';
+      h += '<rect x="' + (cx - 2) + '" y="32.5" width="4" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
+      // Neck
+      h += '<rect x="' + (cx - 3) + '" y="14" width="6" height="5" rx="2" fill="' + c.skin + '"/>';
+      // Head
+      h += '<circle cx="' + cx + '" cy="10" r="7" fill="' + c.skin + '"/>';
+      // Eyes (visor slit visible through helm)
+      h += '<circle cx="' + (cx - 2.5) + '" cy="9" r="1" fill="#333"/>';
+      h += '<circle cx="' + (cx + 2.5) + '" cy="9" r="1" fill="#333"/>';
+      // Eyebrows under helm
+      h += '<path d="M' + (cx - 4.5) + ',7 Q' + (cx - 2.5) + ',6 ' + (cx - 1) + ',7" fill="none" stroke="#333" stroke-width=".6"/>';
+      h += '<path d="M' + (cx + 1) + ',7 Q' + (cx + 2.5) + ',6 ' + (cx + 4.5) + ',7" fill="none" stroke="#333" stroke-width=".6"/>';
+      // Steel helmet
+      h += '<path d="M' + (cx - 8) + ',7 Q' + cx + ',-4 ' + (cx + 8) + ',7 Q' + cx + ',12 ' + (cx - 8) + ',7 Z" fill="#8a9a9a"/>';
+      // Helmet visor slit
+      h += '<path d="M' + (cx - 5) + ',6 Q' + cx + ',8 ' + (cx + 5) + ',6" fill="none" stroke="#2a2a2a" stroke-width="1.2"/>';
+      // Helmet ridge
+      h += '<path d="M' + cx + ',-1 L' + cx + ',10" stroke="#6a7a7a" stroke-width="1.5"/>';
+      // Helmet nosepiece
+      h += '<line x1="' + cx + '" y1="3" x2="' + cx + '" y2="8" stroke="#6a7a7a" stroke-width="1.2"/>';
+      // Gorget (neck armor)
+      h += '<path d="M' + (cx - 9) + ',14 L' + (cx + 9) + ',14 L' + (cx + 7) + ',17 L' + (cx - 7) + ',17 Z" fill="#7a8a8a"/>';
+      // Arms with gauntlets (plate armor)
+      h += '<path d="M' + (cx - 10) + ',23 L' + (cx - 13) + ',36 L' + (cx - 12) + ',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx - 12) + '" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/>';
+      h += '<path d="M' + (cx + 10) + ',23 L' + (cx + 13) + ',36 L' + (cx + 12) + ',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx + 12) + '" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/>';
+
+    } else {
+      // === OSWALD — THE WIZARD ===
+      // Starry robe
+      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="26" rx="3" fill="' + c.body + '"/>';
+      // Robe trim
+      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="3" rx="1.5" fill="#4a2590"/>';
+      // Stars on robe
+      h += '<text x="' + (cx - 5) + '" y="30" font-size="3" fill="#ffd700" opacity=".6">\u2726</text>';
+      h += '<text x="' + (cx + 3) + '" y="28" font-size="2.5" fill="#ffd700" opacity=".5">\u2727</text>';
+      h += '<text x="' + (cx - 4) + '" y="39" font-size="2.5" fill="#ffd700" opacity=".4">\u2727</text>';
+      h += '<text x="' + (cx + 4) + '" y="40" font-size="3" fill="#ffd700" opacity=".6">\u2726</text>';
+      // Robe front line
+      h += '<line x1="' + cx + '" y1="23" x2="' + cx + '" y2="46" stroke="rgba(255,255,255,.08)" stroke-width=".8"/>';
+      // Belt
+      h += '<rect x="' + (cx - 10) + '" y="33" width="20" height="2" rx="1" fill="#1a0a3a"/>';
+      h += '<rect x="' + (cx - 2.5) + '" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
+      // Neck
+      h += '<rect x="' + (cx - 3) + '" y="14" width="6" height="5" rx="2" fill="' + c.skin + '"/>';
+      // Head
+      h += '<circle cx="' + cx + '" cy="10" r="7" fill="' + c.skin + '"/>';
+      // White beard
+      h += '<path d="M' + (cx - 4) + ',12 L' + (cx - 5) + ',18 L' + (cx - 2) + ',16 L' + cx + ',19 L' + (cx + 2) + ',16 L' + (cx + 5) + ',18 L' + (cx + 4) + ',12 Z" fill="#f0e8e0"/>';
+      // Eyes
+      h += '<circle cx="' + (cx - 2.5) + '" cy="9" r="1" fill="#333"/>';
+      h += '<circle cx="' + (cx + 2.5) + '" cy="9" r="1" fill="#333"/>';
+      // Eyebrows (bushy white)
+      h += '<path d="M' + (cx - 5) + ',7 Q' + (cx - 2.5) + ',5.5 ' + (cx - 1) + ',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
+      h += '<path d="M' + (cx + 1) + ',7 Q' + (cx + 2.5) + ',5.5 ' + (cx + 5) + ',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
+      // Pointed wizard hat
+      h += '<polygon points="' + (cx - 9) + ',7 ' + cx + ',-6 ' + (cx + 9) + ',7" fill="#1a0a3a"/>';
+      // Hat brim
+      h += '<path d="M' + (cx - 10) + ',7 Q' + cx + ',10 ' + (cx + 10) + ',7" fill="none" stroke="#1a0a3a" stroke-width="2.5"/>';
+      // Hat band
+      h += '<rect x="' + (cx - 8) + '" y="5.5" width="16" height="1.5" rx=".5" fill="#d4a017"/>';
+      // Hat stars
+      h += '<text x="' + (cx - 4) + '" y="2" font-size="3" fill="#ffd700" opacity=".7">\u2726</text>';
+      h += '<text x="' + (cx + 2) + '" y="0" font-size="2.5" fill="#ffd700" opacity=".6">\u2727</text>';
+      // Staff on right side
+      h += '<line x1="' + (cx + 15) + '" y1="18" x2="' + (cx + 15) + '" y2="55" stroke="#6B3410" stroke-width="2"/>';
+      // Staff crystal
+      h += '<circle cx="' + (cx + 15) + '" cy="17" r="2.5" fill="#8a6af0" opacity=".8"/>';
+      h += '<circle cx="' + (cx + 15) + '" cy="17" r="1.2" fill="#c0b0ff" opacity=".9"/>';
+      // Staff glow (when active)
+      if (isActive) {
+        h += '<circle cx="' + (cx + 15) + '" cy="17" r="5" fill="#8a6af0" opacity=".15"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>';
+      }
+      // Arms - one reaching to table, one on staff
+      h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 13) + ',38 L' + (cx - 12) + ',46" fill="none" stroke="' + c.body + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx - 12) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
+      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 14) + ',36 L' + (cx + 15) + ',44" fill="none" stroke="' + c.body + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx + 15) + '" cy="45" rx="3" ry="2" fill="' + c.skin + '"/>';
     }
     h += '</g>';
   }
@@ -8485,12 +8574,18 @@ function roundTableHTML() {
     h += '<rect x="' + (cx + 8) + '" y="57" width="3" height="16" rx=".5" fill="#3a2010"/>';
   }
 
-  // Legs below table (matching robe colors)
+  // Legs below table
   for (var i = 0; i < chars.length; i++) {
     var c = chars[i];
     var cx = xOffsets[i];
-    h += '<rect x="' + (cx - 5) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
-    h += '<rect x="' + (cx + 1) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
+    if (i === 1) {
+      // Gertrude - armored legs
+      h += '<rect x="' + (cx - 5) + '" y="55" width="4" height="10" rx="1" fill="#6a7a7a" opacity=".7"/>';
+      h += '<rect x="' + (cx + 1) + '" y="55" width="4" height="10" rx="1" fill="#6a7a7a" opacity=".7"/>';
+    } else {
+      h += '<rect x="' + (cx - 5) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
+      h += '<rect x="' + (cx + 1) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
+    }
     // Shoes
     h += '<ellipse cx="' + (cx - 3) + '" cy="66" rx="3" ry="1.5" fill="#2a1a0a"/>';
     h += '<ellipse cx="' + (cx + 3) + '" cy="66" rx="3" ry="1.5" fill="#2a1a0a"/>';
