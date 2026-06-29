@@ -8392,15 +8392,19 @@ function roundTableHTML() {
   // Table scene SVG
   var xOffsets = [38, 91, 144]; // horizontal centers for each figure
   h += '<div style="text-align:center;margin-bottom:4px">';
-  h += '<svg viewBox="0 0 210 80" style="width:100%;max-width:260px;height:auto">';
-  h += '<defs><style>.npc-idle{animation:npcBob 2.8s ease-in-out infinite}.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}@keyframes npcBob{0%,100%{transform:translateY(0)}45%{transform:translateY(-2px)}55%{transform:translateY(-2px)}}</style></defs>';
+  h += '<svg viewBox="0 0 210 100" style="width:100%;max-width:280px;height:auto">';
+  h += '<defs><style>.npc-idle{animation:npcBob 2.8s ease-in-out infinite}.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}@keyframes npcBob{0%,100%{transform:translateY(0)}45%{transform:translateY(-1.5px)}55%{transform:translateY(-1.5px)}}</style></defs>';
 
-  // Tabletop
-  h += '<rect x="10" y="50" width="190" height="7" rx="2" fill="#8B4513"/>';
-  h += '<rect x="10" y="50" width="190" height="3" rx="1" fill="#A0522D"/>';
-  // Table legs
-  h += '<rect x="18" y="57" width="4" height="20" fill="#6B3410"/>';
-  h += '<rect x="188" y="57" width="4" height="20" fill="#6B3410"/>';
+  // Chair backs (behind figures)
+  for (var i = 0; i < chars.length; i++) {
+    var cx = xOffsets[i];
+    h += '<rect x="' + (cx - 11) + '" y="16" width="22" height="34" rx="4" fill="#3a2010"/>';
+    h += '<rect x="' + (cx - 11) + '" y="16" width="22" height="4" rx="2" fill="#4a3020"/>';
+    // Chair back slats
+    h += '<line x1="' + (cx - 6) + '" y1="20" x2="' + (cx - 6) + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
+    h += '<line x1="' + cx + '" y1="20" x2="' + cx + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
+    h += '<line x1="' + (cx + 6) + '" y1="20" x2="' + (cx + 6) + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
+  }
 
   // Figures
   for (var i = 0; i < chars.length; i++) {
@@ -8413,33 +8417,90 @@ function roundTableHTML() {
     if (isActive) {
       h += '<circle cx="' + cx + '" cy="28" r="18" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>';
     }
-    // Body (tunic)
-    h += '<rect x="' + (cx - 11) + '" y="28" width="22" height="23" rx="4" fill="' + c.body + '"/>';
-    // Shoulder line
-    h += '<rect x="' + (cx - 11) + '" y="28" width="22" height="3" rx="1" fill="rgba(255,255,255,.15)"/>';
+    // Body (tunic) - longer robe
+    h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="26" rx="3" fill="' + c.body + '"/>';
+    // Collar / robe trim
+    h += '<path d="M' + (cx - 10) + ',24 L' + cx + ',20 L' + (cx + 10) + ',24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2"/>';
+    h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="3" rx="1.5" fill="rgba(255,255,255,.12)"/>';
+    // Robe front line
+    h += '<line x1="' + cx + '" y1="23" x2="' + cx + '" y2="46" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
+    // Belt
+    h += '<rect x="' + (cx - 10) + '" y="33" width="20" height="2" rx="1" fill="rgba(0,0,0,.25)"/>';
+    // Belt buckle
+    h += '<rect x="' + (cx - 2.5) + '" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
     // Neck
-    h += '<rect x="' + (cx - 3) + '" y="18" width="6" height="4" rx="2" fill="#d4a574"/>';
+    h += '<rect x="' + (cx - 3) + '" y="14" width="6" height="5" rx="2" fill="#d4a574"/>';
     // Head
-    h += '<circle cx="' + cx + '" cy="14" r="8" fill="#d4a574"/>';
+    h += '<circle cx="' + cx + '" cy="10" r="7.5" fill="#d4a574"/>';
     // Eyes
-    h += '<circle cx="' + (cx - 3) + '" cy="13" r="1.1" fill="#333"/>';
-    h += '<circle cx="' + (cx + 3) + '" cy="13" r="1.1" fill="#333"/>';
+    h += '<circle cx="' + (cx - 3) + '" cy="9" r="1" fill="#333"/>';
+    h += '<circle cx="' + (cx + 3) + '" cy="9" r="1" fill="#333"/>';
+    // Eyebrows
+    h += '<path d="M' + (cx - 5) + ',7 Q' + (cx - 3) + ',6 ' + (cx - 1.5) + ',7" fill="none" stroke="' + c.hat + '" stroke-width=".7"/>';
+    h += '<path d="M' + (cx + 1.5) + ',7 Q' + (cx + 3) + ',6 ' + (cx + 5) + ',7" fill="none" stroke="' + c.hat + '" stroke-width=".7"/>';
     // Hat / hood
-    h += '<path d="M' + (cx - 8) + ',10 Q' + cx + ',0 ' + (cx + 8) + ',10" fill="' + c.hat + '"/>';
-    // Hat band
-    h += '<rect x="' + (cx - 7) + '" y="9" width="14" height="2" rx="1" fill="rgba(255,255,255,.2)"/>';
-    // Active indicator: small crown on hat
+    h += '<path d="M' + (cx - 8) + ',7 Q' + cx + ',-2 ' + (cx + 8) + ',7" fill="' + c.hat + '"/>';
+    h += '<rect x="' + (cx - 7) + '" y="6" width="14" height="1.5" rx=".5" fill="rgba(255,255,255,.15)"/>';
+    // Hat brim
+    h += '<path d="M' + (cx - 9) + ',7 Q' + cx + ',10 ' + (cx + 9) + ',7" fill="none" stroke="' + c.hat + '" stroke-width="1.5"/>';
+    // Active indicator: small gold crown on hat
     if (isActive) {
-      h += '<path d="M' + (cx - 4) + ',9 L' + cx + ',4 L' + (cx + 4) + ',9" fill="#ffd700"/>';
+      h += '<path d="M' + (cx - 4) + ',6 L' + cx + ',1 L' + (cx + 4) + ',6" fill="#ffd700"/>';
+    }
+    // Arms reaching to table
+    var side = i < 1 ? -1 : i > 1 ? 1 : 0;
+    if (i === 0) { // Arthur - left arm forward, right arm closer
+      h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 15) + ',40 L' + (cx - 14) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx - 14) + '" cy="47" rx="3" ry="2" fill="#d4a574"/>';
+      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 14) + ',38 L' + (cx + 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx + 13) + '" cy="47" rx="3" ry="2" fill="#d4a574"/>';
+    } else if (i === 2) { // Oswald - right arm forward, left arm closer
+      h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 14) + ',38 L' + (cx - 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx - 13) + '" cy="47" rx="3" ry="2" fill="#d4a574"/>';
+      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 15) + ',40 L' + (cx + 14) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx + 14) + '" cy="47" rx="3" ry="2" fill="#d4a574"/>';
+    } else { // Gertrude (center) - both arms resting
+      h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 13) + ',38 L' + (cx - 12) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx - 12) + '" cy="47" rx="3.5" ry="2" fill="#d4a574"/>';
+      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 13) + ',38 L' + (cx + 12) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
+      h += '<ellipse cx="' + (cx + 12) + '" cy="47" rx="3.5" ry="2" fill="#d4a574"/>';
     }
     h += '</g>';
   }
 
+  // Tabletop
+  h += '<rect x="8" y="48" width="194" height="7" rx="2" fill="#8B4513"/>';
+  h += '<rect x="8" y="48" width="194" height="3" rx="1" fill="#A0522D"/>';
+  // Table legs
+  h += '<rect x="16" y="55" width="5" height="22" fill="#6B3410"/>';
+  h += '<rect x="189" y="55" width="5" height="22" fill="#6B3410"/>';
+
+  // Chair seats and legs (below table)
+  for (var i = 0; i < chars.length; i++) {
+    var cx = xOffsets[i];
+    // Chair seat
+    h += '<rect x="' + (cx - 12) + '" y="54" width="24" height="3" rx="1" fill="#4a3020"/>';
+    // Chair front legs
+    h += '<rect x="' + (cx - 11) + '" y="57" width="3" height="16" rx=".5" fill="#3a2010"/>';
+    h += '<rect x="' + (cx + 8) + '" y="57" width="3" height="16" rx=".5" fill="#3a2010"/>';
+  }
+
+  // Legs below table (matching robe colors)
+  for (var i = 0; i < chars.length; i++) {
+    var c = chars[i];
+    var cx = xOffsets[i];
+    h += '<rect x="' + (cx - 5) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
+    h += '<rect x="' + (cx + 1) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
+    // Shoes
+    h += '<ellipse cx="' + (cx - 3) + '" cy="66" rx="3" ry="1.5" fill="#2a1a0a"/>';
+    h += '<ellipse cx="' + (cx + 3) + '" cy="66" rx="3" ry="1.5" fill="#2a1a0a"/>';
+  }
+
   // Candle on table (center)
-  h += '<rect x="103" y="43" width="3" height="8" rx=".5" fill="#f5f5dc"/>';
-  h += '<rect x="102" y="50" width="5" height="2" rx=".5" fill="#d4a574"/>';
-  h += '<circle cx="104.5" cy="42" r="2.5" fill="#ff8c00" opacity=".8"><animate attributeName="r" values="2.5;2.8;2.5" dur="1.8s" repeatCount="indefinite"/></circle>';
-  h += '<circle cx="104.5" cy="42" r="5" fill="#ff8c00" opacity=".15"><animate attributeName="r" values="5;6;5" dur="1.8s" repeatCount="indefinite"/></circle>';
+  h += '<rect x="103" y="42" width="3" height="7" rx=".5" fill="#f5f5dc"/>';
+  h += '<rect x="102" y="48" width="5" height="2" rx=".5" fill="#d4a574"/>';
+  h += '<circle cx="104.5" cy="41" r="2.5" fill="#ff8c00" opacity=".8"><animate attributeName="r" values="2.5;2.8;2.5" dur="1.8s" repeatCount="indefinite"/></circle>';
+  h += '<circle cx="104.5" cy="41" r="5" fill="#ff8c00" opacity=".15"><animate attributeName="r" values="5;6;5" dur="1.8s" repeatCount="indefinite"/></circle>';
 
   h += '</svg></div>';
 
