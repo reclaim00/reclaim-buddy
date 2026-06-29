@@ -138,7 +138,12 @@ body.dark .section-title::after{background:linear-gradient(to left,transparent,v
 [theme=rose] body.dark{--primary-light:#2e1420;--primary-dark:#fecdd3}
 [theme=teal] body.dark{--primary-light:#142420;--primary-dark:#99f6e4}
 body.dark .badge-gold{background:rgba(122,106,90,.15);color:var(--gold);border:1px solid rgba(122,106,90,.2)}
-.app{max-width:480px;margin:0 auto;padding:16px 16px 90px;min-height:100vh;background:rgba(242,239,232,.3);transition:opacity .12s;overscroll-behavior:contain}
+.app{max-width:480px;margin:0 auto;padding:16px 16px 90px;min-height:100vh;background:rgba(242,239,232,.3);transition:opacity .12s;overscroll-behavior:contain;position:relative}
+#page-curtain{position:absolute;inset:0;z-index:9;background:linear-gradient(135deg,var(--primary),var(--primary-dark));transform-origin:top center;transform:scaleY(0);pointer-events:none;display:flex;align-items:center;justify-content:center}
+#page-curtain::after{content:'\u269C \u00A0 \u2767 \u00A0 \u269C';font-size:24px;color:#fff;opacity:.3;letter-spacing:8px;font-family:serif}
+#page-curtain.close{transform:scaleY(1);transition:transform .18s ease-in}
+#page-curtain.open{transform:scaleY(0);transition:transform .2s ease-out}
+#page-curtain.reset{transition:none;transform:scaleY(0)}
 body.dark .app{background:rgba(21,18,24,.15)}
 body.logged-in .app{padding-top:0}
 .header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 16px;border-bottom:1px solid var(--border);margin-bottom:8px;position:relative}
@@ -7967,6 +7972,20 @@ function getRank(days) {
   return ranks[0];
 }
 
+function ordinal(n) {
+  var s = ['th','st','nd','rd'];
+  var v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+function medievalDate() {
+  var months = ['Wolf','Mud','Lent','Egg','Milk','Hay','Corn','Barley','Wine','Blood','Beast','Frost'];
+  var now = new Date();
+  var day = now.getDate();
+  var month = months[now.getMonth()];
+  var reignYear = Math.floor(soberDays() / 365) + 1;
+  return 'The ' + ordinal(day) + ' Day of ' + month + ', in the ' + ordinal(reignYear) + ' Year of Your Reign';
+}
+
 function kingdomTrackerHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
@@ -8370,6 +8389,9 @@ function throneRoomHTML() {
   h += '<div class="card" style="padding:0;overflow:hidden;border-radius:16px 16px 0 0">';
   h += kingdomHTML();
   h += '</div>';
+
+  // Medieval date banner
+  h += '<div style="text-align:center;font-size:10px;color:var(--muted);letter-spacing:.5px;font-style:italic;padding:4px 0 0">' + medievalDate() + '</div>';
 
   // 2. Stats bar
   var rank = getRank(days);
@@ -10708,11 +10730,26 @@ function render() {
     app._renderTO = null;
   }
   if (app._renderTO) { clearTimeout(app._renderTO); app._renderTO = null; }
+  var curtain = document.getElementById('page-curtain');
+  if (!curtain) {
+    curtain = document.createElement('div');
+    curtain.id = 'page-curtain';
+    app.appendChild(curtain);
+    curtain.classList.add('reset');
+    void curtain.offsetHeight;
+    curtain.classList.remove('reset');
+  }
   if (app.innerHTML === '') {
     doRender();
   } else {
-    app.style.opacity = '0';
-    app._renderTO = setTimeout(doRender, 130);
+    curtain.classList.remove('open');
+    curtain.classList.add('close');
+    app._renderTO = setTimeout(function(){
+      doRender();
+      curtain.classList.remove('close');
+      curtain.classList.add('open');
+      setTimeout(function(){ curtain.classList.remove('open'); }, 250);
+    }, 200);
   }
 }
 
