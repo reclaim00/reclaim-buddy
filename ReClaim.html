@@ -5198,6 +5198,91 @@ function relapseRescueHTML() {
 }
 
 // ====== ARTHUR'S INSIGHTS (PATTERN DETECTION) ======
+function buildMoodTopicInsights() {
+  var insights = [];
+  if (!D.journal || D.journal.length < 3) return insights;
+  var topicMoods = {}, topicCounts = {};
+  var moodLabels = {sad:2,angry:1.5,anxious:2.5,happy:4,grateful:4.5,reflective:3.5,hopeful:4,mixed:3};
+  var recent = D.journal.slice(-20);
+  for (var mi=0;mi<recent.length;mi++) {
+    var txt = getEntryText(recent[mi]);
+    if (!txt) continue;
+    var detected = detectMood(txt);
+    var moodScore = moodLabels[detected.primary] || 3;
+    var topics = extractTopics(txt);
+    for (var tii=0;tii<topics.length;tii++) {
+      var t = topics[tii];
+      if (!topicMoods[t]) { topicMoods[t] = 0; topicCounts[t] = 0; }
+      topicMoods[t] += moodScore;
+      topicCounts[t]++;
+    }
+  }
+  var topicLabels = {craving:'cravings',work:'work',relationships:'relationships',health:'health',wellness:'wellness',school:'school',finances:'finances',progress:'progress',loneliness:'loneliness'};
+  var highTopics = [], lowTopics = [];
+  for (var t2 in topicCounts) {
+    if (topicCounts[t2] < 2) continue;
+    var avg = topicMoods[t2] / topicCounts[t2];
+    if (avg >= 4) highTopics.push({topic:t2,score:avg});
+    else if (avg <= 2.5) lowTopics.push({topic:t2,score:avg});
+  }
+  if (highTopics.length) {
+    var best = highTopics.sort(function(a,b){return b.score-a.score})[0];
+    insights.push({icon:'&#127942;',text:'The topics you write about when your mood is <strong>highest</strong>: <strong>' + (topicLabels[best.topic]||best.topic) + '</strong> (avg mood ' + best.score.toFixed(1) + '/5). This is a protective factor  lean into it.',severity:'positive'});
+  }
+  if (lowTopics.length) {
+    var worst = lowTopics.sort(function(a,b){return a.score-b.score})[0];
+    insights.push({icon:'&#128200;',text:'The topic with your <strong>lowest average mood</strong>: <strong>' + (topicLabels[worst.topic]||worst.topic) + '</strong> (avg mood ' + worst.score.toFixed(1) + '/5). Noticing this pattern is the first step to addressing it.',severity:worst.score < 2 ? 'high' : 'medium'});
+  }
+  return insights;
+}
+
+function buildPeriodComparisonInsights() {
+  var insights = [];
+  var now = Date.now();
+  var weekAgo = now - 7*86400000;
+  var twoWeeksAgo = now - 14*86400000;
+  if (!D.journal || D.journal.length < 2) return insights;
+  var recent = D.journal.filter(function(j){return new Date(j.date).getTime() > weekAgo});
+  var previous = D.journal.filter(function(j){var t=new Date(j.date).getTime();return t > twoWeeksAgo && t <= weekAgo});
+  if (recent.length < previous.length && previous.length >= 2) {
+    insights.push({icon:'&#128200;',text:'Your journal entries dropped from <strong>' + previous.length + '</strong> to <strong>' + recent.length + '</strong> compared to last week. Declining engagement can be an early warning sign.',severity:'medium'});
+  } else if (recent.length > previous.length && recent.length >= 3) {
+    insights.push({icon:'&#9989;',text:'Your journal frequency <strong>increased</strong> this week (' + recent.length + ' entries, up from ' + previous.length + ' last week). Consistent self-reflection builds resilience.',severity:'positive'});
+  }
+  if (D.checkins && D.checkins.length >= 3) {
+    var recentC = D.checkins.filter(function(c){var d=new Date(c.date||c.timestamp);return d.getTime() > weekAgo});
+    var prevC = D.checkins.filter(function(c){var d=new Date(c.date||c.timestamp);return d.getTime() > twoWeeksAgo && d.getTime() <= weekAgo});
+    if (recentC.length < prevC.length && prevC.length >= 2) {
+      insights.push({icon:'&#128204;',text:'Check-ins <strong>dropped</strong> from ' + prevC.length + ' to ' + recentC.length + ' week over week. Regular check-ins help catch warning signs early.',severity:'medium'});
+    }
+  }
+  return insights;
+}
+
+function buildRiskAssessment() {
+  var risk = {level:'low',factors:[]};
+  if (!D.journal) return risk;
+  var daysSinceLastJournal = D.journal.length ? Math.round((Date.now() - new Date(D.journal[D.journal.length-1].date).getTime())/86400000) : 999;
+  var recentCravings = D.cravings ? D.cravings.filter(function(c){return Date.now()-new Date(c.timestamp||c.date).getTime() < 7*86400000}).length : 0;
+  var recentMood = 3;
+  if (D.checkins && D.checkins.length >= 3) {
+    var weekAgo = Date.now() - 7*86400000;
+    var recentCheckinMoods = D.checkins.filter(function(c){var d=new Date(c.date||c.timestamp);return d.getTime() > weekAgo}).map(function(c){return c.mood||3});
+    if (recentCheckinMoods.length >= 2) recentMood = recentCheckinMoods.reduce(function(a,b){return a+b},0)/recentCheckinMoods.length;
+  }
+  if (daysSinceLastJournal > 7) { risk.level = 'high'; risk.factors.push('No journal entry in ' + daysSinceLastJournal + ' days'); }
+  else if (daysSinceLastJournal > 3) { risk.factors.push('Journal gap of ' + daysSinceLastJournal + ' days'); if (risk.level === 'low') risk.level = 'medium'; }
+  if (recentCravings >= 3) { risk.level = 'high'; risk.factors.push(recentCravings + ' cravings this week'); }
+  else if (recentCravings >= 1) { risk.factors.push(recentCravings + ' craving' + (recentCravings > 1 ? 's' : '') + ' this week'); if (risk.level === 'low') risk.level = 'medium'; }
+  if (recentMood < 2.5) { risk.level = 'high'; risk.factors.push('Average mood ' + recentMood.toFixed(1) + '/5 this week'); }
+  else if (recentMood < 3) { risk.factors.push('Mood trending low (' + recentMood.toFixed(1) + '/5)'); if (risk.level === 'low') risk.level = 'medium'; }
+  if (D.relapseRescue && D.relapseRescue.logs && D.relapseRescue.logs.length) {
+    var lastRelapse = new Date(D.relapseRescue.logs[D.relapseRescue.logs.length-1].date);
+    if (Date.now() - lastRelapse.getTime() < 3*86400000) { risk.level = 'high'; risk.factors.push('Recent relapse (within 3 days)'); }
+  }
+  return risk;
+}
+
 function buildArthurInsights() {
   var insights = [];
   if (!D.relapseRescue) D.relapseRescue = { logs: [], followUps: [] };
@@ -5311,13 +5396,36 @@ function buildArthurInsights() {
     }
   }
 
+  // Mood-topic correlation analysis
+  var topicInsights = buildMoodTopicInsights();
+  for (var tix=0;tix<topicInsights.length;tix++) insights.push(topicInsights[tix]);
+
+  // Period-over-period comparison
+  var periodInsights = buildPeriodComparisonInsights();
+  for (var pix=0;pix<periodInsights.length;pix++) insights.push(periodInsights[pix]);
+
   return insights;
 }
 
 function insightsHTML() {
   var insights = buildArthurInsights();
+  var risk = buildRiskAssessment();
   var h = '<h2 style="font-size:20px;font-weight:700;margin:8px 0">&#128302; Arthur\'s Insights</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Pattern detection based on your journal, check-ins, cravings, and relapse history.</p>';
+
+  // Risk assessment summary
+  var riskIcon = risk.level === 'high' ? '&#128308;' : risk.level === 'medium' ? '&#128992;' : '&#128994;';
+  var riskColor = risk.level === 'high' ? 'var(--danger)' : risk.level === 'medium' ? '#f97316' : 'var(--primary)';
+  var riskBg = risk.level === 'high' ? 'var(--danger-bg)' : risk.level === 'medium' ? '#fff7ed' : 'var(--primary-light)';
+  var riskLabel = risk.level === 'high' ? 'Elevated Risk' : risk.level === 'medium' ? 'Moderate Risk' : 'Low Risk';
+  h += '<div class="card" style="border-left:3px solid ' + riskColor + ';background:' + riskBg + ';padding:14px;margin-bottom:10px">';
+  h += '<div style="display:flex;align-items:center;gap:10px">';
+  h += '<span style="font-size:28px">' + riskIcon + '</span>';
+  h += '<div><div style="font-weight:700;font-size:15px;color:' + riskColor + '">' + riskLabel + '</div>';
+  h += '<div style="font-size:12px;color:var(--text);line-height:1.4">';
+  if (risk.factors.length) h += 'Arthur detected: ' + risk.factors.join(', ') + '.';
+  else h += 'You\'re on a stable path. Keep doing what you\'re doing  your data shows consistent engagement.';
+  h += '</div></div></div></div>';
 
   if (!insights.length) {
     h += '<div class="card" style="text-align:center;padding:24px">';
