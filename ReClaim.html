@@ -3427,6 +3427,24 @@ function artDailyRoutineHTML() {
 // Song recommendations by emotional tone
 var REFLECT_SONGS = {};
 var SONG_POOL_GENERATED = false;
+var ITUNES_CACHE = {};
+function fetchItunesSongs(mood) {
+  var keywords = {
+    sad:'sad+healing+recovery',angry:'angry+rock+energy',anxious:'calm+peaceful+relaxing',
+    happy:'happy+uplifting+positive',grateful:'grateful+blessed+thankful',
+    reflective:'reflective+thoughtful+acoustic',hopeful:'hopeful+inspirational+strength'
+  };
+  fetch('https://itunes.apple.com/search?term=' + (keywords[mood]||mood) + '&limit=25&entity=song').then(function(r){return r.json()}).then(function(data){
+    ITUNES_CACHE[mood] = (data.results||[]).map(function(item){
+      return {
+        title:item.trackName, artist:item.artistName,
+        url_apple:item.trackViewUrl,
+        url_spotify:'https://open.spotify.com/search/' + encodeURIComponent(item.trackName + ' ' + item.artistName),
+        url_youtube:'https://www.youtube.com/results?search_query=' + (item.trackName + ' ' + item.artistName).toLowerCase().replace(/[^a-z0-9]/g,'+')
+      };
+    });
+  }).catch(function(){});
+}
 var SONGS_BY_MOOD = {
   sad: [
     {t:'Fix You',a:'Coldplay'},{t:'Hurt',a:'Johnny Cash'},{t:'Someone Like You',a:'Adele'},{t:'Creep',a:'Radiohead'},{t:'When the Party\'s Over',a:'Billie Eilish'},{t:'The Sound of Silence',a:'Simon & Garfunkel'},{t:'Everybody Hurts',a:'R.E.M.'},{t:'Nothing Compares 2 U',a:'Sinead O\'Connor'},{t:'Tears in Heaven',a:'Eric Clapton'},{t:'Yesterday',a:'The Beatles'},{t:'Boulevard of Broken Dreams',a:'Green Day'},{t:'Skinny Love',a:'Bon Iver'},{t:'Hallelujah',a:'Jeff Buckley'},{t:'Mad World',a:'Gary Jules'},{t:'Liability',a:'Lorde'},{t:'Cancer',a:'My Chemical Romance'},{t:'Snuff',a:'Slipknot'},{t:'Black',a:'Pearl Jam'},{t:'Nutshell',a:'Alice In Chains'},{t:'Tears Don\'t Fall',a:'Bullet for My Valentine'},{t:'The Drugs Don\'t Work',a:'The Verve'},{t:'Shallow',a:'Lady Gaga & Bradley Cooper'},{t:'Grenade',a:'Bruno Mars'},{t:'No Ordinary Love',a:'Sade'},{t:'Alone',a:'Masayoshi Takanaka'},{t:'Gold Dust Woman',a:'Fleetwood Mac'},{t:'Something About Us',a:'Daft Punk'},{t:'Bohemian Rhapsody',a:'Queen'},{t:'Smooth Operator',a:'Sade'},{t:'Flashing Lights',a:'Kanye West'},{t:'I Wonder',a:'Kanye West'},{t:'Everything I Am',a:'Kanye West'},{t:'The Scientist',a:'Coldplay'},{t:'She Will Be Loved',a:'Maroon 5'},{t:'Won\'t Go Home Without You',a:'Maroon 5'},{t:'Badfish',a:'Sublime'},{t:'Operator',a:'Jim Croce'},{t:'Photographs and Memories',a:'Jim Croce'},{t:'Lonesome Loser',a:'Little River Band'},{t:'Take It Easy on Me',a:'Little River Band'},    {t:'While My Guitar Gently Weeps',a:'The Beatles'},{t:'Time in a Bottle',a:'Jim Croce'},{t:'Let Her Cry',a:'Hootie & the Blowfish'},{t:'Anti-Hero',a:'Taylor Swift'},{t:'All Too Well',a:'Taylor Swift'},{t:'Cardigan',a:'Taylor Swift'},{t:'Just Give Me a Reason',a:'P!nk'},{t:'I Will Always Love You',a:'Whitney Houston'},{t:'Saving All My Love for You',a:'Whitney Houston'},{t:'Everything I Wanted',a:'Billie Eilish'},    {t:'Ocean Eyes',a:'Billie Eilish'},{t:'Lovely',a:'Billie Eilish'},{t:'Leaving on a Jet Plane',a:'John Denver'},{t:'Nothing Else Matters',a:'Metallica'},{t:'Fade to Black',a:'Metallica'},{t:'How You Remind Me',a:'Nickelback'},{t:'Far Away',a:'Nickelback'},{t:'Stranger in Moscow',a:'Michael Jackson'}
@@ -3468,6 +3486,8 @@ function populateSongPool() {
       var song = generateSong(songs[si].t, songs[si].a);
       REFLECT_SONGS[mood].push(song);
     }
+    // Fire iTunes fetch for live songs
+    fetchItunesSongs(mood);
   }
   SONG_POOL_GENERATED = true;
 }
@@ -3526,10 +3546,7 @@ var SONG_KEYWORDS = {
 };
 
 function getSong(entryText, mood) {
-  if (!SONG_POOL_GENERATED) {
-    if (!window._songPoolLoading) { window._songPoolLoading = true; setTimeout(function(){ populateSongPool(); window._songPoolLoading = false; }, 100); }
-    return null;
-  }
+  // Keyword match (takes priority regardless of cache)
   if (entryText) {
     var t = entryText.toLowerCase();
     for (var key in SONG_KEYWORDS) {
@@ -3539,6 +3556,14 @@ function getSong(entryText, mood) {
         return generateSong(pick.t, pick.a);
       }
     }
+  }
+  // Try live iTunes cache first
+  var cached = ITUNES_CACHE[mood];
+  if (cached && cached.length) return cached[Math.floor(Math.random() * cached.length)];
+  // Fallback to hardcoded pool
+  if (!SONG_POOL_GENERATED) {
+    if (!window._songPoolLoading) { window._songPoolLoading = true; setTimeout(function(){ populateSongPool(); window._songPoolLoading = false; }, 100); }
+    return null;
   }
   var pool = REFLECT_SONGS[mood] || REFLECT_SONGS.reflective;
   return pool[Math.floor(Math.random() * pool.length)];
