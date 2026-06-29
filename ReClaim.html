@@ -7822,8 +7822,13 @@ function kingdomLevel(days) {
   if (days <= 21) return 6;
   if (days <= 30) return 7;
   if (days <= 60) return 8;
-  if (days <= 180) return 9;
-  return 10;
+  if (days <= 120) return 9;
+  if (days <= 180) return 10;
+  if (days <= 270) return 11;
+  if (days <= 365) return 12;
+  if (days <= 545) return 13;
+  if (days <= 730) return 14;
+  return 15;
 }
 function kingdomHTML() {
   var days = soberDays();
@@ -7926,6 +7931,57 @@ function kingdomHTML() {
     if (level >= 5) h += '<line x1="328.5" y1="100" x2="328.5" y2="68" stroke-width="2" class="k-flagpole"/><polygon points="328.5,68 347,73 328.5,78" class="k-flag-r"/>';
     h += '</g>';
   }
+  // Grand tower on keep (level 14+)
+  if (level >= 14) {
+    h += '<rect x="206" y="36" width="88" height="60" class="k-keep"/>';
+    h += '<polygon points="204,36 250,12 296,36" class="k-roof"/>';
+    h += '<rect x="245" y="18" width="10" height="18" class="k-roof" opacity=".8"/>';
+    h += '<rect x="206" y="36" width="88" height="60" fill="url(#stone)" opacity=".5"/>';
+    // Grand windows on tower
+    h += '<path d="M 230,56 L 230,44 Q 240,38 250,44 L 250,56 Z" fill="rgba(255,255,200,.25)"/>';
+    h += '<line x1="240" y1="40" x2="240" y2="56" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>';
+    h += '<line x1="230" y1="50" x2="250" y2="50" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>';
+    h += '<path d="M 252,56 L 252,44 Q 262,38 272,44 L 272,56 Z" fill="rgba(255,255,200,.25)"/>';
+    h += '<line x1="262" y1="40" x2="262" y2="56" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>';
+    h += '<line x1="252" y1="50" x2="272" y2="50" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>';
+  }
+  // Curtain wall with crenellations across front (level 11+)
+  if (level >= 11) {
+    h += '<g class="k-curtain">';
+    h += '<rect x="130" y="178" width="240" height="18" class="k-keep"/>';
+    h += '<rect x="130" y="178" width="240" height="18" fill="url(#stone)" opacity=".5"/>';
+    for (var ci2 = 0; ci2 < 16; ci2++) h += '<rect x="' + (132 + ci2 * 15) + '" y="171" width="10" height="7" class="k-keep"/>';
+    // Guard towers on curtain wall
+    if (level >= 12) {
+      h += '<rect x="118" y="155" width="22" height="41" class="k-tower"/><polygon points="116,155 129,143 142,155" class="k-tower-roof"/>';
+      h += '<rect x="360" y="155" width="22" height="41" class="k-tower"/><polygon points="358,155 371,143 384,155" class="k-tower-roof"/>';
+    }
+    h += '</g>';
+  }
+  // Moat and drawbridge (level 12+)
+  if (level >= 12) {
+    h += '<g class="k-moat">';
+    for (var mi = 0; mi < 4; mi++) {
+      h += '<path d="M' + (130 + mi * 60) + ',196 Q' + (160 + mi * 60) + ',203 ' + (190 + mi * 60) + ',196" fill="none" stroke="#3a7a9a" stroke-width="2" opacity=".5"/>';
+    }
+    // Drawbridge
+    h += '<rect x="232" y="187" width="36" height="11" rx="1" fill="#6B3410"/>';
+    h += '<line x1="232" y1="187" x2="232" y2="194" stroke="#4a2410" stroke-width="1.5"/><line x1="268" y1="187" x2="268" y2="194" stroke="#4a2410" stroke-width="1.5"/>';
+    h += '<line x1="242" y1="187" x2="242" y2="196" stroke="#4a2410" stroke-width=".8"/><line x1="252" y1="187" x2="252" y2="196" stroke="#4a2410" stroke-width=".8"/><line x1="262" y1="187" x2="262" y2="196" stroke="#4a2410" stroke-width=".8"/>';
+    h += '</g>';
+  }
+  // Village huts outside walls (level 13+)
+  if (level >= 13) {
+    h += '<g class="k-village">';
+    var huts = level >= 14 ? [[68,188],[90,185],[112,189],[390,185],[412,188],[434,186]] :
+      level >= 13 ? [[68,188],[112,189],[390,185],[434,186]] : [];
+    for (var hi = 0; hi < huts.length; hi++) {
+      var hx = huts[hi][0], hy = huts[hi][1];
+      h += '<rect x="' + hx + '" y="' + hy + '" width="14" height="10" class="k-tree-trunk" opacity=".6"/>';
+      h += '<polygon points="' + (hx - 2) + ',' + hy + ' ' + (hx + 7) + ',' + (hy - 7) + ' ' + (hx + 16) + ',' + hy + '" fill="#8a6a4a" opacity=".6"/>';
+    }
+    h += '</g>';
+  }
   // Trees
   var tr = Math.min(22, 14 + level * 1.5);
   h += '<g class="k-trees">';
@@ -7944,6 +8000,15 @@ function kingdomHTML() {
     h += '</g>';
   }
   if (level >= 7) h += '<g class="k-birds"><g class="k-bird"><path d="M 60,80 Q 65,76 70,80 Q 75,76 80,80"><animate attributeName="d" dur="0.3s" repeatCount="indefinite" values="M 60,80 Q 65,76 70,80 Q 75,76 80,80;M 60,80 Q 65,84 70,80 Q 75,84 80,80;M 60,80 Q 65,76 70,80 Q 75,76 80,80"/></path></g><g class="k-bird"><path d="M 90,70 Q 95,66 100,70 Q 105,66 110,70"><animate attributeName="d" dur="0.25s" repeatCount="indefinite" values="M 90,70 Q 95,66 100,70 Q 105,66 110,70;M 90,70 Q 95,74 100,70 Q 105,74 110,70;M 90,70 Q 95,66 100,70 Q 105,66 110,70"/></path></g>' + (level>=9?'<g class="k-bird"><path d="M 440,85 Q 445,81 450,85 Q 455,81 460,85"><animate attributeName="d" dur="0.35s" repeatCount="indefinite" values="M 440,85 Q 445,81 450,85 Q 455,81 460,85;M 440,85 Q 445,89 450,85 Q 455,89 460,85;M 440,85 Q 445,81 450,85 Q 455,81 460,85"/></path></g>':'') + '</g>';
+  // Dragon circling at level 15+
+  if (level >= 15) {
+    h += '<g class="k-dragon"><path d="M 0,40 Q 50,10 100,35 Q 150,55 200,30 Q 250,10 300,35 Q 350,55 400,30 Q 450,10 500,40" fill="none" stroke="#5a3a1a" stroke-width="0" opacity="0"><animate attributeName="opacity" values="0;1;1;0" dur="12s" repeatCount="indefinite"/></path>';
+    h += '<g><animateTransform attributeName="transform" type="translate" values="0,0;0,0;0,0" dur="12s" repeatCount="indefinite"/>';
+    h += '<path d="M 10,30 L 28,22 L 22,30 L 30,38 Z" fill="#5a3a1a"><animateMotion dur="12s" repeatCount="indefinite" path="M 0,40 Q 60,15 130,40 Q 200,60 270,35 Q 340,15 410,40 Q 460,55 500,40"/></path>';
+    h += '<path d="M 10,30 L 28,22 L 22,30 L 30,38 Z" fill="#4a2a0a" opacity=".5"><animateMotion dur="12s" repeatCount="indefinite" path="M 0,38 Q 60,13 130,38 Q 200,58 270,33 Q 340,13 410,38 Q 460,53 500,38"/></path>';
+    h += '<ellipse cx="18" cy="17" rx="3" ry="2" fill="#ff6622"><animateMotion dur="12s" repeatCount="indefinite" path="M 0,40 Q 60,15 130,40 Q 200,60 270,35 Q 340,15 410,40 Q 460,55 500,40"/></ellipse>';
+    h += '</g></g>';
+  }
   h += '<rect width="500" height="280" class="k-damage-overlay" opacity="0"/>';
   h += '</svg></div>';
   return h;
