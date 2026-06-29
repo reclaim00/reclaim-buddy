@@ -8243,24 +8243,21 @@ function showVillageModal() {
 }
 function roundTableHTML() {
   var chars = [
-    {name:'Arthur',color:'var(--avatar-arthur)',svg:'<svg viewBox="0 0 16 16" width="14" height="14" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg>',
-     msgs:[
+    {name:'Arthur',body:'#6d28d9',hat:'#4c1d95',msgs:[
        "I've been watching your patterns. You're showing up more. That's the data that matters.",
        "I notice you've been logging regularly. Every entry sharpens the map of your recovery.",
        "Your consistency is building a reliable trend. Keep feeding me data and I'll keep finding insights.",
        "Journal entries are up. Mood tracking is steady. The numbers don't lie — you're putting in the work.",
        "I cross-referenced your check-ins and habits. There's a clear correlation: showing up daily builds momentum."
      ]},
-    {name:'Gertrude',color:'var(--avatar-gertrude)',svg:'<svg viewBox="0 0 16 16" width="14" height="14" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg>',
-     msgs:[
+    {name:'Gertrude',body:'#2d5a5a',hat:'#1a3a3a',msgs:[
        "Stand ready. Your shield is forged. Today, nothing gets past you.",
        "You've faced worse battles than this and held the line. Today is no different.",
        "Your safety plan is your armor. You've prepared for this. Trust your training.",
        "Another day, another victory. You don't need to win every fight — just this one.",
        "I've seen your strength. You are more resilient than whatever faces you today."
      ]},
-    {name:'Oswald',color:'var(--avatar-oswald)',svg:'<svg viewBox="0 0 16 16" width="14" height="14" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg>',
-     msgs:[
+    {name:'Oswald',body:'#4338ca',hat:'#312e81',msgs:[
        "The path ahead may twist, but you've already walked through shadow and emerged. Trust your steps.",
        "Every day of recovery adds to your power. You're weaving strength stronger than any darkness.",
        "Look back and see how far you've come. That is not luck — it is your own will, recognized and claimed.",
@@ -8273,16 +8270,71 @@ function roundTableHTML() {
   var dayMod = Math.floor(dayOfYear / chars.length);
   var h = '<div class="card" style="padding:12px 14px">';
   h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-align:center;margin-bottom:8px">\u2767 The Round Table \u2767</div>';
-  h += '<div style="display:flex;justify-content:center;gap:12px;margin-bottom:8px">';
+
+  // Table scene SVG
+  var xOffsets = [38, 91, 144]; // horizontal centers for each figure
+  h += '<div style="text-align:center;margin-bottom:4px">';
+  h += '<svg viewBox="0 0 210 80" style="width:100%;max-width:260px;height:auto">';
+  h += '<defs><style>.npc-idle{animation:npcBob 2.8s ease-in-out infinite}.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}@keyframes npcBob{0%,100%{transform:translateY(0)}45%{transform:translateY(-2px)}55%{transform:translateY(-2px)}}</style></defs>';
+
+  // Tabletop
+  h += '<rect x="10" y="50" width="190" height="7" rx="2" fill="#8B4513"/>';
+  h += '<rect x="10" y="50" width="190" height="3" rx="1" fill="#A0522D"/>';
+  // Table legs
+  h += '<rect x="18" y="57" width="4" height="20" fill="#6B3410"/>';
+  h += '<rect x="188" y="57" width="4" height="20" fill="#6B3410"/>';
+
+  // Figures
+  for (var i = 0; i < chars.length; i++) {
+    var c = chars[i];
+    var cx = xOffsets[i];
+    var isActive = i === activeIdx;
+
+    h += '<g class="npc-idle' + (i === 1 ? ' npc-idle-d1' : i === 2 ? ' npc-idle-d2' : '') + '">';
+    // Active glow ring
+    if (isActive) {
+      h += '<circle cx="' + cx + '" cy="28" r="18" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>';
+    }
+    // Body (tunic)
+    h += '<rect x="' + (cx - 11) + '" y="28" width="22" height="23" rx="4" fill="' + c.body + '"/>';
+    // Shoulder line
+    h += '<rect x="' + (cx - 11) + '" y="28" width="22" height="3" rx="1" fill="rgba(255,255,255,.15)"/>';
+    // Neck
+    h += '<rect x="' + (cx - 3) + '" y="18" width="6" height="4" rx="2" fill="#d4a574"/>';
+    // Head
+    h += '<circle cx="' + cx + '" cy="14" r="8" fill="#d4a574"/>';
+    // Eyes
+    h += '<circle cx="' + (cx - 3) + '" cy="13" r="1.1" fill="#333"/>';
+    h += '<circle cx="' + (cx + 3) + '" cy="13" r="1.1" fill="#333"/>';
+    // Hat / hood
+    h += '<path d="M' + (cx - 8) + ',10 Q' + cx + ',0 ' + (cx + 8) + ',10" fill="' + c.hat + '"/>';
+    // Hat band
+    h += '<rect x="' + (cx - 7) + '" y="9" width="14" height="2" rx="1" fill="rgba(255,255,255,.2)"/>';
+    // Active indicator: small crown on hat
+    if (isActive) {
+      h += '<path d="M' + (cx - 4) + ',9 L' + cx + ',4 L' + (cx + 4) + ',9" fill="#ffd700"/>';
+    }
+    h += '</g>';
+  }
+
+  // Candle on table (center)
+  h += '<rect x="103" y="43" width="3" height="8" rx=".5" fill="#f5f5dc"/>';
+  h += '<rect x="102" y="50" width="5" height="2" rx=".5" fill="#d4a574"/>';
+  h += '<circle cx="104.5" cy="42" r="2.5" fill="#ff8c00" opacity=".8"><animate attributeName="r" values="2.5;2.8;2.5" dur="1.8s" repeatCount="indefinite"/></circle>';
+  h += '<circle cx="104.5" cy="42" r="5" fill="#ff8c00" opacity=".15"><animate attributeName="r" values="5;6;5" dur="1.8s" repeatCount="indefinite"/></circle>';
+
+  h += '</svg></div>';
+
+  // Names row
+  h += '<div style="display:flex;justify-content:center;gap:24px;margin-bottom:6px">';
   for (var i = 0; i < chars.length; i++) {
     var c = chars[i];
     var isActive = i === activeIdx;
-    h += '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;opacity:' + (isActive ? '1' : '0.5') + '">';
-    h += '<div style="width:28px;height:28px;border-radius:14px;background:' + c.color + ';display:flex;align-items:center;justify-content:center;' + (isActive ? 'box-shadow:0 0 0 2px var(--accent)' : '') + '">' + c.svg + '</div>';
-    h += '<div style="font-size:9px;color:var(--' + (isActive ? 'primary' : 'muted') + ');font-weight:' + (isActive ? '700' : '400') + '">' + c.name + '</div>';
-    h += '</div>';
+    h += '<div style="font-size:10px;color:var(--' + (isActive ? 'primary' : 'muted') + ');font-weight:' + (isActive ? '700' : '400') + '">' + c.name + '</div>';
   }
   h += '</div>';
+
+  // Message
   var pick = chars[activeIdx];
   var msg = pick.msgs[dayMod % pick.msgs.length];
   var hr = new Date().getHours();
