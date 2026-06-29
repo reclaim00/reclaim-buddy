@@ -478,10 +478,19 @@ body.dark .joust-field{background:linear-gradient(180deg,#3d6b33 0%,#2d5225 30%,
 @keyframes flashPop{0%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}40%{opacity:0;transform:translate(-50%,-50%) scale(0.8)}60%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.5)}}
 @keyframes burstPop{0%{opacity:0;transform:translate(-50%,-35%) scale(0.3) rotate(-20deg)}30%{opacity:1;transform:translate(-50%,-35%) scale(1.2) rotate(10deg)}60%{opacity:1;transform:translate(-50%,-35%) scale(1) rotate(0deg)}100%{opacity:0;transform:translate(-50%,-45%) scale(1.5) rotate(30deg)}}
 @keyframes lanceStrike{0%{opacity:0;transform:scale(0.3) rotate(-10deg)}20%{opacity:1;transform:scale(1.4) rotate(5deg)}40%{opacity:1;transform:scale(1) rotate(0deg)}100%{opacity:0;transform:scale(0.5) rotate(15deg)}}
-@keyframes arthurCharge{0%{transform:translateX(0)}20%{transform:translateX(20px)}40%{transform:translateX(50px)}60%{transform:translateX(90px)}80%{transform:translateX(130px)}100%{transform:translateX(160px)}}
-@keyframes arthurRetreat{0%{transform:translateX(50px)}30%{transform:translateX(30px)}60%{transform:translateX(10px)}100%{transform:translateX(0)}}
-@keyframes skeletonCharge{0%{transform:translateX(0)}20%{transform:translateX(-20px)}40%{transform:translateX(-50px)}60%{transform:translateX(-90px)}80%{transform:translateX(-130px)}100%{transform:translateX(-160px)}}
-@keyframes skeletonRetreat{0%{transform:translateX(-50px)}30%{transform:translateX(-30px)}60%{transform:translateX(-10px)}100%{transform:translateX(0)}}
+@keyframes arthurCharge{0%{transform:translateX(0) translateY(0) rotate(0)}10%{transform:translateX(16px) translateY(-3px) rotate(-1.5deg)}20%{transform:translateX(36px) translateY(0) rotate(0)}30%{transform:translateX(56px) translateY(-4px) rotate(-2deg)}40%{transform:translateX(76px) translateY(0) rotate(0)}50%{transform:translateX(96px) translateY(-3px) rotate(-1.5deg)}60%{transform:translateX(114px) translateY(0) rotate(0)}70%{transform:translateX(130px) translateY(-2px) rotate(-1deg)}80%{transform:translateX(146px) translateY(0) rotate(0)}100%{transform:translateX(160px) translateY(-1px) rotate(-.5deg)}}
+@keyframes arthurRetreat{0%{transform:translateX(50px) translateY(0) rotate(0)}25%{transform:translateX(30px) translateY(-2px) rotate(1deg)}50%{transform:translateX(15px) translateY(0) rotate(0)}75%{transform:translateX(5px) translateY(-1px) rotate(.5deg)}100%{transform:translateX(0) translateY(0) rotate(0)}}
+@keyframes skeletonCharge{0%{transform:translateX(0) translateY(0) rotate(0)}10%{transform:translateX(-16px) translateY(-3px) rotate(1.5deg)}20%{transform:translateX(-36px) translateY(0) rotate(0)}30%{transform:translateX(-56px) translateY(-4px) rotate(2deg)}40%{transform:translateX(-76px) translateY(0) rotate(0)}50%{transform:translateX(-96px) translateY(-3px) rotate(1.5deg)}60%{transform:translateX(-114px) translateY(0) rotate(0)}70%{transform:translateX(-130px) translateY(-2px) rotate(1deg)}80%{transform:translateX(-146px) translateY(0) rotate(0)}100%{transform:translateX(-160px) translateY(-1px) rotate(.5deg)}}
+@keyframes skeletonRetreat{0%{transform:translateX(-50px) translateY(0) rotate(0)}25%{transform:translateX(-30px) translateY(-2px) rotate(-1deg)}50%{transform:translateX(-15px) translateY(0) rotate(0)}75%{transform:translateX(-5px) translateY(-1px) rotate(-.5deg)}100%{transform:translateX(0) translateY(0) rotate(0)}}
+@keyframes aGallopFL{0%,100%{transform:rotate(10deg)}50%{transform:rotate(-20deg)}}
+@keyframes aGallopFR{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(12deg)}}
+@keyframes aGallopBL{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(16deg)}}
+@keyframes aGallopBR{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-14deg)}}
+@keyframes sGallopFL{0%,100%{transform:rotate(10deg)}50%{transform:rotate(-22deg)}}
+@keyframes sGallopFR{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(12deg)}}
+@keyframes sGallopBL{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(16deg)}}
+@keyframes sGallopBR{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-15deg)}}
+@keyframes dustBurst{0%{opacity:.5;transform:translateY(0) scale(1)}50%{opacity:.3;transform:translateY(-6px) scale(.7)}100%{opacity:0;transform:translateY(-12px) scale(.3)}}
 @keyframes horseGallop{0%{transform:translateY(0)}25%{transform:translateY(-3px)}50%{transform:translateY(0)}75%{transform:translateY(-2px)}100%{transform:translateY(0)}}
 @keyframes horseRecharge{0%{transform:translateY(0)}15%{transform:translateY(-4px)}30%{transform:translateY(0)}45%{transform:translateY(-3px)}60%{transform:translateY(0)}100%{transform:translateY(0)}}
 @keyframes horseStruck{0%{transform:translateX(0) rotate(0deg)}10%{transform:translateX(-8px) rotate(-4deg)}25%{transform:translateX(4px) rotate(3deg)}40%{transform:translateX(-2px) rotate(-1deg)}60%{transform:translateX(0) rotate(0deg)}100%{transform:translateX(0) rotate(0deg)}}
@@ -9045,10 +9054,17 @@ function showBoxingMatch(onDone) {
     '<svg class="arthur-svg" viewBox="0 0 60 42">' +
     '<ellipse cx="30" cy="40" rx="16" ry="2.5" fill="rgba(0,0,0,.12)"/>' +
     '<g class="a-horse-legs">' +
-    '<line x1="20" y1="28" x2="16" y2="39" stroke="#ddd" stroke-width="3" stroke-linecap="round"/>' +
-    '<line x1="23" y1="28" x2="24" y2="39" stroke="#ddd" stroke-width="3" stroke-linecap="round"/>' +
-    '<line x1="37" y1="28" x2="33" y2="39" stroke="#ddd" stroke-width="3" stroke-linecap="round"/>' +
-    '<line x1="40" y1="28" x2="42" y2="39" stroke="#ddd" stroke-width="3" stroke-linecap="round"/>' +
+    '<g transform="translate(20,28)"><g class="a-leg-FL" style="transform-origin:0 0"><line x1="0" y1="0" x2="-4" y2="11" stroke="#ddd" stroke-width="3" stroke-linecap="round"/></g></g>' +
+    '<g transform="translate(23,28)"><g class="a-leg-FR" style="transform-origin:0 0"><line x1="0" y1="0" x2="1" y2="11" stroke="#ddd" stroke-width="3" stroke-linecap="round"/></g></g>' +
+    '<g transform="translate(37,28)"><g class="a-leg-BL" style="transform-origin:0 0"><line x1="0" y1="0" x2="-4" y2="11" stroke="#ddd" stroke-width="3" stroke-linecap="round"/></g></g>' +
+    '<g transform="translate(40,28)"><g class="a-leg-BR" style="transform-origin:0 0"><line x1="0" y1="0" x2="2" y2="11" stroke="#ddd" stroke-width="3" stroke-linecap="round"/></g></g>' +
+    '</g>' +
+    '<g class="a-dust">' +
+    '<ellipse cx="16" cy="39" rx="2.5" ry="1.2" fill="rgba(139,90,43,.35)"/>' +
+    '<ellipse cx="12" cy="38" rx="1.8" ry=".8" fill="rgba(139,90,43,.25)"/>' +
+    '<ellipse cx="22" cy="39" rx="2" ry="1" fill="rgba(139,90,43,.3)"/>' +
+    '<ellipse cx="38" cy="39" rx="2.5" ry="1.2" fill="rgba(139,90,43,.35)"/>' +
+    '<ellipse cx="44" cy="38" rx="1.8" ry=".8" fill="rgba(139,90,43,.25)"/>' +
     '</g>' +
     '<ellipse cx="30" cy="24" rx="13" ry="6" fill="#f5f5f5"/>' +
     '<path d="M40 22 Q44 16 43 10 Q42 8 40 9 Q38 12 38 16 Q38 18 40 22" fill="#f5f5f5"/>' +
@@ -9078,10 +9094,17 @@ function showBoxingMatch(onDone) {
     '<svg class="skeleton-svg" viewBox="0 0 60 42">' +
     '<ellipse cx="30" cy="40" rx="16" ry="2.5" fill="rgba(0,0,0,.15)"/>' +
     '<g class="s-horse-legs">' +
-    '<line x1="20" y1="28" x2="16" y2="39" stroke="#444" stroke-width="3" stroke-linecap="round"/>' +
-    '<line x1="23" y1="28" x2="24" y2="39" stroke="#444" stroke-width="3" stroke-linecap="round"/>' +
-    '<line x1="37" y1="28" x2="33" y2="39" stroke="#444" stroke-width="3" stroke-linecap="round"/>' +
-    '<line x1="40" y1="28" x2="42" y2="39" stroke="#444" stroke-width="3" stroke-linecap="round"/>' +
+    '<g transform="translate(20,28)"><g class="s-leg-FL" style="transform-origin:0 0"><line x1="0" y1="0" x2="-4" y2="11" stroke="#444" stroke-width="3" stroke-linecap="round"/></g></g>' +
+    '<g transform="translate(23,28)"><g class="s-leg-FR" style="transform-origin:0 0"><line x1="0" y1="0" x2="1" y2="11" stroke="#444" stroke-width="3" stroke-linecap="round"/></g></g>' +
+    '<g transform="translate(37,28)"><g class="s-leg-BL" style="transform-origin:0 0"><line x1="0" y1="0" x2="-4" y2="11" stroke="#444" stroke-width="3" stroke-linecap="round"/></g></g>' +
+    '<g transform="translate(40,28)"><g class="s-leg-BR" style="transform-origin:0 0"><line x1="0" y1="0" x2="2" y2="11" stroke="#444" stroke-width="3" stroke-linecap="round"/></g></g>' +
+    '</g>' +
+    '<g class="s-dust">' +
+    '<ellipse cx="16" cy="39" rx="2.5" ry="1.2" fill="rgba(80,80,80,.35)"/>' +
+    '<ellipse cx="12" cy="38" rx="1.8" ry=".8" fill="rgba(80,80,80,.25)"/>' +
+    '<ellipse cx="22" cy="39" rx="2" ry="1" fill="rgba(80,80,80,.3)"/>' +
+    '<ellipse cx="38" cy="39" rx="2.5" ry="1.2" fill="rgba(80,80,80,.35)"/>' +
+    '<ellipse cx="44" cy="38" rx="1.8" ry=".8" fill="rgba(80,80,80,.25)"/>' +
     '</g>' +
     '<ellipse cx="30" cy="24" rx="13" ry="6" fill="#2a2a2a"/>' +
     '<path d="M40 22 Q44 16 43 10 Q42 8 40 9 Q38 12 38 16 Q38 18 40 22" fill="#2a2a2a"/>' +
@@ -9147,9 +9170,33 @@ function showBoxingMatch(onDone) {
 
   function horseAnim(el, name, duration) {
     if (!el) return;
+    var side = el.id === 'arthur-boxer' ? 'a' : 's';
+    var svg = el.querySelector('svg');
+    if (svg) {
+      svg.querySelectorAll('[class*="-leg"]').forEach(function(l){ l.style.animation = ''; });
+      var dd = svg.querySelector('.' + side + '-dust');
+      if (dd) dd.querySelectorAll('ellipse').forEach(function(d){ d.style.animation = ''; });
+    }
     el.style.animation = 'none'; el.offsetHeight;
     el.style.animation = name;
-    if (duration) setTimeout(function(){ if(el) el.style.animation = ''; }, duration);
+    if (name.indexOf('Charge') !== -1 && svg) {
+      ['FL','FR','BL','BR'].forEach(function(p){
+        var leg = svg.querySelector('.' + side + '-leg-' + p);
+        if (leg) { leg.style.animation = 'none'; leg.offsetHeight; leg.style.animation = side + 'Gallop' + p + ' .22s ease-in-out infinite'; }
+      });
+      var dust = svg.querySelector('.' + side + '-dust');
+      if (dust) dust.querySelectorAll('ellipse').forEach(function(d, i){
+        d.style.animation = 'none'; d.offsetHeight;
+        d.style.animation = 'dustBurst .7s ease-out ' + (i * 0.06) + 's forwards';
+      });
+    }
+    if (duration) setTimeout(function(){
+      if (el) {
+        el.style.animation = '';
+        if (svg) svg.querySelectorAll('[class*="-leg"]').forEach(function(l){ l.style.animation = ''; });
+        if (svg) { var dd2 = svg.querySelector('.' + side + '-dust'); if (dd2) dd2.querySelectorAll('ellipse').forEach(function(d){ d.style.animation = ''; }); }
+      }
+    }, duration);
   }
 
   var timers = [];
