@@ -7789,10 +7789,11 @@ function characterGreetingHTML() {
   var timeWord = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
   var dayMod = Math.floor(dayOfYear / chars.length);
   var msg = pick.msgs[dayMod % pick.msgs.length];
+  var rank = getRank(soberDays());
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:10px 14px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="display:flex;align-items:center;gap:10px">';
   h += '<div style="width:36px;height:36px;border-radius:18px;background:' + pick.color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + pick.svg + '</div>';
-  h += '<div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:1px">Good ' + timeWord + ' from <strong style="color:var(--primary)">' + pick.name + '</strong></div><div style="font-size:13px;line-height:1.5">' + msg + '</div></div>';
+  h += '<div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:1px">Good ' + timeWord + ' from <strong style="color:var(--primary)">' + pick.name + '</strong> &mdash; to ' + rank.sym + ' ' + rank.title + '</div><div style="font-size:13px;line-height:1.5">' + msg + '</div></div>';
   h += '</div></div>';
   return h;
 }
@@ -7945,6 +7946,27 @@ function kingdomFlourish() {
   el.className = el.className.replace(/ damage| flourish/g, '') + ' flourish';
   setTimeout(function() { if (el) el.className = el.className.replace(' flourish', ''); }, 1400);
 }
+function getRank(days) {
+  var ranks = [
+    {title:'Peasant',    next:'Page',           sym:'\u2619', threshold:0,  nextThreshold:1},
+    {title:'Page',       next:'Squire',         sym:'\u2726', threshold:1,  nextThreshold:7},
+    {title:'Squire',     next:'Knight Errant',  sym:'\u2694', threshold:7,  nextThreshold:14},
+    {title:'Knight Errant',next:'Knight',       sym:'\u2720', threshold:14, nextThreshold:30},
+    {title:'Knight',     next:'Knight of the Realm',sym:'\u269C',threshold:30,nextThreshold:60},
+    {title:'Knight of the Realm',next:'Baron',  sym:'\u265B', threshold:60, nextThreshold:90},
+    {title:'Baron',      next:'Viscount',       sym:'\u265A', threshold:90, nextThreshold:180},
+    {title:'Viscount',   next:'Earl',           sym:'\u265C', threshold:180,nextThreshold:270},
+    {title:'Earl',       next:'Duke',           sym:'\u2766', threshold:270,nextThreshold:365},
+    {title:'Duke',       next:'Prince',         sym:'\u2727', threshold:365,nextThreshold:730},
+    {title:'Prince',     next:'King',           sym:'\u265D', threshold:730,nextThreshold:1000},
+    {title:'King',       next:null,             sym:'\u2629', threshold:1000,nextThreshold:1/0}
+  ];
+  for (var i = ranks.length - 1; i >= 0; i--) {
+    if (days >= ranks[i].threshold) return ranks[i];
+  }
+  return ranks[0];
+}
+
 function kingdomTrackerHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
@@ -7959,6 +7981,21 @@ function kingdomTrackerHTML() {
     if (sh > 0) h += '<span style="font-size:13px;color:var(--accent);margin-left:2px" title="' + sh + ' shield' + (sh!==1?'s':'') + ' protecting your streak">&#128737;</span>';
     h += '</div>';
     h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + levelNames[Math.min(level,10)] + ' &mdash; ' + (levelDescs[Math.min(level,10)]||'') + '</div>';
+    // Rank badge
+    var rank = getRank(days);
+    h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">';
+    h += '<span style="font-size:16px">' + rank.sym + '</span> ';
+    h += '<span style="font-size:14px;font-weight:700;color:var(--primary)">' + rank.title + '</span>';
+    if (rank.next) {
+      var prog = days - rank.threshold;
+      var need = rank.nextThreshold - rank.threshold;
+      var pct = Math.min(100, Math.round(prog / need * 100));
+      h += '<span style="font-size:11px;color:var(--muted)">\u2192 ' + rank.next + '</span>';
+      h += '</div><div style="width:80%;margin:2px auto 6px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">';
+      h += '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;transition:width .4s"></div></div>';
+    } else {
+      h += '</div><div style="font-size:10px;color:var(--accent);margin-bottom:4px">The realm is yours</div>';
+    }
     h += soberTimerHTML();
     h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
     h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
