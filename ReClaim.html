@@ -1152,7 +1152,7 @@ function defaultData() {
     relapseGraveyard: { graves: [] },
     royalPardons: [],
     warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
-    dailyQuests: { date: null, completed: [] }
+    dailyQuests: { date: '', done: [] }
   };
 }
 
@@ -8120,7 +8120,7 @@ function characterGreetingHTML() {
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:10px 14px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="display:flex;align-items:center;gap:10px">';
   h += '<div style="width:36px;height:36px;border-radius:18px;background:' + pick.color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + pick.svg + '</div>';
-  h += '<div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:1px">Good ' + timeWord + ' from <strong style="color:var(--primary)">' + pick.name + '</strong> &mdash; to ' + rank.sym + ' ' + rank.title + '</div><div style="font-size:13px;line-height:1.5">' + msg + '</div></div>';
+  h += '<div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:1px">Good ' + timeWord + ' from <strong style="color:var(--primary)">' + pick.name + '</strong> &mdash; to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div><div style="font-size:13px;line-height:1.5">' + msg + '</div></div>';
   h += '</div></div>';
   return h;
 }
@@ -8359,6 +8359,26 @@ function getRank(days) {
   }
   return ranks[0];
 }
+function _rankIconHTML(title, size) {
+  size = size || 14;
+  var c = {
+    'Peasant':'<path d="M9,2 h6 v7 h7 v6 h-7 v7 h-6 v-7 h-7 v-6 h7 z" fill="currentColor"/>',
+    'Page':'<path d="M4,4 h7 v16 h-7 z M13,4 h7 v16 h-7 z M11,4 h2 v16 h-2 z" fill="currentColor"/>',
+    'Squire':'<path d="M6,4 L18,20 M18,4 L6,20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="4" r="2.2" fill="currentColor"/><circle cx="18" cy="4" r="2.2" fill="currentColor"/><rect x="7" y="19" width="10" height="3" rx="1" fill="currentColor"/>',
+    'Knight Errant':'<path d="M12,2 L22,6 L22,15 Q12,22 2,15 L2,6 Z" fill="currentColor"/>',
+    'Knight':'<path d="M6,16 L6,8 Q6,3 12,2 Q18,3 18,8 L18,16 Z" fill="currentColor"/><path d="M10,5 Q12,3 14,5" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".4"/>',
+    'Knight of the Realm':'<path d="M3,16 L7,4 L12,10 L17,4 L21,16 Z" fill="currentColor"/><rect x="3" y="16" width="18" height="4" rx="1" fill="currentColor"/><circle cx="7" cy="8" r="1.5" opacity=".6" fill="currentColor"/><circle cx="12" cy="11" r="1.5" opacity=".6" fill="currentColor"/><circle cx="17" cy="8" r="1.5" opacity=".6" fill="currentColor"/>',
+    'Baron':'<path d="M5,20 h14 v-12 h-14 z" fill="currentColor"/><rect x="5" y="8" width="4" height="4" fill="currentColor"/><rect x="15" y="8" width="4" height="4" fill="currentColor"/><rect x="9" y="13" width="6" height="7" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/>',
+    'Viscount':'<path d="M17,2 A14,14 0 1,1 8,18 A10,10 0 1,0 17,2" fill="currentColor"/><circle cx="17" cy="12" r="2" opacity=".6" fill="currentColor"/>',
+    'Earl':'<path d="M12,2 L14.5,8.6 L21.5,9 L16,13.5 L17.5,20 L12,16.5 L6.5,20 L8,13.5 L2.5,9 L9.5,8.6 Z" fill="currentColor"/>',
+    'Duke':'<rect x="7" y="10" width="10" height="7" rx="2" fill="currentColor"/><circle cx="16" cy="7" r="4" fill="currentColor"/><path d="M7,13 Q3,10 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="17" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="17" width="2.5" height="5" rx="1" fill="currentColor"/>',
+    'Prince':'<path d="M7,12 L17,12 L17,20 Q12,24 7,20 Z" fill="currentColor"/><path d="M10,14 L14,14" stroke="currentColor" opacity=".4" stroke-width="1" fill="none"/><path d="M6,4 L9,1 L12,5 L15,1 L18,4 L18,7 L6,7 Z" fill="currentColor"/>',
+    'King':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="currentColor"/><rect x="7" y="9" width="10" height="7" rx="2" fill="currentColor"/><circle cx="15" cy="6" r="3.5" fill="currentColor"/><path d="M7,12 Q3,9 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="16" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="16" width="2.5" height="5" rx="1" fill="currentColor"/>'
+  };
+  var charge = c[title];
+  if (!charge) return '';
+  return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" style="vertical-align:middle;display:inline-block;margin:-2px 0">' + charge + '</svg>';
+}
 
 function ordinal(n) {
   var s = ['th','st','nd','rd'];
@@ -8391,7 +8411,7 @@ function kingdomTrackerHTML() {
     // Rank badge
     var rank = getRank(days);
     h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">';
-    h += '<span style="font-size:16px">' + rank.sym + '</span> ';
+    h += _rankIconHTML(rank.title, 16) + ' ';
     h += '<span style="font-size:14px;font-weight:700;color:var(--primary)">' + rank.title + '</span>';
     if (rank.next) {
       var prog = days - rank.threshold;
@@ -8848,29 +8868,12 @@ function roundTableHTML() {
   var hr = new Date().getHours();
   var timeWord = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
   var rank = getRank(soberDays());
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-align:center">Good ' + timeWord + ' from <strong style="color:var(--primary)">' + pick.name + '</strong> \u2014 to ' + rank.sym + ' ' + rank.title + '</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-align:center">Good ' + timeWord + ' from <strong style="color:var(--primary)">' + pick.name + '</strong> \u2014 to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div>';
   h += '<div style="font-size:13px;line-height:1.5;text-align:center;font-style:italic;color:var(--text-light)">' + msg + '</div>';
   h += '</div>';
   return h;
 }
 
-function _rankCharge(title) {
-  var charges = {
-    'Peasant':'<path d="M9,2 h6 v7 h7 v6 h-7 v7 h-6 v-7 h-7 v-6 h7 z" fill="#fff"/>',
-    'Page':'<path d="M4,4 h7 v16 h-7 z M13,4 h7 v16 h-7 z M11,4 h2 v16 h-2 z" fill="#fff"/>',
-    'Squire':'<path d="M6,4 L18,20 M18,4 L6,20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><circle cx="6" cy="4" r="2.2" fill="#fff"/><circle cx="18" cy="4" r="2.2" fill="#fff"/><rect x="7" y="19" width="10" height="3" rx="1" fill="#fff"/>',
-    'Knight Errant':'<path d="M12,2 L22,6 L22,15 Q12,22 2,15 L2,6 Z" fill="#fff"/>',
-    'Knight':'<path d="M6,16 L6,8 Q6,3 12,2 Q18,3 18,8 L18,16 Z" fill="#fff"/><path d="M10,5 Q12,3 14,5" fill="none" stroke="#4A2A1A" stroke-width="1.2"/>',
-    'Knight of the Realm':'<path d="M3,16 L7,4 L12,10 L17,4 L21,16 Z" fill="#fff"/><rect x="3" y="16" width="18" height="4" rx="1" fill="#fff"/><circle cx="7" cy="8" r="1.5" fill="#d4a017"/><circle cx="12" cy="11" r="1.5" fill="#d4a017"/><circle cx="17" cy="8" r="1.5" fill="#d4a017"/>',
-    'Baron':'<path d="M5,20 h14 v-12 h-14 z" fill="#fff"/><rect x="5" y="8" width="4" height="4" fill="#fff"/><rect x="15" y="8" width="4" height="4" fill="#fff"/><rect x="9" y="13" width="6" height="7" fill="none" stroke="#4A2A1A" stroke-width="1"/>',
-    'Viscount':'<path d="M17,2 A14,14 0 1,1 8,18 A10,10 0 1,0 17,2" fill="#fff"/><circle cx="17" cy="12" r="2" fill="#d4a017"/>',
-    'Earl':'<path d="M12,2 L14.5,8.6 L21.5,9 L16,13.5 L17.5,20 L12,16.5 L6.5,20 L8,13.5 L2.5,9 L9.5,8.6 Z" fill="#fff"/>',
-    'Duke':'<rect x="7" y="10" width="10" height="7" rx="2" fill="#fff"/><circle cx="16" cy="7" r="4" fill="#fff"/><path d="M7,13 Q3,10 4,6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><rect x="7" y="17" width="2.5" height="5" rx="1" fill="#fff"/><rect x="12" y="17" width="2.5" height="5" rx="1" fill="#fff"/>',
-    'Prince':'<path d="M7,12 L17,12 L17,20 Q12,24 7,20 Z" fill="#fff"/><path d="M10,14 L14,14" stroke="#4A2A1A" stroke-width="1"/><path d="M6,4 L9,1 L12,5 L15,1 L18,4 L18,7 L6,7 Z" fill="#fff"/>',
-    'King':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="#fff"/><rect x="7" y="9" width="10" height="7" rx="2" fill="#fff"/><circle cx="15" cy="6" r="3.5" fill="#fff"/><path d="M7,12 Q3,9 4,6" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><rect x="7" y="16" width="2.5" height="5" rx="1" fill="#fff"/><rect x="12" y="16" width="2.5" height="5" rx="1" fill="#fff"/>'
-  };
-  return charges[title] || '<text x="12" y="16" text-anchor="middle" fill="#fff" font-size="14" font-family="serif">?</text>';
-}
 function coatOfArmsHTML() {
   var days = soberDays();
   var rank = getRank(days);
@@ -8893,9 +8896,7 @@ function coatOfArmsHTML() {
   // Inner shield border
   h += '<path d="M60,16 L98,16 L98,63 Q98,98 60,120 Q22,98 22,63 L22,16 Z" fill="none" stroke="' + c.trim + '" stroke-width="1" opacity=".4"/>';
   // Rank charge centered as SVG
-  h += '<g transform="translate(18,22)">';
-  h += '<svg viewBox="0 0 24 24" width="84" height="84">' + _rankCharge(rank.title) + '</svg>';
-  h += '</g>';
+  h += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
   // Ribbon banner below shield
   h += '<path d="M30,131 Q60,137 90,131 L95,146 Q60,152 25,146 Z" fill="' + c.banner + '" stroke="' + c.trim + '" stroke-width="1"/>';
   h += '<text x="60" y="143" text-anchor="middle" fill="#ffd700" font-size="9" font-weight="bold" font-family="MedievalSharp,serif">' + rank.title.toUpperCase() + '</text>';
@@ -8943,7 +8944,7 @@ function throneRoomHTML() {
   h += '<div class="card" style="margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:12px 10px 10px">';
   h += '<div style="display:flex;justify-content:space-around;align-items:center">';
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--primary)">' + days + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">DAYS</div></div>';
-  h += '<div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:700;color:var(--text)">' + rank.sym + ' ' + rank.title + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">RANK</div></div>';
+  h += '<div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:700;color:var(--text)">' + _rankIconHTML(rank.title, 16) + ' ' + rank.title + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">RANK</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--accent)">' + streak + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">STREAK</div></div>';
   h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')" title="' + (shields > 0 ? shields + ' shields' : '') + '"><div style="font-size:22px;font-weight:700;color:#d4a017">' + schillings + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COINS</div></div>';
   h += '</div>';
