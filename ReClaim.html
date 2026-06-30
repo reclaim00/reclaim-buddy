@@ -7541,16 +7541,20 @@ function getDailyQuests() {
   return { tasks: picks, done: D.dailyQuests.done || [], date: dateStr };
 }
 function completeQuest(taskId) {
-  var q = getDailyQuests();
-  if (q.done.indexOf(taskId) >= 0) return;
-  q.done.push(taskId);
-  D.dailyQuests.done = q.done;
-  var task = null;
-  q.tasks.forEach(function(t){ if (t.id === taskId) task = t; });
-  if (task) earnSchillings(task.pts, 'Daily quest: ' + task.title);
-  if (q.done.length === q.tasks.length && q.tasks.length === 3) earnSchillings(10, 'All daily quests complete!');
-  saveData();
-  render();
+  try {
+    var q = getDailyQuests();
+    if (!q || !q.done || q.done.indexOf(taskId) >= 0) return;
+    q.done.push(taskId);
+    D.dailyQuests.done = q.done;
+    var task = null;
+    if (q.tasks) q.tasks.forEach(function(t){ if (t.id === taskId) task = t; });
+    if (task && task.pts) earnSchillings(task.pts, 'Daily quest: ' + (task.title || ''));
+    if (q.done.length === (q.tasks ? q.tasks.length : 0) && (q.tasks ? q.tasks.length : 0) === 3) earnSchillings(10, 'All daily quests complete!');
+    saveData();
+  } catch(e) {
+    console.error('Quest error:', e);
+    saveData();
+  }
 }
 function dailyQuestsHTML() {
   var q = getDailyQuests();
