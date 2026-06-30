@@ -1129,6 +1129,7 @@ function defaultData() {
     habits: [], // [{id, name, logs: ['date strings']}]
     checkins: [], streak: 0, breatheCount: 0,
     targetAddictions: [],
+    dailyQuests: { date: '', done: [] },
     buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [],
     assessmentTaken: false, assessmentResult: null,
     screenerPHQ9: { taken: false, result: null, progress: null },
@@ -7336,6 +7337,243 @@ var ADDICTION_CHALLENGES = {
 var DEFAULT_CHALLENGES = ADDICTION_CHALLENGES['Other'];
 var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
+var ADDICTION_TASKS = {
+  'Alcohol':[
+    {id:'alc1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose sobriety',pts:5},
+    {id:'alc2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced and how you handled it',pts:5},
+    {id:'alc3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with its intensity and trigger',pts:5},
+    {id:'alc4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner or a sober friend',pts:8},
+    {id:'alc5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for alcohol',pts:3},
+    {id:'alc6',icon:'\u269C',title:'Hydrate',desc:'Drink 8 glasses of water today',pts:5},
+    {id:'alc7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day and any close calls',pts:6},
+    {id:'alc8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle when a craving hits',pts:5},
+    {id:'alc9',icon:'\u2727',title:'Refusal Rehearsal',desc:'Practice saying no to a drink out loud three times',pts:4},
+    {id:'alc10',icon:'\u269C',title:'High-Risk Plan',desc:'Plan your evening to avoid tempting situations',pts:6},
+    {id:'alc11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one alcohol recovery statistic or fact',pts:3},
+    {id:'alc12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things sobriety has given you',pts:5}
+  ],
+  'Drugs (prescription/illicit)':[
+    {id:'drg1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose recovery',pts:5},
+    {id:'drg2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
+    {id:'drg3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
+    {id:'drg4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'drg5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for substance use',pts:3},
+    {id:'drg6',icon:'\u269C',title:'Movement Break',desc:'Go for a 10-minute walk or stretch',pts:5},
+    {id:'drg7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and struggles',pts:6},
+    {id:'drg8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
+    {id:'drg9',icon:'\u2727',title:'Read a Story',desc:'Read one recovery success story',pts:4},
+    {id:'drg10',icon:'\u269C',title:'Safe People',desc:'Text one person who supports your recovery',pts:6},
+    {id:'drg11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about substance recovery',pts:3},
+    {id:'drg12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things recovery has given you',pts:5}
+  ],
+  'Pornography':[
+    {id:'prn1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this path',pts:5},
+    {id:'prn2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
+    {id:'prn3',icon:'\u2766',title:'Urge Check',desc:'Log a craving with intensity and trigger',pts:5},
+    {id:'prn4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'prn5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for this area',pts:3},
+    {id:'prn6',icon:'\u269C',title:'Move Your Body',desc:'Do 15 jumping jacks or a quick workout',pts:5},
+    {id:'prn7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day honestly',pts:6},
+    {id:'prn8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
+    {id:'prn9',icon:'\u2727',title:'Learn Something',desc:'Read one article about recovery',pts:4},
+    {id:'prn10',icon:'\u269C',title:'Restructure Space',desc:'Move your phone/laptop to a public area for 2 hours',pts:6},
+    {id:'prn11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about porn recovery',pts:3},
+    {id:'prn12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things you are gaining back',pts:5}
+  ],
+  'Gambling':[
+    {id:'gam1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you quit gambling',pts:5},
+    {id:'gam2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
+    {id:'gam3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
+    {id:'gam4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'gam5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for gambling',pts:3},
+    {id:'gam6',icon:'\u269C',title:'Money Check',desc:'Log your spending today and note what you saved',pts:5},
+    {id:'gam7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and close calls',pts:6},
+    {id:'gam8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
+    {id:'gam9',icon:'\u2727',title:'Free Activity',desc:'Do a hobby that does not cost money',pts:4},
+    {id:'gam10',icon:'\u269C',title:'Block Access',desc:'Enable a blocker or limit access to gambling sites',pts:6},
+    {id:'gam11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about gambling recovery',pts:3},
+    {id:'gam12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 non-financial things you value',pts:5}
+  ],
+  'Smoking/Nicotine':[
+    {id:'smk1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you quit nicotine',pts:5},
+    {id:'smk2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
+    {id:'smk3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
+    {id:'smk4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'smk5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for nicotine',pts:3},
+    {id:'smk6',icon:'\u269C',title:'Hands Busy',desc:'Keep your hands occupied for 10 minutes with a fidget or hobby',pts:5},
+    {id:'smk7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and cravings',pts:6},
+    {id:'smk8',icon:'\u2767',title:'Breathe Deep',desc:'Take 10 slow deep breaths when an urge hits',pts:5},
+    {id:'smk9',icon:'\u2727',title:'Healthy Swap',desc:'Replace one smoking trigger with a healthy alternative',pts:4},
+    {id:'smk10',icon:'\u269C',title:'Go Outside',desc:'Step outside for fresh air without lighting up',pts:6},
+    {id:'smk11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about nicotine recovery',pts:3},
+    {id:'smk12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 health benefits you have noticed',pts:5}
+  ],
+  'Caffeine':[
+    {id:'caf1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to cut back',pts:5},
+    {id:'caf2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered your caffeine use today',pts:5},
+    {id:'caf3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
+    {id:'caf4',icon:'\u2726',title':'+t('Call a Comrade')+'',desc:'Reach out to your accountability partner',pts:8},
+    {id:'caf5',icon:'\u2619',title:'Read Your Plan',desc:'Review your caffeine reduction plan',pts:3},
+    {id:'caf6',icon:'\u269C',title:'Water First',desc:'Drink a full glass of water before any caffeine',pts:5},
+    {id:'caf7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your energy levels today',pts:6},
+    {id:'caf8',icon:'\u2767',title:'Natural Boost',desc:'Go for a 10-minute walk instead of reaching for caffeine',pts:5},
+    {id:'caf9',icon:'\u2727',title:'Track Intake',desc:'Log every caffeinated drink today',pts:4},
+    {id:'caf10',icon:'\u269C',title:'Cut-off Time',desc:'No caffeine after 2 PM today',pts:6},
+    {id:'caf11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about caffeine and sleep',pts:3},
+    {id:'caf12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 ways better sleep will improve your life',pts:5}
+  ],
+  'Sex/Love':[
+    {id:'sex1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this change',pts:5},
+    {id:'sex2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
+    {id:'sex3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
+    {id:'sex4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'sex5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
+    {id:'sex6',icon:'\u269C',title:'Move Your Body',desc:'Exercise for 15 minutes to channel energy',pts:5},
+    {id:'sex7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today with honesty',pts:6},
+    {id:'sex8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
+    {id:'sex9',icon:'\u2727',title:'Healthy Connection',desc:'Reach out to a friend with no romantic intent',pts:4},
+    {id:'sex10',icon:'\u269C',title:'Boundary Check',desc:'Identify and write one boundary you will keep today',pts:6},
+    {id:'sex11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about healthy relationships',pts:3},
+    {id:'sex12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 non-physical qualities you appreciate',pts:5}
+  ],
+  'Shopping':[
+    {id:'shp1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to spend mindfully',pts:5},
+    {id:'shp2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a shopping urge today',pts:5},
+    {id:'shp3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
+    {id:'shp4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'shp5',icon:'\u2619',title:'Read Your Plan',desc:'Review your shopping safety plan',pts:3},
+    {id:'shp6',icon:'\u269C',title:'24-Hour Rule',desc:'Wait 24 hours before any non-essential purchase',pts:5},
+    {id:'shp7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your spending feelings today',pts:6},
+    {id:'shp8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
+    {id:'shp9',icon:'\u2727',title:'Free Fun',desc:'Do an enjoyable activity that costs nothing',pts:4},
+    {id:'shp10',icon:'\u269C',title:'Unsubscribe',desc:'Unsubscribe from one marketing email or notification',pts:6},
+    {id:'shp11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about compulsive buying',pts:3},
+    {id:'shp12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 non-material things you already have',pts:5}
+  ],
+  'Social Media':[
+    {id:'soc1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to cut back',pts:5},
+    {id:'soc2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a scroll today',pts:5},
+    {id:'soc3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
+    {id:'soc4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'soc5',icon:'\u2619',title:'Read Your Plan',desc:'Review your social media safety plan',pts:3},
+    {id:'soc6',icon:'\u269C',title:'Phone Down',desc:'Keep your phone in another room for 1 hour',pts:5},
+    {id:'soc7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about how social media affected your mood',pts:6},
+    {id:'soc8',icon:'\u2767',title:'Breathe Not Scroll',desc:'Do 10 deep breaths before opening any app',pts:5},
+    {id:'soc9',icon:'\u2727',title:'Real Connection',desc:'Call or meet one person in real life',pts:4},
+    {id:'soc10',icon:'\u269C',title:'Clean Your Feed',desc:'Unfollow one account that does not serve you',pts:6},
+    {id:'soc11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about social media and mental health',pts:3},
+    {id:'soc12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things you enjoy offline',pts:5}
+  ],
+  'Gaming':[
+    {id:'gme1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to game mindfully',pts:5},
+    {id:'gme2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a gaming urge today',pts:5},
+    {id:'gme3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
+    {id:'gme4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'gme5',icon:'\u2619',title:'Read Your Plan',desc:'Review your gaming safety plan',pts:3},
+    {id:'gme6',icon:'\u269C',title:'Timer Set',desc:'Set a timer and stop gaming when it rings',pts:5},
+    {id:'gme7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your gaming feelings today',pts:6},
+    {id:'gme8',icon:'\u2767',title:'Breathe Before Launch',desc:'Do 10 breaths before starting a session',pts:5},
+    {id:'gme9',icon:'\u2727',title:'Offline Hobby',desc:'Spend 30 minutes on a non-screen hobby',pts:4},
+    {id:'gme10',icon:'\u269C',title:'Log Your Hours',desc:'Track total gaming time today honestly',pts:6},
+    {id:'gme11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about gaming and the brain',pts:3},
+    {id:'gme12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 real-world experiences you value',pts:5}
+  ],
+  'Eating/Food':[
+    {id:'eat1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons for a healthy relationship with food',pts:5},
+    {id:'eat2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered an eating urge today',pts:5},
+    {id:'eat3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
+    {id:'eat4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'eat5',icon:'\u2619',title:'Read Your Plan',desc:'Review your eating safety plan',pts:3},
+    {id:'eat6',icon:'\u269C',title:'Mindful Bite',desc:'Eat one meal slowly without any distractions',pts:5},
+    {id:'eat7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your relationship with food today',pts:6},
+    {id:'eat8',icon:'\u2767',title:'Pause Before Eating',desc:'Take 5 breaths before each meal',pts:5},
+    {id:'eat9',icon:'\u2727',title:'Hunger Check',desc:'Rate your hunger before eating on a scale of 1-10',pts:4},
+    {id:'eat10',icon:'\u269C',title:'One Healthy Swap',desc:'Replace one processed snack with whole food',pts:6},
+    {id:'eat11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about intuitive eating',pts:3},
+    {id:'eat12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things your body does for you',pts:5}
+  ],
+  'Self-Harm':[
+    {id:'shm1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to choose safety',pts:5},
+    {id:'shm2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
+    {id:'shm3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
+    {id:'shm4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner or helpline',pts:8},
+    {id:'shm5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
+    {id:'shm6',icon:'\u269C',title:'Ice Distraction',desc:'Hold an ice cube in your hand until it melts',pts:5},
+    {id:'shm7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your emotions today — no judgment',pts:6},
+    {id:'shm8',icon:'\u2767',title:'Breathe Through It',desc:'Do three rounds of 4-7-8 breathing',pts:5},
+    {id:'shm9',icon:'\u2727',title:'Safe Sensation',desc:'Use a safe sensory tool (cold, texture, sound)',pts:4},
+    {id:'shm10',icon:'\u269C',title:'Reach Out',desc:'Tell one trusted person how you are feeling',pts:6},
+    {id:'shm11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about self-harm recovery',pts:3},
+    {id:'shm12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things you are grateful for today',pts:5}
+  ],
+  'Other':[
+    {id:'oth1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this change',pts:5},
+    {id:'oth2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
+    {id:'oth3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
+    {id:'oth4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'oth5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
+    {id:'oth6',icon:'\u269C',title:'Move Your Body',desc:'Do 10 minutes of physical activity',pts:5},
+    {id:'oth7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day honestly',pts:6},
+    {id:'oth8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
+    {id:'oth9',icon:'\u2727',title:'Learn Something',desc:'Read one recovery tip or fact',pts:4},
+    {id:'oth10',icon:'\u269C',title:'One Healthy Choice',desc:'Make one choice today that supports your goal',pts:6},
+    {id:'oth11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one recovery fact',pts:3},
+    {id:'oth12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things you appreciate today',pts:5}
+  ]
+};
+
+function getDailyQuests() {
+  D.dailyQuests = D.dailyQuests || { date: '', done: [] };
+  var today = new Date();
+  var dateStr = today.toDateString();
+  if (D.dailyQuests.date !== dateStr) D.dailyQuests = { date: dateStr, done: [] };
+  var type = (D.targetAddictions && D.targetAddictions.length) ? D.targetAddictions[0] : 'Other';
+  var tasks = ADDICTION_TASKS[type] || ADDICTION_TASKS['Other'];
+  var dayNum = today.getDate();
+  var picks = [];
+  var n = tasks.length;
+  for (var p = 0; p < 3 && p < n; p++) {
+    var idx = (dayNum * 7 + p * 13 + type.length) % n;
+    picks.push(tasks[idx]);
+  }
+  return { tasks: picks, done: D.dailyQuests.done || [], date: dateStr };
+}
+function completeQuest(taskId) {
+  var q = getDailyQuests();
+  if (q.done.indexOf(taskId) >= 0) return;
+  q.done.push(taskId);
+  D.dailyQuests.done = q.done;
+  var task = null;
+  q.tasks.forEach(function(t){ if (t.id === taskId) task = t; });
+  if (task) earnSchillings(task.pts, 'Daily quest: ' + task.title);
+  if (q.done.length === q.tasks.length && q.tasks.length === 3) earnSchillings(10, 'All daily quests complete!');
+  saveData();
+  render();
+}
+function dailyQuestsHTML() {
+  var q = getDailyQuests();
+  if (!q.tasks.length) return '';
+  var type = (D.targetAddictions && D.targetAddictions.length) ? D.targetAddictions[0] : 'Other';
+  var h = '<div class="card" style="margin:6px 0">';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="font-size:16px">\u269C</div><div><div style="font-size:13px;font-weight:700;color:var(--primary)">' + type + ' Daily Quests</div><div style="font-size:10px;color:var(--muted)">Complete all 3 for bonus schillings</div></div></div>';
+  var allDone = true;
+  q.tasks.forEach(function(t){
+    var done = q.done.indexOf(t.id) >= 0;
+    if (!done) allDone = false;
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:8px;background:' + (done ? 'var(--primary-light)' : 'var(--card)') + ';border:1px solid ' + (done ? 'var(--primary)' : 'var(--border)') + ';opacity:' + (done ? '.7' : '1') + '">';
+    h += '<div style="font-size:20px;min-width:28px;text-align:center">' + (done ? '\u2713' : t.icon) + '</div>';
+    h += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;' + (done ? 'text-decoration:line-through' : '') + '">' + t.title + '</div><div style="font-size:10px;color:var(--muted)">' + t.desc + '</div></div>';
+    h += '<div style="text-align:right"><div style="font-size:10px;color:#d4a017;font-weight:700">+' + t.pts + '</div>';
+    if (!done) h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Do</button>';
+    h += '</div></div>';
+  });
+  if (allDone && q.tasks.length) {
+    h += '<div style="text-align:center;padding:8px;font-size:12px;font-weight:700;color:var(--accent)">\u269C All quests complete! Well fought today.</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
 function currentMonthlyChallenge() {
   var now = new Date();
   var month = now.getMonth();
@@ -8775,6 +9013,8 @@ function homeHTML() {
   h += dailyChallenge();
 
   h += monthlyChallengeHTML();
+
+  h += dailyQuestsHTML();
 
   h += recoveryGoalsHTML();
 
