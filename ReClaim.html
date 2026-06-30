@@ -8125,8 +8125,9 @@ function kingdomHTML() {
   var level = kingdomLevel(days);
   // Daily quest upgrade check
   var today = new Date().toDateString();
-  D.dailyQuests = D.dailyQuests || { date: null, completed: [] };
-  var isUpgraded = D.dailyQuests.date === today && D.dailyQuests.completed.length >= 3;
+  D.dailyQuests = D.dailyQuests || { date: '', done: [] };
+  if (D.dailyQuests.completed && !D.dailyQuests.done) { D.dailyQuests.done = D.dailyQuests.completed; delete D.dailyQuests.completed; }
+  var isUpgraded = D.dailyQuests.date === today && (D.dailyQuests.done || []).length >= 3;
   var h = '<div class="kingdom-scene tier-' + level + (isUpgraded ? ' k-upgraded' : '') + '" id="kingdom-scene">';
   h += '<svg viewBox="0 0 500 280">';
   h += '<rect width="500" height="280" class="k-sky"/>';
