@@ -4476,40 +4476,16 @@ function showJournalLetter(idx) {
         // Show after-entry sections
         var after = document.getElementById('letter-after');
         if (after) { after.style.display = 'block'; after.style.animation = 'letterAppear .5s ease both'; }
-        // Type summary text word by word
+        // Show summary text immediately (no typewriter)
         if (summaryText) {
           var stEl = document.getElementById('letter-summary-text');
-          if (stEl) {
-            var sWords = summaryText.split(/(\s+)/);
-            var swi = 0;
-            function typeSummary() {
-              if (swi >= sWords.length) {
-                var closing = document.getElementById('letter-closing');
-                if (closing) closing.style.display = 'block';
-                var closeBtn = document.getElementById('letter-close');
-                if (closeBtn) closeBtn.style.display = 'inline-block';
-                setTimeout(showSchillingNotification, 800);
-                return;
-              }
-              stEl.innerHTML += '<span>' + sWords[swi] + '</span>';
-              swi++;
-              setTimeout(typeSummary, penDelay + (sWords[swi-1].trim().endsWith('.')||sWords[swi-1].trim().endsWith('!')||sWords[swi-1].trim().endsWith('?')?300:0) + (sWords[swi-1].trim().endsWith(',')||sWords[swi-1].trim().endsWith(';')?120:0));
-            }
-            typeSummary();
-          } else {
-            var closing = document.getElementById('letter-closing');
-            if (closing) closing.style.display = 'block';
-            var closeBtn = document.getElementById('letter-close');
-            if (closeBtn) closeBtn.style.display = 'inline-block';
-            setTimeout(showSchillingNotification, 800);
-          }
-        } else {
-          var closing = document.getElementById('letter-closing');
-          if (closing) closing.style.display = 'block';
-          var closeBtn = document.getElementById('letter-close');
-          if (closeBtn) closeBtn.style.display = 'inline-block';
-          setTimeout(showSchillingNotification, 800);
+          if (stEl) stEl.textContent = summaryText;
         }
+        var closing = document.getElementById('letter-closing');
+        if (closing) closing.style.display = 'block';
+        var closeBtn = document.getElementById('letter-close');
+        if (closeBtn) closeBtn.style.display = 'inline-block';
+        setTimeout(showSchillingNotification, 1000);
         return;
       }
       body.innerHTML += '<span>' + words[wi] + '</span>';
