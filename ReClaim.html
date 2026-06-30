@@ -1152,7 +1152,9 @@ function defaultData() {
     relapseGraveyard: { graves: [] },
     royalPardons: [],
     warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
-    dailyQuests: { date: '', done: [] }
+    dailyQuests: { date: '', done: [] },
+    weeklyCampaign: { id: null, weekStart: '', done: [], rewardClaimed: false },
+    shopPurchases: []
   };
 }
 
@@ -1439,6 +1441,18 @@ function updateSchillings() {
   D.warchest.lastEntryCount = (D.journal || []).length;
 }
 var _pendingSchill = null;
+var _audioCtx = null;
+function _initAudio() { if (_audioCtx) return; try { var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; _audioCtx = new AC(); if (_audioCtx.state === 'suspended') _audioCtx.resume(); } catch(e) {} }
+function playSound(type) {
+  try { _initAudio(); if (!_audioCtx) return; var now = _audioCtx.currentTime; var osc = _audioCtx.createOscillator(); var gain = _audioCtx.createGain(); osc.connect(gain); gain.connect(_audioCtx.destination); osc.type = 'sine'; var osc2, gain2;
+    switch(type) {
+      case 'coin': osc.frequency.setValueAtTime(1800,now); osc.frequency.exponentialRampToValueAtTime(1200,now+0.08); gain.gain.setValueAtTime(0.15,now); gain.gain.exponentialRampToValueAtTime(0.001,now+0.12); osc.start(now); osc.stop(now+0.12); break;
+      case 'quest': osc.frequency.setValueAtTime(523,now); osc.frequency.setValueAtTime(659,now+0.12); osc.frequency.setValueAtTime(784,now+0.24); gain.gain.setValueAtTime(0.18,now); gain.gain.exponentialRampToValueAtTime(0.001,now+0.45); osc.start(now); osc.stop(now+0.45); break;
+      case 'trumpet': osc.type='square'; osc.frequency.setValueAtTime(440,now); osc.frequency.setValueAtTime(554,now+0.12); osc.frequency.setValueAtTime(659,now+0.25); osc.frequency.setValueAtTime(880,now+0.38); gain.gain.setValueAtTime(0.12,now); gain.gain.exponentialRampToValueAtTime(0.001,now+0.7); osc.start(now); osc.stop(now+0.7); break;
+      case 'sword': osc.type='sawtooth'; osc.frequency.setValueAtTime(200,now); osc.frequency.exponentialRampToValueAtTime(50,now+0.2); gain.gain.setValueAtTime(0.25,now); gain.gain.exponentialRampToValueAtTime(0.001,now+0.25); osc.start(now); osc.stop(now+0.25); osc2=_audioCtx.createOscillator(); gain2=_audioCtx.createGain(); osc2.connect(gain2); gain2.connect(_audioCtx.destination); osc2.type='square'; osc2.frequency.setValueAtTime(60,now); gain2.gain.setValueAtTime(0.15,now); gain2.gain.exponentialRampToValueAtTime(0.001,now+0.15); osc2.start(now); osc2.stop(now+0.15); break;
+    }
+  } catch(e) {}
+}
 function earnSchillings(amount, reason) {
   D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
   var before = D.warchest.schillings || 0;
@@ -1446,6 +1460,7 @@ function earnSchillings(amount, reason) {
   D.warchest.lastEntryCount = (D.journal || []).length;
   D.warchest.lastDayCounted = soberDays();
   _pendingSchill = { amount: amount, reason: reason };
+  if (amount > 0) playSound('coin');
 }
 function showSchillingNotification() {
   if (!_pendingSchill) return;
@@ -6791,6 +6806,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; Royal Pardon</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; War Chest</div>';
+  h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C Royal Shop</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
@@ -7562,7 +7578,7 @@ function completeQuest(taskId) {
     var task = null;
     if (q.tasks) q.tasks.forEach(function(t){ if (t.id === taskId) task = t; });
     if (task && task.pts) earnSchillings(task.pts, 'Daily quest: ' + (task.title || ''));
-    if (q.done.length === (q.tasks ? q.tasks.length : 0) && (q.tasks ? q.tasks.length : 0) === 3) earnSchillings(10, 'All daily quests complete!');
+    if (q.done.length === (q.tasks ? q.tasks.length : 0) && (q.tasks ? q.tasks.length : 0) === 3) { earnSchillings(10, 'All daily quests complete!'); playSound('quest'); }
     saveData();
   } catch(e) {
     console.error('Quest error:', e);
@@ -7600,6 +7616,72 @@ function dailyQuestsHTML() {
     h += '<div style="text-align:center;padding:8px;font-size:12px;font-weight:700;color:var(--accent)">\u269C All quests complete! Well fought today.</div>';
   }
   h += '</div>';
+  return h;
+}
+var WEEKLY_CAMPAIGNS = [
+  {id:'siege',title:"The Siege of Fortitude",desc:"Stand firm against urges all week",
+    tasks:[
+      {id:'s1',title:'Fortress Wall',desc:'Log cravings on 3 different days',pts:15,check:function(){var o={},c=D.cravings||[];for(var i=0;i<c.length;i++){var d=c[i].date||(c[i].timestamp?new Date(c[i].timestamp).toDateString():'');if(d)o[d]=1}var n=0;for(var k in o)n++;return n>=3}},
+      {id:'s2',title:'Iron Resolve',desc:'Journal on 3 different days',pts:15,check:function(){var o={},j=D.journal||[];for(var i=0;i<j.length;i++){var d=j[i].date;if(d)o[d]=1}var n=0;for(var k in o)n++;return n>=3}},
+      {id:'s3',title:'Unbreakable',desc:'Complete breathing exercise 5 times',pts:15,check:function(){return D.breatheCount>=5}},
+      {id:'s4',title:'Vigilant Watch',desc:'Check in with a buddy 3 times',pts:15,check:function(){return(D.buddyCheckins||[]).length>=3}},
+      {id:'s5',title:'Triumph',desc:'Complete all campaign tasks',pts:20,reward:50}
+    ]},
+  {id:'vigil',title:"The Knight's Vigil",desc:"Deepen your daily recovery ritual",
+    tasks:[
+      {id:'v1',title:'Dawn Practice',desc:'Complete all daily quests for 3 days',pts:20,check:function(){return D.dailyQuests&&D.dailyQuests.done&&D.dailyQuests.done.length>=3}},
+      {id:'v2',title:'Scroll of Truth',desc:'Write journal on 5 separate days',pts:20,check:function(){var o={},j=D.journal||[];for(var i=0;i<j.length;i++){var d=j[i].date;if(d)o[d]=1}var n=0;for(var k in o)n++;return n>=5}},
+      {id:'v3',title:"Ally's Oath",desc:'Use the Craving Breaker 3 times',pts:15,check:function(){return(D.cravingBreakerCount||0)>=3}},
+      {id:'v4',title:'Arms Inspection',desc:'Review your safety plan',pts:10,check:function(){return false}},
+      {id:'v5',title:'Coronation',desc:'Complete all campaign tasks',pts:25,reward:60}
+    ]},
+  {id:'herald',title:"The Herald's Challenge",desc:"Explore every corner of your keep",
+    tasks:[
+      {id:'h1',title:'Coping Arsenal',desc:'Create a new coping card',pts:15,check:function(){return(D.copingCards||[]).length>=1}},
+      {id:'h2',title:'History Scroll',desc:'Check your recovery reports',pts:15,check:function(){return false}},
+      {id:'h3',title:'Music of the Spheres',desc:'Open the music page',pts:15,check:function(){return false}},
+      {id:'h4',title:"Oath of the Round Table",desc:'Visit the Round Table',pts:15,check:function(){return false}},
+      {id:'h5',title:'Crown of Growth',desc:'Complete all campaign tasks',pts:25,reward:70}
+    ]}
+];
+function weeklyStart() { var d=new Date();var day=d.getDay();var diff=d.getDate()-day+(day===0?-6:1);return new Date(d.setDate(diff)).toDateString(); }
+function getWeeklyCampaign() {
+  D.weeklyCampaign=D.weeklyCampaign||{id:null,weekStart:'',done:[],rewardClaimed:false};
+  var ws=weeklyStart();
+  if(D.weeklyCampaign.weekStart!==ws){var wn=Math.floor(Date.now()/604800000);var idx=wn%WEEKLY_CAMPAIGNS.length;D.weeklyCampaign={id:WEEKLY_CAMPAIGNS[idx].id,weekStart:ws,done:[],rewardClaimed:false};saveData()}
+  var camp=null;for(var i=0;i<WEEKLY_CAMPAIGNS.length;i++){if(WEEKLY_CAMPAIGNS[i].id===D.weeklyCampaign.id){camp=WEEKLY_CAMPAIGNS[i];break}}
+  if(!camp){D.weeklyCampaign={id:WEEKLY_CAMPAIGNS[0].id,weekStart:ws,done:[],rewardClaimed:false};camp=WEEKLY_CAMPAIGNS[0]}
+  return{campaign:camp,done:D.weeklyCampaign.done||[],weekStart:ws,rewardClaimed:D.weeklyCampaign.rewardClaimed||false};
+}
+function completeCampaignTask(taskId) {
+  var w=getWeeklyCampaign();if(!w||w.done.indexOf(taskId)>=0)return;w.done.push(taskId);D.weeklyCampaign.done=w.done;
+  var task=null;for(var i=0;i<w.campaign.tasks.length;i++){if(w.campaign.tasks[i].id===taskId){task=w.campaign.tasks[i];break}}
+  if(task&&task.pts)earnSchillings(task.pts,'Campaign: '+task.title);saveData();render();
+}
+function claimCampaignReward() {
+  var w=getWeeklyCampaign();if(w.rewardClaimed)return;var allDone=true;
+  for(var i=0;i<w.campaign.tasks.length;i++){if(w.done.indexOf(w.campaign.tasks[i].id)<0){allDone=false;break}}
+  if(!allDone)return;earnSchillings(w.campaign.tasks[w.campaign.tasks.length-1].reward,'Campaign complete: '+w.campaign.title);D.weeklyCampaign.rewardClaimed=true;saveData();playSound('trumpet');render();
+}
+function weeklyCampaignHTML() {
+  var w=getWeeklyCampaign();var c=w.campaign;var allDone=true;var claimed=w.rewardClaimed;
+  for(var i=0;i<c.tasks.length;i++){if(w.done.indexOf(c.tasks[i].id)<0){allDone=false;break}}
+  var h='<div class="card" style="margin:6px 0">';
+  h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:16px">\u2726</span><div><div style="font-size:13px;font-weight:700;color:var(--primary)">'+c.title+'</div><div style="font-size:10px;color:var(--muted)">'+c.desc+'</div></div></div>';
+  for(var i=0;i<c.tasks.length;i++){
+    var t=c.tasks[i];var done=w.done.indexOf(t.id)>=0;if(!done)allDone=false;var auto=false;
+    if(!done&&t.check){try{auto=t.check()}catch(e){}}
+    var isFin=t.reward?true:false;
+    h+='<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;margin:2px 0;border-radius:6px;background:'+(done||auto?'var(--primary-light)':'var(--card)')+';border:1px solid '+(done||auto?'var(--primary)':'var(--border)')+';opacity:'+(done?'.7':'1')+'">';
+    h+='<div style="font-size:16px;min-width:20px;text-align:center">'+(done?'\u2713':'\u2727')+'</div>';
+    h+='<div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;'+(done?'text-decoration:line-through':'')+'">'+t.title+'</div><div style="font-size:9px;color:var(--muted)">'+t.desc+'</div></div>';
+    h+='<div style="font-size:10px;color:#d4a017;font-weight:700;white-space:nowrap">+'+(t.reward||t.pts)+'</div>';
+    if(!done&&auto){h+='<button class="btn btn-sm btn-primary" onclick="completeCampaignTask(\''+t.id+'\')" style="font-size:9px;padding:2px 6px">\u269C</button>'}
+    h+='</div>';
+  }
+  if(allDone&&!claimed){var r=c.tasks[c.tasks.length-1].reward;h+='<button class="btn btn-primary" onclick="claimCampaignReward()" style="width:100%;margin-top:6px;padding:8px;font-size:12px">\u265B Claim Campaign Reward: '+r+' schillings</button>'}
+  if(claimed)h+='<div style="text-align:center;padding:6px;font-size:11px;color:var(--accent);font-weight:700">\u265B Campaign complete! Well fought.</div>';
+  h+='<div style="font-size:8px;color:var(--muted);text-align:center;margin-top:4px">Resets Monday</div></div>';
   return h;
 }
 
@@ -8585,6 +8667,8 @@ function warchestHTML() {
   h += '&#128737; Shields protect your streak on relapse. Earn them at milestones (1 month, 3 months, etc.) or buy for 30 schillings each.';
   h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'more\')" style="margin-top:4px">Back to Arsenal</button>';
+  // Shop link
+  h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'shop\')" style="width:100%;margin-top:6px;font-size:12px;background:linear-gradient(135deg,#2a5a2a,#3a7a3a)">\u269C Visit the Shop</button>';
   h += '</div>';
   return h;
 }
@@ -8593,7 +8677,53 @@ function buyShield() {
   if ((D.warchest.schillings || 0) < 30) { alert('Not enough schillings! You need 30.'); render(); return; }
   D.warchest.schillings -= 30;
   D.warchest.shields = (D.warchest.shields || 0) + 1;
-  saveData();
+  saveData(); render();
+}
+var SHOP_ITEMS = [
+  {id:'banners', cat:'Decor', name:'Stone Banners', desc:'Hang banners on your castle walls', cost:30, icon:'\u269C'},
+  {id:'tapestry', cat:'Decor', name:'Royal Tapestry', desc:'A grand tapestry behind the throne', cost:50, icon:'\u265C'},
+  {id:'torches', cat:'Decor', name:'Torch Sconces', desc:'Animated torch flames on the keep', cost:40, icon:'\u2727'},
+  {id:'paths', cat:'Decor', name:'Cobblestone Path', desc:'A winding path to the castle gate', cost:25, icon:'\u265B'},
+  {id:'flags', cat:'Decor', name:'Heraldic Flags', desc:'Your personal banner on every tower', cost:60, icon:'\u2726'},
+  {id:'crimson', cat:'Skins', name:"Arthur's Crimson Robes", desc:'Dye Arthur robes deep crimson', cost:80, icon:'\u2619'},
+  {id:'silver', cat:'Skins', name:"Gertrude's Silver Armor", desc:'Polish Gertrude armor to silver', cost:100, icon:'\u2694'},
+  {id:'starry', cat:'Skins', name:"Oswald's Starry Hat", desc:'Oswald hat glows with starry sky', cost:70, icon:'\u2727'},
+  {id:'streak', cat:'Boosts', name:'Streak Shield', desc:'Protects your streak for 1 relapse', cost:50, icon:'\u2629'},
+  {id:'double', cat:'Boosts', name:'Double Coins', desc:'Double schillings earned for 24 hours', cost:75, icon:'\u269C'},
+  {id:'bonus', cat:'Boosts', name:'Bonus Quest', desc:'Unlock a 4th daily quest today', cost:40, icon:'\u2766'}
+];
+function shopHTML() {
+  var s = D.shopPurchases||[];var w=D.warchest||{};var sch=w.schillings||0;
+  var h='<div class="card" style="padding:16px;text-align:center">';
+  h+='<div style="font-size:18px;margin-bottom:2px">\u269C</div>';
+  h+='<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">The Royal Shop</div>';
+  h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Spend schillings on decor, skins, and boosts</div>';
+  h+='<div style="font-size:24px;font-weight:800;color:#d4a017;margin-bottom:10px">'+sch+' \u269C</div>';
+  var cats=['Decor','Skins','Boosts'];
+  for(var ci=0;ci<cats.length;ci++){
+    var cat=cats[ci];
+    h+='<div style="font-size:12px;font-weight:700;color:var(--text);margin:8px 0 4px;text-align:left;letter-spacing:1px">'+cat+'</div>';
+    for(var i=0;i<SHOP_ITEMS.length;i++){
+      var item=SHOP_ITEMS[i];if(item.cat!==cat)continue;
+      var owned=s.indexOf(item.id)>=0;
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:6px;background:'+(owned?'var(--primary-light)':'var(--card)')+';border:1px solid '+(owned?'var(--primary)':'var(--border)')+'">';
+      h+='<div style="font-size:18px">'+item.icon+'</div>';
+      h+='<div style="flex:1;text-align:left;min-width:0"><div style="font-size:11px;font-weight:600">'+item.name+'</div><div style="font-size:9px;color:var(--muted)">'+item.desc+'</div></div>';
+      if(owned){h+='<span style="font-size:10px;color:var(--accent);font-weight:700">\u2713 Owned</span>';}
+      else{h+='<button class="btn btn-sm btn-primary" onclick="buyShopItem(\''+item.id+'\')" style="font-size:9px;padding:3px 8px"'+(sch<item.cost?' disabled':'')+'>'+item.cost+' \u269C</button>';}
+      h+='</div>';
+    }
+  }
+  h+='<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')" style="margin-top:8px">Back to War Chest</button>';
+  h+='</div>';return h;
+}
+function buyShopItem(id) {
+  var s=D.shopPurchases||[];if(s.indexOf(id)>=0)return;
+  var item=null;for(var i=0;i<SHOP_ITEMS.length;i++){if(SHOP_ITEMS[i].id===id){item=SHOP_ITEMS[i];break}}
+  if(!item)return;var w=D.warchest||{};var sch=w.schillings||0;
+  if(sch<item.cost){alert('Not enough schillings! Need '+item.cost+'.');return;}
+  D.warchest.schillings=sch-item.cost;D.shopPurchases=D.shopPurchases||[];D.shopPurchases.push(id);
+  saveData();playSound('coin');render();
 }
 function villageDamage() {
   var el = document.getElementById('village-overlay');
@@ -9010,6 +9140,7 @@ function homeHTML() {
   h += monthlyChallengeHTML();
 
   h += dailyQuestsHTML();
+  h += weeklyCampaignHTML();
 
   h += recoveryGoalsHTML();
 
@@ -9390,7 +9521,7 @@ function showBoxingMatch(onDone) {
 
   // Round 3: Arthur hits - skeleton knocked backwards off horse! Stays gone.
   timers.push(setTimeout(function(){
-    lanceStrike(); flashHit();
+    lanceStrike(); flashHit(); playSound('sword');
     if (R) { horseAnim(R, 'skeletonKnockback 2s cubic-bezier(.3,1,.5,1) forwards', 0); }
     if (A) { horseAnim(A, 'arthurCelebrateJoust 1.5s ease 3', 4500); }
     updateProgress(80);
@@ -9779,7 +9910,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode','relapsegraveyard','royalpardon','warchest'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode','relapsegraveyard','royalpardon','warchest','shop'];
 var REFLECT_SUB_PAGES = [];
 
 function meetingsHTML() {
@@ -11265,7 +11396,7 @@ var ONBOARDING_STEPS = [
     desc:'<div style="margin-bottom:6px">Where your progress is counted. Open the Track tab to:</div><div style="font-size:12px;text-align:left;line-height:1.8;padding:0 4px"><strong>\u2619 Sobriety Timer</strong> \u2014 live countdown of time since last reset<br><strong>\u269C Habits</strong> \u2014 build daily rituals, track streaks<br><strong>\u2726 Goals</strong> \u2014 set recovery milestones and achieve them<br><strong>\u2694 Craving Breaker</strong> \u2014 survive the urge and earn schillings</div><div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">"The numbers don\u2019t lie \u2014 you\u2019re putting in the work."</div>'},
   {icon:'\u269C',title:'The Arsenal',
    npc:'\u269C Oswald',
-   desc:'<div style="margin-bottom:6px">Everything else in your armory. Open the More tab to:</div><div style="font-size:12px;text-align:left;line-height:1.8;padding:0 4px"><strong>\u265B Profile</strong> \u2014 see your stats and edit your story<br><strong>\u269C War Chest</strong> \u2014 spend schillings on shields and upgrades<br><strong>\u2767 Library &amp; Music</strong> \u2014 curated recovery media<br><strong>\u2726 Calendar &amp; Reports</strong> \u2014 view your journey across time<br><strong>\u2619 Reminders &amp; Safety Plan</strong> \u2014 stay on course</div><div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">"The mist clears day by day. Trust your steps."</div>'},
+    desc:'<div style="margin-bottom:6px">Everything else in your armory. Open the More tab to:</div><div style="font-size:12px;text-align:left;line-height:1.8;padding:0 4px"><strong>\u265B Profile</strong> \u2014 see your stats and edit your story<br><strong>\u269C War Chest &amp; Shop</strong> \u2014 spend schillings on shields, decor, skins, and boosts<br><strong>\u2767 Library &amp; Music</strong> \u2014 curated recovery media<br><strong>\u2726 Calendar &amp; Reports</strong> \u2014 view your journey across time<br><strong>\u2619 Reminders &amp; Safety Plan</strong> \u2014 stay on course</div><div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">"The mist clears day by day. Trust your steps."</div>'},
   {icon:'\u2629',title:'Your Reign Begins',
    npc:'\u269C Arthur \u2022 \u269C Gertrude \u2022 \u269C Oswald',
    desc:'<div style="margin-bottom:8px">You are now ready to rule your kingdom. Every check-in, every journal entry, every breath is a brick in your castle walls.</div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6"><strong style="color:#6d28d9">Arthur</strong> says: <em>"The data is clear\u2014you have what it takes."</em><br><strong style="color:#2d5a5a">Gertrude</strong> says: <em>"Hold the line. One day at a time."</em><br><strong style="color:#4338ca">Oswald</strong> says: <em>"Walk forward. The realm awaits."</em></div>'},
@@ -11316,7 +11447,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
