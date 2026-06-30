@@ -8777,7 +8777,7 @@ function roundTableHTML() {
   var xOffsets = [38, 91, 144]; // horizontal centers for each figure
   h += '<div style="text-align:center;margin-bottom:4px">';
   h += '<svg viewBox="0 0 210 100" style="width:100%;max-width:280px;height:auto">';
-  h += '<defs><style>.npc-idle{animation:npcBob 2.8s ease-in-out infinite}.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}@keyframes npcBob{0%,100%{transform:translateY(0)}45%{transform:translateY(-1.5px)}55%{transform:translateY(-1.5px)}}</style></defs>';
+  h += '<defs><style>.npc-idle{animation:npcBob 2.8s ease-in-out infinite}.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}@keyframes npcBob{0%,100%{transform:translateY(0)}45%{transform:translateY(-1.5px)}55%{transform:translateY(-1.5px)}}@keyframes arthurGestL{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-5deg)}50%{transform:rotate(3deg)}75%{transform:rotate(-2deg)}}@keyframes arthurGestR{0%,100%{transform:rotate(0deg)}25%{transform:rotate(4deg)}50%{transform:rotate(-2deg)}75%{transform:rotate(3deg)}}@keyframes gertrudeShiftL{0%,100%{transform:rotate(0deg)}35%{transform:rotate(3deg)}70%{transform:rotate(-1.5deg)}}@keyframes gertrudeShiftR{0%,100%{transform:rotate(0deg)}35%{transform:rotate(-2deg)}70%{transform:rotate(3.5deg)}}@keyframes oswaldArcL{0%,100%{transform:rotate(0deg)}40%{transform:rotate(6deg)}80%{transform:rotate(-3deg)}}@keyframes oswaldArcR{0%,100%{transform:rotate(0deg)}40%{transform:rotate(-4deg)}80%{transform:rotate(2deg)}}.arthur-larm{animation:arthurGestL 4s ease-in-out infinite}.arthur-rarm{animation:arthurGestR 4s ease-in-out infinite}.gertrude-larm{animation:gertrudeShiftL 3.5s ease-in-out infinite}.gertrude-rarm{animation:gertrudeShiftR 3.5s ease-in-out infinite}.oswald-larm{animation:oswaldArcL 5s ease-in-out infinite}.oswald-rarm{animation:oswaldArcR 5s ease-in-out infinite}</style></defs>';
 
   // Chair backs (behind figures)
   for (var i = 0; i < chars.length; i++) {
@@ -8838,11 +8838,15 @@ function roundTableHTML() {
       h += '<circle cx="' + (cx + 3.5) + '" cy="2" r=".8" fill="#40e060"/>';
       // Crown base band
       h += '<rect x="' + (cx - 7) + '" y="6" width="14" height="1.5" rx=".5" fill="#b8860b"/>';
-      // Arms
+      // Arms with kingly gesture animation
+      h += '<g class="arthur-larm" style="transform-origin:' + (cx - 10) + 'px 25px">';
       h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 14) + ',38 L' + (cx - 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
       h += '<ellipse cx="' + (cx - 13) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
+      h += '</g>';
+      h += '<g class="arthur-rarm" style="transform-origin:' + (cx + 10) + 'px 25px">';
       h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 14) + ',38 L' + (cx + 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
       h += '<ellipse cx="' + (cx + 13) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
+      h += '</g>';
 
     } else if (i === 1) {
       // === GERTRUDE — THE KNIGHT ===
@@ -8880,11 +8884,15 @@ function roundTableHTML() {
       h += '<line x1="' + cx + '" y1="3" x2="' + cx + '" y2="8" stroke="#6a7a7a" stroke-width="1.2"/>';
       // Gorget (neck armor)
       h += '<path d="M' + (cx - 9) + ',14 L' + (cx + 9) + ',14 L' + (cx + 7) + ',17 L' + (cx - 7) + ',17 Z" fill="#7a8a8a"/>';
-      // Arms with gauntlets (plate armor)
+      // Arms with armored shift animation
+      h += '<g class="gertrude-larm" style="transform-origin:' + (cx - 10) + 'px 23px">';
       h += '<path d="M' + (cx - 10) + ',23 L' + (cx - 13) + ',36 L' + (cx - 12) + ',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
       h += '<ellipse cx="' + (cx - 12) + '" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/>';
+      h += '</g>';
+      h += '<g class="gertrude-rarm" style="transform-origin:' + (cx + 10) + 'px 23px">';
       h += '<path d="M' + (cx + 10) + ',23 L' + (cx + 13) + ',36 L' + (cx + 12) + ',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
       h += '<ellipse cx="' + (cx + 12) + '" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/>';
+      h += '</g>';
 
     } else {
       // === OSWALD — THE WIZARD ===
@@ -8925,18 +8933,22 @@ function roundTableHTML() {
       h += '<text x="' + (cx + 2) + '" y="0" font-size="2.5" fill="#ffd700" opacity=".6">\u2727</text>';
       // Staff on right side
       h += '<line x1="' + (cx + 15) + '" y1="18" x2="' + (cx + 15) + '" y2="55" stroke="#6B3410" stroke-width="2"/>';
-      // Staff crystal
-      h += '<circle cx="' + (cx + 15) + '" cy="17" r="2.5" fill="#8a6af0" opacity=".8"/>';
+      // Staff crystal with subtle pulse
+      h += '<circle cx="' + (cx + 15) + '" cy="17" r="2.5" fill="#8a6af0" opacity=".8"><animate attributeName="r" values="2.2;2.8;2.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".6;.9;.6" dur="3s" repeatCount="indefinite"/></circle>';
       h += '<circle cx="' + (cx + 15) + '" cy="17" r="1.2" fill="#c0b0ff" opacity=".9"/>';
       // Staff glow (when active)
       if (isActive) {
         h += '<circle cx="' + (cx + 15) + '" cy="17" r="5" fill="#8a6af0" opacity=".15"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>';
       }
-      // Arms - one reaching to table, one on staff
+      // Arms with wizard arcane animation
+      h += '<g class="oswald-larm" style="transform-origin:' + (cx - 10) + 'px 25px">';
       h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 13) + ',38 L' + (cx - 12) + ',46" fill="none" stroke="' + c.body + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
       h += '<ellipse cx="' + (cx - 12) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
+      h += '</g>';
+      h += '<g class="oswald-rarm" style="transform-origin:' + (cx + 10) + 'px 25px">';
       h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 14) + ',36 L' + (cx + 15) + ',44" fill="none" stroke="' + c.body + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
       h += '<ellipse cx="' + (cx + 15) + '" cy="45" rx="3" ry="2" fill="' + c.skin + '"/>';
+      h += '</g>';
     }
     h += '</g>';
   }
