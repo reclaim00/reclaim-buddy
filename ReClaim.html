@@ -1127,7 +1127,7 @@ function defaultData() {
     moods: [],
     journal: [],
     habits: [], // [{id, name, logs: ['date strings']}]
-    checkins: [], streak: 0, breatheCount: 0,
+    checkins: [], streak: 0, breatheCount: 0, lastBreatheDate: '',
     targetAddictions: [],
     dailyQuests: { date: '', done: [] },
     buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [],
@@ -5761,7 +5761,7 @@ function startBreathing(btn) {
     btn.textContent = steps[step] + '...';
     circle.style.transform = scales[step];
     circle.style.borderColor = colors[step];
-    if (totalRounds >= 3) { clearTimer(); timerDisplay.textContent = '0'; btn.textContent = 'Done!'; D.breatheCount++; saveData(); setTimeout(function(){btn.closest('.overlay').remove()},1000); return; }
+    if (totalRounds >= 3) { clearTimer(); timerDisplay.textContent = '0'; btn.textContent = 'Done!'; D.breatheCount++; D.lastBreatheDate = new Date().toDateString(); saveData(); setTimeout(function(){btn.closest('.overlay').remove()},1000); return; }
     var dur = durations[step];
     startStepTimer(dur);
     step++;
@@ -7522,6 +7522,19 @@ var ADDICTION_TASKS = {
   ]
 };
 
+var _Q = {};
+_Q.journal = function() { var t=new Date().toDateString(); return D.journal && D.journal.some(function(e){return e.date===t}); };
+_Q.craving = function() { var t=new Date().toDateString(); return D.cravings && D.cravings.some(function(e){return e.date===t || (e.timestamp && new Date(e.timestamp).toDateString()===t)}); };
+_Q.buddy = function() { var t=new Date().toDateString(); return D.buddyCheckins && D.buddyCheckins.some(function(e){try{return new Date(e.date).toDateString()===t}catch(ex){}return false}); };
+_Q.breathe = function() { var t=new Date().toDateString(); return D.lastBreatheDate === t; };
+function _getTaskCheck(task) {
+  var t = task.title;
+  if (t.indexOf('Breathe') >= 0 || t === 'Pause Before Eating') return _Q.breathe;
+  if (t.indexOf('Name Your Why') >= 0 || t.indexOf('Evening Reflection') >= 0 || t.indexOf('Gratitude Pause') >= 0) return _Q.journal;
+  if (t.indexOf('Trigger Patrol') >= 0 || t.indexOf('Craving Check') >= 0 || t.indexOf('Urge Check') >= 0) return _Q.craving;
+  if (t.indexOf('Call a Comrade') >= 0) return _Q.buddy;
+  return null;
+}
 function getDailyQuests() {
   D.dailyQuests = D.dailyQuests || { date: '', done: [] };
   // Migrate old format (completed -> done)
@@ -7566,11 +7579,21 @@ function dailyQuestsHTML() {
   q.tasks.forEach(function(t){
     var done = q.done.indexOf(t.id) >= 0;
     if (!done) allDone = false;
-    h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:8px;background:' + (done ? 'var(--primary-light)' : 'var(--card)') + ';border:1px solid ' + (done ? 'var(--primary)' : 'var(--border)') + ';opacity:' + (done ? '.7' : '1') + '">';
+    var checkFn = _getTaskCheck(t);
+    var autoDone = checkFn ? checkFn() : false;
+    var isManual = !checkFn;
+    var active = done || autoDone;
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:8px;background:' + (active ? 'var(--primary-light)' : 'var(--card)') + ';border:1px solid ' + (active ? 'var(--primary)' : 'var(--border)') + ';opacity:' + (done ? '.7' : '1') + '">';
     h += '<div style="font-size:20px;min-width:28px;text-align:center">' + (done ? '\u2713' : t.icon) + '</div>';
     h += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;' + (done ? 'text-decoration:line-through' : '') + '">' + t.title + '</div><div style="font-size:10px;color:var(--muted)">' + t.desc + '</div></div>';
     h += '<div style="text-align:right"><div style="font-size:10px;color:#d4a017;font-weight:700">+' + t.pts + '</div>';
-    if (!done) h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Do</button>';
+    if (!done) {
+      if (autoDone) {
+        h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Claim</button>';
+      } else if (isManual) {
+        h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Do</button>';
+      }
+    }
     h += '</div></div>';
   });
   if (allDone && q.tasks.length) {
