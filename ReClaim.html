@@ -74,7 +74,19 @@ body.dark ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8a7
 .kingdom-scene .k-clouds{animation:cloudDrift 25s linear infinite}
 @keyframes sunPulse{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
 .kingdom-scene .k-sun{transform-origin:410px 50px;animation:sunPulse 3s ease-in-out infinite}
-.kingdom-scene.damage{animation:kingdomShake .5s ease-in-out}
+@keyframes villagerWalk{0%{transform:translateX(-30px)}100%{transform:translateX(530px)}}
+@keyframes walkLeg{0%,100%{transform:rotate(15deg)}50%{transform:rotate(-12deg)}}
+@keyframes goatGraze{0%,100%{transform:rotate(0)}40%{transform:rotate(8deg)}60%{transform:rotate(8deg)}}
+@keyframes goatBody{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
+@keyframes catTail{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}
+@keyframes catIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes dogWag{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(25deg)}}
+@keyframes dogPant{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.1)}}
+@keyframes smithySpark{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+@keyframes windmillBlade{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.kingdom-scene .k-villagers{transform:translateY(225px)}
+.kingdom-scene .k-villager{display:inline-block}
+.kingdom-scene .k-goat{display:inline-block}
 .kingdom-scene.damage .k-damage-overlay{animation:kingdomFlash .5s ease forwards}
 .kingdom-scene.flourish{animation:kingdomGlow 1.2s ease}
 @keyframes kingdomShake{0%,100%{transform:translateX(0)}10%{transform:translateX(-5px) rotate(-.4deg)}20%{transform:translateX(4px) rotate(.3deg)}30%{transform:translateX(-3px) rotate(-.2deg)}50%{transform:translateX(2px)}70%{transform:translateX(-1px)}}
@@ -8495,15 +8507,183 @@ function kingdomHTML() {
     h += '<line x1="242" y1="187" x2="242" y2="196" stroke="#4a2410" stroke-width=".8"/><line x1="252" y1="187" x2="252" y2="196" stroke="#4a2410" stroke-width=".8"/><line x1="262" y1="187" x2="262" y2="196" stroke="#4a2410" stroke-width=".8"/>';
     h += '</g>';
   }
-  // Village huts outside walls (level 13+)
-  if (level >= 13) {
+  // Village buildings - unique structures across the midground (level 5+)
+  if (level >= 5) {
     h += '<g class="k-village">';
-    var huts = level >= 14 ? [[68,188],[90,185],[112,189],[390,185],[412,188],[434,186]] :
-      level >= 13 ? [[68,188],[112,189],[390,185],[434,186]] : [];
-    for (var hi = 0; hi < huts.length; hi++) {
-      var hx = huts[hi][0], hy = huts[hi][1];
-      h += '<rect x="' + hx + '" y="' + hy + '" width="14" height="10" class="k-tree-trunk" opacity=".6"/>';
-      h += '<polygon points="' + (hx - 2) + ',' + hy + ' ' + (hx + 7) + ',' + (hy - 7) + ' ' + (hx + 16) + ',' + hy + '" fill="#8a6a4a" opacity=".6"/>';
+    // Building definitions: [type, x, y, width, roofColor, wallColor]
+    // type: 0=wattle, 1=stone, 2=tavern, 3=smithy, 4=church, 5=windmill
+    var bldgs = level >= 14 ? [
+      [0,30,186,16,'#6B4423','#d4c8a0'],[1,50,184,18,'#8B4513','#8a8a8a'],[2,74,185,20,'#5a3a1a','#c8b89a'],[3,100,187,16,'#4a2a10','#b8a888'],
+      [4,350,183,18,'#3a2a1a','#9a9a8a'],[5,374,185,16,'#6B4423','#d4b89a'],[0,394,186,18,'#5a3a1a','#c4b89a'],[1,418,184,18,'#8B4513','#8a8a9a'],
+      [2,442,186,20,'#6B4423','#c8b8a0'],[0,466,188,16,'#5a3a1a','#d4c8b0'],
+      [0,55,224,14,'#6B4423','#d4c8a0'],[1,80,226,16,'#8B4513','#8a8a8a'],[2,410,226,16,'#5a3a1a','#c8b89a'],[0,435,228,14,'#6B4423','#d4c8b0']
+    ] : level >= 10 ? [
+      [0,30,186,16,'#6B4423','#d4c8a0'],[1,50,184,18,'#8B4513','#8a8a8a'],[2,74,185,20,'#5a3a1a','#c8b89a'],[3,100,187,16,'#4a2a10','#b8a888'],
+      [4,350,183,18,'#3a2a1a','#9a9a8a'],[5,374,185,16,'#6B4423','#d4b89a'],[0,394,186,18,'#5a3a1a','#c4b89a'],[1,418,184,18,'#8B4513','#8a8a9a'],
+      [2,442,186,20,'#6B4423','#c8b8a0'],[0,466,188,16,'#5a3a1a','#d4c8b0'],
+      [0,60,226,14,'#6B4423','#d4c8a0'],[1,420,226,16,'#8B4513','#8a8a8a']
+    ] : level >= 7 ? [
+      [0,30,186,16,'#6B4423','#d4c8a0'],[1,50,184,18,'#8B4513','#8a8a8a'],[2,74,185,20,'#5a3a1a','#c8b89a'],[3,100,187,16,'#4a2a10','#b8a888'],
+      [0,394,186,18,'#5a3a1a','#c4b89a'],[1,418,184,18,'#8B4513','#8a8a9a'],[2,442,186,20,'#6B4423','#c8b8a0'],[0,466,188,16,'#5a3a1a','#d4c8b0']
+    ] : [
+      [0,40,186,16,'#6B4423','#d4c8a0'],[2,74,185,20,'#5a3a1a','#c8b89a'],[3,100,187,16,'#4a2a10','#b8a888'],
+      [0,410,186,18,'#5a3a1a','#c4b89a'],[1,440,186,18,'#8B4513','#8a8a9a'],[0,468,188,16,'#5a3a1a','#d4c8b0']
+    ];
+    for (var bi=0;bi<bldgs.length;bi++) {
+      var bt=bldgs[bi][0],bx=bldgs[bi][1],by=bldgs[bi][2],bw=bldgs[bi][3],rc=bldgs[bi][4],wc=bldgs[bi][5];
+      var bh=Math.round(bw*0.65);
+      if (bt===0) {
+        // Wattle cottage: cream walls with timber cross-lines, thatch roof
+        h+='<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1" fill="'+wc+'"/>';
+        h+='<line x1="'+(bx+3)+'" y1="'+by+'" x2="'+(bx+3)+'" y2="'+(by+bh)+'" stroke="rgba(60,40,20,.2)" stroke-width=".6"/>';
+        h+='<line x1="'+(bx+bw-3)+'" y1="'+by+'" x2="'+(bx+bw-3)+'" y2="'+(by+bh)+'" stroke="rgba(60,40,20,.2)" stroke-width=".6"/>';
+        h+='<line x1="'+(bx+1)+'" y1="'+(by+4)+'" x2="'+(bx+bw-1)+'" y2="'+(by+4)+'" stroke="rgba(60,40,20,.15)" stroke-width=".4"/>';
+        h+='<line x1="'+(bx+1)+'" y1="'+(by+8)+'" x2="'+(bx+bw-1)+'" y2="'+(by+8)+'" stroke="rgba(60,40,20,.15)" stroke-width=".4"/>';
+        h+='<polygon points="'+(bx-2)+','+by+' '+(bx+bw/2)+','+(by-8)+' '+(bx+bw+2)+','+by+'" fill="'+rc+'"/>';
+        // Door
+        h+='<rect x="'+(bx+bw/2-2)+'" y="'+(by+bh-6)+'" width="4" height="6" rx="1" fill="rgba(40,20,10,.5)"/>';
+      } else if (bt===1) {
+        // Stone cottage: gray stone with mortar lines, tile roof
+        h+='<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1" fill="'+wc+'"/>';
+        h+='<line x1="'+(bx+4)+'" y1="'+by+'" x2="'+(bx+4)+'" y2="'+(by+bh)+'" stroke="rgba(0,0,0,.08)" stroke-width=".5"/>';
+        h+='<line x1="'+(bx+8)+'" y1="'+(by+2)+'" x2="'+(bx+8)+'" y2="'+(by+bh)+'" stroke="rgba(0,0,0,.08)" stroke-width=".5"/>';
+        h+='<line x1="'+(bx+bw-4)+'" y1="'+(by+2)+'" x2="'+(bx+bw-4)+'" y2="'+(by+bh)+'" stroke="rgba(0,0,0,.08)" stroke-width=".5"/>';
+        for (var li=0;li<Math.floor(bh/4);li++) h+='<line x1="'+bx+'" y1="'+(by+2+li*4)+'" x2="'+(bx+bw)+'" y2="'+(by+2+li*4)+'" stroke="rgba(0,0,0,.06)" stroke-width=".4"/>';
+        h+='<polygon points="'+(bx-2)+','+by+' '+(bx+bw/2)+','+(by-7)+' '+(bx+bw+2)+','+by+'" fill="'+rc+'"/>';
+        h+='<rect x="'+(bx+2)+'" y="'+(by+bh-6)+'" width="3" height="6" rx="1" fill="rgba(40,20,10,.5)"/>';
+        h+='<rect x="'+(bx+bw-5)+'" y="'+(by+bh-8)+'" width="3" height="3" rx=".5" fill="rgba(200,200,150,.4)"/>';
+      } else if (bt===2) {
+        // Tavern: wider, prominent door, sign
+        h+='<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1" fill="'+wc+'"/>';
+        h+='<rect x="'+(bx+3)+'" y="'+(by+3)+'" width="'+(bw-6)+'" height="'+(bh-9)+'" rx=".5" fill="rgba(0,0,0,.06)"/>';
+        h+='<polygon points="'+(bx-2)+','+by+' '+(bx+bw/2)+','+(by-9)+' '+(bx+bw+2)+','+by+'" fill="'+rc+'"/>';
+        h+='<rect x="'+(bx+bw/2-3)+'" y="'+(by+bh-7)+'" width="6" height="7" rx="1" fill="rgba(40,20,10,.6)"/>';
+        // Sign hanging
+        h+='<line x1="'+(bx+4)+'" y1="'+(by+3)+'" x2="'+(bx+4)+'" y2="'+(by+7)+'" stroke="rgba(0,0,0,.3)" stroke-width=".5"/>';
+        h+='<rect x="'+(bx+2)+'" y="'+(by+7)+'" width="4" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
+        h+='<text x="'+(bx+4)+'" y="'+(by+9)+'" font-size="2" fill="#4a2a0a" text-anchor="middle" font-weight="700">&#9883;</text>';
+      } else if (bt===3) {
+        // Smithy: open front, angled roof, chimney
+        h+='<rect x="'+bx+'" y="'+(by+3)+'" width="'+bw+'" height="'+(bh-3)+'" rx="1" fill="'+wc+'"/>';
+        h+='<polygon points="'+(bx-3)+','+(by+3)+' '+(bx+bw/2)+','+(by-6)+' '+(bx+bw+3)+','+(by+3)+'" fill="'+rc+'"/>';
+        // Open front (darker)
+        h+='<rect x="'+(bx+2)+'" y="'+(by+bh-6)+'" width="'+(bw-4)+'" height="6" rx=".5" fill="rgba(20,10,5,.5)"/>';
+        // Chimney
+        h+='<rect x="'+(bx+bw-4)+'" y="'+(by-5)+'" width="3" height="8" rx=".5" fill="#7a6a5a"/>';
+        // Sparks
+        h+='<circle cx="'+(bx+bw-2.5)+'" cy="'+(by-7)+'" r=".6" fill="#ff6622" opacity=".6" style="animation:smithySpark 1.2s ease-out infinite"/>';
+        h+='<circle cx="'+(bx+bw-1)+'" cy="'+(by-9)+'" r=".4" fill="#ffaa44" opacity=".4" style="animation:smithySpark 1s ease-out infinite .4s"/>';
+      } else if (bt===4) {
+        // Church: narrow, tall, spire with cross
+        var ch=bh+6;
+        h+='<rect x="'+bx+'" y="'+(by-6)+'" width="'+bw+'" height="'+(ch+6)+'" rx="1" fill="'+wc+'"/>';
+        h+='<polygon points="'+(bx-1)+','+(by-6)+' '+(bx+bw/2)+','+(by-18)+' '+(bx+bw+1)+','+(by-6)+'" fill="'+rc+'"/>';
+        h+='<line x1="'+(bx+bw/2)+'" y1="'+(by-18)+'" x2="'+(bx+bw/2)+'" y2="'+(by-22)+'" stroke="#666" stroke-width="1"/>';
+        h+='<line x1="'+(bx+bw/2-1.5)+'" y1="'+(by-22)+'" x2="'+(bx+bw/2+1.5)+'" y2="'+(by-22)+'" stroke="#666" stroke-width=".8"/>';
+        // Gothic window
+        h+='<path d="M'+(bx+bw/2-2)+','+(by+4)+' L'+(bx+bw/2-2)+','+(by+0)+' Q'+(bx+bw/2)+','+(by-3)+' '+(bx+bw/2+2)+','+(by+0)+' L'+(bx+bw/2+2)+','+(by+4)+' Z" fill="rgba(200,200,255,.2)"/>';
+        // Door
+        h+='<rect x="'+(bx+bw/2-2)+'" y="'+(by+ch-4)+'" width="4" height="4" rx="1" fill="rgba(40,20,10,.5)"/>';
+      } else if (bt===5) {
+        // Windmill: tapered body, rotating blades
+        h+='<polygon points="'+(bx+2)+','+(by+bh)+' '+(bx)+','+(by-4)+' '+(bx+bw)+','+(by-4)+' '+(bx+bw-2)+','+(by+bh)+'" fill="'+wc+'"/>';
+        h+='<rect x="'+(bx+3)+'" y="'+(by-2)+'" width="'+(bw-6)+'" height="'+(bh+1)+'" rx=".5" fill="rgba(0,0,0,.06)"/>';
+        // Cone roof
+        h+='<polygon points="'+(bx)+','+(by-4)+' '+(bx+bw/2)+','+(by-10)+' '+(bx+bw)+','+(by-4)+'" fill="'+rc+'"/>';
+        // Blades (cross with rotation)
+        if (level >= 10) {
+          h+='<g style="transform-origin:'+(bx+bw/2)+'px '+(by-6)+'px;animation:windmillBlade 6s linear infinite">';
+          h+='<line x1="'+(bx+bw/2)+'" y1="'+(by-12)+'" x2="'+(bx+bw/2)+'" y2="'+(by)+'" stroke="#6B3410" stroke-width="1.2"/>';
+          h+='<line x1="'+(bx+bw/2-5)+'" y1="'+(by-6)+'" x2="'+(bx+bw/2+5)+'" y2="'+(by-6)+'" stroke="#6B3410" stroke-width="1.2"/>';
+          h+='<circle cx="'+(bx+bw/2)+'" cy="'+(by-6)+'" r="1.5" fill="#d4a017"/>';
+          h+='</g>';
+        }
+        // Small door
+        h+='<rect x="'+(bx+bw/2-2)+'" y="'+(by+bh-5)+'" width="4" height="5" rx="1" fill="rgba(40,20,10,.5)"/>';
+      }
+    }
+    h += '</g>';
+  }
+  // Animals
+  if (level >= 6) {
+    h += '<g class="k-animals">';
+    // Dog near castle door (level 6+)
+    h += '<g class="k-dog" style="animation:catIdle 3s ease-in-out infinite"><rect x="228" y="224" width="5" height="3" rx="1.5" fill="#8B4513"/>';
+    h += '<circle cx="227" cy="223" r="1.5" fill="#8B4513"/>';
+    h += '<circle cx="226.5" cy="222.5" r=".5" fill="#333"/>';
+    h += '<path d="M 226.5,222 L 226,221" stroke="#333" stroke-width=".3"/>';
+    // Tail
+    h += '<path d="M 233,224 L 235,221" stroke="#8B4513" stroke-width=".8" stroke-linecap="round" style="transform-origin:233px 224px;animation:dogWag 1s ease-in-out infinite"/>';
+    h += '</g>';
+  }
+  if (level >= 7) {
+    // Goat in left field (level 7+)
+    h += '<g class="k-goat" style="animation:goatBody 2s ease-in-out infinite">';
+    h += '<ellipse cx="140" cy="219" rx="5" ry="3" fill="#e8e0d8"/>';
+    h += '<rect x="139" y="216" width="7" height="3" rx="1" fill="#e8e0d8"/>';
+    h += '<circle cx="139" cy="215" r="2" fill="#e8e0d8"/>';
+    h += '<ellipse cx="138" cy="215" rx="1.2" ry=".8" fill="#c8a090" style="transform-origin:138px 215px;animation:goatGraze 2.5s ease-in-out infinite"/>';
+    h += '<circle cx="137.5" cy="214.5" r=".4" fill="#333"/>';
+    // Horns
+    h += '<path d="M 138,213 L 136,211" stroke="#aaa" stroke-width=".6" stroke-linecap="round"/>';
+    h += '<path d="M 140,213 L 142,211" stroke="#aaa" stroke-width=".6" stroke-linecap="round"/>';
+    // Legs
+    h += '<line x1="137" y1="222" x2="136" y2="226" stroke="#ccc" stroke-width="1"/><line x1="142" y1="222" x2="143" y2="226" stroke="#ccc" stroke-width="1"/>';
+    h += '<line x1="138" y1="222" x2="138" y2="226" stroke="#ccc" stroke-width=".8"/><line x1="141" y1="222" x2="141" y2="226" stroke="#ccc" stroke-width=".8"/>';
+    h += '</g>';
+    // Second goat at level 10+
+    if (level >= 10) {
+      h += '<g class="k-goat" style="animation:goatBody 2s ease-in-out infinite .5s">';
+      h += '<ellipse cx="160" cy="220" rx="4" ry="2.5" fill="#d8d0c8"/>';
+      h += '<circle cx="159" cy="217" r="1.8" fill="#d8d0c8"/>';
+      h += '<ellipse cx="158" cy="217" rx="1" ry=".6" fill="#b8a090" style="transform-origin:158px 217px;animation:goatGraze 2.5s ease-in-out infinite .3s"/>';
+      h += '<path d="M 158,215 L 156.5,213.5" stroke="#aaa" stroke-width=".5" stroke-linecap="round"/>';
+      h += '<path d="M 160,215 L 161.5,213.5" stroke="#aaa" stroke-width=".5" stroke-linecap="round"/>';
+      h += '<line x1="157" y1="223" x2="157" y2="226" stroke="#ccc" stroke-width=".8"/><line x1="161" y1="223" x2="161" y2="226" stroke="#ccc" stroke-width=".8"/>';
+      h += '</g>';
+    }
+  }
+  // Cat on wall (level 10+)
+  if (level >= 10) {
+    h += '<g class="k-cat" style="animation:catIdle 4s ease-in-out infinite">';
+    h += '<ellipse cx="323" cy="170" rx="3" ry="2" fill="#2a2a2a"/>';
+    h += '<circle cx="321" cy="168" r="1.5" fill="#2a2a2a"/>';
+    h += '<circle cx="320.5" cy="167.5" r=".3" fill="#44ff44"/>';
+    // Ears
+    h += '<polygon points="320,167 319,165.5 321,166.5" fill="#2a2a2a"/>';
+    h += '<polygon points="322,167 323,165.5 321,166.5" fill="#2a2a2a"/>';
+    // Tail
+    h += '<path d="M 326,170 Q 329,166 328,162" fill="none" stroke="#2a2a2a" stroke-width="1.2" stroke-linecap="round" style="transform-origin:326px 170px;animation:catTail 3s ease-in-out infinite"/>';
+    h += '</g>';
+  }
+  // Tiny walking villagers on the path (level 4+)
+  if (level >= 4) {
+    h += '<g class="k-villagers">';
+    // Villager 1: walks right along the path
+    h += '<g class="k-villager" style="animation:villagerWalk 12s linear infinite">';
+    h += '<circle cx="0" cy="0" r="2.5" fill="var(--accent)"/>';
+    h += '<rect x="-2" y="2.5" width="4" height="6" rx="1" fill="#6B3410"/>';
+    h += '<line x1="-1" y1="8.5" x2="-2" y2="12" stroke="#333" stroke-width="1" stroke-linecap="round" style="transform-origin:-1px 8.5px;animation:walkLeg .3s ease-in-out infinite"/>';
+    h += '<line x1="1" y1="8.5" x2="2" y2="12" stroke="#333" stroke-width="1" stroke-linecap="round" style="transform-origin:1px 8.5px;animation:walkLeg .3s ease-in-out infinite .15s"/>';
+    // Arms
+    h += '<line x1="-2" y1="3.5" x2="-4" y2="6" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-2px 3.5px;animation:walkLeg .3s ease-in-out infinite .15s"/>';
+    h += '<line x1="2" y1="3.5" x2="4" y2="6" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:2px 3.5px;animation:walkLeg .3s ease-in-out infinite"/>';
+    h += '</g>';
+    // Villager 2: walks left (inverted), different color, offset delay
+    h += '<g class="k-villager" style="animation:villagerWalk 15s linear infinite 4s">';
+    h += '<circle cx="0" cy="0" r="2" fill="#2d5a5a"/>';
+    h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#5a3a2a"/>';
+    h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .35s ease-in-out infinite"/>';
+    h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .35s ease-in-out infinite .175s"/>';
+    h += '</g>';
+    // Villager 3 at level 8+
+    if (level >= 8) {
+      h += '<g class="k-villager" style="animation:villagerWalk 18s linear infinite 8s">';
+      h += '<circle cx="0" cy="0" r="2" fill="#c09a7a"/>';
+      h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#8B4513"/>';
+      h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .4s ease-in-out infinite"/>';
+      h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .4s ease-in-out infinite .2s"/>';
+      h += '</g>';
     }
     h += '</g>';
   }
