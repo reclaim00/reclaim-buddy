@@ -3310,6 +3310,13 @@ function journalHTML() {
   h += '<div style="display:flex;gap:4px">';
   if (D.journal.length) h += '<button class="btn btn-sm btn-danger" onclick="deleteAllJournalEntries()" style="padding:4px 8px;font-size:10px;width:auto">'+t('Delete All')+'</button>';
   h += '<button class="btn btn-sm btn-primary" onclick="showNewJournal()">+ '+t('New')+'</button></div></div>';
+  // Insights summary
+  if (D.journal.length || D.moods.length) {
+    h += '<div class="card" style="padding:10px 12px">';
+    h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer" onclick="var e=document.getElementById(\'journal-insights-body\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">';
+    h += '<span style="font-size:16px">&#128302;</span><span style="font-size:12px;font-weight:600;color:var(--primary)">Journal Insights</span><span style="font-size:10px;color:var(--muted)">(click to toggle)</span></div>';
+    h += '<div id="journal-insights-body" style="display:none">' + insightsHTML() + '</div></div>';
+  }
   h += '<input type="text" id="journal-search" placeholder="'+t('Search entries...')+'" oninput="render()" style="margin-bottom:8px">';
   if (!D.journal.length) {
     h += '<div class="card"><div class="empty-state">'+t('No journal entries yet. Start writing!')+'</div></div>';
@@ -4982,8 +4989,9 @@ function careHTML() {
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'coping\')">'+t('Coping Cards')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')">'+t('Assessment')+'</div>';
-  h += '<div class="sub-item" onclick="showRelapsePlan()">'+t('Relapse Plan')+'</div>';
-  h += '<div class="sub-item" onclick="showRelapseRescue()" style="border-color:var(--danger)">&#129309; Rescue</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; Relapse Rescue</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; Relapse Graveyard</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
   h += '</div>';
 
@@ -5620,8 +5628,7 @@ function buildArthurInsights() {
 function insightsHTML() {
   var insights = buildArthurInsights();
   var risk = buildRiskAssessment();
-  var h = '<h2 class="page-title">&#128302; Arthur\'s Insights</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Pattern detection based on your journal, check-ins, cravings, and relapse history.</p>';
+  var h = '';
 
   // Risk assessment summary
   var riskIcon = risk.level === 'high' ? '&#128308;' : risk.level === 'medium' ? '&#128992;' : '&#128994;';
@@ -6454,6 +6461,28 @@ function buddyHTML() {
     }
   }
   h += '</div>';
+  // Accountability check-in
+  if (!D.accountability) D.accountability = { frequency: 1, lastCheckin: null, streak: 0, bestStreak: 0, checkins: [] };
+  var acc = D.accountability;
+  var buddyName = D.buddy.name;
+  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:18px">&#128170;</div><h3 style="margin:0">Accountability Check-In</h3></div>';
+  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">Stay consistent with ' + safe(buddyName) + '. Check in on schedule to build reliability.</p>';
+  var streakLabel = acc.streak > 0 ? acc.streak + ' day' + (acc.streak !== 1 ? 's' : '') : 'Not started';
+  h += '<div class="stat-grid" style="margin-bottom:8px"><div class="stat-card"><div class="num">' + streakLabel + '</div><div class="label">Streak</div></div><div class="stat-card"><div class="num">' + (acc.bestStreak||0) + '</div><div class="label">Best</div></div><div class="stat-card"><div class="num">' + (acc.checkins||[]).length + '</div><div class="label">Total</div></div></div>';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><span style="font-size:11px;color:var(--muted)">Check in every</span><select onchange="D.accountability.frequency=parseInt(this.value);saveData()" style="font-size:11px;padding:2px 4px;border-radius:4px;border:1px solid var(--border);background:var(--card);color:var(--text)">';
+  [1,2,3,4,5,6,7].forEach(function(n){h+='<option value="'+n+'"'+(acc.frequency===n?' selected':'')+'>'+n+' day'+(n>1?'s':'')+'</option>';});
+  h += '</select></div>';
+  var due = acc.lastCheckin ? (Date.now() - acc.lastCheckin) / 86400000 >= acc.frequency : true;
+  h += '<button class="btn btn-primary btn-sm" onclick="accCheckin()" style="width:100%;font-size:12px" ' + (due ? '' : 'disabled') + '>' + (due ? 'Check In Now' : 'Already checked in') + '</button>';
+  if (acc.checkins && acc.checkins.length) {
+    h += '<div style="margin-top:8px;max-height:120px;overflow-y:auto">';
+    var recentAcc = acc.checkins.slice().reverse().slice(0,5);
+    for (var ai=0;ai<recentAcc.length;ai++) {
+      h += '<div style="display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px"><span style="color:var(--muted)">' + safe(recentAcc[ai].date) + '</span><span>' + safe(recentAcc[ai].note||'') + '</span></div>';
+    }
+    h += '</div>';
+  }
+  h += '</div>';
   // Progress sharing
   h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Let ' + safe(D.buddy.name) + ' see your recovery stats. Sharing is automatic when you visit this page.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button></div>';
   h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128170;</div><h3 style="margin:0">' + safe(D.buddy.name) + '\'s Progress</h3></div><div id="comrade-progress"><div class="empty-state">Loading...</div></div></div>';
@@ -6961,12 +6990,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Comrade')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
-  h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; Relapse Rescue</div>';
-  h += '<div class="sub-item" onclick="goTo(\'insights\')" style="border-color:var(--primary)">&#128302; Insights</div>';
-  h += '<div class="sub-item" onclick="goTo(\'accountability\')" style="border-color:var(--accent)">&#128170; Accountability</div>';
   h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; Chivalry Code</div>';
-  h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; Relapse Graveyard</div>';
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; Royal Pardon</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; War Chest</div>';
@@ -10368,8 +10392,9 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','relapseplan','relapserescue','timecapsule','screener','programs','insights','accountability','chivalrycode','relapsegraveyard','royalpardon','warchest','shop'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop'];
 var REFLECT_SUB_PAGES = [];
+var CARE_SUB_PAGES = ['relapseplan','relapserescue','relapsegraveyard'];
 
 function meetingsHTML() {
   var h = '';
@@ -11914,7 +11939,7 @@ function render() {
     if (curPg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
     [].forEach.call(document.querySelectorAll('.tab'),function(t){
       var tp = t.getAttribute('data-page');
-      t.classList.toggle('active', tp === curPg || (tp === 'more' && MORE_SUB_PAGES.indexOf(curPg) !== -1) || (tp === 'reflect' && REFLECT_SUB_PAGES.indexOf(curPg) !== -1));
+      t.classList.toggle('active', tp === curPg || (tp === 'more' && MORE_SUB_PAGES.indexOf(curPg) !== -1) || (tp === 'reflect' && REFLECT_SUB_PAGES.indexOf(curPg) !== -1) || (tp === 'care' && CARE_SUB_PAGES.indexOf(curPg) !== -1));
     });
     document.getElementById('tabs').style.display = 'flex';
     var tb = document.querySelector('.top-bar');
@@ -11960,6 +11985,7 @@ document.getElementById('tabs').addEventListener('click', function(e) {
     subPg = '';
     if (tp === 'more' && MORE_SUB_PAGES.indexOf(pg) !== -1) { pg = 'more'; render(); return; }
     if (tp === 'reflect' && REFLECT_SUB_PAGES.indexOf(pg) !== -1) { pg = 'reflect'; render(); return; }
+    if (tp === 'care' && CARE_SUB_PAGES.indexOf(pg) !== -1) { pg = 'care'; render(); return; }
     pg = tp;
     render();
   }
