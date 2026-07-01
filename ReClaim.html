@@ -2289,9 +2289,28 @@ function recordRelapse() {
   D.warchest.lastDayCounted = soberDays();
   D.warchest.lastEntryCount = (D.journal || []).length;
   saveData();
+  // Auto-grant Royal Pardon
+  autoGrantPardon();
   setTimeout(kingdomDamage, 150);
   setTimeout(villageDamage, 200);
   showRelapseRecovery();
+}
+
+function autoGrantPardon() {
+  if (!D.royalPardons) D.royalPardons = [];
+  var relapseDate = D.sobriety.relapseDates && D.sobriety.relapseDates.length
+    ? D.sobriety.relapseDates[D.sobriety.relapseDates.length - 1] : Date.now();
+  var dateStr = new Date(relapseDate).toISOString().split('T')[0];
+  var hasPardon = D.royalPardons.some(function(p) { return p.date === dateStr && p.isAutoPardon; });
+  if (hasPardon) return;
+  D.royalPardons.push({
+    date: dateStr,
+    forgive: 'I forgive myself for this setback. I am human, and recovery is not a straight line.',
+    commit: 'I commit to showing up for myself, learning from this, and continuing my journey with courage.',
+    grantedAt: Date.now(),
+    isAutoPardon: true
+  });
+  saveData();
 }
 
 function showRelapseRecovery(protectedByBoost) {
@@ -2311,7 +2330,21 @@ function showRelapseRecovery(protectedByBoost) {
   h += '<div class="card" style="border-left:4px solid var(--accent);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128204; Next 24 Hours</div><div style="font-size:13px;color:var(--text);line-height:1.5">Identify the trigger — what happened right before? Log it in your journal. Restore your environment (remove triggers). Re-commit to your sobriety timer. Reach out to your comrade or a support group. Read your safety plan from Arthur. Be kind to yourself  shame fuels the cycle, honesty breaks it.</div></div>';
   // Next week
   h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128198; Next 1 Week</div><div style="font-size:13px;color:var(--text);line-height:1.5">Review what led to the relapse and update your trigger list. Strengthen your daily routine  add one extra check-in or coping practice. Forgive yourself fully. Relapse is part of recovery for many people. What matters is what you do next. You are still on the path.</div></div>';
-   h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'royalpardon\')">&#128081; Royal Pardon</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">I\'ve Got This</button></div></div>';
+  // Auto-pardon certificate
+  if (!protectedByBoost && D.royalPardons && D.royalPardons.length) {
+    var lastPardon = D.royalPardons[D.royalPardons.length - 1];
+    h += '<div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:14px;margin-top:8px;text-align:center;box-shadow:0 2px 12px rgba(138,122,106,.15)">';
+    h += '<div style="font-size:28px;margin-bottom:2px">&#128081;</div>';
+    h += '<div style="font-size:12px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Royal Pardon</div>';
+    h += '<div style="font-size:9px;color:var(--gold);margin-bottom:6px;font-style:italic">"By the crown I carry and the realm we are building — you are pardoned. Rise and begin again with my blessing."</div>';
+    h += '<div style="border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:6px 4px;margin-bottom:4px">';
+    h += '<div style="font-size:11px;line-height:1.4;margin-bottom:4px"><em>"' + safe(lastPardon.forgive) + '"</em></div>';
+    if (lastPardon.commit) h += '<div style="font-size:10px;color:var(--text-light)">&#9876; <strong>Vow:</strong> ' + safe(lastPardon.commit) + '</div>';
+    h += '</div>';
+    h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px">SEAL OF KING ARTHUR</div>';
+    h += '</div>';
+  }
+  h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">I\'ve Got This</button></div></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
