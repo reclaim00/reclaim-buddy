@@ -9184,33 +9184,31 @@ function warchestHTML() {
     }
   }
   // King's Ledger — real-world savings calculator
-  if (isActive) {
-    var cpDay = D.sobriety.costPerDay || 0;
-    var dQty = D.sobriety.dailyQuantity || 0;
-    var uLabel = D.sobriety.unitLabel || '';
-    var moneySaved = days * cpDay;
-    var unitsAvoided = days * dQty;
-    var hrsRegained = Math.round(days * 1.5);
-    h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
-    h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:20px">\uD83D\uDCD6</span><h3 style="margin:0;font-size:14px">The King\u2019s Ledger</h3></div>';
-    h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">Enter how much you spent daily and the calculator will show what you\u2019ve saved since your last reset.</p>';
-    // Inputs always visible
-    h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
-    h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Cost/day ($)</label>';
-    h += '<input type="number" min="0" step="0.5" value="' + cpDay + '" onchange="D.sobriety.costPerDay=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 15" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-    h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Quantity/day</label>';
-    h += '<input type="number" min="0" step="0.5" value="' + dQty + '" onchange="D.sobriety.dailyQuantity=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 6" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-    h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Unit label</label>';
-    h += '<input type="text" value="' + safe(uLabel) + '" onchange="D.sobriety.unitLabel=this.value;saveData();render()" placeholder="drinks" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-    h += '</div>';
-    // Results — always visible, shows $0 until inputs are filled
-    h += '<div class="stat-grid">';
-    h += '<div class="stat-card"><div class="num" style="color:#d4a017">$' + moneySaved.toLocaleString() + '</div><div class="label">Money Saved</div></div>';
-    var unitDisplay = uLabel ? safe(uLabel) + ' Avoided' : 'Units Avoided';
-    h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + unitDisplay + '</div></div>';
-    h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
-    h += '</div></div>';
-  }
+  var cpDay = D.sobriety.costPerDay || 0;
+  var dQty = D.sobriety.dailyQuantity || 0;
+  var uLabel = D.sobriety.unitLabel || '';
+  var moneySaved = days * cpDay;
+  var unitsAvoided = days * dQty;
+  var hrsRegained = Math.round(days * 1.5);
+  h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:20px">\uD83D\uDCD6</span><h3 style="margin:0;font-size:14px">The King\u2019s Ledger</h3></div>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">Enter how much you spent daily and the calculator will show what you\u2019ve saved' + (isActive ? ' since your last reset.' : ' once you start your journey.') + '</p>';
+  // Inputs always visible
+  h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
+  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Cost/day ($)</label>';
+  h += '<input type="number" min="0" step="0.5" value="' + cpDay + '" onchange="D.sobriety.costPerDay=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 15" style="font-size:12px;padding:4px 6px;margin:0"></div>';
+  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Quantity/day</label>';
+  h += '<input type="number" min="0" step="0.5" value="' + dQty + '" onchange="D.sobriety.dailyQuantity=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 6" style="font-size:12px;padding:4px 6px;margin:0"></div>';
+  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Unit label</label>';
+  h += '<input type="text" value="' + safe(uLabel) + '" onchange="D.sobriety.unitLabel=this.value;saveData();render()" placeholder="drinks" style="font-size:12px;padding:4px 6px;margin:0"></div>';
+  h += '</div>';
+  // Results — always visible
+  h += '<div class="stat-grid">';
+  h += '<div class="stat-card"><div class="num" style="color:#d4a017">$' + moneySaved.toLocaleString() + '</div><div class="label">Money Saved</div></div>';
+  var unitDisplay = uLabel ? safe(uLabel) + ' Avoided' : 'Units Avoided';
+  h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + unitDisplay + '</div></div>';
+  h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
+  h += '</div></div>';
   if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your reign to start earning schillings</div>';
   // Shield info
   h += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">';
