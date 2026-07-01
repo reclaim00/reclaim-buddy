@@ -10891,42 +10891,37 @@ function saveOswaldStep() {
 function showRelapseCutscene() {
   var plan = D.relapsePlan;
   if (!plan || !plan.triggers || !plan.triggers.length) { render(); return; }
-  var mc = getComputedStyle(document.documentElement).getPropertyValue('--purple').trim()||'#8b5cf6';
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
-  overlay.style.overflow = 'hidden';
-  var h = '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;background:repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%) 0 0 / 2px 2px;animation:jcGrain .3s steps(3) infinite"></div><div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);opacity:0;animation:jcVignette 1.5s ease .3s forwards"></div><div class="overlay-content" style="padding:16px 12px 8px;max-width:480px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:100%">';
+  overlay.style.background = 'rgba(0,0,0,.65)';
+  overlay.style.alignItems = 'center';
+  var h = '<div class="journal-letter" id="rc-scroll" style="animation:scrollUnroll 1s cubic-bezier(.22,1,.36,1) both">';
   h += '<div style="text-align:center;opacity:0" id="rc-char">'+_npcStandalone('Oswald')+'</div>';
-  h += '<div style="text-align:center;padding:4px 0 6px;opacity:0" id="rc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">OSWALD vs THE DRAGON</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR RELAPSE PLAN</div></div>';
-  var chips = [];
-  if (plan.triggers && plan.triggers.length) chips.push(plan.triggers.length + ' triggers');
-  if (plan.interruptActions && plan.interruptActions.length) chips.push(plan.interruptActions.length + ' actions');
-  if (plan.contacts && plan.contacts.length) chips.push(plan.contacts.length + ' contacts');
-  if (plan.commitment) chips.push('Commitment written');
-  var ctx = chips.map(function(l){return '<span style="font-size:9px;background:rgba(255,255,255,.06);padding:2px 8px;border-radius:8px;color:rgba(255,255,255,.5);letter-spacing:.3px">'+l+'</span>'}).join(' ');
-  h += '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px;opacity:0" id="rc-context">'+ctx+'</div><div style="flex:1"></div>';
-  h += '<div id="rc-main" style="opacity:0"><div style="text-align:center;margin-bottom:12px;opacity:0" id="rc-icon"><div style="--jc-mc:'+mc+';width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%,'+mc+','+mc+'44 70%,rgba(0,0,0,.3));margin:0 auto 8px;box-shadow:0 0 30px '+mc+'44,inset 0 -4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:28px">&#128302;</div><div style="font-size:18px;font-weight:700;color:'+mc+'">Forged in Battle</div><div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:2px;margin-top:2px">YOUR PLAN IS READY</div></div>';
-  h += '<div style="padding:0 4px;opacity:0" id="rc-details">';
-  if (plan.triggers && plan.triggers.length) h += '<div style="margin-bottom:8px;opacity:0" class="rc-section" data-d="0"><div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:3px">&#9888; TRIGGERS</div><div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.5">'+safe(plan.triggers.join(' &middot; '))+'</div></div>';
-  if (plan.warningSigns) h += '<div style="margin-bottom:8px;opacity:0" class="rc-section" data-d="1"><div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:3px">&#128196; WARNING SIGNS</div><div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.5">'+safe(plan.warningSigns)+'</div></div>';
-  if (plan.interruptActions && plan.interruptActions.length) h += '<div style="margin-bottom:8px;opacity:0" class="rc-section" data-d="2"><div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:3px">&#128170; INTERRUPT ACTIONS</div><div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.5">'+safe(plan.interruptActions.join(' &middot; '))+'</div></div>';
-  if (plan.contacts && plan.contacts.length) h += '<div style="margin-bottom:8px;opacity:0" class="rc-section" data-d="3"><div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:3px">&#128222; EMERGENCY CONTACTS</div><div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.5">'+safe(plan.contacts.filter(function(c){return c.name}).map(function(c){return c.name+' - '+c.phone}).join(' &middot; '))+'</div></div>';
-  h += '</div></div><div style="flex:1"></div>';
-  if (plan.commitment) h += '<div id="rc-commitment" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:6px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">MY COMMITMENT</div><div style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);font-style:italic">"'+safe(plan.commitment)+'"</div></div>';
-  h += '<div style="flex:1"></div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove();render()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="rc-close">Continue &#8594;</button></div>';
+  h += '<div class="scroll-header" id="rc-title" style="opacity:0">';
+  h += '<div class="scroll-date">OSWALD vs THE DRAGON</div>';
+  h += '<div class="scroll-title">Your Relapse Plan</div>';
+  h += '</div>';
+  h += '<div id="rc-details" style="opacity:0">';
+  if (plan.triggers && plan.triggers.length) h += '<div class="letter-section"><div class="letter-section-label">&#9888; Triggers</div><div class="letter-section-text">'+safe(plan.triggers.join(' &middot; '))+'</div></div>';
+  if (plan.warningSigns) h += '<div class="letter-section"><div class="letter-section-label">&#128196; Warning Signs</div><div class="letter-section-text">'+safe(plan.warningSigns)+'</div></div>';
+  if (plan.interruptActions && plan.interruptActions.length) h += '<div class="letter-section"><div class="letter-section-label">&#128170; Interrupt Actions</div><div class="letter-section-text">'+safe(plan.interruptActions.join(' &middot; '))+'</div></div>';
+  if (plan.contacts && plan.contacts.length) h += '<div class="letter-section"><div class="letter-section-label">&#128222; Emergency Contacts</div><div class="letter-section-text">'+safe(plan.contacts.filter(function(c){return c.name}).map(function(c){return c.name+' - '+c.phone}).join(' &middot; '))+'</div></div>';
+  if (plan.commitment) h += '<div class="letter-section"><div class="letter-section-label">My Commitment</div><div class="letter-section-text" style="font-style:italic">"'+safe(plan.commitment)+'"</div></div>';
+  h += '</div>';
+  h += '<div class="scroll-closing" id="rc-closing" style="display:none">';
+  h += '<div class="scroll-signoff">Sealed by the Wizard,</div>';
+  h += '<div class="scroll-signature">Oswald</div>';
+  h += '<div class="scroll-time">' + new Date().toLocaleDateString() + '</div>';
+  h += '</div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();render()" id="rc-close" style="display:none;margin-top:10px">&#10003; Close Scroll</button>';
+  h += '</div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
-  setTimeout(function(){var e=overlay.querySelector('#rc-char');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},100);
-  setTimeout(function(){playSound('drum');var e=overlay.querySelector('#rc-title');if(e)e.style.animation='jcTitleGlow 1s cubic-bezier(.34,1.56,.64,1) forwards'},200);
-  setTimeout(function(){var e=overlay.querySelector('#rc-context');if(e)e.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards'},700);
-  setTimeout(function(){var e=overlay.querySelector('#rc-main');if(e)e.style.animation='jcZoomIn .8s cubic-bezier(.16,1,.3,1) forwards'},1200);
-  setTimeout(function(){var e=overlay.querySelector('#rc-icon');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},1300);
-  setTimeout(function(){var e=overlay.querySelector('#rc-details');if(e)e.style.animation='jcSlideUp .6s cubic-bezier(.16,1,.3,1) forwards'},1700);
-  var secs = overlay.querySelectorAll('.rc-section');
-  for (var si=0;si<secs.length;si++)(function(s){setTimeout(function(){s.style.animation='jcSlideUp .5s cubic-bezier(.16,1,.3,1) forwards'},1900+parseInt(s.getAttribute('data-d'))*400)})(secs[si]);
-  setTimeout(function(){var e=overlay.querySelector('#rc-commitment');if(e)e.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards'},2800);
-  setTimeout(function(){var e=overlay.querySelector('#rc-close');if(e)e.style.animation='jcZoomIn .5s cubic-bezier(.16,1,.3,1) forwards'},3600);
+  setTimeout(function(){var e=overlay.querySelector('#rc-char');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},200);
+  setTimeout(function(){playSound('drum');var e=overlay.querySelector('#rc-title');if(e)e.style.animation='letterAppear .6s ease both'},700);
+  setTimeout(function(){var e=overlay.querySelector('#rc-details');if(e)e.style.animation='letterAppear .5s ease both'},1200);
+  setTimeout(function(){var e=overlay.querySelector('#rc-closing');if(e)e.style.display='block';if(e)e.style.animation='letterAppear .5s ease both'},2000);
+  setTimeout(function(){var e=overlay.querySelector('#rc-close');if(e)e.style.display='inline-block';if(e)e.style.animation='letterAppear .4s ease both'},2600);
 }
 function showRelapsePlan() {
   startOswaldWizard();
@@ -11334,49 +11329,45 @@ function showSafetyCutscene() {
   var type = (types.length ? types[0] : 'Other');
   var sp = SAFETY_PLANS[type] || SAFETY_PLANS['Other'];
   var answers = D.safetyAnswers || [];
-  var mc = getComputedStyle(document.documentElement).getPropertyValue('--rose').trim()||'#ec4899';
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
-  overlay.style.overflow = 'hidden';
-  var h = '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;background:repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%) 0 0 / 2px 2px;animation:jcGrain .3s steps(3) infinite"></div><div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);opacity:0;animation:jcVignette 1.5s ease .3s forwards"></div><div class="overlay-content" style="padding:16px 12px 8px;max-width:480px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:100%">';
+  overlay.style.background = 'rgba(0,0,0,.65)';
+  overlay.style.alignItems = 'center';
+  var h = '<div class="journal-letter" id="sc-scroll" style="animation:scrollUnroll 1s cubic-bezier(.22,1,.36,1) both">';
   h += '<div style="text-align:center;opacity:0" id="sc-char">'+_npcStandalone('Gertrude')+'</div>';
-  h += '<div style="text-align:center;padding:4px 0 6px;opacity:0" id="sc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">GERTRUDE vs THE RIVAL KNIGHT</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR SAFETY PLAN</div></div>';
-  var chipList = [];
-  if (sp && sp.steps) chipList.push(sp.steps.length + ' steps');
-  chipList.push('For ' + type);
-  if (answers.length) { var filled = answers.filter(function(a){return a && a.trim()}).length; if (filled > 0) chipList.push(filled + ' questions answered'); }
-  var ctx = chipList.map(function(l){return '<span style="font-size:9px;background:rgba(255,255,255,.06);padding:2px 8px;border-radius:8px;color:rgba(255,255,255,.5);letter-spacing:.3px">'+l+'</span>'}).join(' ');
-  h += '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px;opacity:0" id="sc-context">'+ctx+'</div><div style="flex:1"></div>';
-  h += '<div id="sc-main" style="opacity:0"><div style="text-align:center;margin-bottom:12px;opacity:0" id="sc-icon"><div style="--jc-mc:'+mc+';width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 35% 30%,'+mc+','+mc+'44 70%,rgba(0,0,0,.3));margin:0 auto 8px;box-shadow:0 0 30px '+mc+'44,inset 0 -4px 12px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;font-size:28px">&#9876;</div><div style="font-size:18px;font-weight:700;color:'+mc+'">Gertrude\'s Plan</div><div style="font-size:9px;color:rgba(255,255,255,.35);letter-spacing:2px;margin-top:2px">PERSONALIZED FOR YOU</div></div>';
-  h += '<div style="padding:0 4px;opacity:0" id="sc-details">';
-  if (sp && sp.plan) h += '<div style="margin-bottom:8px;opacity:0" class="sc-section" data-d="0"><div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:3px">&#128737; YOUR PLAN</div><div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.6">'+safe(sp.plan)+'</div></div>';
+  h += '<div class="scroll-header" id="sc-title" style="opacity:0">';
+  h += '<div class="scroll-date">GERTRUDE vs THE RIVAL KNIGHT</div>';
+  h += '<div class="scroll-title">Your Safety Plan</div>';
+  h += '</div>';
+  h += '<div id="sc-details" style="opacity:0">';
+  if (sp && sp.plan) h += '<div class="letter-section"><div class="letter-section-label">&#128737; Your Plan</div><div class="letter-section-text">'+safe(sp.plan)+'</div></div>';
   if (sp && sp.steps) {
-    h += '<div style="margin-bottom:8px;opacity:0" class="sc-section" data-d="1"><div style="font-size:9px;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:3px">&#9989; YOUR STEPS</div><div style="font-size:12px;color:rgba(255,255,255,.7);line-height:1.7">';
+    h += '<div class="letter-section"><div class="letter-section-label">&#9989; Your Steps</div><div class="letter-section-text">';
     for (var si=0;si<sp.steps.length;si++) h += '<div style="padding:2px 0">' + (si+1) + '. ' + safe(sp.steps[si]) + '</div>';
     h += '</div></div>';
   }
-  h += '</div></div><div style="flex:1"></div>';
   if (answers && answers.length) {
-    h += '<div id="sc-answers" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:6px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">YOUR ANSWERS TO GERTRUDE</div>';
+    h += '<div class="letter-section"><div class="letter-section-label">Your Answers to Gertrude</div><div class="letter-section-text">';
     for (var ai=0;ai<Math.min(answers.length,GERTRUDE_QUESTIONS.length);ai++) {
-      if (answers[ai] && answers[ai].trim()) h += '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:4px"><span style="color:rgba(255,255,255,.3)">Q'+(ai+1)+':</span> '+safe(answers[ai])+'</div>';
+      if (answers[ai] && answers[ai].trim()) h += '<div style="margin-top:4px"><span style="opacity:.6">Q'+(ai+1)+':</span> '+safe(answers[ai])+'</div>';
     }
-    h += '</div>';
+    h += '</div></div>';
   }
-  h += '<div style="flex:1"></div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove();render()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="sc-close">Continue &#8594;</button></div>';
+  h += '</div>';
+  h += '<div class="scroll-closing" id="sc-closing" style="display:none">';
+  h += '<div class="scroll-signoff">Sealed by the Knight,</div>';
+  h += '<div class="scroll-signature">Gertrude</div>';
+  h += '<div class="scroll-time">' + new Date().toLocaleDateString() + '</div>';
+  h += '</div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();render()" id="sc-close" style="display:none;margin-top:10px">&#10003; Close Scroll</button>';
+  h += '</div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
-  setTimeout(function(){var e=overlay.querySelector('#sc-char');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},100);
-  setTimeout(function(){playSound('drum');var e=overlay.querySelector('#sc-title');if(e)e.style.animation='jcTitleGlow 1s cubic-bezier(.34,1.56,.64,1) forwards'},200);
-  setTimeout(function(){var e=overlay.querySelector('#sc-context');if(e)e.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards'},700);
-  setTimeout(function(){var e=overlay.querySelector('#sc-main');if(e)e.style.animation='jcZoomIn .8s cubic-bezier(.16,1,.3,1) forwards'},1200);
-  setTimeout(function(){var e=overlay.querySelector('#sc-icon');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},1300);
-  setTimeout(function(){var e=overlay.querySelector('#sc-details');if(e)e.style.animation='jcSlideUp .6s cubic-bezier(.16,1,.3,1) forwards'},1700);
-  var secs = overlay.querySelectorAll('.sc-section');
-  for (var si2=0;si2<secs.length;si2++)(function(s){setTimeout(function(){s.style.animation='jcSlideUp .5s cubic-bezier(.16,1,.3,1) forwards'},1900+parseInt(s.getAttribute('data-d'))*500)})(secs[si2]);
-  setTimeout(function(){var e=overlay.querySelector('#sc-answers');if(e)e.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards'},3000);
-  setTimeout(function(){var e=overlay.querySelector('#sc-close');if(e)e.style.animation='jcZoomIn .5s cubic-bezier(.16,1,.3,1) forwards'},3800);
+  setTimeout(function(){var e=overlay.querySelector('#sc-char');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},200);
+  setTimeout(function(){playSound('drum');var e=overlay.querySelector('#sc-title');if(e)e.style.animation='letterAppear .6s ease both'},700);
+  setTimeout(function(){var e=overlay.querySelector('#sc-details');if(e)e.style.animation='letterAppear .5s ease both'},1200);
+  setTimeout(function(){var e=overlay.querySelector('#sc-closing');if(e)e.style.display='block';if(e)e.style.animation='letterAppear .5s ease both'},2000);
+  setTimeout(function(){var e=overlay.querySelector('#sc-close');if(e)e.style.display='inline-block';if(e)e.style.animation='letterAppear .4s ease both'},2600);
 }
 var GERTRUDE_QUESTIONS = [
   {q:'What situations or environments make you feel most at risk?',pl:'e.g. parties, certain people, times of day, stress at work'},
