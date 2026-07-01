@@ -124,7 +124,18 @@ body.dark .kingdom-scene.k-upgraded{box-shadow:0 0 20px rgba(255,215,0,.15),0 0 
 @keyframes fogDrift{0%{transform:translateX(0)}100%{transform:translateX(40px)}}
 @keyframes rainbowArc{0%,100%{opacity:.3}50%{opacity:.8}}
 @keyframes auroraWave{0%{transform:translateX(0)}50%{transform:translateX(25px)}100%{transform:translateX(0)}}
-/* ===== FOCUS VISIBLE ===== */
+/* Round Table NPC animations */
+@keyframes npcBob{0%,100%{transform:translateY(0)}45%{transform:translateY(-1.5px)}55%{transform:translateY(-1.5px)}}
+@keyframes arthurGestL{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-5deg)}50%{transform:rotate(3deg)}75%{transform:rotate(-2deg)}}
+@keyframes arthurGestR{0%,100%{transform:rotate(0deg)}25%{transform:rotate(4deg)}50%{transform:rotate(-2deg)}75%{transform:rotate(3deg)}}
+@keyframes gertrudeShiftL{0%,100%{transform:rotate(0deg)}35%{transform:rotate(3deg)}70%{transform:rotate(-1.5deg)}}
+@keyframes gertrudeShiftR{0%,100%{transform:rotate(0deg)}35%{transform:rotate(-2deg)}70%{transform:rotate(3.5deg)}}
+@keyframes oswaldArcL{0%,100%{transform:rotate(0deg)}40%{transform:rotate(6deg)}80%{transform:rotate(-3deg)}}
+@keyframes oswaldArcR{0%,100%{transform:rotate(0deg)}40%{transform:rotate(-4deg)}80%{transform:rotate(2deg)}}
+.npc-idle{animation:npcBob 2.8s ease-in-out infinite}.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}
+.arthur-larm{animation:arthurGestL 4s ease-in-out infinite;transform-origin:var(--a-larm-origin)}.arthur-rarm{animation:arthurGestR 4s ease-in-out infinite;transform-origin:var(--a-rarm-origin)}
+.gertrude-larm{animation:gertrudeShiftL 3.5s ease-in-out infinite;transform-origin:var(--g-larm-origin)}.gertrude-rarm{animation:gertrudeShiftR 3.5s ease-in-out infinite;transform-origin:var(--g-rarm-origin)}
+.oswald-larm{animation:oswaldArcL 5s ease-in-out infinite;transform-origin:var(--o-larm-origin)}.oswald-rarm{animation:oswaldArcR 5s ease-in-out infinite;transform-origin:var(--o-rarm-origin)}
 :focus-visible{outline:none;box-shadow:var(--focus-ring);border-color:var(--primary);border-radius:var(--radius-sm)}
 /* ===== SELECT DROPDOWN ARROWS ===== */
 body.dark select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2334d399' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")}
@@ -8867,6 +8878,96 @@ function showVillageModal() {
   ov.innerHTML = '<div class="overlay-content" style="max-width:480px;text-align:center;padding:20px"><div style="font-size:13px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">Your Village</div><div style="font-size:22px;font-weight:700;color:var(--primary);margin-bottom:2px">' + lnames[Math.min(level,maxL)] + '</div><div style="font-size:12px;color:var(--text-light);margin-bottom:8px">' + (ldescs[Math.min(level,maxL)]||'') + '</div>' + (days > 0 ? '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">' + days + ' day' + (days!==1?'s':'') + ' of growth</div>' : '') + '<div style="max-width:360px;margin:0 auto 10px">' + villageHTML() + '</div><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'village-modal\').remove()">Close</button></div>';
   document.body.appendChild(ov);
 }
+function _rtArthur(cx,isActive){
+  var h='<g class="npc-idle">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
+  h+='<path d="M'+(cx-14)+',20 L'+(cx-14)+',46 L'+(cx+14)+',46 L'+(cx+14)+',20 Z" fill="#3a0a50" opacity=".5" rx="2"/>';
+  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="#4a1570"/>';
+  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="4" rx="1.5" fill="#f0e8d0"/>';
+  h+='<rect x="'+(cx-10)+'" y="43" width="20" height="3" rx="1" fill="#f0e8d0"/>';
+  for(var ei=0;ei<4;ei++)h+='<rect x="'+(cx-8+ei*5)+'" y="21" width="1.5" height="2" rx=".5" fill="#333" opacity=".4"/>';
+  h+='<line x1="'+cx+'" y1="24" x2="'+cx+'" y2="46" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
+  h+='<path d="M'+(cx-8)+',28 Q'+cx+',33 '+(cx+8)+',28" fill="none" stroke="#d4a017" stroke-width="1.2" opacity=".7"/>';
+  h+='<circle cx="'+cx+'" cy="32" r="2" fill="#d4a017"/>';
+  h+='<rect x="'+(cx-10)+'" y="33" width="20" height="2" rx="1" fill="rgba(0,0,0,.25)"/>';
+  h+='<rect x="'+(cx-2.5)+'" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
+  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="#c89a6a"/>';
+  h+='<circle cx="'+cx+'" cy="10" r="7" fill="#c89a6a"/>';
+  h+='<circle cx="'+(cx-2.5)+'" cy="9" r="1" fill="#333"/>';
+  h+='<circle cx="'+(cx+2.5)+'" cy="9" r="1" fill="#333"/>';
+  h+='<path d="M'+(cx-4.5)+',7 Q'+(cx-2.5)+',6 '+(cx-1)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
+  h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',6 '+(cx+4.5)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
+  h+='<path d="M'+(cx-7)+',7 L'+(cx-5)+',0 L'+(cx-2)+',4 L'+cx+',-1 L'+(cx+2)+',4 L'+(cx+5)+',0 L'+(cx+7)+',7 Z" fill="#d4a017" stroke="#b8860b" stroke-width=".5"/>';
+  h+='<circle cx="'+cx+'" cy="2" r="1.2" fill="#e04040"/>';
+  h+='<circle cx="'+(cx-3.5)+'" cy="2" r=".8" fill="#4060e0"/>';
+  h+='<circle cx="'+(cx+3.5)+'" cy="2" r=".8" fill="#40e060"/>';
+  h+='<rect x="'+(cx-7)+'" y="6" width="14" height="1.5" rx=".5" fill="#b8860b"/>';
+  h+='<g class="arthur-larm" style="--a-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-14)+',38 L'+(cx-13)+',46" fill="none" stroke="#4a1570" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-13)+'" cy="47" rx="3" ry="2" fill="#c89a6a"/></g>';
+  h+='<g class="arthur-rarm" style="--a-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',38 L'+(cx+13)+',46" fill="none" stroke="#4a1570" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+13)+'" cy="47" rx="3" ry="2" fill="#c89a6a"/></g>';
+  h+='</g>';return h;
+}
+function _rtGertrude(cx,isActive){
+  var h='<g class="npc-idle'+(isActive?'':' npc-idle-d1')+'">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
+  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="#4a6a6a"/>';
+  for(var li=0;li<8;li++){h+='<line x1="'+(cx-9)+'" y1="'+(23+li*3)+'" x2="'+(cx+9)+'" y2="'+(23+li*3)+'" stroke="rgba(200,220,220,.15)" stroke-width=".5"/>';h+='<line x1="'+(cx-9+4)+'" y1="'+(24.5+li*3)+'" x2="'+(cx+9-4)+'" y2="'+(24.5+li*3)+'" stroke="rgba(200,220,220,.1)" stroke-width=".5"/>';}
+  h+='<rect x="'+(cx-8)+'" y="22" width="16" height="22" rx="2" fill="#2a5a5a" opacity=".85"/>';
+  h+='<path d="M'+(cx-3)+',26 L'+(cx+3)+',26 L'+(cx+3)+',28 L'+(cx+5)+',28 L'+(cx+5)+',34 L'+(cx+3)+',34 L'+(cx+3)+',40 L'+(cx+3+0.5)+',40 L'+(cx+3)+',42 L'+(cx-3)+',42 L'+(cx-3)+',40 L'+(cx-3-0.5)+',40 L'+(cx-3)+',34 L'+(cx-5)+',34 L'+(cx-5)+',28 L'+(cx-3)+',28 Z" fill="#d4a017" opacity=".8"/>';
+  h+='<rect x="'+(cx-8)+'" y="33" width="16" height="2" rx="1" fill="#8B4513"/>';
+  h+='<rect x="'+(cx-2)+'" y="32.5" width="4" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
+  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="#d4a574"/>';
+  h+='<circle cx="'+cx+'" cy="10" r="7" fill="#d4a574"/>';
+  h+='<circle cx="'+(cx-2.5)+'" cy="9" r="1" fill="#333"/>';
+  h+='<circle cx="'+(cx+2.5)+'" cy="9" r="1" fill="#333"/>';
+  h+='<path d="M'+(cx-4.5)+',7 Q'+(cx-2.5)+',6 '+(cx-1)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
+  h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',6 '+(cx+4.5)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
+  h+='<path d="M'+(cx-8)+',7 Q'+cx+',-4 '+(cx+8)+',7 Q'+cx+',12 '+(cx-8)+',7 Z" fill="#8a9a9a"/>';
+  h+='<path d="M'+(cx-5)+',6 Q'+cx+',8 '+(cx+5)+',6" fill="none" stroke="#2a2a2a" stroke-width="1.2"/>';
+  h+='<path d="M'+cx+',-1 L'+cx+',10" stroke="#6a7a7a" stroke-width="1.5"/>';
+  h+='<line x1="'+cx+'" y1="3" x2="'+cx+'" y2="8" stroke="#6a7a7a" stroke-width="1.2"/>';
+  h+='<path d="M'+(cx-9)+',14 L'+(cx+9)+',14 L'+(cx+7)+',17 L'+(cx-7)+',17 Z" fill="#7a8a8a"/>';
+  h+='<g class="gertrude-larm" style="--g-larm-origin:'+(cx-10)+'px 23px"><path d="M'+(cx-10)+',23 L'+(cx-13)+',36 L'+(cx-12)+',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-12)+'" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/></g>';
+  h+='<g class="gertrude-rarm" style="--g-rarm-origin:'+(cx+10)+'px 23px"><path d="M'+(cx+10)+',23 L'+(cx+13)+',36 L'+(cx+12)+',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+12)+'" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/></g>';
+  h+='</g>';return h;
+}
+function _rtOswald(cx,isActive){
+  var h='<g class="npc-idle'+(isActive?'':' npc-idle-d2')+'">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
+  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="#2a1560"/>';
+  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="3" rx="1.5" fill="#4a2590"/>';
+  h+='<text x="'+(cx-5)+'" y="30" font-size="3" fill="#ffd700" opacity=".6">\u2726</text>';
+  h+='<text x="'+(cx+3)+'" y="28" font-size="2.5" fill="#ffd700" opacity=".5">\u2727</text>';
+  h+='<text x="'+(cx-4)+'" y="39" font-size="2.5" fill="#ffd700" opacity=".4">\u2727</text>';
+  h+='<text x="'+(cx+4)+'" y="40" font-size="3" fill="#ffd700" opacity=".6">\u2726</text>';
+  h+='<line x1="'+cx+'" y1="23" x2="'+cx+'" y2="46" stroke="rgba(255,255,255,.08)" stroke-width=".8"/>';
+  h+='<rect x="'+(cx-10)+'" y="33" width="20" height="2" rx="1" fill="#1a0a3a"/>';
+  h+='<rect x="'+(cx-2.5)+'" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
+  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="#c09a7a"/>';
+  h+='<circle cx="'+cx+'" cy="10" r="7" fill="#c09a7a"/>';
+  h+='<path d="M'+(cx-4)+',12 L'+(cx-5)+',18 L'+(cx-2)+',16 L'+cx+',19 L'+(cx+2)+',16 L'+(cx+5)+',18 L'+(cx+4)+',12 Z" fill="#f0e8e0"/>';
+  h+='<circle cx="'+(cx-2.5)+'" cy="9" r="1" fill="#333"/>';
+  h+='<circle cx="'+(cx+2.5)+'" cy="9" r="1" fill="#333"/>';
+  h+='<path d="M'+(cx-5)+',7 Q'+(cx-2.5)+',5.5 '+(cx-1)+',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
+  h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',5.5 '+(cx+5)+',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
+  h+='<polygon points="'+(cx-9)+',7 '+cx+',-6 '+(cx+9)+',7" fill="#1a0a3a"/>';
+  h+='<path d="M'+(cx-10)+',7 Q'+cx+',10 '+(cx+10)+',7" fill="none" stroke="#1a0a3a" stroke-width="2.5"/>';
+  h+='<rect x="'+(cx-8)+'" y="5.5" width="16" height="1.5" rx=".5" fill="#d4a017"/>';
+  h+='<text x="'+(cx-4)+'" y="2" font-size="3" fill="#ffd700" opacity=".7">\u2726</text>';
+  h+='<text x="'+(cx+2)+'" y="0" font-size="2.5" fill="#ffd700" opacity=".6">\u2727</text>';
+  h+='<line x1="'+(cx+15)+'" y1="18" x2="'+(cx+15)+'" y2="55" stroke="#6B3410" stroke-width="2"/>';
+  h+='<circle cx="'+(cx+15)+'" cy="17" r="2.5" fill="#8a6af0" opacity=".8"><animate attributeName="r" values="2.2;2.8;2.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".6;.9;.6" dur="3s" repeatCount="indefinite"/></circle>';
+  h+='<circle cx="'+(cx+15)+'" cy="17" r="1.2" fill="#c0b0ff" opacity=".9"/>';
+  if(isActive)h+='<circle cx="'+(cx+15)+'" cy="17" r="5" fill="#8a6af0" opacity=".15"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>';
+  h+='<g class="oswald-larm" style="--o-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-13)+',38 L'+(cx-12)+',46" fill="none" stroke="#2a1560" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-12)+'" cy="47" rx="3" ry="2" fill="#c09a7a"/></g>';
+  h+='<g class="oswald-rarm" style="--o-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',36 L'+(cx+15)+',44" fill="none" stroke="#2a1560" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+15)+'" cy="45" rx="3" ry="2" fill="#c09a7a"/></g>';
+  h+='</g>';return h;
+}
+function _npcStandalone(name){
+  var svg = '<svg viewBox="0 0 40 60" style="width:80px;height:120px;display:block;margin:0 auto">';
+  svg += '<defs><style>.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}</style></defs>';
+  if(name==='Arthur')svg+=_rtArthur(20,true);
+  else if(name==='Gertrude')svg+=_rtGertrude(20,true);
+  else svg+=_rtOswald(20,true);
+  svg += '</svg>';
+  return svg;
+}
 function roundTableHTML() {
   var chars = [
     {name:'Arthur',body:'#4a1570',skin:'#c89a6a',msgs:[
@@ -8901,7 +9002,7 @@ function roundTableHTML() {
   var xOffsets = [38, 91, 144]; // horizontal centers for each figure
   h += '<div style="text-align:center;margin-bottom:4px">';
   h += '<svg viewBox="0 0 210 100" style="width:100%;max-width:280px;height:auto">';
-  h += '<defs><style>.npc-idle{animation:npcBob 2.8s ease-in-out infinite}.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}@keyframes npcBob{0%,100%{transform:translateY(0)}45%{transform:translateY(-1.5px)}55%{transform:translateY(-1.5px)}}@keyframes arthurGestL{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-5deg)}50%{transform:rotate(3deg)}75%{transform:rotate(-2deg)}}@keyframes arthurGestR{0%,100%{transform:rotate(0deg)}25%{transform:rotate(4deg)}50%{transform:rotate(-2deg)}75%{transform:rotate(3deg)}}@keyframes gertrudeShiftL{0%,100%{transform:rotate(0deg)}35%{transform:rotate(3deg)}70%{transform:rotate(-1.5deg)}}@keyframes gertrudeShiftR{0%,100%{transform:rotate(0deg)}35%{transform:rotate(-2deg)}70%{transform:rotate(3.5deg)}}@keyframes oswaldArcL{0%,100%{transform:rotate(0deg)}40%{transform:rotate(6deg)}80%{transform:rotate(-3deg)}}@keyframes oswaldArcR{0%,100%{transform:rotate(0deg)}40%{transform:rotate(-4deg)}80%{transform:rotate(2deg)}}.arthur-larm{animation:arthurGestL 4s ease-in-out infinite}.arthur-rarm{animation:arthurGestR 4s ease-in-out infinite}.gertrude-larm{animation:gertrudeShiftL 3.5s ease-in-out infinite}.gertrude-rarm{animation:gertrudeShiftR 3.5s ease-in-out infinite}.oswald-larm{animation:oswaldArcL 5s ease-in-out infinite}.oswald-rarm{animation:oswaldArcR 5s ease-in-out infinite}</style></defs>';
+  h += '<defs><style>.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}</style></defs>';
 
   // Chair backs (behind figures)
   for (var i = 0; i < chars.length; i++) {
@@ -8916,165 +9017,10 @@ function roundTableHTML() {
 
   // Figures
   for (var i = 0; i < chars.length; i++) {
-    var c = chars[i];
     var cx = xOffsets[i];
-    var isActive = i === activeIdx;
-
-    h += '<g class="npc-idle' + (i === 1 ? ' npc-idle-d1' : i === 2 ? ' npc-idle-d2' : '') + '">';
-    // Active glow ring
-    if (isActive) {
-      h += '<circle cx="' + cx + '" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>';
-    }
-
-    if (i === 0) {
-      // === ARTHUR — THE KING ===
-      // Royal mantle (cape behind)
-      h += '<path d="M' + (cx - 14) + ',20 L' + (cx - 14) + ',46 L' + (cx + 14) + ',46 L' + (cx + 14) + ',20 Z" fill="#3a0a50" opacity=".5" rx="2"/>';
-      // Royal robe
-      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="26" rx="3" fill="' + c.body + '"/>';
-      // Ermine trim (white fur with black tips)
-      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="4" rx="1.5" fill="#f0e8d0"/>';
-      h += '<rect x="' + (cx - 10) + '" y="43" width="20" height="3" rx="1" fill="#f0e8d0"/>';
-      for (var ei = 0; ei < 4; ei++) { h += '<rect x="' + (cx - 8 + ei * 5) + '" y="21" width="1.5" height="2" rx=".5" fill="#333" opacity=".4"/>'; }
-      // Robe front line
-      h += '<line x1="' + cx + '" y1="24" x2="' + cx + '" y2="46" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
-      // Gold chain across chest
-      h += '<path d="M' + (cx - 8) + ',28 Q' + cx + ',33 ' + (cx + 8) + ',28" fill="none" stroke="#d4a017" stroke-width="1.2" opacity=".7"/>';
-      h += '<circle cx="' + cx + '" cy="32" r="2" fill="#d4a017"/>';
-      // Belt
-      h += '<rect x="' + (cx - 10) + '" y="33" width="20" height="2" rx="1" fill="rgba(0,0,0,.25)"/>';
-      h += '<rect x="' + (cx - 2.5) + '" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
-      // Neck
-      h += '<rect x="' + (cx - 3) + '" y="14" width="6" height="5" rx="2" fill="' + c.skin + '"/>';
-      // Head
-      h += '<circle cx="' + cx + '" cy="10" r="7" fill="' + c.skin + '"/>';
-      // Eyes
-      h += '<circle cx="' + (cx - 2.5) + '" cy="9" r="1" fill="#333"/>';
-      h += '<circle cx="' + (cx + 2.5) + '" cy="9" r="1" fill="#333"/>';
-      // Eyebrows
-      h += '<path d="M' + (cx - 4.5) + ',7 Q' + (cx - 2.5) + ',6 ' + (cx - 1) + ',7" fill="none" stroke="#333" stroke-width=".6"/>';
-      h += '<path d="M' + (cx + 1) + ',7 Q' + (cx + 2.5) + ',6 ' + (cx + 4.5) + ',7" fill="none" stroke="#333" stroke-width=".6"/>';
-      // Gold crown
-      h += '<path d="M' + (cx - 7) + ',7 L' + (cx - 5) + ',0 L' + (cx - 2) + ',4 L' + cx + ',-1 L' + (cx + 2) + ',4 L' + (cx + 5) + ',0 L' + (cx + 7) + ',7 Z" fill="#d4a017" stroke="#b8860b" stroke-width=".5"/>';
-      // Crown jewels
-      h += '<circle cx="' + cx + '" cy="2" r="1.2" fill="#e04040"/>';
-      h += '<circle cx="' + (cx - 3.5) + '" cy="2" r=".8" fill="#4060e0"/>';
-      h += '<circle cx="' + (cx + 3.5) + '" cy="2" r=".8" fill="#40e060"/>';
-      // Crown base band
-      h += '<rect x="' + (cx - 7) + '" y="6" width="14" height="1.5" rx=".5" fill="#b8860b"/>';
-      // Arms with kingly gesture animation
-      h += '<g class="arthur-larm" style="transform-origin:' + (cx - 10) + 'px 25px">';
-      h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 14) + ',38 L' + (cx - 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx - 13) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
-      h += '</g>';
-      h += '<g class="arthur-rarm" style="transform-origin:' + (cx + 10) + 'px 25px">';
-      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 14) + ',38 L' + (cx + 13) + ',46" fill="none" stroke="' + c.body + '" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx + 13) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
-      h += '</g>';
-
-    } else if (i === 1) {
-      // === GERTRUDE — THE KNIGHT ===
-      // Chainmail hauberk (body)
-      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="26" rx="3" fill="#4a6a6a"/>';
-      // Chainmail pattern (horizontal lines)
-      for (var li = 0; li < 8; li++) {
-        h += '<line x1="' + (cx - 9) + '" y1="' + (23 + li * 3) + '" x2="' + (cx + 9) + '" y2="' + (23 + li * 3) + '" stroke="rgba(200,220,220,.15)" stroke-width=".5"/>';
-        h += '<line x1="' + (cx - 9 + 4) + '" y1="' + (24.5 + li * 3) + '" x2="' + (cx + 9 - 4) + '" y2="' + (24.5 + li * 3) + '" stroke="rgba(200,220,220,.1)" stroke-width=".5"/>';
-      }
-      // Surcoat (tabard over armor)
-      h += '<rect x="' + (cx - 8) + '" y="22" width="16" height="22" rx="2" fill="' + c.body + '" opacity=".85"/>';
-      // Surcoat cross emblem
-      h += '<path d="M' + (cx - 3) + ',26 L' + (cx + 3) + ',26 L' + (cx + 3) + ',28 L' + (cx + 5) + ',28 L' + (cx + 5) + ',34 L' + (cx + 3) + ',34 L' + (cx + 3) + ',40 L' + (cx + 3 + 0.5) + ',40 L' + (cx + 3) + ',42 L' + (cx - 3) + ',42 L' + (cx - 3) + ',40 L' + (cx - 3 - 0.5) + ',40 L' + (cx - 3) + ',34 L' + (cx - 5) + ',34 L' + (cx - 5) + ',28 L' + (cx - 3) + ',28 Z" fill="#d4a017" opacity=".8"/>';
-      // Belt over surcoat
-      h += '<rect x="' + (cx - 8) + '" y="33" width="16" height="2" rx="1" fill="#8B4513"/>';
-      h += '<rect x="' + (cx - 2) + '" y="32.5" width="4" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
-      // Neck
-      h += '<rect x="' + (cx - 3) + '" y="14" width="6" height="5" rx="2" fill="' + c.skin + '"/>';
-      // Head
-      h += '<circle cx="' + cx + '" cy="10" r="7" fill="' + c.skin + '"/>';
-      // Eyes (visor slit visible through helm)
-      h += '<circle cx="' + (cx - 2.5) + '" cy="9" r="1" fill="#333"/>';
-      h += '<circle cx="' + (cx + 2.5) + '" cy="9" r="1" fill="#333"/>';
-      // Eyebrows under helm
-      h += '<path d="M' + (cx - 4.5) + ',7 Q' + (cx - 2.5) + ',6 ' + (cx - 1) + ',7" fill="none" stroke="#333" stroke-width=".6"/>';
-      h += '<path d="M' + (cx + 1) + ',7 Q' + (cx + 2.5) + ',6 ' + (cx + 4.5) + ',7" fill="none" stroke="#333" stroke-width=".6"/>';
-      // Steel helmet
-      h += '<path d="M' + (cx - 8) + ',7 Q' + cx + ',-4 ' + (cx + 8) + ',7 Q' + cx + ',12 ' + (cx - 8) + ',7 Z" fill="#8a9a9a"/>';
-      // Helmet visor slit
-      h += '<path d="M' + (cx - 5) + ',6 Q' + cx + ',8 ' + (cx + 5) + ',6" fill="none" stroke="#2a2a2a" stroke-width="1.2"/>';
-      // Helmet ridge
-      h += '<path d="M' + cx + ',-1 L' + cx + ',10" stroke="#6a7a7a" stroke-width="1.5"/>';
-      // Helmet nosepiece
-      h += '<line x1="' + cx + '" y1="3" x2="' + cx + '" y2="8" stroke="#6a7a7a" stroke-width="1.2"/>';
-      // Gorget (neck armor)
-      h += '<path d="M' + (cx - 9) + ',14 L' + (cx + 9) + ',14 L' + (cx + 7) + ',17 L' + (cx - 7) + ',17 Z" fill="#7a8a8a"/>';
-      // Arms with armored shift animation
-      h += '<g class="gertrude-larm" style="transform-origin:' + (cx - 10) + 'px 23px">';
-      h += '<path d="M' + (cx - 10) + ',23 L' + (cx - 13) + ',36 L' + (cx - 12) + ',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx - 12) + '" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/>';
-      h += '</g>';
-      h += '<g class="gertrude-rarm" style="transform-origin:' + (cx + 10) + 'px 23px">';
-      h += '<path d="M' + (cx + 10) + ',23 L' + (cx + 13) + ',36 L' + (cx + 12) + ',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx + 12) + '" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/>';
-      h += '</g>';
-
-    } else {
-      // === OSWALD — THE WIZARD ===
-      // Starry robe
-      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="26" rx="3" fill="' + c.body + '"/>';
-      // Robe trim
-      h += '<rect x="' + (cx - 10) + '" y="20" width="20" height="3" rx="1.5" fill="#4a2590"/>';
-      // Stars on robe
-      h += '<text x="' + (cx - 5) + '" y="30" font-size="3" fill="#ffd700" opacity=".6">\u2726</text>';
-      h += '<text x="' + (cx + 3) + '" y="28" font-size="2.5" fill="#ffd700" opacity=".5">\u2727</text>';
-      h += '<text x="' + (cx - 4) + '" y="39" font-size="2.5" fill="#ffd700" opacity=".4">\u2727</text>';
-      h += '<text x="' + (cx + 4) + '" y="40" font-size="3" fill="#ffd700" opacity=".6">\u2726</text>';
-      // Robe front line
-      h += '<line x1="' + cx + '" y1="23" x2="' + cx + '" y2="46" stroke="rgba(255,255,255,.08)" stroke-width=".8"/>';
-      // Belt
-      h += '<rect x="' + (cx - 10) + '" y="33" width="20" height="2" rx="1" fill="#1a0a3a"/>';
-      h += '<rect x="' + (cx - 2.5) + '" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
-      // Neck
-      h += '<rect x="' + (cx - 3) + '" y="14" width="6" height="5" rx="2" fill="' + c.skin + '"/>';
-      // Head
-      h += '<circle cx="' + cx + '" cy="10" r="7" fill="' + c.skin + '"/>';
-      // White beard
-      h += '<path d="M' + (cx - 4) + ',12 L' + (cx - 5) + ',18 L' + (cx - 2) + ',16 L' + cx + ',19 L' + (cx + 2) + ',16 L' + (cx + 5) + ',18 L' + (cx + 4) + ',12 Z" fill="#f0e8e0"/>';
-      // Eyes
-      h += '<circle cx="' + (cx - 2.5) + '" cy="9" r="1" fill="#333"/>';
-      h += '<circle cx="' + (cx + 2.5) + '" cy="9" r="1" fill="#333"/>';
-      // Eyebrows (bushy white)
-      h += '<path d="M' + (cx - 5) + ',7 Q' + (cx - 2.5) + ',5.5 ' + (cx - 1) + ',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
-      h += '<path d="M' + (cx + 1) + ',7 Q' + (cx + 2.5) + ',5.5 ' + (cx + 5) + ',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
-      // Pointed wizard hat
-      h += '<polygon points="' + (cx - 9) + ',7 ' + cx + ',-6 ' + (cx + 9) + ',7" fill="#1a0a3a"/>';
-      // Hat brim
-      h += '<path d="M' + (cx - 10) + ',7 Q' + cx + ',10 ' + (cx + 10) + ',7" fill="none" stroke="#1a0a3a" stroke-width="2.5"/>';
-      // Hat band
-      h += '<rect x="' + (cx - 8) + '" y="5.5" width="16" height="1.5" rx=".5" fill="#d4a017"/>';
-      // Hat stars
-      h += '<text x="' + (cx - 4) + '" y="2" font-size="3" fill="#ffd700" opacity=".7">\u2726</text>';
-      h += '<text x="' + (cx + 2) + '" y="0" font-size="2.5" fill="#ffd700" opacity=".6">\u2727</text>';
-      // Staff on right side
-      h += '<line x1="' + (cx + 15) + '" y1="18" x2="' + (cx + 15) + '" y2="55" stroke="#6B3410" stroke-width="2"/>';
-      // Staff crystal with subtle pulse
-      h += '<circle cx="' + (cx + 15) + '" cy="17" r="2.5" fill="#8a6af0" opacity=".8"><animate attributeName="r" values="2.2;2.8;2.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".6;.9;.6" dur="3s" repeatCount="indefinite"/></circle>';
-      h += '<circle cx="' + (cx + 15) + '" cy="17" r="1.2" fill="#c0b0ff" opacity=".9"/>';
-      // Staff glow (when active)
-      if (isActive) {
-        h += '<circle cx="' + (cx + 15) + '" cy="17" r="5" fill="#8a6af0" opacity=".15"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>';
-      }
-      // Arms with wizard arcane animation
-      h += '<g class="oswald-larm" style="transform-origin:' + (cx - 10) + 'px 25px">';
-      h += '<path d="M' + (cx - 10) + ',25 L' + (cx - 13) + ',38 L' + (cx - 12) + ',46" fill="none" stroke="' + c.body + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx - 12) + '" cy="47" rx="3" ry="2" fill="' + c.skin + '"/>';
-      h += '</g>';
-      h += '<g class="oswald-rarm" style="transform-origin:' + (cx + 10) + 'px 25px">';
-      h += '<path d="M' + (cx + 10) + ',25 L' + (cx + 14) + ',36 L' + (cx + 15) + ',44" fill="none" stroke="' + c.body + '" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>';
-      h += '<ellipse cx="' + (cx + 15) + '" cy="45" rx="3" ry="2" fill="' + c.skin + '"/>';
-      h += '</g>';
-    }
-    h += '</g>';
+    if (i === 0) h += _rtArthur(cx, i === activeIdx);
+    else if (i === 1) h += _rtGertrude(cx, i === activeIdx);
+    else h += _rtOswald(cx, i === activeIdx);
   }
 
   // Tabletop
@@ -10951,7 +10897,8 @@ function showRelapseCutscene() {
   overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
   overlay.style.overflow = 'hidden';
   var h = '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;background:repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%) 0 0 / 2px 2px;animation:jcGrain .3s steps(3) infinite"></div><div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);opacity:0;animation:jcVignette 1.5s ease .3s forwards"></div><div class="overlay-content" style="padding:16px 12px 8px;max-width:480px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:100%">';
-  h += '<div style="text-align:center;padding:30px 0 6px;opacity:0" id="rc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">OSWALD vs THE DRAGON</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR RELAPSE PLAN</div></div>';
+  h += '<div style="text-align:center;opacity:0" id="rc-char">'+_npcStandalone('Oswald')+'</div>';
+  h += '<div style="text-align:center;padding:4px 0 6px;opacity:0" id="rc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">OSWALD vs THE DRAGON</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR RELAPSE PLAN</div></div>';
   var chips = [];
   if (plan.triggers && plan.triggers.length) chips.push(plan.triggers.length + ' triggers');
   if (plan.interruptActions && plan.interruptActions.length) chips.push(plan.interruptActions.length + ' actions');
@@ -10970,6 +10917,7 @@ function showRelapseCutscene() {
   h += '<div style="flex:1"></div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove();render()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="rc-close">Continue &#8594;</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
+  setTimeout(function(){var e=overlay.querySelector('#rc-char');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},100);
   setTimeout(function(){playSound('drum');var e=overlay.querySelector('#rc-title');if(e)e.style.animation='jcTitleGlow 1s cubic-bezier(.34,1.56,.64,1) forwards'},200);
   setTimeout(function(){var e=overlay.querySelector('#rc-context');if(e)e.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards'},700);
   setTimeout(function(){var e=overlay.querySelector('#rc-main');if(e)e.style.animation='jcZoomIn .8s cubic-bezier(.16,1,.3,1) forwards'},1200);
@@ -11392,7 +11340,8 @@ function showSafetyCutscene() {
   overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
   overlay.style.overflow = 'hidden';
   var h = '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;background:repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%) 0 0 / 2px 2px;animation:jcGrain .3s steps(3) infinite"></div><div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);opacity:0;animation:jcVignette 1.5s ease .3s forwards"></div><div class="overlay-content" style="padding:16px 12px 8px;max-width:480px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:100%">';
-  h += '<div style="text-align:center;padding:30px 0 6px;opacity:0" id="sc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">GERTRUDE vs THE RIVAL KNIGHT</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR SAFETY PLAN</div></div>';
+  h += '<div style="text-align:center;opacity:0" id="sc-char">'+_npcStandalone('Gertrude')+'</div>';
+  h += '<div style="text-align:center;padding:4px 0 6px;opacity:0" id="sc-title"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">GERTRUDE vs THE RIVAL KNIGHT</div><div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">YOUR SAFETY PLAN</div></div>';
   var chipList = [];
   if (sp && sp.steps) chipList.push(sp.steps.length + ' steps');
   chipList.push('For ' + type);
@@ -11418,6 +11367,7 @@ function showSafetyCutscene() {
   h += '<div style="flex:1"></div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove();render()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="sc-close">Continue &#8594;</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
+  setTimeout(function(){var e=overlay.querySelector('#sc-char');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},100);
   setTimeout(function(){playSound('drum');var e=overlay.querySelector('#sc-title');if(e)e.style.animation='jcTitleGlow 1s cubic-bezier(.34,1.56,.64,1) forwards'},200);
   setTimeout(function(){var e=overlay.querySelector('#sc-context');if(e)e.style.animation='jcSlideUp .7s cubic-bezier(.16,1,.3,1) forwards'},700);
   setTimeout(function(){var e=overlay.querySelector('#sc-main');if(e)e.style.animation='jcZoomIn .8s cubic-bezier(.16,1,.3,1) forwards'},1200);
