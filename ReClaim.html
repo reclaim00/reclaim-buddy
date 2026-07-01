@@ -104,9 +104,26 @@ body.dark .kingdom-scene .k-window{fill:#ff8833;animation:lanternGlow 2s ease-in
 body.dark .kingdom-scene .k-clouds ellipse{opacity:.06}
 body.dark .kingdom-scene .k-door{fill:#1a0800}
 @keyframes lanternGlow{0%,100%{opacity:.4}50%{opacity:1}}
+.kingdom-scene.k-rain{--sky-c:#6a7a8a;--ground-c:#5a6a7a;--hill-c:#5a6a7a}
+.kingdom-scene.k-storm{--sky-c:#2a2a3a;--ground-c:#3a3a4a;--hill-c:#3a3a4a}
+.kingdom-scene.k-fog{--sky-c:#8a9aaa;--ground-c:#7a8a9a;--hill-c:#7a8a9a}
+.kingdom-scene.k-mist{--sky-c:#9aaabb;--ground-c:#8a9aaa;--hill-c:#8a9aaa}
+.kingdom-scene.k-cloudy{--sky-c:#7a8a9a;--ground-c:#6a7a8a;--hill-c:#6a7a8a}
+.kingdom-scene.k-aurora{--sky-c:#1a2a3a;--ground-c:#2a3a4a;--hill-c:#2a3a4a}
+.kingdom-scene.k-rainbow{--sky-c:#5a7a9a;--ground-c:#5a7a8a;--hill-c:#5a7a8a}
+.k-storm .k-sun,.k-rain .k-sun,.k-fog .k-sun,.k-mist .k-sun,.k-cloudy .k-sun,.k-aurora .k-sun{display:none}
+.k-rainbow .k-sun{fill:#ffdd44}
+.k-rain .k-clouds ellipse,.k-storm .k-clouds ellipse{fill:#5a6a7a;opacity:.8}
+.k-fog .k-clouds ellipse,.k-mist .k-clouds ellipse{fill:#8a9aaa;opacity:.4}
+.k-cloudy .k-clouds ellipse{fill:#6a7a8a;opacity:.7}
 .kingdom-scene.k-upgraded{box-shadow:0 0 20px rgba(255,215,0,.2),0 0 60px rgba(255,215,0,.08),0 1px 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04)}
 .kingdom-scene.k-upgraded .k-flag-l,.kingdom-scene.k-upgraded .k-flag-r{fill:#ffd700 !important;filter:drop-shadow(0 0 4px rgba(255,215,0,.5))}
 body.dark .kingdom-scene.k-upgraded{box-shadow:0 0 20px rgba(255,215,0,.15),0 0 60px rgba(255,215,0,.06),0 1px 6px rgba(0,0,0,.3),0 4px 20px rgba(0,0,0,.2)}
+@keyframes rainDrop{0%{transform:translateY(-20px);opacity:0}15%{opacity:.6}100%{transform:translateY(280px);opacity:0}}
+@keyframes lightningFlash{0%,100%{opacity:0}3%{opacity:.7}6%{opacity:0}12%{opacity:.4}15%{opacity:0}}
+@keyframes fogDrift{0%{transform:translateX(0)}100%{transform:translateX(40px)}}
+@keyframes rainbowArc{0%,100%{opacity:.3}50%{opacity:.8}}
+@keyframes auroraWave{0%{transform:translateX(0)}50%{transform:translateX(25px)}100%{transform:translateX(0)}}
 /* ===== FOCUS VISIBLE ===== */
 :focus-visible{outline:none;box-shadow:var(--focus-ring);border-color:var(--primary);border-radius:var(--radius-sm)}
 /* ===== SELECT DROPDOWN ARROWS ===== */
@@ -8201,15 +8218,26 @@ function kingdomLevel(days) {
   if (days <= 730) return 14;
   return 15;
 }
+function getKingdomWeather() {
+  var days=soberDays();var streak=D.streak||0;var hour=new Date().getHours();var isNight=hour<6||hour>=20;
+  var today=new Date().toDateString();var cravedToday=D.cravings&&D.cravings.some(function(c){var d=c.date||(c.timestamp?new Date(c.timestamp).toDateString():'');return d===today});
+  var relapsedToday=D.relapseHistory&&D.relapseHistory.length>0&&D.relapseHistory[D.relapseHistory.length-1].date===today;
+  var isMilestone=days>0&&(days%30===0||days%90===0||days%365===0);
+  if(relapsedToday)return'storm';if(isMilestone&&days>=30)return'rainbow';
+  if(isNight&&days>=100)return'aurora';if(streak>=30)return'clear';
+  if(streak>=7)return'clear';if(cravedToday&&streak<3)return'rain';
+  if(streak>=3)return'cloudy';if(days>=1)return'fog';return'mist';
+}
 function kingdomHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
+  var weather = getKingdomWeather();
   // Daily quest upgrade check
   var today = new Date().toDateString();
   D.dailyQuests = D.dailyQuests || { date: '', done: [] };
   if (D.dailyQuests.completed && !D.dailyQuests.done) { D.dailyQuests.done = D.dailyQuests.completed; delete D.dailyQuests.completed; }
   var isUpgraded = D.dailyQuests.date === today && (D.dailyQuests.done || []).length >= 3;
-  var h = '<div class="kingdom-scene tier-' + level + (isUpgraded ? ' k-upgraded' : '') + '" id="kingdom-scene">';
+  var h = '<div class="kingdom-scene tier-' + level + (isUpgraded ? ' k-upgraded' : '') + ' k-' + weather + '" id="kingdom-scene">';
   h += '<svg viewBox="0 0 500 280">';
   h += '<rect width="500" height="280" class="k-sky"/>';
   // Stars (hidden in day, visible at night via CSS)
@@ -8382,6 +8410,12 @@ function kingdomHTML() {
     h += '</g></g>';
   }
   h += '<rect width="500" height="280" class="k-damage-overlay" opacity="0"/>';
+  // Weather overlays
+  if(weather==='rain')h+='<g class="w-rain">'+Array.from({length:40},function(_,i){var x=Math.random()*500,y=Math.random()*40*-1,d=70+Math.random()*80;return '<line x1="'+x+'" y1="'+y+'" x2="'+(x-2)+'" y2="'+(y+15)+'" stroke="#88bbff" stroke-width=".5" opacity=".3" style="animation:rainDrop '+d+'ms linear infinite;animation-delay:'+(Math.random()*d)+'ms"/>'}).join('')+'</g>';
+  if(weather==='storm'){h+='<rect width="500" height="280" fill="#fff" opacity="0" style="animation:lightningFlash 6s ease-in-out infinite;pointer-events:none"/>';h+='<g class="w-rain">'+Array.from({length:60},function(_,i){var x=Math.random()*500,y=Math.random()*40*-1,d=50+Math.random()*60;return '<line x1="'+x+'" y1="'+y+'" x2="'+(x-2)+'" y2="'+(y+15)+'" stroke="#88bbff" stroke-width=".5" opacity=".4" style="animation:rainDrop '+d+'ms linear infinite;animation-delay:'+(Math.random()*d)+'ms"/>'}).join('')+'</g>';}
+  if(weather==='fog'||weather==='mist')h+='<rect x="0" y="0" width="500" height="280" fill="#b0c0d0" opacity=".15" style="animation:fogDrift 8s ease-in-out infinite alternate;pointer-events:none"/><rect x="0" y="0" width="500" height="280" fill="#b0c0d0" opacity=".1" style="animation:fogDrift 12s ease-in-out infinite alternate;animation-delay:-3s;pointer-events:none"/>';
+  if(weather==='rainbow'){var rY=90;h+='<g opacity=".4" style="animation:rainbowArc 4s ease-in-out infinite alternate">';['#ff0000','#ff8800','#ffff00','#00bb00','#0088ff','#4400ff','#8800cc'].forEach(function(c,i){var r=90+i*8;h+='<path d="M 80,'+rY+' A '+r+','+r+' 0 0,1 420,'+rY+'" fill="none" stroke="'+c+'" stroke-width="4"/>';});h+='</g>';}
+  if(weather==='aurora'){h+='<g opacity=".25" style="animation:auroraWave 6s ease-in-out infinite alternate">';['#00ff88','#00ccff','#ff44ff'].forEach(function(c,i){h+='<path d="M 0,'+(200-i*30)+' Q 80,'+(160-i*30)+' 180,'+(190-i*30)+' T 360,'+(170-i*30)+' T 500,'+(180-i*30)+'" fill="none" stroke="'+c+'" stroke-width="20" opacity=".15"/>';h+='<path d="M 0,'+(210-i*30)+' Q 100,'+(170-i*30)+' 200,'+(200-i*30)+' T 380,'+(180-i*30)+' T 500,'+(190-i*30)+'" fill="none" stroke="'+c+'" stroke-width="12" opacity=".12" style="animation:auroraWave 8s ease-in-out infinite alternate;animation-delay:-'+(i*2)+'s"/>';});h+='</g>';}
   h += '</svg></div>';
   return h;
 }
@@ -9045,7 +9079,13 @@ function throneRoomHTML() {
   // === ACTIVE THRONE ROOM ===
 
   // 0. Medieval date banner (top of throne room)
-  h += '<div style="text-align:center;font-size:13px;color:var(--accent);letter-spacing:.5px;font-style:italic;padding:6px 0 4px;font-family:MedievalSharp,serif;border-bottom:1px solid var(--border);margin-bottom:8px">' + medievalDate() + '</div>';
+  h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--accent);letter-spacing:.5px;font-style:italic;padding:6px 0 4px;font-family:MedievalSharp,serif;border-bottom:1px solid var(--border);margin-bottom:8px">';
+  h += medievalDate();
+  var w=D._lastWeather||(D._lastWeather=getKingdomWeather());D._lastWeather=w;
+  var wIcons={clear:'\u2600',cloudy:'\u2601',rain:'\u2602',storm:'\u26A1',fog:'\u2744',mist:'\u2744',rainbow:'\u269C',aurora:'\u2726'};
+  var wNames={clear:'Clear',cloudy:'Cloudy',rain:'Rain',storm:'Storm',fog:'Fog',mist:'Mist',rainbow:'Rainbow',aurora:'Aurora'};
+  h += '<span style="font-size:12px;opacity:.7">' + (wIcons[w]||'\u2600') + ' ' + (wNames[w]||'') + '</span>';
+  h += '</div>';
 
   // 1. Kingdom scene (full-width, no top border radius)
   h += '<div class="card" style="padding:0;overflow:hidden;border-radius:16px 16px 0 0">';
