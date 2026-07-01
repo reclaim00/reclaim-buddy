@@ -1182,7 +1182,7 @@ function defaultData() {
     assessmentTaken: false, assessmentResult: null,
     screenerPHQ9: { taken: false, result: null, progress: null },
     screenerGAD7: { taken: false, result: null, progress: null },
-    sobriety: { startDate: null, relapseDates: [], addictionType: '' },
+    sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '' },
     // Pre-populated coping cards displayed from defaults; user can add custom
     customCopingCards: [],
     savedArticles: [], savedBooks: [], savedPodcasts: [], savedVideos: [],
@@ -9183,6 +9183,36 @@ function warchestHTML() {
       h += '<span style="font-size:9px;background:var(--primary-light);padding:1px 5px;border-radius:4px;margin:1px;display:inline-block">' + (mIdx>=0?mNames[mIdx]:'') + '</span>';
     }
   }
+  // King's Ledger — real-world savings calculator
+  if (isActive) {
+    var cpDay = D.sobriety.costPerDay || 0;
+    var dQty = D.sobriety.dailyQuantity || 0;
+    var uLabel = D.sobriety.unitLabel || 'units';
+    var moneySaved = days * cpDay;
+    var unitsAvoided = days * dQty;
+    var hrsRegained = days * 1.5; // rough avg: 1.5 hrs/day lost to addiction
+    h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
+    h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:20px">\uD83D\uDCD6</span><h3 style="margin:0;font-size:14px">The King\u2019s Ledger</h3></div>';
+    h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">Real-world savings since your last reset. Set your daily cost and usage below.</p>';
+    h += '<div class="stat-grid" style="margin-bottom:6px">';
+    h += '<div class="stat-card"><div class="num" style="color:#d4a017">$' + moneySaved.toLocaleString() + '</div><div class="label">Money Saved</div></div>';
+    h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + safe(uLabel) + ' Avoided</div></div>';
+    h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + Math.round(hrsRegained) + 'h</div><div class="label">Time Regained</div></div>';
+    h += '</div>';
+    // Toggle settings
+    var lsKey = 'kings-ledger-open';
+    var isOpen = localStorage.getItem(lsKey) === '1';
+    h += '<div style="display:flex;align-items:center;gap:4px;cursor:pointer" onclick="var e=document.getElementById(\'kings-ledger-settings\');e.style.display=e.style.display===\'none\'?\'block\':\'none\';localStorage.setItem(\'' + lsKey + '\',e.style.display===\'block\'?\'1\':\'0\')">';
+    h += '<span style="font-size:10px;color:var(--muted)">\u2699 Settings</span></div>';
+    h += '<div id="kings-ledger-settings" style="display:' + (isOpen?'block':'none') + ';margin-top:6px">';
+    h += '<label style="font-size:10px;color:var(--muted);display:block">Cost per day ($)</label>';
+    h += '<input type="number" min="0" step="0.5" value="' + cpDay + '" onchange="D.sobriety.costPerDay=parseFloat(this.value)||0;saveData();render()" style="margin-bottom:4px">';
+    h += '<label style="font-size:10px;color:var(--muted);display:block">Daily usage (quantity)</label>';
+    h += '<input type="number" min="0" step="0.5" value="' + dQty + '" onchange="D.sobriety.dailyQuantity=parseFloat(this.value)||0;saveData();render()" style="margin-bottom:4px">';
+    h += '<label style="font-size:10px;color:var(--muted);display:block">Unit label (e.g. drinks, cigarettes)</label>';
+    h += '<input type="text" value="' + safe(uLabel) + '" onchange="D.sobriety.unitLabel=this.value;saveData();render()" placeholder="units" style="margin-bottom:0;font-size:12px">';
+    h += '</div></div>';
+  }
   if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your reign to start earning schillings</div>';
   // Shield info
   h += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">';
@@ -9592,6 +9622,12 @@ function throneRoomHTML() {
   h += '<div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:700;color:var(--text)">' + _rankIconHTML(rank.title, 16) + ' ' + rank.title + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">RANK</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--accent)">' + streak + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">STREAK</div></div>';
   h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')" title="' + (shields > 0 ? shields + ' shields' : '') + '"><div style="font-size:22px;font-weight:700;color:#d4a017">' + schillings + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COINS</div></div>';
+  // King's Ledger mini widget
+  if (D.sobriety.startDate && (D.sobriety.costPerDay || D.sobriety.dailyQuantity)) {
+    var _cpDay = D.sobriety.costPerDay || 0;
+    var _moneySaved = days * _cpDay;
+    h += '<div style="text-align:center;flex:1"><div style="font-size:18px;font-weight:700;color:var(--gold)">$' + _moneySaved.toLocaleString() + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;cursor:pointer" onclick="goTo(\'warchest\')">SAVED</div></div>';
+  }
   h += '</div>';
   // Rank progress
   if (rank.next) {
