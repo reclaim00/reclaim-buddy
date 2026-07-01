@@ -94,6 +94,7 @@ body.dark ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8a7
 @keyframes emberRise{0%{opacity:0;transform:translateY(0) translateX(0)}20%{opacity:.8}100%{opacity:0;transform:translateY(-18px) translateX(var(--ex))}}
 @keyframes fireGlow{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.3;transform:scale(1.12)}}
 @keyframes smokePuff{0%{opacity:0;transform:translateY(0) scale(.5)}30%{opacity:.3}100%{opacity:0;transform:translateY(-20px) scale(1.8)}}
+@keyframes torchFlicker{0%,100%{opacity:.6;transform:scaleY(1)}25%{opacity:.8;transform:scaleY(1.15)}50%{opacity:.5;transform:scaleY(0.9)}75%{opacity:.9;transform:scaleY(1.1)}}
 .kingdom-scene.damage .k-damage-overlay{animation:kingdomFlash .5s ease forwards}
 .kingdom-scene.flourish{animation:kingdomGlow 1.2s ease}
 @keyframes kingdomShake{0%,100%{transform:translateX(0)}10%{transform:translateX(-5px) rotate(-.4deg)}20%{transform:translateX(4px) rotate(.3deg)}30%{transform:translateX(-3px) rotate(-.2deg)}50%{transform:translateX(2px)}70%{transform:translateX(-1px)}}
@@ -1615,6 +1616,8 @@ function playSound(type) {
   } catch(e) {}
 }
 function earnSchillings(amount, reason) {
+  var w = getWarchest();
+  if (w.boostData.doubleExpiry > Date.now()) amount *= 2;
   D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
   var before = D.warchest.schillings || 0;
   D.warchest.schillings = before + amount;
@@ -1785,6 +1788,13 @@ async function unlockWithBiometric() {
 }
 
 var D = AUTH_USER ? loadData() : defaultData();
+// Migrate warchest for boosts and milestone data
+D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
+D.warchest.boostData = D.warchest.boostData || { streak: 0, doubleExpiry: 0, bonusDate: '' };
+D.warchest.milestonesClaimed = D.warchest.milestonesClaimed || [];
+D.shopPurchases = D.shopPurchases || [];
+function hasShop(id) { return (D.shopPurchases||[]).indexOf(id) >= 0; }
+function getWarchest() { var w = D.warchest = D.warchest || {}; w.boostData = w.boostData || {}; w.boostData.streak = w.boostData.streak || 0; w.boostData.doubleExpiry = w.boostData.doubleExpiry || 0; w.boostData.bonusDate = w.boostData.bonusDate || ''; w.milestonesClaimed = w.milestonesClaimed || []; return w; }
 var pg = 'home';
 var subPg = '';
 
@@ -2261,6 +2271,18 @@ function selectAddiction(type, btn) {
 function recordRelapse() {
   if (!confirm(t('This records a relapse date. Remember: recovery is not linear. Every day is a fresh start.'))) return;
   if (!D.sobriety.relapseDates) D.sobriety.relapseDates = [];
+  var w = getWarchest();
+  // Shop streak shield: consume one to prevent streak reset
+  if (w.boostData.streak > 0) {
+    w.boostData.streak--;
+    w.lastDayCounted = soberDays();
+    w.lastEntryCount = (D.journal || []).length;
+    saveData();
+    setTimeout(kingdomDamage, 150);
+    setTimeout(villageDamage, 200);
+    showRelapseRecovery(true);
+    return;
+  }
   D.sobriety.relapseDates.push(Date.now());
   D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
   D.warchest.shields = (D.warchest.shields || 0) + 1;
@@ -2272,12 +2294,17 @@ function recordRelapse() {
   showRelapseRecovery();
 }
 
-function showRelapseRecovery() {
+function showRelapseRecovery(protectedByBoost) {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var shields = (D.warchest && D.warchest.shields) || 0;
-  var shieldLine = shields > 0 ? '<div style="font-size:13px;color:var(--gold);margin-bottom:6px">&#128737; Your streak is protected by ' + shields + ' shield' + (shields!==1?'s':'') + '</div>' : '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">&#128737; Your next relapse will earn a shield to protect your streak</div>';
-  var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#128737;</div><h3 style="font-size:20px;font-weight:700;color:var(--danger);margin:0">Relapse Recorded</h3><p style="font-size:13px;color:var(--muted);margin-top:4px">Your streak continues — a shield absorbed the impact</p>' + shieldLine + '</div>';
+  var shieldMsg = '';
+  if (protectedByBoost) {
+    shieldMsg = '<div style="font-size:14px;color:var(--gold);margin-bottom:6px;background:var(--primary-light);border-radius:8px;padding:8px">&#128737; <strong>Streak Shield absorbed the relapse!</strong> Your sober streak is fully preserved.</div>';
+  } else {
+    var shields = (D.warchest && D.warchest.shields) || 0;
+    shieldMsg = shields > 0 ? '<div style="font-size:13px;color:var(--gold);margin-bottom:6px">&#128737; Your streak is protected by ' + shields + ' shield' + (shields!==1?'s':'') + '</div>' : '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">&#128737; Your next relapse will earn a shield to protect your streak</div>';
+  }
+  var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#128737;</div><h3 style="font-size:20px;font-weight:700;color:var(--danger);margin:0">Relapse Recorded</h3><p style="font-size:13px;color:var(--muted);margin-top:4px">' + (protectedByBoost ? 'Your streak continues — a Streak Shield protected it' : 'Your streak continues — a shield absorbed the impact') + '</p>' + shieldMsg + '</div>';
   // Next 1 hour
   h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#9200; Next 1 Hour</div><div style="font-size:13px;color:var(--text);line-height:1.5">Breathe. You are not back to square one — you have all the tools you\'ve built. Drink water, wash your face, step outside. Call or text your comrade or a crisis line if you need to talk. Delete the means of access. Write one sentence about what happened without judgment.</div></div>';
   // Next 24 hours
@@ -7690,7 +7717,6 @@ function _getTaskCheck(task) {
 }
 function getDailyQuests() {
   D.dailyQuests = D.dailyQuests || { date: '', done: [] };
-  // Migrate old format (completed -> done)
   if (D.dailyQuests.completed && !D.dailyQuests.done) { D.dailyQuests.done = D.dailyQuests.completed; delete D.dailyQuests.completed; }
   var today = new Date();
   var dateStr = today.toDateString();
@@ -7700,11 +7726,14 @@ function getDailyQuests() {
   var dayNum = today.getDate();
   var picks = [];
   var n = tasks.length;
-  for (var p = 0; p < 3 && p < n; p++) {
+  var w = getWarchest();
+  var bonusActive = w.boostData.bonusDate === dateStr;
+  var questCount = bonusActive ? Math.min(4, n) : Math.min(3, n);
+  for (var p = 0; p < questCount && p < n; p++) {
     var idx = (dayNum * 7 + p * 13 + type.length) % n;
     picks.push(tasks[idx]);
   }
-  return { tasks: picks, done: D.dailyQuests.done || [], date: dateStr };
+  return { tasks: picks, done: D.dailyQuests.done || [], date: dateStr, bonus: bonusActive };
 }
 function completeQuest(taskId) {
   try {
@@ -7715,7 +7744,7 @@ function completeQuest(taskId) {
     var task = null;
     if (q.tasks) q.tasks.forEach(function(t){ if (t.id === taskId) task = t; });
     if (task && task.pts) earnSchillings(task.pts, 'Daily quest: ' + (task.title || ''));
-    if (q.done.length === (q.tasks ? q.tasks.length : 0) && (q.tasks ? q.tasks.length : 0) === 3) { earnSchillings(10, 'All daily quests complete!'); playSound('quest'); }
+    if (q.done.length === (q.tasks ? q.tasks.length : 0) && (q.tasks ? q.tasks.length : 0) >= 3) { earnSchillings(10, 'All daily quests complete!'); playSound('quest'); }
     saveData();
   } catch(e) {
     console.error('Quest error:', e);
@@ -7727,7 +7756,7 @@ function dailyQuestsHTML() {
   if (!q.tasks.length) return '';
   var type = (D.targetAddictions && D.targetAddictions.length) ? D.targetAddictions[0] : 'Other';
   var h = '<div class="card" style="margin:6px 0">';
-  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="font-size:16px">\u269C</div><div><div style="font-size:13px;font-weight:700;color:var(--primary)">' + type + ' Daily Quests</div><div style="font-size:10px;color:var(--muted)">Complete all 3 for bonus schillings</div></div></div>';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="font-size:16px">\u269C</div><div><div style="font-size:13px;font-weight:700;color:var(--primary)">' + type + ' Daily Quests</div><div style="font-size:10px;color:var(--muted)">Complete all ' + (q.bonus ? '4' : '3') + ' for bonus schillings' + (q.bonus ? '<span style="color:var(--gold)"> &#10086; Bonus Quest active!</span>' : '') + '</div></div></div>';
   var allDone = true;
   q.tasks.forEach(function(t){
     var done = q.done.indexOf(t.id) >= 0;
@@ -8468,6 +8497,49 @@ function kingdomHTML() {
     }
   }
   h += '</g>';
+  // Shop decor: banners, tapestry, torches, enhanced flags
+  if (level >= 4) {
+    // Stone Banners hanging from keep walls
+    if (hasShop('banners')) {
+      h += '<rect x="196" y="106" width="4" height="28" rx="1" fill="#6a4a2a" opacity=".7"/>';
+      h += '<polygon points="196,106 200,106 198,98" fill="#8a2a2a" opacity=".7"/>';
+      h += '<rect x="300" y="106" width="4" height="28" rx="1" fill="#6a4a2a" opacity=".7"/>';
+      h += '<polygon points="300,106 304,106 302,98" fill="#8a2a2a" opacity=".7"/>';
+    }
+    // Royal Tapestry behind throne
+    if (hasShop('tapestry')) {
+      h += '<rect x="228" y="80" width="44" height="30" rx="2" fill="#4a1a2a" opacity=".6"/>';
+      h += '<rect x="231" y="83" width="38" height="24" rx="1" fill="none" stroke="#d4a017" stroke-width=".5" opacity=".5"/>';
+      h += '<rect x="235" y="87" width="30" height="16" rx="1" fill="#6a2a3a" opacity=".4"/>';
+      h += '<circle cx="250" cy="95" r="5" fill="#d4a017" opacity=".4"/>';
+      h += '<circle cx="250" cy="95" r="2.5" fill="#8a2a2a" opacity=".5"/>';
+    }
+    // Torch Sconces flanking door
+    if (hasShop('torches')) {
+      h += '<rect x="227" y="164" width="2" height="8" rx=".5" fill="#4a3a2a"/>';
+      h += '<ellipse cx="228" cy="163" rx="2.5" ry="3.5" fill="#ff6622" style="transform-origin:228px 163px;animation:torchFlicker .3s ease-in-out infinite"/>';
+      h += '<ellipse cx="228" cy="164" rx="1.5" ry="2.5" fill="#ffcc00" style="transform-origin:228px 164px;animation:torchFlicker .25s ease-in-out infinite .1s"/>';
+      h += '<circle cx="228" cy="163" r="6" fill="#ff6622" opacity=".12" style="animation:torchFlicker .3s ease-in-out infinite"/>';
+      h += '<rect x="271" y="164" width="2" height="8" rx=".5" fill="#4a3a2a"/>';
+      h += '<ellipse cx="272" cy="163" rx="2.5" ry="3.5" fill="#ff6622" style="transform-origin:272px 163px;animation:torchFlicker .3s ease-in-out infinite .15s"/>';
+      h += '<ellipse cx="272" cy="164" rx="1.5" ry="2.5" fill="#ffcc00" style="transform-origin:272px 164px;animation:torchFlicker .25s ease-in-out infinite .25s"/>';
+      h += '<circle cx="272" cy="163" r="6" fill="#ff6622" opacity=".12" style="animation:torchFlicker .3s ease-in-out infinite .15s"/>';
+    }
+    // Enhanced heraldic flags on towers
+    if (hasShop('flags') && level >= 5) {
+      h += '<line x1="171.5" y1="100" x2="171.5" y2="60" stroke-width="1.5" class="k-flagpole" opacity=".5"/>';
+      h += '<polygon points="171.5,60 185,65 171.5,70" fill="#cc3a3a" opacity=".5" class="k-flag-l"/>';
+      h += '<line x1="328.5" y1="100" x2="328.5" y2="60" stroke-width="1.5" class="k-flagpole" opacity=".5"/>';
+      h += '<polygon points="328.5,60 342,65 328.5,70" fill="#cc3a3a" opacity=".5" class="k-flag-r"/>';
+      // Small pennants on curtain wall guard towers
+      if (level >= 12) {
+        h += '<line x1="129" y1="143" x2="129" y2="133" stroke-width="1" class="k-flagpole" opacity=".4"/>';
+        h += '<polygon points="129,133 136,136 129,139" fill="#aa3a3a" opacity=".4"/>';
+        h += '<line x1="371" y1="143" x2="371" y2="133" stroke-width="1" class="k-flagpole" opacity=".4"/>';
+        h += '<polygon points="371,133 378,136 371,139" fill="#aa3a3a" opacity=".4"/>';
+      }
+    }
+  }
   // Chimney smoke from castle
   if (level >= 2) {
     h += '<g class="k-chimney-smoke">';
@@ -8720,7 +8792,13 @@ function kingdomHTML() {
   else h += '<rect x="85" y="173" width="8" height="25" class="k-tree-trunk"/><circle cx="89" cy="158" r="' + tr + '" class="k-tree"/>';
   if (level >= 4) h += '<rect x="402" y="173" width="8" height="25" class="k-tree-trunk"/><circle cx="406" cy="158" r="' + Math.max(8, tr-4) + '" class="k-tree"/>';
   h += '</g>';
-  if (level >= 4) h += '<path d="M 235,198 Q 220,222 200,248 Q 230,238 250,198" class="k-path" opacity=".35"/>';
+  if (level >= 4) { h += '<path d="M 235,198 Q 220,222 200,248 Q 230,238 250,198" class="k-path" opacity=".35"/>';
+    // Cobblestone Path (shop decor)
+    if (hasShop('paths')) {
+      var cs = [[228,202],[222,208],[215,214],[208,220],[202,226],[196,232],[205,235],[218,230],[232,222],[240,214],[246,206]];
+      for (var csi=0;csi<cs.length;csi++) h += '<ellipse cx="'+cs[csi][0]+'" cy="'+cs[csi][1]+'" rx="3" ry="2" fill="rgba(100,90,80,.25)"/><ellipse cx="'+(cs[csi][0]+1)+'" cy="'+(cs[csi][1]-1)+'" rx="1.5" ry="1" fill="rgba(120,110,100,.15)"/>';
+    }
+  }
   if (level >= 5) {
     h += '<g class="k-flowers">';
     var fc = ['#ff7788','#ff99aa','#ffbb44','#ee77cc'];
@@ -8987,14 +9065,25 @@ function updateVillage() {
   el.innerHTML = villageHTML();
 }
 function warchestHTML() {
+  var w = getWarchest();
   var days = soberDays();
   var entries = (D.journal || []).length;
-  D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
-  var schillings = D.warchest.schillings || 0;
-  var shields = D.warchest.shields || 0;
+  var schillings = w.schillings || 0;
+  var shields = w.shields || 0;
+  var bd = w.boostData || {};
   var dayEarned = days * 5;
   var entryEarned = entries * 5;
   var isActive = D.sobriety.startDate ? true : false;
+  // Award milestone shields
+  var milestones = [30,90,180,365,730];
+  var mNames = ['1 Month','3 Months','6 Months','1 Year','2 Years'];
+  for (var mi=0;mi<milestones.length;mi++) {
+    if (days >= milestones[mi] && (w.milestonesClaimed||[]).indexOf(milestones[mi]) < 0) {
+      w.milestonesClaimed = w.milestonesClaimed || [];
+      w.milestonesClaimed.push(milestones[mi]);
+      w.shields = (w.shields||0) + 1;
+    }
+  }
   var h = '<div class="card" style="text-align:center;padding:16px">';
   h += '<div style="font-size:13px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">&#128176; The Royal War Chest</div>';
   h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px">Earn schillings by staying sober and writing journal entries</div>';
@@ -9010,6 +9099,17 @@ function warchestHTML() {
   h += '<div style="display:flex;gap:6px;margin-bottom:10px">';
   h += '<button class="btn btn-primary btn-sm" onclick="buyShield()" style="flex:1;background:linear-gradient(135deg,#6a4a2a,#8a6a4a);font-size:12px"' + (schillings < 30 ? ' disabled' : '') + '>&#128737; Buy Shield (30 schillings)</button>';
   h += '</div>';
+  // Active boosts
+  var boostLines = [];
+  if ((bd.streak||0) > 0) boostLines.push('&#2629; Streak Shield &times;' + bd.streak);
+  if (bd.doubleExpiry > Date.now()) boostLines.push('&#269C; Double Coins (' + Math.ceil((bd.doubleExpiry-Date.now())/3600000) + 'h)');
+  if (bd.bonusDate === new Date().toDateString()) boostLines.push('&#10086; Bonus Quest active');
+  if (boostLines.length > 0) {
+    h += '<div style="background:var(--primary-light);border-radius:8px;padding:8px;margin-bottom:8px">';
+    h += '<div style="font-size:10px;font-weight:700;color:var(--primary);margin-bottom:3px">Active Boosts</div>';
+    for (var bi=0;bi<boostLines.length;bi++) h += '<div style="font-size:11px;color:var(--text);line-height:1.6">' + boostLines[bi] + '</div>';
+    h += '</div>';
+  }
   // Earnings breakdown
   h += '<div style="background:var(--primary-light);border-radius:10px;padding:10px;margin-bottom:8px">';
   h += '<div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:4px">Earnings Breakdown</div>';
@@ -9017,6 +9117,15 @@ function warchestHTML() {
   h += '<span>' + days + ' days &times; 5 = ' + dayEarned + '</span>';
   h += '<span>' + entries + ' entries &times; 5 = ' + entryEarned + '</span>';
   h += '</div></div>';
+  // Milestone shields
+  var awarded = w.milestonesClaimed||[];
+  if (awarded.length > 0) {
+    h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">Milestone shields earned: ' + awarded.length + '</div>';
+    for (var mi2=0;mi2<awarded.length;mi2++) {
+      var mIdx = milestones.indexOf(awarded[mi2]);
+      h += '<span style="font-size:9px;background:var(--primary-light);padding:1px 5px;border-radius:4px;margin:1px;display:inline-block">' + (mIdx>=0?mNames[mIdx]:'') + '</span>';
+    }
+  }
   if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your reign to start earning schillings</div>';
   // Shield info
   h += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">';
@@ -9029,10 +9138,10 @@ function warchestHTML() {
   return h;
 }
 function buyShield() {
-  D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
-  if ((D.warchest.schillings || 0) < 30) { alert('Not enough schillings! You need 30.'); render(); return; }
-  D.warchest.schillings -= 30;
-  D.warchest.shields = (D.warchest.shields || 0) + 1;
+  var w = getWarchest();
+  if ((w.schillings || 0) < 30) { alert('Not enough schillings! You need 30.'); render(); return; }
+  w.schillings -= 30;
+  w.shields = (w.shields || 0) + 1;
   saveData(); render();
 }
 var SHOP_ITEMS = [
@@ -9049,7 +9158,10 @@ var SHOP_ITEMS = [
   {id:'bonus', cat:'Boosts', name:'Bonus Quest', desc:'Unlock a 4th daily quest today', cost:40, icon:'\u2766'}
 ];
 function shopHTML() {
-  var s = D.shopPurchases||[];var w=D.warchest||{};var sch=w.schillings||0;
+  var s = D.shopPurchases||[];var w=getWarchest();var sch=w.schillings||0;var bd=w.boostData||{};
+  var activeStr = (bd.streak||0) > 0 ? '<span style="font-size:9px;color:var(--gold)">('+bd.streak+' active)</span>' : '';
+  var activeDbl = bd.doubleExpiry > Date.now() ? '<span style="font-size:9px;color:var(--gold)">('+Math.ceil((bd.doubleExpiry-Date.now())/3600000)+'h left)</span>' : '';
+  var activeBon = bd.bonusDate === new Date().toDateString() ? '<span style="font-size:9px;color:var(--gold)">(active today)</span>' : '';
   var h='<div class="card" style="padding:16px;text-align:center">';
   h+='<div style="font-size:18px;margin-bottom:2px">\u269C</div>';
   h+='<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">The Royal Shop</div>';
@@ -9062,10 +9174,17 @@ function shopHTML() {
     for(var i=0;i<SHOP_ITEMS.length;i++){
       var item=SHOP_ITEMS[i];if(item.cat!==cat)continue;
       var owned=s.indexOf(item.id)>=0;
-      h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:6px;background:'+(owned?'var(--primary-light)':'var(--card)')+';border:1px solid '+(owned?'var(--primary)':'var(--border)')+'">';
+      var isBoost=item.cat==='Boosts';
+      var boostStatus='';
+      if(isBoost){
+        if(item.id==='streak')boostStatus=activeStr;
+        else if(item.id==='double')boostStatus=activeDbl;
+        else if(item.id==='bonus')boostStatus=activeBon;
+      }
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:6px;background:'+((owned&&!isBoost)?'var(--primary-light)':'var(--card)')+';border:1px solid '+((owned&&!isBoost)?'var(--primary)':'var(--border)')+'">';
       h+='<div style="font-size:18px">'+item.icon+'</div>';
-      h+='<div style="flex:1;text-align:left;min-width:0"><div style="font-size:11px;font-weight:600">'+item.name+'</div><div style="font-size:9px;color:var(--muted)">'+item.desc+'</div></div>';
-      if(owned){h+='<span style="font-size:10px;color:var(--accent);font-weight:700">\u2713 Owned</span>';}
+      h+='<div style="flex:1;text-align:left;min-width:0"><div style="font-size:11px;font-weight:600">'+item.name+' '+boostStatus+'</div><div style="font-size:9px;color:var(--muted)">'+item.desc+'</div></div>';
+      if(owned&&!isBoost){h+='<span style="font-size:10px;color:var(--accent);font-weight:700">\u2713 Owned</span>';}
       else{h+='<button class="btn btn-sm btn-primary" onclick="buyShopItem(\''+item.id+'\')" style="font-size:9px;padding:3px 8px"'+(sch<item.cost?' disabled':'')+'>'+item.cost+' \u269C</button>';}
       h+='</div>';
     }
@@ -9074,11 +9193,16 @@ function shopHTML() {
   h+='</div>';return h;
 }
 function buyShopItem(id) {
-  var s=D.shopPurchases||[];if(s.indexOf(id)>=0)return;
+  var s=D.shopPurchases||[];
   var item=null;for(var i=0;i<SHOP_ITEMS.length;i++){if(SHOP_ITEMS[i].id===id){item=SHOP_ITEMS[i];break}}
-  if(!item)return;var w=D.warchest||{};var sch=w.schillings||0;
+  if(!item)return;var w=getWarchest();var sch=w.schillings||0;
   if(sch<item.cost){alert('Not enough schillings! Need '+item.cost+'.');return;}
-  D.warchest.schillings=sch-item.cost;D.shopPurchases=D.shopPurchases||[];D.shopPurchases.push(id);
+  D.warchest.schillings=sch-item.cost;
+  // Boost items are consumable — track in boostData, not shopPurchases
+  if (id==='streak') { D.warchest.boostData.streak = (D.warchest.boostData.streak||0) + 1; }
+  else if (id==='double') { D.warchest.boostData.doubleExpiry = Date.now() + 86400000; }
+  else if (id==='bonus') { D.warchest.boostData.bonusDate = new Date().toDateString(); }
+  else { D.shopPurchases=D.shopPurchases||[];D.shopPurchases.push(id); }
   saveData();playSound('coin');render();
 }
 function villageDamage() {
@@ -9100,84 +9224,109 @@ function showVillageModal() {
   document.body.appendChild(ov);
 }
 function _rtArthur(cx,isActive){
+  var skinTone = '#c89a6a';
+  var bodyColor = hasShop('crimson') ? '#6a0a0a' : '#4a1570';
+  var crownColor = hasShop('crimson') ? '#cc2222' : '#d4a017';
+  var jewelColor = hasShop('crimson') ? '#ff4444' : '#e04040';
   var h='<g class="npc-idle">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
   h+='<path d="M'+(cx-14)+',20 L'+(cx-14)+',46 L'+(cx+14)+',46 L'+(cx+14)+',20 Z" fill="#3a0a50" opacity=".5" rx="2"/>';
-  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="#4a1570"/>';
+  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="'+bodyColor+'"/>';
   h+='<rect x="'+(cx-10)+'" y="20" width="20" height="4" rx="1.5" fill="#f0e8d0"/>';
   h+='<rect x="'+(cx-10)+'" y="43" width="20" height="3" rx="1" fill="#f0e8d0"/>';
   for(var ei=0;ei<4;ei++)h+='<rect x="'+(cx-8+ei*5)+'" y="21" width="1.5" height="2" rx=".5" fill="#333" opacity=".4"/>';
   h+='<line x1="'+cx+'" y1="24" x2="'+cx+'" y2="46" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
-  h+='<path d="M'+(cx-8)+',28 Q'+cx+',33 '+(cx+8)+',28" fill="none" stroke="#d4a017" stroke-width="1.2" opacity=".7"/>';
-  h+='<circle cx="'+cx+'" cy="32" r="2" fill="#d4a017"/>';
+  h+='<path d="M'+(cx-8)+',28 Q'+cx+',33 '+(cx+8)+',28" fill="none" stroke="'+crownColor+'" stroke-width="1.2" opacity=".7"/>';
+  h+='<circle cx="'+cx+'" cy="32" r="2" fill="'+crownColor+'"/>';
   h+='<rect x="'+(cx-10)+'" y="33" width="20" height="2" rx="1" fill="rgba(0,0,0,.25)"/>';
-  h+='<rect x="'+(cx-2.5)+'" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
-  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="#c89a6a"/>';
-  h+='<circle cx="'+cx+'" cy="10" r="7" fill="#c89a6a"/>';
+  h+='<rect x="'+(cx-2.5)+'" y="32.5" width="5" height="3" rx=".5" fill="'+crownColor+'" opacity=".8"/>';
+  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="'+skinTone+'"/>';
+  h+='<circle cx="'+cx+'" cy="10" r="7" fill="'+skinTone+'"/>';
   h+='<circle cx="'+(cx-2.5)+'" cy="9" r="1" fill="#333"/>';
   h+='<circle cx="'+(cx+2.5)+'" cy="9" r="1" fill="#333"/>';
   h+='<path d="M'+(cx-4.5)+',7 Q'+(cx-2.5)+',6 '+(cx-1)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
   h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',6 '+(cx+4.5)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
-  h+='<path d="M'+(cx-7)+',7 L'+(cx-5)+',0 L'+(cx-2)+',4 L'+cx+',-1 L'+(cx+2)+',4 L'+(cx+5)+',0 L'+(cx+7)+',7 Z" fill="#d4a017" stroke="#b8860b" stroke-width=".5"/>';
-  h+='<circle cx="'+cx+'" cy="2" r="1.2" fill="#e04040"/>';
+  h+='<path d="M'+(cx-7)+',7 L'+(cx-5)+',0 L'+(cx-2)+',4 L'+cx+',-1 L'+(cx+2)+',4 L'+(cx+5)+',0 L'+(cx+7)+',7 Z" fill="'+crownColor+'" stroke="#b8860b" stroke-width=".5"/>';
+  h+='<circle cx="'+cx+'" cy="2" r="1.2" fill="'+jewelColor+'"/>';
   h+='<circle cx="'+(cx-3.5)+'" cy="2" r=".8" fill="#4060e0"/>';
   h+='<circle cx="'+(cx+3.5)+'" cy="2" r=".8" fill="#40e060"/>';
   h+='<rect x="'+(cx-7)+'" y="6" width="14" height="1.5" rx=".5" fill="#b8860b"/>';
-  h+='<g class="arthur-larm" style="--a-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-14)+',38 L'+(cx-13)+',46" fill="none" stroke="#4a1570" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-13)+'" cy="47" rx="3" ry="2" fill="#c89a6a"/></g>';
-  h+='<g class="arthur-rarm" style="--a-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',38 L'+(cx+13)+',46" fill="none" stroke="#4a1570" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+13)+'" cy="47" rx="3" ry="2" fill="#c89a6a"/></g>';
+  h+='<g class="arthur-larm" style="--a-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-14)+',38 L'+(cx-13)+',46" fill="none" stroke="'+bodyColor+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-13)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
+  h+='<g class="arthur-rarm" style="--a-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',38 L'+(cx+13)+',46" fill="none" stroke="'+bodyColor+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+13)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
   h+='</g>';return h;
 }
 function _rtGertrude(cx,isActive){
+  var skinTone = '#d4a574';
+  var armorColor = hasShop('silver') ? '#c0c0c0' : '#4a6a6a';
+  var chainColor = hasShop('silver') ? '#d0d0d0' : '#2a5a5a';
+  var helmColor = hasShop('silver') ? '#d0d0d0' : '#8a9a9a';
+  var visorColor = hasShop('silver') ? '#e0e0e0' : '#6a7a7a';
   var h='<g class="npc-idle'+(isActive?'':' npc-idle-d1')+'">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
-  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="#4a6a6a"/>';
+  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="'+armorColor+'"/>';
   for(var li=0;li<8;li++){h+='<line x1="'+(cx-9)+'" y1="'+(23+li*3)+'" x2="'+(cx+9)+'" y2="'+(23+li*3)+'" stroke="rgba(200,220,220,.15)" stroke-width=".5"/>';h+='<line x1="'+(cx-9+4)+'" y1="'+(24.5+li*3)+'" x2="'+(cx+9-4)+'" y2="'+(24.5+li*3)+'" stroke="rgba(200,220,220,.1)" stroke-width=".5"/>';}
-  h+='<rect x="'+(cx-8)+'" y="22" width="16" height="22" rx="2" fill="#2a5a5a" opacity=".85"/>';
+  h+='<rect x="'+(cx-8)+'" y="22" width="16" height="22" rx="2" fill="'+chainColor+'" opacity=".85"/>';
   h+='<path d="M'+(cx-3)+',26 L'+(cx+3)+',26 L'+(cx+3)+',28 L'+(cx+5)+',28 L'+(cx+5)+',34 L'+(cx+3)+',34 L'+(cx+3)+',40 L'+(cx+3+0.5)+',40 L'+(cx+3)+',42 L'+(cx-3)+',42 L'+(cx-3)+',40 L'+(cx-3-0.5)+',40 L'+(cx-3)+',34 L'+(cx-5)+',34 L'+(cx-5)+',28 L'+(cx-3)+',28 Z" fill="#d4a017" opacity=".8"/>';
   h+='<rect x="'+(cx-8)+'" y="33" width="16" height="2" rx="1" fill="#8B4513"/>';
   h+='<rect x="'+(cx-2)+'" y="32.5" width="4" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
-  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="#d4a574"/>';
-  h+='<circle cx="'+cx+'" cy="10" r="7" fill="#d4a574"/>';
+  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="'+skinTone+'"/>';
+  h+='<circle cx="'+cx+'" cy="10" r="7" fill="'+skinTone+'"/>';
   h+='<circle cx="'+(cx-2.5)+'" cy="9" r="1" fill="#333"/>';
   h+='<circle cx="'+(cx+2.5)+'" cy="9" r="1" fill="#333"/>';
   h+='<path d="M'+(cx-4.5)+',7 Q'+(cx-2.5)+',6 '+(cx-1)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
   h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',6 '+(cx+4.5)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
-  h+='<path d="M'+(cx-8)+',7 Q'+cx+',-4 '+(cx+8)+',7 Q'+cx+',12 '+(cx-8)+',7 Z" fill="#8a9a9a"/>';
+  h+='<path d="M'+(cx-8)+',7 Q'+cx+',-4 '+(cx+8)+',7 Q'+cx+',12 '+(cx-8)+',7 Z" fill="'+helmColor+'"/>';
   h+='<path d="M'+(cx-5)+',6 Q'+cx+',8 '+(cx+5)+',6" fill="none" stroke="#2a2a2a" stroke-width="1.2"/>';
-  h+='<path d="M'+cx+',-1 L'+cx+',10" stroke="#6a7a7a" stroke-width="1.5"/>';
-  h+='<line x1="'+cx+'" y1="3" x2="'+cx+'" y2="8" stroke="#6a7a7a" stroke-width="1.2"/>';
-  h+='<path d="M'+(cx-9)+',14 L'+(cx+9)+',14 L'+(cx+7)+',17 L'+(cx-7)+',17 Z" fill="#7a8a8a"/>';
-  h+='<g class="gertrude-larm" style="--g-larm-origin:'+(cx-10)+'px 23px"><path d="M'+(cx-10)+',23 L'+(cx-13)+',36 L'+(cx-12)+',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-12)+'" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/></g>';
-  h+='<g class="gertrude-rarm" style="--g-rarm-origin:'+(cx+10)+'px 23px"><path d="M'+(cx+10)+',23 L'+(cx+13)+',36 L'+(cx+12)+',45" fill="none" stroke="#6a7a7a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+12)+'" cy="46" rx="3.5" ry="2.5" fill="#8a9a9a"/></g>';
+  h+='<path d="M'+cx+',-1 L'+cx+',10" stroke="'+visorColor+'" stroke-width="1.5"/>';
+  h+='<line x1="'+cx+'" y1="3" x2="'+cx+'" y2="8" stroke="'+visorColor+'" stroke-width="1.2"/>';
+  h+='<path d="M'+(cx-9)+',14 L'+(cx+9)+',14 L'+(cx+7)+',17 L'+(cx-7)+',17 Z" fill="'+armorColor+'"/>';
+  h+='<g class="gertrude-larm" style="--g-larm-origin:'+(cx-10)+'px 23px"><path d="M'+(cx-10)+',23 L'+(cx-13)+',36 L'+(cx-12)+',45" fill="none" stroke="'+armorColor+'" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-12)+'" cy="46" rx="3.5" ry="2.5" fill="'+helmColor+'"/></g>';
+  h+='<g class="gertrude-rarm" style="--g-rarm-origin:'+(cx+10)+'px 23px"><path d="M'+(cx+10)+',23 L'+(cx+13)+',36 L'+(cx+12)+',45" fill="none" stroke="'+armorColor+'" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+12)+'" cy="46" rx="3.5" ry="2.5" fill="'+helmColor+'"/></g>';
   h+='</g>';return h;
 }
 function _rtOswald(cx,isActive){
+  var skinTone = '#c09a7a';
+  var robeColor = hasShop('starry') ? '#0a0a5a' : '#2a1560';
+  var hatColor = hasShop('starry') ? '#0a0a3a' : '#1a0a3a';
+  var starColor = hasShop('starry') ? '#aaaaff' : '#ffd700';
+  var orbGlow = hasShop('starry') ? '#6666ff' : '#8a6af0';
   var h='<g class="npc-idle'+(isActive?'':' npc-idle-d2')+'">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
-  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="#2a1560"/>';
+  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="'+robeColor+'"/>';
   h+='<rect x="'+(cx-10)+'" y="20" width="20" height="3" rx="1.5" fill="#4a2590"/>';
-  h+='<text x="'+(cx-5)+'" y="30" font-size="3" fill="#ffd700" opacity=".6">\u2726</text>';
-  h+='<text x="'+(cx+3)+'" y="28" font-size="2.5" fill="#ffd700" opacity=".5">\u2727</text>';
-  h+='<text x="'+(cx-4)+'" y="39" font-size="2.5" fill="#ffd700" opacity=".4">\u2727</text>';
-  h+='<text x="'+(cx+4)+'" y="40" font-size="3" fill="#ffd700" opacity=".6">\u2726</text>';
+  if (hasShop('starry')) {
+    for (var sti=0;sti<3;sti++) h+='<circle cx="'+(cx-6+sti*6)+'" cy="'+(25+sti*8)+'" r=".8" fill="'+starColor+'" opacity=".6" style="animation:windowGlow 1.5s ease-in-out infinite;animation-delay:'+(sti*0.5)+'s"/>';
+  } else {
+    h+='<text x="'+(cx-5)+'" y="30" font-size="3" fill="'+starColor+'" opacity=".6">\u2726</text>';
+    h+='<text x="'+(cx+3)+'" y="28" font-size="2.5" fill="'+starColor+'" opacity=".5">\u2727</text>';
+    h+='<text x="'+(cx-4)+'" y="39" font-size="2.5" fill="'+starColor+'" opacity=".4">\u2727</text>';
+    h+='<text x="'+(cx+4)+'" y="40" font-size="3" fill="'+starColor+'" opacity=".6">\u2726</text>';
+  }
   h+='<line x1="'+cx+'" y1="23" x2="'+cx+'" y2="46" stroke="rgba(255,255,255,.08)" stroke-width=".8"/>';
   h+='<rect x="'+(cx-10)+'" y="33" width="20" height="2" rx="1" fill="#1a0a3a"/>';
   h+='<rect x="'+(cx-2.5)+'" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
-  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="#c09a7a"/>';
-  h+='<circle cx="'+cx+'" cy="10" r="7" fill="#c09a7a"/>';
+  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="'+skinTone+'"/>';
+  h+='<circle cx="'+cx+'" cy="10" r="7" fill="'+skinTone+'"/>';
   h+='<path d="M'+(cx-4)+',12 L'+(cx-5)+',18 L'+(cx-2)+',16 L'+cx+',19 L'+(cx+2)+',16 L'+(cx+5)+',18 L'+(cx+4)+',12 Z" fill="#f0e8e0"/>';
   h+='<circle cx="'+(cx-2.5)+'" cy="9" r="1" fill="#333"/>';
   h+='<circle cx="'+(cx+2.5)+'" cy="9" r="1" fill="#333"/>';
   h+='<path d="M'+(cx-5)+',7 Q'+(cx-2.5)+',5.5 '+(cx-1)+',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
-  h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',5.5 '+(cx+5)+',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
-  h+='<polygon points="'+(cx-9)+',7 '+cx+',-6 '+(cx+9)+',7" fill="#1a0a3a"/>';
-  h+='<path d="M'+(cx-10)+',7 Q'+cx+',10 '+(cx+10)+',7" fill="none" stroke="#1a0a3a" stroke-width="2.5"/>';
+  h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',5.5 '+(cx+4.5)+',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
+  h+='<polygon points="'+(cx-9)+',7 '+cx+',-6 '+(cx+9)+',7" fill="'+hatColor+'"/>';
+  h+='<path d="M'+(cx-10)+',7 Q'+cx+',10 '+(cx+10)+',7" fill="none" stroke="'+hatColor+'" stroke-width="2.5"/>';
   h+='<rect x="'+(cx-8)+'" y="5.5" width="16" height="1.5" rx=".5" fill="#d4a017"/>';
-  h+='<text x="'+(cx-4)+'" y="2" font-size="3" fill="#ffd700" opacity=".7">\u2726</text>';
-  h+='<text x="'+(cx+2)+'" y="0" font-size="2.5" fill="#ffd700" opacity=".6">\u2727</text>';
+  if (hasShop('starry')) {
+    h+='<circle cx="'+(cx-6)+'" cy="1" r="1" fill="#fff" opacity=".7" style="animation:windowGlow 2s ease-in-out infinite"/>';
+    h+='<circle cx="'+(cx+5)+'" cy="-2" r=".8" fill="#88bbff" opacity=".6" style="animation:windowGlow 1.5s ease-in-out infinite .3s"/>';
+    h+='<circle cx="'+(cx+2)+'" cy="3" r=".6" fill="#ffaaff" opacity=".5" style="animation:windowGlow 1.8s ease-in-out infinite .7s"/>';
+    h+='<circle cx="'+(cx-3)+'" cy="-3" r=".7" fill="#aaffff" opacity=".5" style="animation:windowGlow 2.2s ease-in-out infinite .5s"/>';
+  } else {
+    h+='<text x="'+(cx-4)+'" y="2" font-size="3" fill="'+starColor+'" opacity=".7">\u2726</text>';
+    h+='<text x="'+(cx+2)+'" y="0" font-size="2.5" fill="'+starColor+'" opacity=".6">\u2727</text>';
+  }
   h+='<line x1="'+(cx+15)+'" y1="18" x2="'+(cx+15)+'" y2="55" stroke="#6B3410" stroke-width="2"/>';
-  h+='<circle cx="'+(cx+15)+'" cy="17" r="2.5" fill="#8a6af0" opacity=".8"><animate attributeName="r" values="2.2;2.8;2.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".6;.9;.6" dur="3s" repeatCount="indefinite"/></circle>';
+  h+='<circle cx="'+(cx+15)+'" cy="17" r="2.5" fill="'+orbGlow+'" opacity=".8"><animate attributeName="r" values="2.2;2.8;2.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".6;.9;.6" dur="3s" repeatCount="indefinite"/></circle>';
   h+='<circle cx="'+(cx+15)+'" cy="17" r="1.2" fill="#c0b0ff" opacity=".9"/>';
-  if(isActive)h+='<circle cx="'+(cx+15)+'" cy="17" r="5" fill="#8a6af0" opacity=".15"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>';
-  h+='<g class="oswald-larm" style="--o-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-13)+',38 L'+(cx-12)+',46" fill="none" stroke="#2a1560" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-12)+'" cy="47" rx="3" ry="2" fill="#c09a7a"/></g>';
-  h+='<g class="oswald-rarm" style="--o-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',36 L'+(cx+15)+',44" fill="none" stroke="#2a1560" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+15)+'" cy="45" rx="3" ry="2" fill="#c09a7a"/></g>';
+  if(isActive)h+='<circle cx="'+(cx+15)+'" cy="17" r="5" fill="'+orbGlow+'" opacity=".15"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>';
+  h+='<g class="oswald-larm" style="--o-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-13)+',38 L'+(cx-12)+',46" fill="none" stroke="'+robeColor+'" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-12)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
+  h+='<g class="oswald-rarm" style="--o-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',36 L'+(cx+15)+',44" fill="none" stroke="'+robeColor+'" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+15)+'" cy="45" rx="3" ry="2" fill="'+skinTone+'"/></g>';
   h+='</g>';return h;
 }
 function _npcStandalone(name){
