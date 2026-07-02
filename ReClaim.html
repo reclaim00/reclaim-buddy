@@ -8519,11 +8519,25 @@ function kingdomHTML() {
     h += '<rect x="195" y="105" width="110" height="93" fill="url(#stone)"/>';
     h += '<rect x="278" y="105" width="27" height="93" fill="rgba(0,0,0,.1)"/>';
     h += '<rect x="193" y="186" width="114" height="12" class="k-keep" opacity=".7"/><rect x="193" y="186" width="114" height="12" fill="url(#stone)" opacity=".7"/>';
+    // Damage features — cracked walls and rubble for levels 1-2, fading with time
+    if (level <= 2) {
+      if (level === 1) {
+        h += '<path d="M208,120 L216,118 L218,130 L226,126 L228,138 L236,134" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
+        h += '<path d="M258,115 L263,124 L260,130 L268,136 L265,142" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
+        h += '<path d="M282,145 L286,152 L283,158 L290,162" fill="none" stroke="rgba(60,30,10,.65)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>';
+        h += '<path d="M234,170 L238,176 L235,182" fill="none" stroke="rgba(60,30,10,.5)" stroke-width="1.2" stroke-linecap="round"/>';
+        h += '<circle cx="196" cy="192" r="4.5" class="k-rubble"/><circle cx="204" cy="189" r="3" class="k-rubble"/><circle cx="290" cy="191" r="4" class="k-rubble"/><circle cx="298" cy="187" r="3" class="k-rubble"/><circle cx="305" cy="193" r="2.5" class="k-rubble"/>';
+      } else if (level === 2) {
+        h += '<path d="M215,130 L220,136 L218,142" fill="none" stroke="rgba(60,30,10,.4)" stroke-width="1.2" stroke-linecap="round"/>';
+        h += '<path d="M270,140 L274,146" fill="none" stroke="rgba(60,30,10,.35)" stroke-width="1" stroke-linecap="round"/>';
+        h += '<circle cx="202" cy="192" r="3" class="k-rubble"/><circle cx="296" cy="190" r="2.5" class="k-rubble"/>';
+      }
+    }
     // Roof
     if (level >= 2) {
       h += '<polygon points="190,105 250,70 310,105" class="k-roof"/><polygon points="190,105 250,70 310,105" fill="url(#stone)"/>';
       h += '<polygon points="244,72 250,68 256,72" class="k-roof" opacity=".8"/>';
-    } else if (level === 1) h += '<polygon points="195,140 250,120 305,140" class="k-roof" opacity=".5"/>';
+    } else if (level === 1) h += '<polygon points="195,140 250,120 305,140" class="k-roof" opacity=".5"/><path d="M240,122 L245,118 L250,122 L255,118" fill="none" stroke="rgba(60,30,10,.5)" stroke-width=".8" transform="translate(0,2)"/>';
     // Battlements on keep (level 2+)
     if (level >= 2) {
       h += '<g class="k-cren">';
