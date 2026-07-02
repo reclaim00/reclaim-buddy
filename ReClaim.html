@@ -7017,6 +7017,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">'+t('Calendar')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'reminders\')">'+t('Reminders')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 King\u2019s Ledger</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Recovery')+'</h3>';
   h += '<div class="sub-grid">';
@@ -9121,6 +9122,39 @@ function updateVillage() {
   if (!el) return;
   el.innerHTML = villageHTML();
 }
+
+function kingsLedgerHTML() {
+  var days = soberDays();
+  var isActive = D.sobriety.startDate ? true : false;
+  var cpDay = D.sobriety.costPerDay || 0;
+  var dQty = D.sobriety.dailyQuantity || 0;
+  var uLabel = D.sobriety.unitLabel || '';
+  var moneySaved = days * cpDay;
+  var unitsAvoided = days * dQty;
+  var hrsRegained = Math.round(days * 1.5);
+  var h = '';
+  h += '<h2 class="page-title">\uD83D\uDCD6 The King\u2019s Ledger</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:10px">See how much you\u2019ve saved in money, reduced usage, and regained in time since you began. Enter your daily numbers below.</p>';
+  h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
+  h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
+  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Cost/day ($)</label>';
+  h += '<input type="number" min="0" step="0.5" value="' + cpDay + '" onchange="D.sobriety.costPerDay=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 15" style="font-size:12px;padding:4px 6px;margin:0"></div>';
+  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Quantity/day</label>';
+  h += '<input type="number" min="0" step="0.5" value="' + dQty + '" onchange="D.sobriety.dailyQuantity=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 6" style="font-size:12px;padding:4px 6px;margin:0"></div>';
+  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Unit label</label>';
+  h += '<input type="text" value="' + safe(uLabel) + '" onchange="D.sobriety.unitLabel=this.value;saveData();render()" placeholder="drinks" style="font-size:12px;padding:4px 6px;margin:0"></div>';
+  h += '</div>';
+  h += '<div class="stat-grid">';
+  h += '<div class="stat-card"><div class="num" style="color:#d4a017">$' + moneySaved.toLocaleString() + '</div><div class="label">Money Saved</div></div>';
+  var unitDisplay = uLabel ? safe(uLabel) + ' Avoided' : 'Units Avoided';
+  h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + unitDisplay + '</div></div>';
+  h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
+  h += '</div></div>';
+  if (!isActive) h += '<div class="card"><div class="empty-state">Start your sobriety journey to see your real savings.</div></div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')">Back to War Chest</button>';
+  return h;
+}
+
 function warchestHTML() {
   var w = getWarchest();
   var days = soberDays();
@@ -10461,7 +10495,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop','kingsledger'];
 var REFLECT_SUB_PAGES = [];
 var CARE_SUB_PAGES = ['relapseplan','relapserescue','relapsegraveyard'];
 
@@ -11995,7 +12029,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
