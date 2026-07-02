@@ -10155,52 +10155,68 @@ function showBoxingMatch(onDone) {
 
   updateProgress(0);
 
-  var CHARGE_DUR = 1500;
-  var RETREAT_DUR = 1200;
-  var CHARGE_EASE = 'cubic-bezier(.22,1,.36,1)';
-  var RETREAT_EASE = 'cubic-bezier(.34,1.2,.64,1)';
+  var C = 1000; // charge ms
+  var R = 700;  // retreat ms
+  var G = 300;  // gap after charge before retreat
+  var P = 700;  // pause between rounds
+  var CE = 'cubic-bezier(.22,1,.36,1)';
+  var RE = 'cubic-bezier(.34,1.2,.64,1)';
 
-  // Pass 1: Both charge — miss — both retreat to starting positions
+  // ----- Round 1: charge — miss — retreat -----
   timers.push(setTimeout(function(){
-    if (A) { horseAnim(A, 'arthurCharge ' + CHARGE_DUR + 'ms ' + CHARGE_EASE + ' forwards', CHARGE_DUR); }
-    if (S) { horseAnim(S, 'skeletonCharge ' + CHARGE_DUR + 'ms ' + CHARGE_EASE + ' forwards', CHARGE_DUR); }
-    updateProgress(15);
+    if (A) { horseAnim(A, 'arthurCharge ' + C + 'ms ' + CE + ' forwards', C); }
+    if (S) { horseAnim(S, 'skeletonCharge ' + C + 'ms ' + CE + ' forwards', C); }
+    updateProgress(10);
   }, 1200));
 
   timers.push(setTimeout(function(){
-    if (A) { horseAnim(A, 'arthurRetreat ' + RETREAT_DUR + 'ms ' + RETREAT_EASE + ' forwards', RETREAT_DUR); }
-    if (S) { horseAnim(S, 'skeletonRetreat ' + RETREAT_DUR + 'ms ' + RETREAT_EASE + ' forwards', RETREAT_DUR); }
-    updateProgress(40);
-  }, 1200 + CHARGE_DUR + 300));
+    if (A) { horseAnim(A, 'arthurRetreat ' + R + 'ms ' + RE + ' forwards', R); }
+    if (S) { horseAnim(S, 'skeletonRetreat ' + R + 'ms ' + RE + ' forwards', R); }
+    updateProgress(25);
+  }, 1200 + C + G));
 
-  // Pass 2: Both charge — Arthur strikes mid-gallop!
+  // ----- Round 2: charge — miss — retreat -----
+  var r2 = 1200 + C + G + R + P;
   timers.push(setTimeout(function(){
-    if (A) { horseAnim(A, 'arthurCharge ' + CHARGE_DUR + 'ms ' + CHARGE_EASE + ' forwards', CHARGE_DUR); }
-    if (S) { horseAnim(S, 'skeletonCharge ' + CHARGE_DUR + 'ms ' + CHARGE_EASE + ' forwards', CHARGE_DUR); }
-    updateProgress(60);
-  }, 1200 + CHARGE_DUR + 300 + RETREAT_DUR + 800));
+    if (A) { horseAnim(A, 'arthurCharge ' + C + 'ms ' + CE + ' forwards', C); }
+    if (S) { horseAnim(S, 'skeletonCharge ' + C + 'ms ' + CE + ' forwards', C); }
+    updateProgress(42);
+  }, r2));
 
-  // Mid-charge: lance connects while both are thundering toward each other
-  var pass2Start = 1200 + CHARGE_DUR + 300 + RETREAT_DUR + 800;
+  timers.push(setTimeout(function(){
+    if (A) { horseAnim(A, 'arthurRetreat ' + R + 'ms ' + RE + ' forwards', R); }
+    if (S) { horseAnim(S, 'skeletonRetreat ' + R + 'ms ' + RE + ' forwards', R); }
+    updateProgress(58);
+  }, r2 + C + G));
+
+  // ----- Round 3: charge — HIT mid-gallop! -----
+  var r3 = r2 + C + G + R + P;
+  timers.push(setTimeout(function(){
+    if (A) { horseAnim(A, 'arthurCharge ' + C + 'ms ' + CE + ' forwards', C); }
+    if (S) { horseAnim(S, 'skeletonCharge ' + C + 'ms ' + CE + ' forwards', C); }
+    updateProgress(72);
+  }, r3));
+
+  // Lance strikes while both are thundering forward — skeleton flies off!
   timers.push(setTimeout(function(){
     lanceStrike(); flashHit(); playSound('sword');
     if (R) { horseAnim(R, 'skeletonKnockback 2s cubic-bezier(.3,1,.5,1) forwards', 0); }
     if (A) { horseAnim(A, 'arthurCelebrateJoust 1.5s ease 3', 4500); }
-    updateProgress(78);
-  }, pass2Start + Math.round(CHARGE_DUR * 0.6)));
+    updateProgress(84);
+  }, r3 + Math.round(C * 0.6)));
 
-  // Stars burst as skeleton flies off
+  // Stars burst
   timers.push(setTimeout(function(){
     starsBurst();
-    updateProgress(92);
-  }, pass2Start + CHARGE_DUR + 800));
+    updateProgress(94);
+  }, r3 + C + 900));
 
   // Winner!
   timers.push(setTimeout(function(){
     if (WT) { WT.innerHTML = '&#x265B; ARTHUR WINS! &#x265B;'; WT.className = 'winner-text show'; }
     updateProgress(100);
     if (contBtn) contBtn.style.display = 'inline-block';
-  }, pass2Start + CHARGE_DUR + 1800));
+  }, r3 + C + 1800));
 
   // Close/cleanup
   if (contBtn) {
