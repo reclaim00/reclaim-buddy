@@ -167,6 +167,9 @@ body:not(.dark) .deco-divider::before{content:'\269C \00A0 \2618 \00A0 \269C'}  
 body.dark .deco-divider::before{content:'\2726 \00A0 \269C \00A0 \2726'}         /* ? ? ? */
 /* ===== BORDER ACCENTS ===== */
 .card,.overlay-content,.si-card,.coping-card,.buddy-card,.milestone,.music-item,.chat-box,.sub-item{border:1px solid var(--border)}
+/* ===== SCROLL / PARCHMENT TEXTURE ON CARDS ===== */
+.card{background:var(--parchment-bg);background-image:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(139,26,26,.015) 18px,rgba(139,26,26,.015) 20px),repeating-linear-gradient(0deg,transparent,transparent 26px,rgba(139,26,26,.02) 26px,rgba(139,26,26,.02) 27px),linear-gradient(135deg,var(--parchment-bg),var(--card))}
+body.dark .card{background-image:repeating-linear-gradient(90deg,transparent,transparent 18px,rgba(200,180,160,.01) 18px,rgba(200,180,160,.01) 20px),repeating-linear-gradient(0deg,transparent,transparent 26px,rgba(200,180,160,.015) 26px,rgba(200,180,160,.015) 27px),linear-gradient(135deg,var(--parchment-bg),var(--card))}
 /* ===== ORNATE CARD TOP ACCENT ===== */
 .card::before{content:'';position:absolute;top:0;left:8px;right:8px;height:3px;background:var(--grad-primary);opacity:.35;border-radius:0 0 2px 2px;pointer-events:none}
 body.dark .card::before{opacity:.55}
@@ -207,24 +210,24 @@ body.dark .card::before{background:linear-gradient(135deg,transparent,rgba(138,1
 body.dark .card::after{opacity:.5}
 .card h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--primary-dark)}
 body.dark .card h3{color:var(--primary-dark)}
-.page-title{font-size:20px;font-weight:700;margin:8px 0 12px;text-align:center;position:relative;padding:10px 16px;font-family:'Cinzel',serif;letter-spacing:.5px;color:var(--primary-dark);background:linear-gradient(90deg,transparent,var(--primary-light),transparent);border-top:1.5px solid var(--primary);border-bottom:1.5px solid var(--primary);overflow:hidden}
-.page-title::before{content:'\2767';margin-right:10px;font-size:14px;opacity:.35;display:inline-block}
-.page-title::after{content:'\2767';margin-left:10px;font-size:14px;opacity:.35;display:inline-block}
+.page-title{font-size:20px;font-weight:700;margin:8px 0 12px;text-align:center;position:relative;padding:12px 16px;font-family:'Cinzel',serif;letter-spacing:.5px;color:var(--primary-dark);background:linear-gradient(90deg,transparent,var(--primary-light),transparent);border-top:1.5px solid var(--primary);border-bottom:1.5px solid var(--primary);overflow:hidden}
+.page-title::before{content:'\269C \00A0 \2767 \00A0';margin-right:6px;font-size:12px;opacity:.35;display:inline-block}
+.page-title::after{content:'\00A0 \2767 \00A0 \269C';margin-left:6px;font-size:12px;opacity:.35;display:inline-block}
 body.dark .page-title{color:var(--primary-dark);border-top-color:var(--gold);border-bottom-color:var(--gold);background:linear-gradient(90deg,transparent,rgba(138,122,154,.08),transparent)}
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:12px;border:none;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;width:100%;position:relative;letter-spacing:.3px}
-.btn-primary{background:var(--grad-primary);color:#fff;box-shadow:var(--shadow-btn),inset 0 1px 0 rgba(255,255,255,.12);transition:all .2s}
-.btn-primary::before{content:'';position:absolute;top:-1px;left:12px;right:12px;height:2px;background:rgba(255,255,255,.2);border-radius:1px;pointer-events:none}
-.btn-primary:hover{filter:brightness(1.12);transform:translateY(-2px);box-shadow:var(--shadow-hover),inset 0 1px 0 rgba(255,255,255,.12)}
-.btn-primary:active{transform:translateY(0);filter:brightness(.95)}
-.btn-outline{background:var(--primary-light);color:var(--primary-dark);border:1.5px solid var(--primary);transition:all .2s}
+body.dark .page-title::before,body.dark .page-title::after{color:var(--gold)}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;border-radius:8px;border:none;font-size:14px;font-weight:600;cursor:pointer;width:100%;position:relative;letter-spacing:.3px;transition:all .2s;box-shadow:0 1px 0 rgba(255,255,255,.12) inset,-1px -1px 3px rgba(0,0,0,.08) inset,0 1px 3px rgba(0,0,0,.08)}
+.btn-primary{background:var(--grad-primary);color:#fff;box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 -2px 0 rgba(0,0,0,.2) inset,0 2px 4px rgba(0,0,0,.1)}
+.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 -2px 0 rgba(0,0,0,.2) inset,0 4px 12px rgba(0,0,0,.15)}
+.btn-primary:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(255,255,255,.1) inset,0 1px 2px rgba(0,0,0,.08) inset}
+.btn-outline{background:var(--primary-light);color:var(--primary-dark);border:1.5px solid var(--primary);transition:all .2s;box-shadow:0 1px 0 rgba(255,255,255,.1) inset,0 1px 3px rgba(0,0,0,.06)}
 body.dark .btn-outline{background:rgba(138,122,154,.06);color:var(--primary-dark)}
 .btn-outline:hover{background:var(--grad-primary);color:#fff;transform:translateY(-1px);box-shadow:var(--shadow-btn)}
 body.dark .btn-outline:hover{background:var(--grad-primary);color:#fff}
 .btn-danger{background:var(--danger-bg);color:var(--danger)}
 .btn-sm{padding:8px 16px;font-size:12px;width:auto;border-radius:8px}
 .tabs{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;background:var(--card);display:flex;border-top:1.5px solid var(--border);padding:4px 0;padding-bottom:20px;z-index:100;box-shadow:0 -4px 24px rgba(0,0,0,.06);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.tabs::before{content:'\269C \00A0 \269C \00A0 \269C';position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--primary);opacity:.12;letter-spacing:8px;pointer-events:none;white-space:nowrap}
-body.dark .tabs::before{color:var(--gold);opacity:.18}
+.tabs::before{content:'';position:absolute;top:-9px;left:0;right:0;height:9px;background:linear-gradient(90deg,var(--stone-base) 0,#a89888 20%,var(--stone-base) 40%,#b8a898 60%,var(--stone-base) 80%,#a89888 100%);background-size:12px 9px;image-rendering:pixelated;box-shadow:0 -2px 4px rgba(0,0,0,.08);pointer-events:none}
+body.dark .tabs::before{background:linear-gradient(90deg,#1e1a24 0,#3a3640 20%,#1e1a24 40%,#2a2630 60%,#1e1a24 80%,#3a3640 100%);background-size:12px 9px}
 body.dark .tabs{box-shadow:0 -4px 24px rgba(0,0,0,.4)}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;border:none;background:none;font-size:10px;color:var(--muted);cursor:pointer;font-weight:500;position:relative;transition:color .2s}
 .tab:hover{color:var(--text)}
@@ -1008,7 +1011,7 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 <div id="village-overlay"></div>
 <div id="toast-container"></div>
 <div class="top-bar">
-  <div class="logo-text">Re.<span style="color:var(--primary)">Claim</span></div>
+  <div><div class="logo-text">Re.<span style="color:var(--primary)">Claim</span></div><div id="regnal-header" style="font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:-2px"></div></div>
   <div style="display:flex;gap:8px">
     <button class="sos-btn-float" onclick="showSOS()" title="SOS - Get help now" style="font-size:12px;font-weight:900;letter-spacing:1px">SOS</button>
     <button class="profile-btn-float" onclick="goTo('profile')" title="Profile"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 6.5 4.5 10.5 9 12 4.5-1.5 9-5.5 9-12V5z"/><path d="M8 10c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z"/><path d="M8 10c0 2.2 1.8 4 4 4s4-1.8 4-4"/></svg></button>
@@ -2030,6 +2033,23 @@ function soberDays() {
     }
   }
   return Math.max(0, days);
+}
+
+function regnalDate(rawDate) {
+  var d = rawDate ? new Date(rawDate) : new Date();
+  if (!D.sobriety.startDate) return d.toLocaleDateString();
+  var start = new Date(D.sobriety.startDate);
+  var reignMs = d - start;
+  if (reignMs < 0) return d.toLocaleDateString();
+  var reignYear = Math.floor(reignMs / 31557600000) + 1;
+  var suffixes = ['th','st','nd','rd','th','th','th','th','th','th'];
+  var suffix = reignYear % 100 >= 11 && reignYear % 100 <= 13 ? 'th' : suffixes[reignYear % 10] || 'th';
+  var months = ['Wolf','Mud','Lent','Egg','Milk','Hay','Corn','Barley','Wine','Blood','Beast','Frost'];
+  var mName = months[d.getMonth()];
+  var day = d.getDate();
+  var daySuffix = suffixes[day % 10] || 'th';
+  if (day >= 11 && day <= 13) daySuffix = 'th';
+  return day + daySuffix + ' of ' + mName + ', ' + reignYear + suffix + ' Year of Your Reign';
 }
 
 function plantStage() {
@@ -3362,7 +3382,7 @@ function journalHTML() {
       var entryText = getEntryText(entries[i]);
       if (search && entryText.toLowerCase().indexOf(search) === -1) continue;
       shown++;
-      h += '<div class="card"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + entries[i].date + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryText.replace(/\n/g,'<br>') + '</div></div></div>';
+      h += '<div class="card"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryText.replace(/\n/g,'<br>') + '</div></div></div>';
     }
     if (search && shown === 0) h += '<div class="card"><div class="empty-state">'+t('No entries matching')+' "' + search + '"</div></div>';
   }
@@ -4495,7 +4515,7 @@ function reflectHTML() {
       var idx = D.journal.length - 1 - i;
       var entryTextRefl = getEntryText(entries[i]);
       h += '<div class="card journal-entry" data-search="' + (entryTextRefl.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
-      h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + entries[i].date + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
+      h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
       h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div></div>';
       h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect with Arthur</button>';
       h += '</div>';
@@ -10740,7 +10760,7 @@ function relapseGraveyardHTML() {
 }
 function graveTombstoneHTML(g, idx) {
   var epitaph = g.epitaph || g.lesson || 'Here lies a lesson.';
-  var dateLabel = g.date ? new Date(g.date).toLocaleDateString() : 'Unknown';
+  var dateLabel = g.date ? regnalDate(g.date) : 'Unknown';
   return '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px 12px 8px 8px;padding:10px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.06)">' +
     '<div style="font-size:28px;margin-bottom:2px;opacity:.5">&#9904;</div>' +
     '<div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:2px">' + dateLabel + '</div>' +
@@ -12049,6 +12069,9 @@ function render() {
     if (tb) tb.style.display = 'flex';
     applyTheme();
     updateTabLabels();
+    // Update regnal date in header
+    var rh = document.getElementById('regnal-header');
+    if (rh) rh.textContent = D.sobriety.startDate ? regnalDate() : 'Begin your reign';
     var tbEl = document.getElementById('tools-badge');
     if (tbEl && D.timeCapsules) {
       var ready = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked}).length;
