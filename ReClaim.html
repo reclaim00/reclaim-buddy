@@ -2050,7 +2050,7 @@ function regnalDate(rawDate) {
   var reignYear = Math.floor(reignMs / 31557600000) + 1;
   var suffixes = ['th','st','nd','rd','th','th','th','th','th','th'];
   var suffix = reignYear % 100 >= 11 && reignYear % 100 <= 13 ? 'th' : suffixes[reignYear % 10] || 'th';
-  var months = ['Wolf','Mud','Lent','Egg','Milk','Hay','Corn','Barley','Wine','Blood','Beast','Frost'];
+  var months = ['Ærra Ġēola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','Ærra-Liða','Æftera-Liða','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','Æftera Ġēola'];
   var mName = months[d.getMonth()];
   var day = d.getDate();
   var daySuffix = suffixes[day % 10] || 'th';
@@ -9001,7 +9001,7 @@ function ordinal(n) {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 function medievalDate() {
-  var months = ['Wolf','Mud','Lent','Egg','Milk','Hay','Corn','Barley','Wine','Blood','Beast','Frost'];
+  var months = ['Ærra Ġēola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','Ærra-Liða','Æftera-Liða','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','Æftera Ġēola'];
   var now = new Date();
   var day = now.getDate();
   var month = months[now.getMonth()];
