@@ -461,12 +461,9 @@ body.dark .progress-bar .fill::before{background-image:repeating-linear-gradient
 .profile-btn-float{width:40px;height:40px;border-radius:20px;background:var(--card);color:var(--text);border:1px solid var(--border);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.06);transition:all .2s}
 .profile-btn-float:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
 body.dark .profile-btn-float{background:rgba(20,16,30,.6);border-color:#2d223a;backdrop-filter:blur(8px)}
-/* ====== JOUSTING MATCH ====== */
 .oswald-svg{width:75px;height:105px;transform-origin:bottom center}
-.dragon-svg{width:180px;height:auto;transform-origin:bottom center}
-.d-body{animation:dBodyBreathe 3.5s ease-in-out infinite;transform-origin:33px 22px}
+.arthur-svg{width:75px;height:105px;transform-origin:bottom center}
 .erin-svg{width:75px;height:105px;transform-origin:bottom center}
-.knight-svg{width:85px;height:105px;transform-origin:bottom center}
 .mtn-climber{transition:all .6s cubic-bezier(.34,1.2,.64,1)}.mtn-climber svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
 .mtn-climb-char{animation:climbBob .55s ease-in-out infinite}.mtn-climb-char .climb-arm{animation:climbArm .65s ease-in-out infinite;transform-origin:center 8px}.mtn-climb-char .climb-arm.d2{animation-delay:.33s}
 .mtn-scroll-bg{animation:mtnBgScroll 2s linear infinite}.mtn-scroll-bg2{animation:mtnBgScroll 2.8s linear infinite}
@@ -501,7 +498,6 @@ body.dark .profile-btn-float{background:rgba(20,16,30,.6);border-color:#2d223a;b
 @keyframes gunBlast{0%{opacity:0;transform:translateX(0) scale(0.5)}20%{opacity:1;transform:translateX(30px) scale(1.3)}100%{opacity:0;transform:translateX(80px) scale(0.5)}}
 @keyframes cowboyFaceOff{0%{transform:translateX(80px) translateY(0)}50%{transform:translateX(20px) translateY(0)}100%{transform:translateX(0) translateY(0)}}
 @keyframes erinApproach{0%{transform:translateX(0) translateY(0)}100%{transform:translateX(140px) translateY(0)}}
-@keyframes dragonDefeat{0%{transform:scaleX(-1) rotate(0deg) scale(1)}30%{transform:scaleX(-1) rotate(6deg) scale(0.95)}60%{transform:scaleX(-1) rotate(-4deg) scale(0.85)}100%{transform:scaleX(-1) rotate(0deg) scale(0.3);opacity:0.6}}
 @keyframes cmCelebrate{0%{opacity:0;transform:scale(0.3) translateY(20px)}60%{opacity:1;transform:scale(1.15) translateY(-4px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 
 @keyframes koPop{0%{transform:translate(-50%,-50%) scale(0) rotate(-10deg);opacity:0}40%{transform:translate(-50%,-50%) scale(1.3) rotate(5deg);opacity:1}60%{transform:translate(-50%,-50%) scale(0.9) rotate(-2deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(0deg);opacity:1}}
@@ -576,7 +572,6 @@ body.dark .journal-letter.rolled .scroll-roll-hint .hint-line{background:#b0a89a
 @keyframes cowboyFaceOff{0%{transform:translateX(80px) translateY(0) scaleX(-1)}50%{transform:translateX(20px) translateY(0) scaleX(-1)}100%{transform:translateX(0) translateY(0) scaleX(-1)}}
 @keyframes erinApproach{0%{transform:translateX(0) translateY(0)}40%{transform:translateX(60px) translateY(0)}70%{transform:translateX(100px) translateY(-2px)}100%{transform:translateX(130px) translateY(0)}}
 @keyframes spellCharge{0%{transform:translateX(0) scale(1);opacity:0}30%{transform:translateX(18px) translateY(-4px) scale(1.2);opacity:1;filter:brightness(1.5)}60%{transform:translateX(40px) translateY(-2px) scale(1.3);opacity:1;filter:brightness(2)}100%{transform:translateX(60px) translateY(0) scale(1.4);opacity:0;filter:brightness(3)}}
-@keyframes dragonDefeat{0%{transform:translateX(0) scale(1);opacity:1}20%{transform:rotate(8deg) scale(1.08);opacity:1}45%{transform:rotate(-4deg) scale(0.85);opacity:.9}70%{transform:rotate(6deg) translateY(20px) scale(0.5);opacity:.5}100%{transform:rotate(0deg) translateY(40px) scale(0.2);opacity:0}}
 @keyframes cmCelebrate{0%{transform:translateY(0) scale(1)}25%{transform:translateY(-10px) scale(1.1) rotate(-3deg)}50%{transform:translateY(-3px) scale(1.05) rotate(0deg)}75%{transform:translateY(-8px) scale(1.08) rotate(2deg)}100%{transform:translateY(0) scale(1) rotate(0deg)}}
 /* ===== NATURE THEME FLOATING LEAVES (light) ===== */
 body:not(.dark) .leaf-accent{position:fixed;width:24px;height:24px;pointer-events:none;z-index:0;opacity:.06;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232d6a4f'%3E%3Cpath d='M12 2C8 6 4 10 2 14c2 2 5 3 8 3 3 0 6-1 8-3-2-4-4-8-6-12z'/%3E%3C/svg%3E") no-repeat center;background-size:contain}
@@ -9743,8 +9738,6 @@ function checkNotifications() {
 setInterval(checkNotifications, 30000);
 checkNotifications();
 
-// ====== JOUSTING REMOVED ======
-
 function showTeamBattle(data) {
   var existing = document.querySelector('.overlay');
   if (existing) existing.remove();
@@ -10777,6 +10770,9 @@ function saveOswaldStep() {
     return;
   }
   renderOswaldStep();
+}
+
+function showRelapseCutscene() {
   var plan = D.relapsePlan;
   if (!plan || !plan.triggers || !plan.triggers.length) { render(); return; }
   var overlay = document.createElement('div');
@@ -10786,7 +10782,7 @@ function saveOswaldStep() {
   var h = '<div class="journal-letter" id="rc-scroll" style="animation:scrollUnroll 1s cubic-bezier(.22,1,.36,1) both">';
   h += '<div style="text-align:center;opacity:0" id="rc-char">'+_npcStandalone('Oswald')+'</div>';
   h += '<div class="scroll-header" id="rc-title" style="opacity:0">';
-  h += '<div class="scroll-date">OSWALD vs THE DRAGON</div>';
+  h += '<div class="scroll-date">OSWALD\'S WISDOM</div>';
   h += '<div class="scroll-title">Your Relapse Plan</div>';
   h += '</div>';
   h += '<div id="rc-details" style="opacity:0">';
@@ -10930,52 +10926,7 @@ function openCapsuleAnimation(idx) {
   document.body.appendChild(overlay);
 }
 
-// Gertrude cutscene removed
-function showSafetyCutscene() {
-  var types = D.targetAddictions || [];
-  var type = (types.length ? types[0] : 'Other');
-  var sp = SAFETY_PLANS[type] || SAFETY_PLANS['Other'];
-  var answers = D.safetyAnswers || [];
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.style.background = 'rgba(0,0,0,.65)';
-  overlay.style.alignItems = 'center';
-  var h = '<div class="journal-letter" id="sc-scroll" style="animation:scrollUnroll 1s cubic-bezier(.22,1,.36,1) both">';
-  h += '<div style="text-align:center;opacity:0" id="sc-char">'+_npcStandalone('Gertrude')+'</div>';
-  h += '<div class="scroll-header" id="sc-title" style="opacity:0">';
-  h += '<div class="scroll-date">GERTRUDE vs THE RIVAL KNIGHT</div>';
-  h += '<div class="scroll-title">Your Safety Plan</div>';
-  h += '</div>';
-  h += '<div id="sc-details" style="opacity:0">';
-  if (sp && sp.plan) h += '<div class="letter-section"><div class="letter-section-label">&#128737; Your Plan</div><div class="letter-section-text">'+safe(sp.plan)+'</div></div>';
-  if (sp && sp.steps) {
-    h += '<div class="letter-section"><div class="letter-section-label">&#9989; Your Steps</div><div class="letter-section-text">';
-    for (var si=0;si<sp.steps.length;si++) h += '<div style="padding:2px 0">' + (si+1) + '. ' + safe(sp.steps[si]) + '</div>';
-    h += '</div></div>';
-  }
-  if (answers && answers.length) {
-    h += '<div class="letter-section"><div class="letter-section-label">Your Answers to Gertrude</div><div class="letter-section-text">';
-    for (var ai=0;ai<Math.min(answers.length,GERTRUDE_QUESTIONS.length);ai++) {
-      if (answers[ai] && answers[ai].trim()) h += '<div style="margin-top:4px"><span style="opacity:.6">Q'+(ai+1)+':</span> '+safe(answers[ai])+'</div>';
-    }
-    h += '</div></div>';
-  }
-  h += '</div>';
-  h += '<div class="scroll-closing" id="sc-closing" style="display:none">';
-  h += '<div class="scroll-signoff">Sealed by the Knight,</div>';
-  h += '<div class="scroll-signature">Gertrude</div>';
-  h += '<div class="scroll-time">' + new Date().toLocaleDateString() + '</div>';
-  h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();render()" id="sc-close" style="display:none;margin-top:10px">&#10003; Close Scroll</button>';
-  h += '</div>';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-  setTimeout(function(){var e=overlay.querySelector('#sc-char');if(e)e.style.animation='jcZoomIn .7s cubic-bezier(.34,1.56,.64,1) forwards'},200);
-  setTimeout(function(){playSound('drum');var e=overlay.querySelector('#sc-title');if(e)e.style.animation='letterAppear .6s ease both'},700);
-  setTimeout(function(){var e=overlay.querySelector('#sc-details');if(e)e.style.animation='letterAppear .5s ease both'},1200);
-  setTimeout(function(){var e=overlay.querySelector('#sc-closing');if(e)e.style.display='block';if(e)e.style.animation='letterAppear .5s ease both'},2000);
-  setTimeout(function(){var e=overlay.querySelector('#sc-close');if(e)e.style.display='inline-block';if(e)e.style.animation='letterAppear .4s ease both'},2600);
-}
+
 var GERTRUDE_QUESTIONS = [
   {q:'What situations or environments make you feel most at risk?',pl:'e.g. parties, certain people, times of day, stress at work'},
   {q:'Who is in your support network that you can reach out to?',pl:'e.g. sponsor, therapist, family member, close friend'},
