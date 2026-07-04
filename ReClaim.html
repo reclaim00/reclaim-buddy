@@ -4167,65 +4167,65 @@ function buildSummary(txt, mood, topics, dayCount, streak, entryHour) {
   var mins = Math.ceil(words / 15);
 
   // Entry overview
-  lines.push('<b>Entry Overview:</b> <b>' + words + '</b> words' + (mins > 1 ? '  about <b>' + mins + ' minutes</b> of honest reflection' : '  a <b>short check-in</b> that still carries weight') + '.');
+  lines.push('Entry Overview: ' + words + ' words' + (mins > 1 ? '  about ' + mins + ' minutes of honest reflection' : '  a short check-in that still carries weight') + '.');
 
   // Sobriety context
-  if (dayCount > 0) lines.push('<b>Sobriety:</b> You\'re <b>' + dayCount + '</b> day' + (dayCount!==1?'s':'') + ' into this journey. Every day you hold this line, the foundation <b>deepens</b> and the voice of addiction <b>softens</b>.');
+  if (dayCount > 0) lines.push('Sobriety: You\'re ' + dayCount + ' day' + (dayCount!==1?'s':'') + ' into this journey. Every day you hold this line, the foundation deepens and the voice of addiction softens.');
 
   // Journal streak
-  if (streak > 3 && streak <= 7) lines.push('<b>Journal Streak:</b> <b>' + streak + '</b> days in a row. This is how habits are <b>forged</b>  one page at a time. You\'re building <b>proof</b> to yourself that you show up.');
-  else if (streak > 7 && streak <= 30) lines.push('<b>Journal Streak:</b> A <b>' + streak + '-day</b> streak means this is becoming <b>automatic</b>. You\'ve passed the hardest threshold  now it\'s <b>momentum</b>.');
-  else if (streak > 30 && streak <= 90) lines.push('<b>Journal Streak:</b> <b>' + streak + '</b> days. At this point, journaling isn\'t something you <b>do</b>  it\'s something you <b>are</b>. You\'ve rewired your brain to <b>process</b> rather than <b>suppress</b>.');
-  else if (streak > 90) lines.push('<b>Journal Streak:</b> <b>' + streak + '</b> days of uninterrupted journaling. This is <b>mastery-level</b> consistency. You are in the <b>top fraction</b> of people who sustain a practice this long.');
+  if (streak > 3 && streak <= 7) lines.push('Journal Streak: ' + streak + ' days in a row. This is how habits are forged  one page at a time. You\'re building proof to yourself that you show up.');
+  else if (streak > 7 && streak <= 30) lines.push('Journal Streak: A ' + streak + '-day streak means this is becoming automatic. You\'ve passed the hardest threshold  now it\'s momentum.');
+  else if (streak > 30 && streak <= 90) lines.push('Journal Streak: ' + streak + ' days. At this point, journaling isn\'t something you do  it\'s something you are. You\'ve rewired your brain to process rather than suppress.');
+  else if (streak > 90) lines.push('Journal Streak: ' + streak + ' days of uninterrupted journaling. This is mastery-level consistency. You are in the top fraction of people who sustain a practice this long.');
 
   // Time of day analysis
   var timeAnalysis = '';
   if (entryHour >= 5 && entryHour < 12) {
-    timeAnalysis = '<b>Morning Pages:</b> Writing in the morning taps into your <b>fresh mind</b>  before the day\'s noise drowns out your inner voice. Morning entries tend to be more <b>honest, intuitive, and unguarded</b>. You\'re setting a <b>deliberate tone</b> for the hours ahead.';
+    timeAnalysis = 'Morning Pages: Writing in the morning taps into your fresh mind  before the day\'s noise drowns out your inner voice. Morning entries tend to be more honest, intuitive, and unguarded. You\'re setting a deliberate tone for the hours ahead.';
   } else if (entryHour >= 12 && entryHour < 17) {
-    timeAnalysis = '<b>Midday Pause:</b> You stopped in the <b>middle of the current</b> to check in with yourself. That takes <b>awareness</b>  most people push through without asking how they feel. This is a sign of <b>growing mindfulness</b>.';
+    timeAnalysis = 'Midday Pause: You stopped in the middle of the current to check in with yourself. That takes awareness  most people push through without asking how they feel. This is a sign of growing mindfulness.';
   } else if (entryHour >= 17 && entryHour < 21) {
-    timeAnalysis = '<b>Evening Reflection:</b> There\'s a reason the <b>evening review</b> is a cornerstone of every wisdom tradition  it lets you <b>digest the day</b> before sleep claims it. By writing now, you\'re <b>processing</b> instead of <b>carrying</b>.';
+    timeAnalysis = 'Evening Reflection: There\'s a reason the evening review is a cornerstone of every wisdom tradition  it lets you digest the day before sleep claims it. By writing now, you\'re processing instead of carrying.';
   } else {
-    timeAnalysis = '<b>Night Writing:</b> Late-night entries arrive when the world is <b>quiet</b> and the mind is <b>unfiltered</b>. These pages often hold the <b>deepest truths</b>  the thoughts we\'re too guarded to face in daylight. The stillness is <b>listening</b>.';
+    timeAnalysis = 'Night Writing: Late-night entries arrive when the world is quiet and the mind is unfiltered. These pages often hold the deepest truths  the thoughts we\'re too guarded to face in daylight. The stillness is listening.';
   }
   lines.push(timeAnalysis);
 
   // Mood-specific deep analysis
   var moodDepth = {
-    sad: 'Your words carry a <b>weight today</b>. Sadness is not your enemy  it\'s your <b>inner self telling you something matters</b>. The question isn\'t "how do I stop feeling sad?" but rather <b>"what is this sadness protecting?"</b> or <b>"what does it want me to see?"</b>. You have the <b>courage to feel it</b> rather than numb it  and that alone is a <b>victory</b> most people never claim.',
-    angry: '<b>Fire in your words.</b> Anger gets a bad name, but it\'s one of the most <b>honest emotions</b> we have. It signals that a <b>boundary has been crossed</b> or a <b>value is being threatened</b>. The key is not to <b>suppress</b> the fire but to <b>aim it wisely</b>. Ask yourself: <b>what does this anger want to protect?</b> Behind almost every anger is a <b>hurt that needs attention</b>.',
-    anxious: '<b>Anxiety is a loud room.</b> Your words show the <b>restlessness</b> of a mind trying to <b>solve every problem at once</b>. Here\'s what helps: <b>ground yourself in the present moment</b>. Name one thing you can <b>see, hear, and feel</b> right now. Anxiety lives in the <b>future</b>  bring yourself back to <b>right now</b>, where you are actually <b>safe and in control</b>. You showed up to write despite the noise  that is <b>true courage</b>.',
-    happy: 'There\'s a <b>lightness</b> in your words today. Don\'t rush past it  <b>happiness is a visitor that deserves your full attention</b>. Notice what\'s different about today. What <b>contributed</b> to this feeling? Who or what are you <b>grateful</b> for right now? <b>Savoring</b> positive moments is a skill, and you\'re <b>practicing it</b> simply by writing about it. This moment is <b>earned</b>.',
-    grateful: 'Your words are filled with <b>appreciation</b>. This is one of the most <b>powerful recovery tools</b> there is  gratitude <b>rewires the brain</b> to notice what\'s <b>good</b> rather than what\'s <b>threatening</b>. Studies show that people who <b>regularly</b> practice gratitude have <b>better sleep, lower stress, and stronger relationships</b>. You\'re not being naive  you\'re <b>training your mind for resilience</b>.',
-    reflective: 'You\'re in a <b>quiet, contemplative space</b>. This is where <b>real growth happens</b>  not in the loud moments of crisis, but in the <b>still moments between</b> where you <b>make sense of things</b>. Reflection is how experience becomes <b>wisdom</b>. Keep asking questions. Keep <b>turning things over</b>. The answers don\'t come all at once  they come in <b>layers</b>, and you\'re <b>peeling them back</b>.',
-    hopeful: '<b>Hope radiates from your words.</b> This is precious. Hope is not naive optimism  it\'s the <b>evidence of your own strength</b> reflected back at you. You\'ve been through hard things and you\'re <b>still here, still writing, still believing</b> that things can get better. <b>Hold onto this hope</b> like a candle in a dark room. It\'s <b>real</b> and it\'s <b>yours</b>.',
-    mixed: 'Your entry holds <b>multiple threads</b>  joy and struggle, hope and fear, clarity and confusion. This is what it means to be <b>human in recovery</b>. You don\'t have to pick one feeling. The goal isn\'t to feel <b>only good things</b>  it\'s to feel <b>all of it</b> without letting any single feeling <b>take the wheel</b>. You\'re doing exactly that. <b>Keep holding the complexity.</b>'
+    sad: 'Your words carry a weight today. Sadness is not your enemy  it\'s your inner self telling you something matters. The question isn\'t "how do I stop feeling sad?" but rather "what is this sadness protecting?" or "what does it want me to see?". You have the courage to feel it rather than numb it  and that alone is a victory most people never claim.',
+    angry: 'Fire in your words. Anger gets a bad name, but it\'s one of the most honest emotions we have. It signals that a boundary has been crossed or a value is being threatened. The key is not to suppress the fire but to aim it wisely. Ask yourself: what does this anger want to protect? Behind almost every anger is a hurt that needs attention.',
+    anxious: 'Anxiety is a loud room. Your words show the restlessness of a mind trying to solve every problem at once. Here\'s what helps: ground yourself in the present moment. Name one thing you can see, hear, and feel right now. Anxiety lives in the future  bring yourself back to right now, where you are actually safe and in control. You showed up to write despite the noise  that is true courage.',
+    happy: 'There\'s a lightness in your words today. Don\'t rush past it  happiness is a visitor that deserves your full attention. Notice what\'s different about today. What contributed to this feeling? Who or what are you grateful for right now? Savoring positive moments is a skill, and you\'re practicing it simply by writing about it. This moment is earned.',
+    grateful: 'Your words are filled with appreciation. This is one of the most powerful recovery tools there is  gratitude rewires the brain to notice what\'s good rather than what\'s threatening. Studies show that people who regularly practice gratitude have better sleep, lower stress, and stronger relationships. You\'re not being naive  you\'re training your mind for resilience.',
+    reflective: 'You\'re in a quiet, contemplative space. This is where real growth happens  not in the loud moments of crisis, but in the still moments between where you make sense of things. Reflection is how experience becomes wisdom. Keep asking questions. Keep turning things over. The answers don\'t come all at once  they come in layers, and you\'re peeling them back.',
+    hopeful: 'Hope radiates from your words. This is precious. Hope is not naive optimism  it\'s the evidence of your own strength reflected back at you. You\'ve been through hard things and you\'re still here, still writing, still believing that things can get better. Hold onto this hope like a candle in a dark room. It\'s real and it\'s yours.',
+    mixed: 'Your entry holds multiple threads  joy and struggle, hope and fear, clarity and confusion. This is what it means to be human in recovery. You don\'t have to pick one feeling. The goal isn\'t to feel only good things  it\'s to feel all of it without letting any single feeling take the wheel. You\'re doing exactly that. Keep holding the complexity.'
   };
   if (moodDepth[mood]) lines.push(moodDepth[mood]);
 
   // Advanced topic analysis
   if (topics && topics.length) {
     var topicAnalysis = [];
-    if (topics.indexOf('craving') !== -1) topicAnalysis.push('You acknowledged a <b>craving</b>. This is a <b>critical skill</b>  cravings lose power the moment you <b>name them out loud</b>. What triggered it? What did you do instead? Each craving you survive <b>weakens the next one</b>.');
-    if (topics.indexOf('work') !== -1) topicAnalysis.push('Your <b>work life</b> is present in your thoughts. Work stress is one of the <b>most common relapse triggers</b>. Notice if there\'s a pattern: certain <b>times, people, or tasks</b> that activate your stress response. Awareness is the first step to <b>building boundaries</b>.');
-    if (topics.indexOf('relationships') !== -1) topicAnalysis.push('Your <b>relationships</b> are on your mind. The people in our lives can be our <b>greatest support or our biggest triggers</b>. Is there someone you need to <b>set a boundary</b> with? Or someone you could <b>reach out to</b> today? Connection is the <b>opposite of addiction</b>.');
-    if (topics.indexOf('health') !== -1) topicAnalysis.push('You wrote about your <b>health</b>. Recovery and physical health are <b>deeply connected</b>  when we care for our bodies, we <b>strengthen our minds</b>. What\'s one small thing you could do today to <b>honor your body</b>?');
-    if (topics.indexOf('loneliness') !== -1) topicAnalysis.push('You opened up about <b>feeling alone</b>. Loneliness is one of the <b>heaviest burdens</b> in recovery. Please know: <b>writing it down is a step toward connection</b>. You\'ve told the page  now consider telling <b>one trusted person</b>. You don\'t have to carry this alone.');
-    if (topics.indexOf('progress') !== -1) topicAnalysis.push('You reflected on your <b>progress</b>. This is <b>essential</b>  we often move forward so fast that we forget to <b>look back at how far we\'ve come</b>. The distance between where you were and where you are now is <b>real, measurable, and meaningful</b>. You earned this moment of recognition.');
-    if (topics.indexOf('finances') !== -1) topicAnalysis.push('<b>Financial stress</b> came up. Money worries are <b>real and valid</b>. They can feel overwhelming, but you don\'t have to solve everything today. What\'s <b>one small step</b> you could take this week? Even <b>looking at your numbers</b> is an act of courage, not avoidance.');
-    if (topics.indexOf('wellness') !== -1) topicAnalysis.push('You wrote about <b>wellness and self-care</b>. This shows you\'re thinking about <b>what you need</b> to thrive, not just survive. What\'s one practice that\'s been working for you lately? <b>Double down on what works.</b>');
+    if (topics.indexOf('craving') !== -1) topicAnalysis.push('You acknowledged a craving. This is a critical skill  cravings lose power the moment you name them out loud. What triggered it? What did you do instead? Each craving you survive weakens the next one.');
+    if (topics.indexOf('work') !== -1) topicAnalysis.push('Your work life is present in your thoughts. Work stress is one of the most common relapse triggers. Notice if there\'s a pattern: certain times, people, or tasks that activate your stress response. Awareness is the first step to building boundaries.');
+    if (topics.indexOf('relationships') !== -1) topicAnalysis.push('Your relationships are on your mind. The people in our lives can be our greatest support or our biggest triggers. Is there someone you need to set a boundary with? Or someone you could reach out to today? Connection is the opposite of addiction.');
+    if (topics.indexOf('health') !== -1) topicAnalysis.push('You wrote about your health. Recovery and physical health are deeply connected  when we care for our bodies, we strengthen our minds. What\'s one small thing you could do today to honor your body?');
+    if (topics.indexOf('loneliness') !== -1) topicAnalysis.push('You opened up about feeling alone. Loneliness is one of the heaviest burdens in recovery. Please know: writing it down is a step toward connection. You\'ve told the page  now consider telling one trusted person. You don\'t have to carry this alone.');
+    if (topics.indexOf('progress') !== -1) topicAnalysis.push('You reflected on your progress. This is essential  we often move forward so fast that we forget to look back at how far we\'ve come. The distance between where you were and where you are now is real, measurable, and meaningful. You earned this moment of recognition.');
+    if (topics.indexOf('finances') !== -1) topicAnalysis.push('Financial stress came up. Money worries are real and valid. They can feel overwhelming, but you don\'t have to solve everything today. What\'s one small step you could take this week? Even looking at your numbers is an act of courage, not avoidance.');
+    if (topics.indexOf('wellness') !== -1) topicAnalysis.push('You wrote about wellness and self-care. This shows you\'re thinking about what you need to thrive, not just survive. What\'s one practice that\'s been working for you lately? Double down on what works.');
     if (topicAnalysis.length) {
-      lines.push('<b>Deeper Themes:</b>');
+      lines.push('Deeper Themes:');
       topicAnalysis.forEach(function(ta) { lines.push('&#9755; ' + ta); });
     }
   }
 
   // Overall sentiment synthesis
-  if (words > 200) lines.push('<b>Overall:</b> You wrote <b>' + words + ' words</b> today  this is a <b>deep session</b>. You\'re not just skimming the surface; you\'re <b>digging into the soil of your experience</b>. This level of honesty is <b>rare and powerful</b>. Whatever you\'re working through, you\'re doing it <b>right</b>.');
-  else if (words > 100) lines.push('<b>Overall:</b> Over <b>' + words + ' words</b>  you\'re <b>opening up</b> and getting to the <b>real material</b>. The first 100 words are often warm-up  after that, the <b>truth starts to emerge</b>. You pushed past the surface.');
-  else if (words > 50) lines.push('<b>Overall:</b> <b>' + words + ' words</b>  sometimes the <b>shortest entries carry the most weight</b>. You said what needed to be said. No filler. That\'s <b>efficiency of the heart</b>.');
-  else lines.push('<b>Overall:</b> Even a <b>short entry</b> is a <b>victory</b>  you showed up, you named something real, and you <b>chose honesty over silence</b>. That\'s what matters.');
+  if (words > 200) lines.push('Overall: You wrote ' + words + ' words today  this is a deep session. You\'re not just skimming the surface; you\'re digging into the soil of your experience. This level of honesty is rare and powerful. Whatever you\'re working through, you\'re doing it right.');
+  else if (words > 100) lines.push('Overall: Over ' + words + ' words  you\'re opening up and getting to the real material. The first 100 words are often warm-up  after that, the truth starts to emerge. You pushed past the surface.');
+  else if (words > 50) lines.push('Overall: ' + words + ' words  sometimes the shortest entries carry the most weight. You said what needed to be said. No filler. That\'s efficiency of the heart.');
+  else lines.push('Overall: Even a short entry is a victory  you showed up, you named something real, and you chose honesty over silence. That\'s what matters.');
 
   return lines.join('<br>');
 }
