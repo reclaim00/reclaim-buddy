@@ -651,7 +651,6 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 </style>
 </head>
 <body>
-<div style="position:fixed;top:4px;right:4px;z-index:99999;background:#7a1a1a;color:#fff;padding:2px 6px;border-radius:4px;font-size:10px;font-family:sans-serif;opacity:0.9">v2026-07-06</div>
 <div id="landscape-bg"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5aa8e0"/><stop offset="40%" stop-color="#7ac0f0"/><stop offset="75%" stop-color="#a0d4f8"/><stop offset="100%" stop-color="#c8e8c0"/></linearGradient>
@@ -825,7 +824,6 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script>
 var APP_VERSION = '2026-07-06';
-console.log('Re.Claim v' + APP_VERSION + ' (build 2)');
 // ====== FIREBASE ======
 var firebaseConfig = {
   apiKey: "AIzaSyDX0CdgdB8lmjRq8QmJAMkE3WgC_OB7zB0",
@@ -11105,7 +11103,15 @@ function showOnboarding() {
 }
 function renderOnboardingStep() {
   var s = ONBOARDING_STEPS[ONBOARDING_STEP];
-  if (!s) { D._onboardingDone = true; saveData(); render(); return; }
+  if (!s) {
+    D._onboardingDone = true;
+    D.sobriety.addictionType = D.addictionType || 'Other';
+    D.sobriety.startDate = Date.now();
+    pg = 'home'; _pageCache = {};
+    saveData(); render();
+    setTimeout(startSoberTimer, 200);
+    return;
+  }
   var isLast = ONBOARDING_STEP >= ONBOARDING_STEPS.length - 1;
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
