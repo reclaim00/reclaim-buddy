@@ -2036,6 +2036,7 @@ function plantHTML() {
   } else {
     h += '<div style="display:flex;gap:6px;margin-top:4px">';
     h += '<button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1">Record Relapse</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="resetSoberTimer()" style="flex:1;border-color:var(--warning);color:var(--warning)">Reset Timer</button>';
     h += '<button class="btn btn-danger btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button>';
     h += '</div>';
   }
@@ -2199,6 +2200,16 @@ function endSobrietyReset(overlay) {
   overlay.remove();
   D.sobriety.startDate = null;
   D.sobriety.addictionType = '';
+  saveData();
+  render();
+}
+
+function resetSoberTimer() {
+  if (!D.sobriety.startDate) return;
+  if (!confirm('Reset your sobriety timer? This will record the current time as a relapse and restart your clock from now.')) return;
+  if (!D.sobriety.relapseDates) D.sobriety.relapseDates = [];
+  D.sobriety.relapseDates.push(Date.now());
+  D.sobriety.startDate = Date.now();
   saveData();
   render();
 }
@@ -8811,6 +8822,7 @@ function kingdomTrackerHTML() {
     }
     h += soberTimerHTML();
     h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="resetSoberTimer()" style="flex:1;border-color:var(--warning);color:var(--warning)">Reset Timer</button>';
     h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
   } else {
     h += '<div style="font-size:14px;color:var(--muted);margin-bottom:6px">Your kingdom awaits</div>';
