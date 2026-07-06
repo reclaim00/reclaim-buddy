@@ -909,12 +909,12 @@ function onAuthReady(email, isNew) {
   if (firebase && firebase.auth().currentUser) {
     loadFromFirestore(function(cloudData) {
       render();
-      if (isNew) { setTimeout(function(){ showOnboarding(); }, 400); }
+      if (isNew && !D._onboardingDone) { setTimeout(function(){ showOnboarding(); }, 400); }
       if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
     });
   } else {
     render();
-    if (isNew) { setTimeout(function(){ showOnboarding(); }, 400); }
+    if (isNew && !D._onboardingDone) { setTimeout(function(){ showOnboarding(); }, 400); }
     if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
   }
   if (isLockSet()) { showLockScreen(); } else { resetLockTimer(); }
@@ -1702,7 +1702,7 @@ function safetyPlanHTML() {
     h += '<div style="display:flex;gap:6px;margin-top:4px">';
     h += '<button class="btn btn-sm btn-outline" onclick="D.targetAddictions=[];saveData()" style="font-size:11px">Change Addictions</button>';
     if (!D.sobriety.startDate) {
-      h += '<button class="btn btn-sm btn-primary" onclick="startSobriety()" style="font-size:11px">Start Sobriety Tracker</button>';
+      h += '<button class="btn btn-sm btn-primary" onclick="showOnboarding()" style="font-size:11px">Start Sobriety Tracker</button>';
     }
     h += '</div>';
   }
@@ -2026,7 +2026,7 @@ function plantHTML() {
   h += '</div>';
   // Buttons
   if (!isActive) {
-    h += '<button class="btn btn-primary btn-sm" onclick="startSobriety()" style="margin-top:4px">Track Sobriety</button>';
+    h += '<button class="btn btn-primary btn-sm" onclick="showOnboarding()" style="margin-top:4px">Track Sobriety</button>';
   } else {
     h += '<div style="display:flex;gap:6px;margin-top:4px">';
     h += '<button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1">Record Relapse</button>';
@@ -2038,88 +2038,6 @@ function plantHTML() {
   return h;
 }
 
-var _SOBRIETY_STEP = 0;
-function startSobriety() {
-  _SOBRIETY_STEP = 0;
-  D.addictionType = '';
-  D.goals = '';
-  D.theme = '';
-  renderSobrietyStep();
-}
-function renderSobrietyStep() {
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.style.background = 'rgba(0,0,0,0.6)';
-  var h = '<div class="overlay-content" style="max-width:420px;text-align:center;padding:28px 20px">';
-  if (_SOBRIETY_STEP === 0) {
-    h += '<div style="font-size:42px;margin-bottom:8px">\u2694</div>';
-    h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Your Battle</h3>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">What would you like to conquer?</p>';
-    h += '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0" id="s-step-addiction">';
-    for (var i=0;i<ADDICTION_TYPES.length;i++) {
-      h += '<button class="btn btn-sm btn-outline" onclick="document.querySelectorAll(\'#s-step-addiction button\').forEach(function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';D.addictionType=\''+ADDICTION_TYPES[i]+'\'" style="font-size:11px;padding:6px 14px;border-radius:20px">'+ADDICTION_TYPES[i]+'</button>';
-    }
-    h += '</div>';
-    h += '<button class="btn btn-primary" onclick="advanceSobriety()" style="margin-top:4px">Next \u2192</button>';
-  } else if (_SOBRIETY_STEP === 1) {
-    h += '<div style="font-size:42px;margin-bottom:8px">\u2727</div>';
-    h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Your Goals</h3>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">What do you want to achieve?</p>';
-    h += '<textarea id="s-step-goals" placeholder="e.g. Be sober for 30 days, rebuild trust..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0" oninput="D.goals=this.value"></textarea>';
-    h += '<div style="display:flex;gap:8px;margin-top:4px">';
-    h += '<button class="btn btn-sm btn-outline" onclick="_SOBRIETY_STEP--;renderSobrietyStep()" style="flex:1">\u2190 Back</button>';
-    h += '<button class="btn btn-sm btn-primary" onclick="advanceSobriety()" style="flex:1">Next \u2192</button>';
-    h += '</div>';
-  } else if (_SOBRIETY_STEP === 2) {
-    h += '<div style="font-size:42px;margin-bottom:8px">\u265C</div>';
-    h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Your Kingdom</h3>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Choose a kingdom theme.</p>';
-    h += '<div style="display:flex;gap:12px;justify-content:center;margin:16px 0" id="s-step-theme">';
-    h += '<button class="btn" onclick="document.querySelectorAll(\'#s-step-theme button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--text)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';selectSobrietyTheme(\'gothic\')" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Gothic</span><span style="font-size:11px;color:var(--muted)">Dark stone, candlelight</span></button>';
-    h += '<button class="btn" onclick="document.querySelectorAll(\'#s-step-theme button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--text)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';selectSobrietyTheme(\'fantasy\')" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u265B</span><span style="font-weight:700;font-size:15px">Fantasy</span><span style="font-size:11px;color:var(--muted)">Bright banners, green hills</span></button>';
-    h += '</div>';
-    h += '<div style="display:flex;gap:8px;margin-top:4px">';
-    h += '<button class="btn btn-sm btn-outline" onclick="_SOBRIETY_STEP--;renderSobrietyStep()" style="flex:1">\u2190 Back</button>';
-    h += '<button class="btn btn-sm btn-primary" onclick="advanceSobriety()" style="flex:1">Next \u2192</button>';
-    h += '</div>';
-  } else if (_SOBRIETY_STEP === 3) {
-    h += '<div style="font-size:42px;margin-bottom:8px">\u269C</div>';
-    h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Begin Operation Re.Claim</h3>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">You\'ve chosen your battle, set your goals, and claimed your kingdom. The realm is ready.</p>';
-    h += '<div style="margin:12px 0;padding:10px;background:var(--primary-light);border-radius:10px;font-size:12px;line-height:1.6">"The crown is heavy, but you were made for this. Every day you show up, the kingdom grows stronger."</div>';
-    h += '<button class="btn btn-primary" onclick="finalizeSobriety()" style="margin-top:4px;font-weight:700">\u269C Begin Operation Re.Claim</button>';
-  }
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Cancel</button>';
-  h += '</div>';
-  overlay.innerHTML = h;
-  var existing = document.querySelector('.overlay');
-  if (existing) existing.remove();
-  document.body.appendChild(overlay);
-}
-function advanceSobriety() {
-  if (_SOBRIETY_STEP === 0 && !D.addictionType) { alert('Pick an addiction to conquer.'); return; }
-  if (_SOBRIETY_STEP === 1) { var el = document.getElementById('s-step-goals'); if (el) D.goals = el.value; }
-  if (_SOBRIETY_STEP === 2 && !D.theme) { alert('Choose a kingdom theme.'); return; }
-  _SOBRIETY_STEP++;
-  renderSobrietyStep();
-}
-function selectSobrietyTheme(theme) {
-  D.theme = theme;
-  if (theme === 'gothic') { D.darkMode = true; document.body.classList.add('dark'); applyTheme(); }
-  else { D.darkMode = false; document.body.classList.remove('dark'); applyTheme(); }
-}
-function finalizeSobriety() {
-  var type = D.addictionType || 'Other';
-  D.sobriety.addictionType = type;
-  D.sobriety.startDate = Date.now();
-  D._onboardingDone = true;
-  pg = 'home';
-  _pageCache = {};
-  saveData();
-  document.querySelector('.overlay').remove();
-  render();
-  setTimeout(startSoberTimer, 200);
-}
 
 function recordRelapse() {
   if (!confirm(t('This records a relapse date. Remember: recovery is not linear. Every day is a fresh start.'))) return;
@@ -8882,7 +8800,7 @@ function kingdomTrackerHTML() {
     h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
   } else {
     h += '<div style="font-size:14px;color:var(--muted);margin-bottom:6px">Your kingdom awaits</div>';
-    h += '<button class="btn btn-primary btn-sm" onclick="startSobriety()">Begin Your Reign</button>';
+    h += '<button class="btn btn-primary btn-sm" onclick="showOnboarding()">Begin Your Reign</button>';
   }
   h += '</div>';
   return h;
@@ -9498,7 +9416,7 @@ function throneRoomHTML() {
     h += '<div style="padding:24px 20px;text-align:center">';
     h += '<div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px">Your Kingdom Awaits</div>';
     h += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">The throne is empty \u2014 and it\u2019s waiting for you.<br>Start your journey and build something real.</div>';
-    h += '<button class="btn btn-primary" onclick="startSobriety()" style="width:100%;padding:14px;font-size:15px;font-weight:700">Start Your Reign</button>';
+    h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">Start Your Reign</button>';
     h += '</div></div>';
     return h;
   }
@@ -11089,7 +11007,6 @@ var ONBOARDING_STEPS = [
 ];
 var ONBOARDING_STEP = 0;
 function showOnboarding() {
-  if (D._onboardingDone) return;
   ONBOARDING_STEP = 0;
   renderOnboardingStep();
 }
@@ -11132,7 +11049,7 @@ function renderOnboardingStep() {
       (ONBOARDING_STEP > 0 ? '<button class="btn btn-sm btn-outline" onclick="ONBOARDING_STEP--;renderOnboardingStep()" style="flex:1">\u2190 Back</button>' : '') +
       '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1">'+ (isLast ? '\u269C Begin Operation Re.Claim' : 'Next \u2192') +'</button>' +
     '</div>' +
-    '<button onclick="D._onboardingDone=true;saveData();document.getElementById(\'onboarding-ov\').remove();render()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);font-family:serif">\u2715</button>' +
+    '<button onclick="ONBOARDING_STEP=0;document.getElementById(\'onboarding-ov\').remove()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);font-family:serif">\u2715</button>' +
     '</div>';
   var existing = document.getElementById('onboarding-ov');
   if (existing) existing.remove();
