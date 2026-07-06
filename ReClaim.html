@@ -2048,25 +2048,84 @@ function plantHTML() {
   return h;
 }
 
+var _SOBRIETY_STEP = 0;
 function startSobriety() {
+  _SOBRIETY_STEP = 0;
+  D.addictionType = '';
+  D.goals = '';
+  D.theme = '';
+  renderSobrietyStep();
+}
+function renderSobrietyStep() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Start Your Sobriety Journey</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">What are you stepping away from?</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">';
-  for (var i=0;i<ADDICTION_TYPES.length;i++) {
-    h += '<button class="btn btn-sm btn-outline" onclick="selectAddiction(\''+ADDICTION_TYPES[i]+'\',this)" style="font-size:11px;padding:8px">'+ADDICTION_TYPES[i]+'</button>';
+  overlay.style.background = 'rgba(0,0,0,0.6)';
+  var h = '<div class="overlay-content" style="max-width:420px;text-align:center;padding:28px 20px">';
+  if (_SOBRIETY_STEP === 0) {
+    h += '<div style="font-size:42px;margin-bottom:8px">\u2694</div>';
+    h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Your Battle</h3>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">What would you like to conquer?</p>';
+    h += '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0" id="s-step-addiction">';
+    for (var i=0;i<ADDICTION_TYPES.length;i++) {
+      h += '<button class="btn btn-sm btn-outline" onclick="document.querySelectorAll(\'#s-step-addiction button\').forEach(function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';D.addictionType=\''+ADDICTION_TYPES[i]+'\'" style="font-size:11px;padding:6px 14px;border-radius:20px">'+ADDICTION_TYPES[i]+'</button>';
+    }
+    h += '</div>';
+    h += '<button class="btn btn-primary" onclick="advanceSobriety()" style="margin-top:4px">Next \u2192</button>';
+  } else if (_SOBRIETY_STEP === 1) {
+    h += '<div style="font-size:42px;margin-bottom:8px">\u2727</div>';
+    h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Your Goals</h3>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">What do you want to achieve?</p>';
+    h += '<textarea id="s-step-goals" placeholder="e.g. Be sober for 30 days, rebuild trust..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0" oninput="D.goals=this.value"></textarea>';
+    h += '<div style="display:flex;gap:8px;margin-top:4px">';
+    h += '<button class="btn btn-sm btn-outline" onclick="_SOBRIETY_STEP--;renderSobrietyStep()" style="flex:1">\u2190 Back</button>';
+    h += '<button class="btn btn-sm btn-primary" onclick="advanceSobriety()" style="flex:1">Next \u2192</button>';
+    h += '</div>';
+  } else if (_SOBRIETY_STEP === 2) {
+    h += '<div style="font-size:42px;margin-bottom:8px">\u265C</div>';
+    h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Your Kingdom</h3>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Choose a kingdom theme.</p>';
+    h += '<div style="display:flex;gap:12px;justify-content:center;margin:16px 0" id="s-step-theme">';
+    h += '<button class="btn" onclick="document.querySelectorAll(\'#s-step-theme button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--text)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';selectSobrietyTheme(\'gothic\')" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Gothic</span><span style="font-size:11px;color:var(--muted)">Dark stone, candlelight</span></button>';
+    h += '<button class="btn" onclick="document.querySelectorAll(\'#s-step-theme button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--text)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';selectSobrietyTheme(\'fantasy\')" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u265B</span><span style="font-weight:700;font-size:15px">Fantasy</span><span style="font-size:11px;color:var(--muted)">Bright banners, green hills</span></button>';
+    h += '</div>';
+    h += '<div style="display:flex;gap:8px;margin-top:4px">';
+    h += '<button class="btn btn-sm btn-outline" onclick="_SOBRIETY_STEP--;renderSobrietyStep()" style="flex:1">\u2190 Back</button>';
+    h += '<button class="btn btn-sm btn-primary" onclick="advanceSobriety()" style="flex:1">Next \u2192</button>';
+    h += '</div>';
+  } else if (_SOBRIETY_STEP === 3) {
+    h += '<div style="font-size:42px;margin-bottom:8px">\u269C</div>';
+    h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">Begin Operation Re.Claim</h3>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">You\'ve chosen your battle, set your goals, and claimed your kingdom. The realm is ready.</p>';
+    h += '<div style="margin:12px 0;padding:10px;background:var(--primary-light);border-radius:10px;font-size:12px;line-height:1.6">"The crown is heavy, but you were made for this. Every day you show up, the kingdom grows stronger."</div>';
+    h += '<button class="btn btn-primary" onclick="finalizeSobriety()" style="margin-top:4px;font-weight:700">\u269C Begin Operation Re.Claim</button>';
   }
-  h += '</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:4px">Cancel</button></div>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Cancel</button>';
+  h += '</div>';
   overlay.innerHTML = h;
+  var existing = document.querySelector('.overlay');
+  if (existing) existing.remove();
   document.body.appendChild(overlay);
 }
-
-function selectAddiction(type, btn) {
+function advanceSobriety() {
+  if (_SOBRIETY_STEP === 0 && !D.addictionType) { alert('Pick an addiction to conquer.'); return; }
+  if (_SOBRIETY_STEP === 1) { var el = document.getElementById('s-step-goals'); if (el) D.goals = el.value; }
+  if (_SOBRIETY_STEP === 2 && !D.theme) { alert('Choose a kingdom theme.'); return; }
+  _SOBRIETY_STEP++;
+  renderSobrietyStep();
+}
+function selectSobrietyTheme(theme) {
+  D.theme = theme;
+  if (theme === 'gothic') { D.darkMode = true; document.body.classList.add('dark'); applyTheme(); }
+  else { D.darkMode = false; document.body.classList.remove('dark'); applyTheme(); }
+}
+function finalizeSobriety() {
+  var type = D.addictionType || 'Other';
   D.sobriety.addictionType = type;
-  var allBtns = btn.closest('.overlay-content').querySelectorAll('.btn');
-  for (var i=0;i<allBtns.length;i++) allBtns[i].className = 'btn btn-sm btn-outline';
-  btn.className = 'btn btn-sm btn-primary';
   D.sobriety.startDate = Date.now();
+  D._onboardingDone = true;
   saveData();
+  document.querySelector('.overlay').remove();
+  render();
 }
 
 function recordRelapse() {
