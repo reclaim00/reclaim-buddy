@@ -1978,16 +1978,8 @@ function startSoberTimer() {
 function renderSoberTimer() {
   var el = document.getElementById('sober-timer');
   if (!el) return;
-  var e = soberElapsed();
-  if (!e) return;
-  var parts = [];
-  if (e.years > 0) parts.push(e.years + 'y');
-  if (e.months > 0 || e.years > 0) parts.push(e.months + 'mo');
-  parts.push(e.days + 'd');
-  parts.push(String(e.hours).padStart(2,'0') + 'h');
-  parts.push(String(e.minutes).padStart(2,'0') + 'm');
-  parts.push(String(e.seconds).padStart(2,'0') + 's');
-  el.innerHTML = parts.join(' ');
+  var html = soberTimerHTML();
+  if (html) el.innerHTML = html;
 }
 
 function plantHTML() {
@@ -9522,21 +9514,7 @@ function throneRoomHTML() {
   h += '</div>';
 
   // 5. Sobriety timer
-  h += '<div class="card" style="padding:10px 14px;margin:6px 0">';
-  h += '<div style="font-size:10px;color:var(--muted);letter-spacing:1px;text-align:center;margin-bottom:4px;font-family:MedievalSharp,serif">\u269C Time Since Last Reset \u269C</div>';
-  h += '<div id="sober-timer" style="font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px;text-align:center;color:var(--primary)">';
-  var e = soberElapsed();
-  if (e) {
-    var tp = [];
-    if (e.years > 0) tp.push(e.years + 'y');
-    if (e.months > 0 || e.years > 0) tp.push(e.months + 'mo');
-    tp.push(e.days + 'd');
-    tp.push(String(e.hours).padStart(2,'0') + 'h');
-    tp.push(String(e.minutes).padStart(2,'0') + 'm');
-    tp.push(String(e.seconds).padStart(2,'0') + 's');
-    h += tp.join(' ');
-  }
-  h += '</div></div>';
+  h += soberTimerHTML();
 
   // 6. Round Table (all 3 NPCs)
   h += roundTableHTML();
