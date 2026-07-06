@@ -11021,27 +11021,17 @@ function safetyHTML() {
 }
 // ====== ONBOARDING TUTORIAL ======
 var ONBOARDING_STEPS = [
-  {icon:'\u265B',title:'Welcome to Re.Claim',
-   npc:'\u269C Arthur \u2022 \u269C Gertrude \u2022 \u269C Oswald',
-   desc:'<div style="margin-bottom:8px">Hey there \u2014 welcome. Re.Claim is your space for recovery, with a bit of medieval flavor. Every day you show up makes you stronger.</div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.7">Three friends will guide you:<br><strong style="color:#6d28d9">Arthur</strong> \u2014 tracks your progress, points out patterns<br><strong style="color:#2d5a5a">Gertrude</strong> \u2014 helps you build safety plans and stay tough<br><strong style="color:#4338ca">Oswald</strong> \u2014 keeps you grounded with wisdom and perspective</div>'},
-  {icon:'\u265C',title:'The Throne Room',
-   npc:'\u269C Gertrude',
-   desc:'<div style="margin-bottom:6px">This is your home base. Here\u2019s what you\u2019ll find:</div><div style="font-size:12px;text-align:left;line-height:1.8;padding:0 4px"><strong>\u2726 Kingdom Scene</strong> \u2014 your realm grows as your streak rises<br><strong>\u269C Stats Bar</strong> \u2014 days, rank, streak, coins at a glance<br><strong>\u2720 Coat of Arms</strong> \u2014 your heraldry, earned by perseverance<br><strong>\u2619 Quick Actions</strong> \u2014 Journal, Check-In, Craving, Breathe<br><strong>\u2767 Round Table</strong> \u2014 Arthur, Gertrude, and Oswald check in daily</div><div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">"Pull up a chair. You belong here."</div>'},
-  {icon:'\u2712',title:'The Scriptorium',
-   npc:'\u269C Arthur',
-   desc:'<div style="margin-bottom:6px">Where your story gets written. Open the Reflect tab to:</div><div style="font-size:12px;text-align:left;line-height:1.8;padding:0 4px"><strong>\u2712 Journal</strong> \u2014 write freely, search past entries, track your journey<br><strong>\u2766 Mood Log</strong> \u2014 note how you feel each day<br><strong>\u2694 Craving Log</strong> \u2014 name the urge, learn its shape<br><strong>\u2767 Breathing</strong> \u2014 guided 4-7-8 breath to calm your mind</div><div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">"Write it out. Every entry makes things clearer."</div>'},
-  {icon:'\u2694',title:"The Healer's Ward",
-   npc:'\u269C Gertrude',
-   desc:'<div style="margin-bottom:6px">Armor for your mind. Open the Heal tab to:</div><div style="font-size:12px;text-align:left;line-height:1.8;padding:0 4px"><strong>\u2720 Coping Cards</strong> \u2014 build a deck of strategies that work for you<br><strong>\u2618 Comrade</strong> \u2014 connect with an accountability partner<br><strong>\u2628 Crisis Helplines</strong> \u2014 one tap to reach support<br><strong>\u269C SOS</strong> \u2014 emergency plan when things get hard</div><div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">"You\u2019ve got what you need. Let\u2019s use it."</div>'},
-  {icon:'\u2727',title:'The Ledger',
-   npc:'\u269C Arthur',
-    desc:'<div style="margin-bottom:6px">Where your progress gets counted. Open the Track tab to:</div><div style="font-size:12px;text-align:left;line-height:1.8;padding:0 4px"><strong>\u2619 Sobriety Timer</strong> \u2014 see how long since your last reset<br><strong>\u269C Habits</strong> \u2014 build daily rituals, track streaks<br><strong>\u2726 Goals</strong> \u2014 set milestones and hit them<br><strong>\u2694 Craving Breaker</strong> \u2014 ride out the urge and earn schillings</div><div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">"The numbers don\u2019t lie \u2014 you\u2019re making progress."</div>'},
-  {icon:'\u269C',title:'The Arsenal',
-   npc:'\u269C Oswald',
-    desc:'<div style="margin-bottom:6px">Everything else you need. Open the More tab to:</div><div style="font-size:12px;text-align:left;line-height:1.8;padding:0 4px"><strong>\u265B Profile</strong> \u2014 see your stats and edit your story<br><strong>\u269C War Chest &amp; Shop</strong> \u2014 spend schillings on shields, decor, skins, and boosts<br><strong>\u2767 Library &amp; Music</strong> \u2014 curated recovery media<br><strong>\u2726 Calendar &amp; Reports</strong> \u2014 look back at your journey<br><strong>\u2619 Reminders &amp; Safety Plan</strong> \u2014 stay on track</div><div style="margin-top:8px;font-size:11px;color:var(--muted);font-style:italic">"Take what helps. Leave the rest."</div>'},
-  {icon:'\u2629',title:'You\u2019re Ready',
-   npc:'\u269C Arthur \u2022 \u269C Gertrude \u2022 \u269C Oswald',
-   desc:'<div style="margin-bottom:8px">That\u2019s the tour. Every check-in, journal entry, and breath is a step forward.</div><div style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.6"><strong style="color:#6d28d9">Arthur</strong>: <em>"You\u2019ve got what it takes. Let\u2019s get to work."</em><br><strong style="color:#2d5a5a">Gertrude</strong>: <em>"One day at a time. I\u2019ll be here."</em><br><strong style="color:#4338ca">Oswald</strong>: <em>"The path is yours. Walk it your way."</em></div>'},
+  {icon:'\u2694',title:'Your Battle',
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What would you like to conquer? Choose the battle you\'re ready to fight.</div><div id="onboarding-addiction" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0">'+ADDICTION_TYPES.map(function(at){return'<button data-v="'+at+'" class="btn btn-sm btn-outline" onclick="document.querySelectorAll(\'#onboarding-addiction button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--primary-dark)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';D.addictionType=this.getAttribute(\'data-v\')" style="width:auto;font-size:11px;padding:6px 14px;border-radius:20px;margin:0">'+at+'</button>';}).join('')+'</div>'},
+  {icon:'\u2727',title:'Your Goals',
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What do you want to achieve? Write down your goals.</div><textarea id="onboarding-goals" placeholder="e.g. Be sober for 30 days, rebuild trust with my family, find healthy hobbies..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0" oninput="D.goals=this.value"></textarea>'},
+  {icon:'\u265C',title:'Your Kingdom',
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Choose a kingdom theme that fits your world.</div><div id="onboarding-theme" style="display:flex;gap:12px;justify-content:center;margin:16px 0">'+
+     '<button class="btn" onclick="selectOnboardingTheme(\'gothic\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Gothic</span><span style="font-size:11px;color:var(--muted)">Dark stone, candlelight, shadows</span></button>'+
+     '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u265B</span><span style="font-weight:700;font-size:15px">Fantasy</span><span style="font-size:11px;color:var(--muted)">Bright banners, green hills, golden light</span></button>'+
+   '</div>'},
+  {icon:'\u269C',title:'Begin Operation Re.Claim',
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your battle, set your goals, and claimed your kingdom. The realm is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The crown is heavy, but you were made for this. Every day you show up, the kingdom grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Three friends will guide you:<br>Arthur \u2022 Gertrude \u2022 Oswald</div>'},
 ];
 var ONBOARDING_STEP = 0;
 function showOnboarding() {
@@ -11051,7 +11041,8 @@ function showOnboarding() {
 }
 function renderOnboardingStep() {
   var s = ONBOARDING_STEPS[ONBOARDING_STEP];
-  if (!s) { D._onboardingDone = true; saveData(); return; }
+  if (!s) { D._onboardingDone = true; saveData(); render(); return; }
+  var isLast = ONBOARDING_STEP >= ONBOARDING_STEPS.length - 1;
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.id = 'onboarding-ov';
@@ -11060,21 +11051,39 @@ function renderOnboardingStep() {
     '<div style="background:var(--card);max-width:380px;width:92%;margin:0 auto;border-radius:20px;padding:32px 24px 24px;text-align:center;animation:siFade .3s ease;position:relative;border:2px solid var(--primary-light);box-shadow:0 0 0 1px var(--border),0 16px 64px rgba(0,0,0,.3)">' +
     '<div style="position:absolute;top:-1px;left:20px;right:20px;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px"></div>' +
     '<div style="font-size:42px;margin-bottom:8px;font-family:MedievalSharp,serif">' + s.icon + '</div>' +
-    '<div style="font-size:20px;font-weight:700;margin-bottom:2px;color:var(--primary);font-family:MedievalSharp,serif">' + s.title + '</div>' +
-    '<div style="font-size:10px;color:var(--muted);letter-spacing:.5px;margin-bottom:12px">' + s.npc + '</div>' +
+    '<div style="font-size:20px;font-weight:700;margin-bottom:12px;color:var(--primary);font-family:MedievalSharp,serif">' + s.title + '</div>' +
     '<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:16px;padding:0 4px">' + s.desc + '</div>' +
     '<div style="display:flex;justify-content:center;gap:5px;margin-bottom:16px">' +
       ONBOARDING_STEPS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:50%;background:'+(i===ONBOARDING_STEP?'var(--accent)':'var(--border)')+'"></div>'; }).join('') +
     '</div>' +
     '<div style="display:flex;gap:8px">' +
       (ONBOARDING_STEP > 0 ? '<button class="btn btn-sm btn-outline" onclick="ONBOARDING_STEP--;renderOnboardingStep()" style="flex:1">\u2190 Back</button>' : '') +
-      '<button class="btn btn-sm btn-primary" onclick="ONBOARDING_STEP++;renderOnboardingStep()" style="flex:1">'+ (ONBOARDING_STEP < ONBOARDING_STEPS.length-1 ? 'Next \u2192' : '\u269C Begin') +'</button>' +
+      '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1">'+ (isLast ? '\u269C Begin Operation Re.Claim' : 'Next \u2192') +'</button>' +
     '</div>' +
-    '<button onclick="D._onboardingDone=true;saveData();document.getElementById(\'onboarding-ov\').remove()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);font-family:serif">\u2715</button>' +
+    '<button onclick="D._onboardingDone=true;saveData();document.getElementById(\'onboarding-ov\').remove();render()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);font-family:serif">\u2715</button>' +
     '</div>';
   var existing = document.getElementById('onboarding-ov');
   if (existing) existing.remove();
   document.body.appendChild(overlay);
+}
+function selectOnboardingTheme(theme, btn) {
+  var all = btn.parentElement.querySelectorAll('button');
+  all.forEach(function(b){ b.style.background='var(--primary-light)'; b.style.color='var(--text)'; b.style.borderColor='var(--border)'; });
+  btn.style.background='var(--grad-primary)'; btn.style.color='#fff'; btn.style.borderColor='var(--primary)';
+  D.theme = theme;
+  if (theme === 'gothic') { D.darkMode = true; document.body.classList.add('dark'); }
+  else { D.darkMode = false; document.body.classList.remove('dark'); }
+  applyTheme();
+}
+function advanceOnboarding() {
+  if (ONBOARDING_STEP === 0 && !D.addictionType) { alert('Pick an addiction to conquer.'); return; }
+  if (ONBOARDING_STEP === 1) {
+    var goalsEl = document.getElementById('onboarding-goals');
+    if (goalsEl) D.goals = goalsEl.value;
+  }
+  if (ONBOARDING_STEP === 2 && !D.theme) { alert('Choose a kingdom theme.'); return; }
+  ONBOARDING_STEP++;
+  renderOnboardingStep();
 }
 function render() {
   if (LOCK_ENABLED) return;
