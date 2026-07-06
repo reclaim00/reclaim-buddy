@@ -9490,7 +9490,7 @@ function coatOfArmsHTML() {
 function throneRoomHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
-  var isActive = D.sobriety.startDate && days > 0;
+  var isActive = !!D.sobriety.startDate;
   var h = '';
 
   if (!isActive) {
