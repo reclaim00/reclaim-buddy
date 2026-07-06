@@ -9981,10 +9981,10 @@ function showMilestoneParty(days) {
   }, 2400);
 }
 
-// ====== SERVICE WORKER ======
+// ====== SERVICE WORKER - FORCE UNREGISTER ======
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').catch(function(){});
+  navigator.serviceWorker.getRegistrations().then(function(regs) {
+    regs.forEach(function(reg) { reg.unregister(); });
   });
 }
 
