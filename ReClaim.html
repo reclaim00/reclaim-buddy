@@ -8058,12 +8058,13 @@ function applyTheme() {
     red:{primary:'#f87171',dark:'#dc2626',light:'#fecaca',lightDark:'rgba(248,113,113,0.15)'},
   };
   var c = pal[D.accentColor] || pal.green;
-  var el = document.body;
+  var el = document.body, root = document.documentElement;
   if (!el) return;
   el.style.setProperty('--primary', c.primary);
   el.style.setProperty('--primary-dark', c.dark);
   if (D.darkMode) {
     el.classList.add('dark');
+    root.style.background = '#0f0f13';
     el.style.setProperty('--bg','#0f0f13');
     el.style.setProperty('--card','#1a1a24');
     el.style.setProperty('--text','#e4e4e7');
@@ -8072,6 +8073,7 @@ function applyTheme() {
     el.style.setProperty('--primary-light', c.lightDark);
   } else {
     el.classList.remove('dark');
+    root.style.background = '#f5f5f0';
     el.style.setProperty('--bg','#f5f5f0');
     el.style.setProperty('--card','#ffffff');
     el.style.setProperty('--text','#1a1a2e');
