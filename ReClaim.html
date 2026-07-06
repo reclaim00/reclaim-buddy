@@ -2123,9 +2123,12 @@ function finalizeSobriety() {
   D.sobriety.addictionType = type;
   D.sobriety.startDate = Date.now();
   D._onboardingDone = true;
+  pg = 'home';
+  _pageCache = {};
   saveData();
   document.querySelector('.overlay').remove();
   render();
+  setTimeout(startSoberTimer, 200);
 }
 
 function recordRelapse() {
