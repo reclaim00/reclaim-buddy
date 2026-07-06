@@ -1,6 +1,6 @@
 self.addEventListener('install',function(e){self.skipWaiting()});
 self.addEventListener('activate',function(e){e.waitUntil(clients.claim())});
-self.addEventListener('fetch',function(e){e.respondWith(fetch(e.request))});
+self.addEventListener('fetch',function(e){e.respondWith(fetch(e.request,{cache:'no-store'}))});
 self.addEventListener('push',function(e){
   var d=e.data?e.data.json():{};
   self.registration.showNotification(d.title||'Re.Claim',{body:d.body||'',icon:d.icon||'icon-192.png'});
