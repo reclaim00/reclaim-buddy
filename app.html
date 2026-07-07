@@ -935,7 +935,7 @@ function onAuthReady(email, isNew) {
   document.addEventListener('visibilitychange', function(){ if (!document.hidden && AUTH_EMAIL && firebase && firebase.auth().currentUser) { loadFromFirestore(function(){}); } });
 }
 
-setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 5000);
+setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 30000);
 try { firebase.auth().onAuthStateChanged(function(user) {
   if (user && user.email) {
     AUTH_RESTORED = true;
@@ -1000,7 +1000,6 @@ function defaultData() {
     relapseGraveyard: { graves: [] },
     royalPardons: [],
     warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
-    dailyQuests: { date: '', done: [] },
     weeklyCampaign: { id: null, weekStart: '', done: [], rewardClaimed: false },
     shopPurchases: []
   };
@@ -6319,12 +6318,24 @@ function buddyHTML() {
   h += buddyCompetitionHTML();
   // Shared challenges
   h += buddyChallengesHTML();
+  // Competitions
+  h += competitionsHTML();
   // Messages
   h += buddyMessagesHTML();
   h += '<div style="display:flex;gap:8px;margin:8px 0">';
   h += '<button class="btn btn-outline btn-sm" onclick="editBuddy()" style="flex:1">Edit Partner</button>';
   h += '<button class="btn btn-danger btn-sm" onclick="removeBuddy()" style="flex:1">Remove</button>';
   h += '</div>';
+  // Previously paired buddies
+  var past = D.pairedBuddies || [];
+  if (past.length > 0) {
+    h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:16px">&#128101;</div><h3 style="margin:0;font-size:14px">Past Comrades</h3></div>';
+    for (var pi=0;pi<past.length;pi++) {
+      if (past[pi].email === (D.buddy && D.buddy.contact)) continue;
+      h += '<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="flex:1">' + safe(past[pi].name) + '</span><span style="font-size:11px;color:var(--muted)">' + (past[pi].language || '') + '</span></div>';
+    }
+    h += '</div>';
+  }
   setTimeout(fetchBuddyProgress, 400);
   setTimeout(function(){ shareProgressWithBuddy(true); }, 600);
   return h;
@@ -6396,6 +6407,98 @@ function newChallenge() {
   saveData();
   render();
 }
+
+// ====== COMPETITIONS ======
+function competitionsHTML() {
+  var comps = D.competitions || [];
+  if (!comps.length) return '';
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#9876;&#65039;</div><h3 style="margin:0">Active Competitions</h3></div>';
+  var now = Date.now();
+  var active = comps.filter(function(c){ return c.status === 'active' && c.endDate > now; });
+  if (!active.length) {
+    h += '<div class="empty-state">No active competitions. Start one with your comrade!</div>';
+    h += '<button class="btn btn-outline btn-sm" onclick="createCompetition()">+ New Competition</button></div>';
+    return h;
+  }
+  for (var i=0;i<active.length;i++) {
+    var c = active[i];
+    var me = c.participants && c.participants[0] ? c.participants[0] : {name:'You',progress:0};
+    var them = c.participants && c.participants[1] ? c.participants[1] : {name:'Buddy',progress:0};
+    var total = Math.max(me.progress, them.progress, 1);
+    var myPct = Math.min(100, (me.progress / total) * 100);
+    var theirPct = Math.min(100, (them.progress / total) * 100);
+    var leader = me.progress > them.progress ? me.name : (them.progress > me.progress ? them.name : 'Tied');
+    var daysLeft = Math.max(0, Math.ceil((c.endDate - now) / 86400000));
+    h += '<div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><strong style="font-size:13px">' + safe(c.title) + '</strong><span style="font-size:11px;color:var(--muted)">' + daysLeft + 'd left</span></div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px">' + leader + ' is winning</div>';
+    h += '<div style="margin:4px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span>' + safe(me.name) + '</span><span>' + me.progress + '</span></div><div class="progress-bar"><div class="fill" style="width:' + myPct + '%"></div></div></div>';
+    h += '<div style="margin:4px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span>' + safe(them.name) + '</span><span>' + them.progress + '</span></div><div class="progress-bar"><div class="fill" style="width:' + theirPct + '%;background:var(--accent)"></div></div></div>';
+    h += '<button class="btn btn-sm btn-outline" onclick="addCompetitionProgress(' + i + ')" style="margin-top:4px;font-size:10px">+ Update Progress</button>';
+    h += '</div>';
+  }
+  h += '<button class="btn btn-outline btn-sm" onclick="createCompetition()">+ New Competition</button></div>';
+  return h;
+}
+
+function createCompetition() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var buddyName = D.buddy ? D.buddy.name : 'your comrade';
+  var types = [
+    {id:'streak', label:'Check-in Streak', desc:'Who keeps the longest streak'},
+    {id:'journal', label:'Journal Entries', desc:'Who writes more entries'},
+    {id:'checkin', label:'Buddy Check-ins', desc:'Who checks in more'},
+    {id:'custom', label:'Custom Challenge', desc:'Set your own rules'}
+  ];
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px"><h3 style="margin-bottom:4px">Start a Competition</h3><p style="font-size:12px;color:var(--muted);margin-bottom:10px">Compete with ' + safe(buddyName) + ' to stay motivated</p><div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Challenge Type</label>' +
+    types.map(function(t,i){ return '<div class="goal-item" onclick="selectCompType('+i+')" id="comp-type-'+i+'" style="cursor:pointer;padding:8px 10px;margin-bottom:4px;border:2px solid var(--border);border-radius:8px"><strong style="font-size:13px">' + t.label + '</strong><div style="font-size:11px;color:var(--muted)">' + t.desc + '</div></div>'; }).join('') +
+    '</div><div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Duration (days)</label><select id="comp-duration" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)"><option value="7">7 days</option><option value="14">14 days</option><option value="21">21 days</option><option value="30" selected>30 days</option><option value="60">60 days</option></select></div>' +
+    '<div style="display:flex;gap:6px;margin-top:4px"><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary" onclick="finalizeCompetition()">&#9876;&#65039; Start Competition!</button></div></div>';
+  document.body.appendChild(overlay);
+  window._compBuddyName = buddyName;
+}
+
+function finalizeCompetition() {
+  var typeEl = document.querySelector('[id^="comp-type-"].selected');
+  if (!typeEl) { alert('Select a challenge type'); return; }
+  var idx = parseInt(typeEl.id.replace('comp-type-',''));
+  var types = ['streak','journal','checkin','custom'];
+  var type = types[idx];
+  var labels = ['Check-in Streak','Journal Entries','Buddy Check-ins','Custom Challenge'];
+  var duration = parseInt(document.getElementById('comp-duration').value);
+  var title = type === 'custom' ? prompt('Name your challenge:') : labels[idx] + ' Battle';
+  if (!title || !title.trim()) return;
+  if (!D.competitions) D.competitions = [];
+  var buddyEmail = D.buddy ? (D.buddy.contact || 'buddy@unknown') : 'buddy@unknown';
+  D.competitions.push({
+    id: Date.now(),
+    type: type,
+    title: title.trim(),
+    startDate: Date.now(),
+    endDate: Date.now() + duration * 86400000,
+    participants: [{email: AUTH_EMAIL, name: D.name || 'You', progress: 0}, {email: buddyEmail, name: D.buddy ? D.buddy.name : 'Buddy', progress: 0}],
+    status: 'active'
+  });
+  saveData();
+  document.querySelector('.overlay').remove();
+  render();
+}
+window.selectCompType = function(idx) {
+  document.querySelectorAll('[id^="comp-type-"]').forEach(function(el){ el.classList.remove('selected'); el.style.borderColor = 'var(--border)'; });
+  var el = document.getElementById('comp-type-'+idx);
+  if (el) { el.classList.add('selected'); el.style.borderColor = 'var(--primary)'; }
+};
+window.addCompetitionProgress = function(idx) {
+  var comps = D.competitions || [];
+  if (!comps[idx]) return;
+  var me = comps[idx].participants[0];
+  if (me.email !== AUTH_EMAIL) { me = comps[idx].participants[1]; }
+  if (!me) return;
+  me.progress = (me.progress || 0) + 1;
+  saveData();
+  render();
+};
 
 function setupBuddyHTML() {
   var h = '';
