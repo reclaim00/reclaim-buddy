@@ -977,7 +977,7 @@ function defaultData() {
     checkins: [], streak: 0, breatheCount: 0, lastBreatheDate: '',
     targetAddictions: [],
     dailyQuests: { date: '', done: [] },
-    buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [],
+    buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [], competitions: [],
     assessmentTaken: false, assessmentResult: null,
     screenerPHQ9: { taken: false, result: null, progress: null },
     screenerGAD7: { taken: false, result: null, progress: null },
@@ -8004,6 +8004,27 @@ function applyTheme() {
     el.style.setProperty('--border','#e5e7eb');
     el.style.setProperty('--primary-light', c.light);
   }
+  // Theme-based kingdom scene colors
+  var ks = document.querySelector('.kingdom-scene');
+  if (ks) {
+    if (D.theme === 'fantasy') {
+      ks.style.setProperty('--sky-c', '#7ec8e3');
+      ks.style.setProperty('--ground-c', '#7cb342');
+      ks.style.setProperty('--hill-c', '#8bc34a');
+      ks.style.setProperty('--keep-c', '#d4a76a');
+      ks.style.setProperty('--roof-c', '#c0392b');
+      ks.style.setProperty('--tower-c', '#d4a76a');
+      ks.style.setProperty('--tower-roof-c', '#c0392b');
+      ks.style.setProperty('--door-c', '#5d4037');
+      ks.style.setProperty('--tree-c', '#4caf50');
+      ks.style.setProperty('--tree-trunk-c', '#5d4037');
+      ks.style.setProperty('--flag-c', '#e74c3c');
+      ks.style.setProperty('--window-c', '#ffe082');
+      ks.style.setProperty('--path-c', '#a1887f');
+    } else {
+      ['sky-c','ground-c','hill-c','keep-c','roof-c','tower-c','tower-roof-c','door-c','tree-c','tree-trunk-c','flag-c','window-c','path-c','cloud-c','bird-c','rubble-c'].forEach(function(k){ ks.style.removeProperty('--'+k); });
+    }
+  }
 }
 
 function updateTabLabels() {
@@ -9497,10 +9518,13 @@ function throneRoomHTML() {
   }
   h += '</div>';
 
-  // 3. Coat of Arms
+  // 3. Sobriety timer (right under castle)
+  h += soberTimerHTML();
+
+  // 4. Coat of Arms
   h += coatOfArmsHTML();
 
-  // 4. Quick actions
+  // 5. Quick actions
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">';
   h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'journal\')" style="background:linear-gradient(135deg,#5a3a1a,#7a5a3a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2726</span> Journal</button>';
   h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'track\')" style="background:linear-gradient(135deg,#3a5a2a,#5a7a4a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2619</span> Check-In</button>';
@@ -9508,10 +9532,7 @@ function throneRoomHTML() {
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="background:linear-gradient(135deg,#2a4a5a,#4a6a7a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2766</span> Breathe</button>';
   h += '</div>';
 
-  // 5. Sobriety timer
-  h += soberTimerHTML();
-
-  // 6. Round Table (all 3 NPCs)
+  // 5. Round Table (all 3 NPCs)
   h += roundTableHTML();
 
   return h;
