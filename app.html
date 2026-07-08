@@ -854,18 +854,18 @@ var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHO
 function subscribePush() {
   if (!MESSAGING || !AUTH_EMAIL || VAPID_KEY === 'REPLACE_WITH_YOUR_VAPID_KEY') return;
   MESSAGING.getToken({vapidKey: VAPID_KEY}).then(function(token) {
-    if (DB) DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({token: token, updated: firebase.firestore.FieldValue.serverTimestamp()}).catch(function(){});
-  }).catch(function(){});
+    if (DB) DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({token: token, updated: firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
 function unsubscribePush() {
   if (!MESSAGING || !AUTH_EMAIL) return;
   MESSAGING.getToken({vapidKey: VAPID_KEY}).then(function(token) {
     if (token) {
-      MESSAGING.deleteToken(token).catch(function(){});
+      MESSAGING.deleteToken(token).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
     }
-  }).catch(function(){});
-  DB.collection('pushSubscriptions').doc(AUTH_EMAIL).delete().catch(function(){});
+  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  DB.collection('pushSubscriptions').doc(AUTH_EMAIL).delete().catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
 // ====== CLOUD SYNC (Firestore cross-device) ======
@@ -964,6 +964,11 @@ try { firebase.auth().onAuthStateChanged(function(user) {
     setTimeout(function(){ document.getElementById('loading-screen').classList.add('hide'); showSignIn(); }, 100);
   }
 }); } catch(e) {}
+
+// Register service worker for offline support
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(e){ console.error('SW registration failed:', e); });
+}
 
 // ====== DATA ======
 function defaultData() {
@@ -1756,7 +1761,7 @@ function handleAuth() {
   }
 }
 function signOut() {
-  firebase.auth().signOut().catch(function(){});
+  firebase.auth().signOut().catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
   localStorage.removeItem('rc_user');
   AUTH_USER = '';
   AUTH_EMAIL = '';
@@ -3248,7 +3253,7 @@ function showCrisisAlert(text) {
       notifyBtn.style.cssText = 'margin-top:4px;width:100%';
       notifyBtn.onclick = function() {
         var msg = t('I need support right now. Your comrade may be in distress. Please reach out.');
-        if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your comrade has been notified.'));notifyBtn.remove();}).catch(function(){});
+        if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your comrade has been notified.'));notifyBtn.remove();}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
       };
       overlay.querySelector('.overlay-content').appendChild(notifyBtn);
     }, 300);
@@ -3462,7 +3467,7 @@ function fetchItunesSongs(mood) {
         url_youtube:'https://www.youtube.com/results?search_query=' + (item.trackName + ' ' + item.artistName).toLowerCase().replace(/[^a-z0-9]/g,'+')
       };
     });
-  }).catch(function(){});
+  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 var SONGS_BY_MOOD = {
   sad: [
@@ -6123,7 +6128,7 @@ function fetchGlobalBuddies(callback) {
 
 function syncToGlobal(entry) {
   if (!firebase || !firebase.auth().currentUser) return;
-  DB.collection('users').doc(AUTH_EMAIL).set(entry).catch(function(){});
+  DB.collection('users').doc(AUTH_EMAIL).set(entry).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
 function registerCurrentUser() {
@@ -6146,10 +6151,10 @@ function generatePairingCode() {
   var code = '';
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   for (var i=0;i<6;i++) code += chars[Math.floor(Math.random() * chars.length)];
-  var shareBtn = (navigator.share ? '<button class="btn btn-sm btn-primary" onclick="navigator.share({title:\'Re.Claim comrade code\',text:\'Connect with me on Re.Claim! My pairing code: ' + code + ' (Language: ' + (D.language || 'English') + ')\'}).catch(function(){})" style="margin-top:4px;width:auto;margin-right:4px">Share</button>' : '');
+  var shareBtn = (navigator.share ? '<button class="btn btn-sm btn-primary" onclick="navigator.share({title:\'Re.Claim comrade code\',text:\'Connect with me on Re.Claim! My pairing code: ' + code + ' (Language: ' + (D.language || 'English') + ')\'}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); })" style="margin-top:4px;width:auto;margin-right:4px">Share</button>' : '');
   document.getElementById('pairing-result').innerHTML = '<div style="background:var(--primary-light);padding:12px;border-radius:10px;text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Share this code with your comrade anywhere in the world:</div><div style="font-size:32px;font-weight:900;color:var(--primary);letter-spacing:6px">' + code + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Your language: <strong>' + (D.language || 'English') + '</strong></div><div style="margin-top:6px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">' + shareBtn + '<button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText(\'' + code + '\');this.textContent=\'Copied!\'" style="width:auto">Copy Code</button></div></div>';
   // Save code globally
-  DB.collection('pairingCodes').doc(AUTH_EMAIL).set({ code: code }).catch(function(){});
+  DB.collection('pairingCodes').doc(AUTH_EMAIL).set({ code: code }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 function connectPairingCode() {
   var input = document.getElementById('pairing-code');
@@ -6187,7 +6192,7 @@ function connectPairingCode() {
       // Code not found  save this one for a comrade to match
       allCodes[AUTH_EMAIL] = code;
       localStorage.setItem('rc_pairing_codes', JSON.stringify(allCodes));
-      DB.collection('pairingCodes').doc(AUTH_EMAIL).set({ code: code }).catch(function(){});
+      DB.collection('pairingCodes').doc(AUTH_EMAIL).set({ code: code }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
       registerCurrentUser();
       document.getElementById('pairing-result').innerHTML = '<div style="font-size:13px;color:var(--muted)">Code saved and shared globally! Share it with your comrade anywhere in the world.</div>';
     })
@@ -7047,7 +7052,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
       h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">'+t('Journal entries are encrypted with AES-256-GCM before saving.')+'</p>';
       h += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
       h += '<button class="btn btn-sm btn-outline" onclick="var np=prompt(\''+t('Enter new passphrase (min 4 chars):')+'\');if(!np||np.length<4){alert(\''+t('Passphrase must be at least 4 characters.')+'\');return}var cp=prompt(\''+t('Confirm new passphrase:')+'\');if(np!==cp){alert(\''+t('Passphrases do not match.')+'\');return}changeEncryptionPassphrase(\'\',np).then(function(){alert(\''+t('Passphrase changed!')+'\');}).catch(function(){alert(\''+t('Failed to change passphrase.')+'\')})">'+t('Change Passphrase')+'</button>';
-      h += '<button class="btn btn-sm btn-danger" onclick="if(!confirm(\''+t('This will decrypt all journal entries. Are you sure?')+'\'))return;disableEncryption().then(function(){render();alert(\''+t('Encryption disabled. All entries have been decrypted.')+'\');}).catch(function(){})">'+t('Disable Encryption')+'</button>';
+      h += '<button class="btn btn-sm btn-danger" onclick="if(!confirm(\''+t('This will decrypt all journal entries. Are you sure?')+'\'))return;disableEncryption().then(function(){render();alert(\''+t('Encryption disabled. All entries have been decrypted.')+'\');}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); })">'+t('Disable Encryption')+'</button>';
       h += '</div>';
     } else {
       h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="color:var(--primary);font-weight:600">&#128274; '+t('Encryption active')+'</span><span class="badge badge-gold">'+t('Locked')+'</span></div>';
@@ -8068,7 +8073,7 @@ function shareCardImage() {
   var card = document.getElementById('share-card');
   if (!card) return;
   if (navigator.share) {
-    navigator.share({ title: t('My Recovery Progress'), text: card.innerText, url: 'https://reclaim00.github.io/reclaim-buddy/' }).catch(function(){});
+    navigator.share({ title: t('My Recovery Progress'), text: card.innerText, url: 'https://reclaim00.github.io/reclaim-buddy/' }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
   } else {
     alert(t('Take a screenshot of the card above to share!'));
   }
@@ -8197,7 +8202,7 @@ function buddySendMessage() {
     date: new Date().toDateString(),
     time: String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0'),
     timestamp: Date.now()
-  }).catch(function(){});
+  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
   render();
 }
 
@@ -8262,7 +8267,7 @@ function buddyMessagesHTML() {
         }
         html += '</div>';
         el.innerHTML = html;
-      }).catch(function(){});
+      }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
     }, 500);
   }
   return h;
