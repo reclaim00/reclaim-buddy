@@ -1893,16 +1893,19 @@ function plantStageInfo() {
 
 // ====== SOBER LEVEL-UP ======
 var SOBER_LEVELS = [
-  {level:1, minDays:0, title:'Seed', icon:'🌱', desc:'Your journey has begun'},
-  {level:2, minDays:3, title:'Sprout', icon:'🌿', desc:'New growth is appearing'},
-  {level:3, minDays:7, title:'Seedling', icon:'🌱', desc:'Roots are getting stronger'},
-  {level:4, minDays:14, title:'Growing', icon:'🌻', desc:'You are blooming'},
-  {level:5, minDays:30, title:'Young Tree', icon:'🌳', desc:'Building resilience'},
-  {level:6, minDays:90, title:'Strong Tree', icon:'🌲', desc:'Deep roots, steady growth'},
-  {level:7, minDays:180, title:'Guardian', icon:'🛡️', desc:'Protecting your recovery'},
-  {level:8, minDays:365, title:'Sage', icon:'🧠', desc:'A year of wisdom'},
-  {level:9, minDays:730, title:'Legend', icon:'🌟', desc:'Two years — incredible'},
-  {level:10, minDays:1825, title:'Immortal', icon:'👑', desc:'Five years — you are unbreakable'}
+  {level:1, minDays:0, title:'Peasant', icon:'\u2619', desc:'The journey begins'},
+  {level:2, minDays:1, title:'Page', icon:'\u2726', desc:'Learning the ways of the court'},
+  {level:3, minDays:7, title:'Squire', icon:'\u2694', desc:'Proving your worth'},
+  {level:4, minDays:14, title:'Knight Errant', icon:'\u2720', desc:'Riding toward a cause'},
+  {level:5, minDays:30, title:'Knight', icon:'\u269C', desc:'Sworn to the realm'},
+  {level:6, minDays:60, title:'Knight of the Realm', icon:'\u265B', desc:'Honored across the land'},
+  {level:7, minDays:90, title:'Baron', icon:'\u265A', desc:'A lord of the kingdom'},
+  {level:8, minDays:180, title:'Viscount', icon:'\u265C', desc:'A trusted advisor'},
+  {level:9, minDays:270, title:'Earl', icon:'\u2766', desc:'Noble and steadfast'},
+  {level:10, minDays:365, title:'Duke', icon:'\u2727', desc:'A pillar of the realm'},
+  {level:11, minDays:730, title:'Prince', icon:'\u265D', desc:'Heir to the throne'},
+  {level:12, minDays:1000, title:'King', icon:'\u2629', desc:'Long may you reign'},
+  {level:13, minDays:1825, title:'Emperor', icon:'\u265E', desc:'Five years — an immortal legend'}
 ];
 
 function soberLevel() {
@@ -9687,7 +9690,17 @@ function throneRoomHTML() {
   }
   h += '</div>';
 
-  // 3. Sobriety timer (right under castle)
+  // 3. Level card (medieval rank, clickable → profile)
+  var _lvl = soberLevel();
+  var _prog = soberLevelProgress();
+  h += '<div class="card" style="margin-top:8px;padding:10px;text-align:center;cursor:pointer" onclick="goTo(\'profile\')">';
+  h += '<div style="font-size:24px">' + _lvl.icon + '</div>';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--primary)">' + _lvl.title + '</div>';
+  h += '<div class="progress-bar" style="max-width:140px;margin:4px auto"><div class="fill" style="width:' + _prog + '%"></div></div>';
+  h += '<div style="font-size:10px;color:var(--muted)">Level ' + _lvl.level + ' &middot; ' + _prog + '% to next rank</div>';
+  h += '</div>';
+
+  // 4. Sobriety timer (right under castle)
   h += soberTimerHTML();
 
   // 4. Coat of Arms
