@@ -1,5 +1,5 @@
 var CACHE = 'reclaim-v1';
-var SHELL = ['/reclaim-buddy/app.html', '/reclaim-buddy/manifest.json', '/reclaim-buddy/icon-192.png', '/reclaim-buddy/icon-512.png', '/reclaim-buddy/icon.svg'];
+var SHELL = ['/reclaim-buddy/', '/reclaim-buddy/index.html', '/reclaim-buddy/app.html', '/reclaim-buddy/manifest.json', '/reclaim-buddy/icon-192.png', '/reclaim-buddy/icon-512.png', '/reclaim-buddy/icon.svg'];
 
 self.addEventListener('install', function(e) {
   e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(SHELL); }));
@@ -18,7 +18,7 @@ self.addEventListener('fetch', function(e) {
       return hit || fetch(req).then(function(res) {
         return caches.open(CACHE).then(function(c) { c.put(req, res.clone()); return res; });
       }).catch(function() {
-        return caches.match('/reclaim-buddy/app.html');
+        return caches.match('/reclaim-buddy/');
       });
     })
   );
@@ -33,6 +33,6 @@ self.addEventListener('notificationclick', function(e) {
   e.notification.close();
   e.waitUntil(clients.matchAll({type:'window'}).then(function(ws) {
     if (ws.length) { ws[0].focus(); return; }
-    clients.openWindow('/reclaim-buddy/app.html');
+    clients.openWindow('/reclaim-buddy/');
   }));
 });
