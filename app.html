@@ -874,16 +874,22 @@ function syncToFirestore(retries) {
   if (!firebase || !firebase.auth().currentUser) return;
   D._lastSync = Date.now();
   if (retries === undefined) retries = 0;
-  firebase.auth().currentUser.getIdToken(true).then(function(){
-    DB.collection('appData').doc(AUTH_EMAIL).set({
-      data: JSON.parse(JSON.stringify(D)),
-      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-    }).catch(function(){
+  // Debounce: clear pending sync and schedule a new one
+  if (window._syncTimer) clearTimeout(window._syncTimer);
+  window._syncTimer = setTimeout(function(){
+    firebase.auth().currentUser.getIdToken(true).then(function(){
+      DB.collection('appData').doc(AUTH_EMAIL).set({
+        data: JSON.parse(JSON.stringify(D)),
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(function(e){
+        console.warn(e);
+        if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1); }, 1000 * (retries + 1));
+      });
+    }).catch(function(e){
+      console.warn(e);
       if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1); }, 1000 * (retries + 1));
     });
-  }).catch(function(){
-    if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1); }, 1000 * (retries + 1));
-  });
+  }, 500);
 }
 
 function loadFromFirestore(callback) {
@@ -891,14 +897,19 @@ function loadFromFirestore(callback) {
   DB.collection('appData').doc(AUTH_EMAIL).get().then(function(doc) {
     if (doc.exists && doc.data().data && doc.data().data.joinDate) {
       var cloudData = validateData(doc.data().data);
-      // Merge cloud into D: cloud wins on conflicts, local fills gaps
-      for (var k in cloudData) D[k] = cloudData[k];
-      saveData();
+      var cloudTime = doc.data().lastUpdated ? doc.data().lastUpdated.toMillis() : 0;
+      var localTime = D._lastSync || 0;
+      // Only merge cloud data if it's newer than local to prevent overwrites
+      if (cloudTime >= localTime) {
+        for (var k in cloudData) D[k] = cloudData[k];
+        D._lastSync = cloudTime;
+        saveData();
+      }
       if (callback) callback(cloudData);
     } else {
       if (callback) callback(null);
     }
-  }).catch(function(){ if (callback) callback(null); });
+  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); if (callback) callback(null); });
 }
 
 // ====== AUTH ======
@@ -933,6 +944,15 @@ function onAuthReady(email, isNew) {
   if (window._focusSync) document.removeEventListener('focus', window._focusSync);
   window._focusSync = function(){ if (AUTH_EMAIL && firebase && firebase.auth().currentUser) { loadFromFirestore(function(){}); } };
   document.addEventListener('visibilitychange', function(){ if (!document.hidden && AUTH_EMAIL && firebase && firebase.auth().currentUser) { loadFromFirestore(function(){}); } });
+  // Auto-sync every 2 minutes to avoid data loss on tab close
+  if (window._autoSyncTimer) clearInterval(window._autoSyncTimer);
+  window._autoSyncTimer = setInterval(function(){
+    if (AUTH_EMAIL && firebase && firebase.auth().currentUser) syncToFirestore();
+  }, 120000);
+  // Sync on page unload
+  window.addEventListener('beforeunload', function(){
+    if (AUTH_EMAIL && firebase && firebase.auth().currentUser) { DB.collection('appData').doc(AUTH_EMAIL).set({ data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(){}); }
+  });
 }
 
 setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 30000);
