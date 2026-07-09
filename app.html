@@ -952,12 +952,6 @@ function onAuthReady(email, isNew) {
 }
 
 setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 5000);
-if (AUTH_USER) {
-  D = loadData();
-  document.body.classList.add('logged-in');
-  render();
-  document.getElementById('loading-screen').classList.add('hide');
-}
 try { firebase.auth().onAuthStateChanged(function(user) {
   if (user && user.email) {
     AUTH_RESTORED = true;
@@ -11401,7 +11395,7 @@ applyTheme();
 setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
 if (AUTH_USER && !isLockSet()) {
   document.body.classList.add('logged-in');
-  render();
+  try { render(); } catch(e) { document.getElementById('app').innerHTML = '<div class="card"><h3>Something went wrong</h3><p style="font-size:12px;color:var(--muted)">' + e.message + '</p></div>'; }
   setTimeout(updateVillage, 100);
   loadFromFirestore(function(cloudData) {
     if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
