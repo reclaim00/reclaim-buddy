@@ -657,6 +657,7 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 </head>
 <body>
 <div id="loading-screen"><div class="loader-content"><div class="loader-crown">♛</div><div class="loader-bar"><div class="loader-fill"></div></div><div class="loader-text">Raising the kingdom...</div></div></div>
+<script>(function(){try{if(localStorage.getItem('rc_user')){document.getElementById('loading-screen').classList.add('hide')}}catch(e){}})()</script>
 <div id="landscape-bg"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5aa8e0"/><stop offset="40%" stop-color="#7ac0f0"/><stop offset="75%" stop-color="#a0d4f8"/><stop offset="100%" stop-color="#c8e8c0"/></linearGradient>
@@ -951,7 +952,7 @@ function onAuthReady(email, isNew) {
   });
 }
 
-setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 8000);
+setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 5000);
 if (AUTH_USER) {
   D = loadData();
   document.body.classList.add('logged-in');
