@@ -267,6 +267,7 @@ body.dark .overlay{background:rgba(0,0,0,.65)}
 .overlay.fade-out .overlay-content{animation:overlaySlide .15s ease reverse both}
 .overlay-content{background:var(--card);width:100%;max-width:480px;margin:0 auto;border-radius:20px 20px 0 0;padding:20px;max-height:85vh;overflow-y:auto;box-shadow:0 -8px 40px rgba(0,0,0,.12);animation:overlaySlide .3s cubic-bezier(.22,1,.36,1)}
 @keyframes overlaySlide{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes achievePop{0%{transform:scale(0.3) rotate(-10deg);opacity:0}50%{transform:scale(1.15) rotate(3deg);opacity:1}70%{transform:scale(0.92) rotate(-1deg)}100%{transform:scale(1) rotate(0);opacity:1}}
 @keyframes schillingPop{0%{transform:scale(.5) translateY(20px);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1) translateY(0);opacity:1}}
 .quote{font-style:italic;font-size:14px;line-height:1.6;color:var(--text);padding:14px 16px;background:var(--primary-light);border-radius:12px;margin:10px 0;border-left:3px solid var(--primary)}
 body.dark .quote{border-left-color:var(--gold);background:rgba(138,122,154,.04)}
@@ -1024,7 +1025,8 @@ function defaultData() {
     royalPardons: [],
     warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
     weeklyCampaign: { id: null, weekStart: '', done: [], rewardClaimed: false },
-    shopPurchases: []
+    shopPurchases: [],
+    achievements: []
   };
 }
 
@@ -1908,6 +1910,30 @@ var SOBER_LEVELS = [
   {level:11, minDays:730, title:'Prince', icon:'\u265D', desc:'Heir to the throne'},
   {level:12, minDays:1000, title:'King', icon:'\u2629', desc:'Long may you reign'},
   {level:13, minDays:1825, title:'Emperor', icon:'\u265E', desc:'Five years — an immortal legend'}
+];
+
+// ====== MEDIEVAL ACHIEVEMENTS ======
+var ACHIEVEMENTS = [
+  {id:'first_step',     icon:'\u2619',  title:'First Step',       desc:'Stay sober for 1 day',           check:function(d){return d>=1}},
+  {id:'week_warrior',   icon:'\u2694',  title:'Week Warrior',     desc:'Stay sober for 7 days',          check:function(d){return d>=7}},
+  {id:'fortnight',      icon:'\u2720',  title:'Fortnight Fortress',desc:'Stay sober for 14 days',         check:function(d){return d>=14}},
+  {id:'moons_silver',   icon:'\u269C',  title:'Silver Moon',      desc:'Stay sober for 30 days',         check:function(d){return d>=30}},
+  {id:'moons_golden',   icon:'\u265B',  title:'Golden Moon',      desc:'Stay sober for 60 days',         check:function(d){return d>=60}},
+  {id:'season_king',    icon:'\u265C',  title:'Seasoned King',    desc:'Stay sober for 90 days',         check:function(d){return d>=90}},
+  {id:'half_crown',     icon:'\u2766',  title:'Half a Crown',     desc:'Stay sober for 180 days',        check:function(d){return d>=180}},
+  {id:'year_ring',      icon:'\u2727',  title:'Year Ring',        desc:'Stay sober for 1 year',          check:function(d){return d>=365}},
+  {id:'iron_throne',    icon:'\u265D',  title:'Iron Throne',      desc:'Stay sober for 2 years',         check:function(d){return d>=730}},
+  {id:'decade_early',   icon:'\u2629',  title:'Millennium',       desc:'Stay sober for 1000 days',       check:function(d){return d>=1000}},
+  {id:'scribe',         icon:'\u270D',  title:'Royal Scribe',     desc:'Write 10 journal entries',       check:function(d,j){return j>=10}},
+  {id:'chronicler',     icon:'\u270D',  title:'Chronicler',       desc:'Write 50 journal entries',       check:function(d,j){return j>=50}},
+  {id:'shield_bearer',  icon:'\u265A',  title:'Shield Bearer',    desc:'Earn 3 shields',                 check:function(d,j,s){return s>=3}},
+  {id:'quest_knight',   icon:'\u269C',  title:'Quest Knight',     desc:'Complete 10 quests',             check:function(d,j,s,q){return q>=10}},
+  {id:'comrade',        icon:'\u2726',  title:'True Comrade',     desc:'Pair with a buddy',              check:function(){return D.buddyPair && D.buddyPair.partnerId}},
+  {id:'stone_wall',     icon:'\u265E',  title:'Stone Wall',       desc:'Reach castle level 5',           check:function(d){return kingdomLevel(d)>=5}},
+  {id:'dragon_lord',    icon:'\u265B',  title:'Dragon Lord',      desc:'Reach castle level 15',          check:function(d){return kingdomLevel(d)>=15}},
+  {id:'first_entry',    icon:'\u270D',  title:'First Scroll',     desc:'Write your first journal entry', check:function(d,j){return j>=1}},
+  {id:'relapse_rise',   icon:'\u2629',  title:'Phoenix',          desc:'Come back after a relapse',      check:function(){return D.relapseHistory && D.relapseHistory.length > 0}},
+  {id:'crown_jewel',    icon:'\u2727',  title:'Crown Jewel',      desc:'Unlock all achievements',        check:function(d,j,s,q){var all=ACHIEVEMENTS.map(function(a){return a.id});return all.every(function(i){return(D.achievements||[]).indexOf(i)>=0})}},
 ];
 
 function soberLevel() {
@@ -6955,6 +6981,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; Royal Pardon</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; War Chest</div>';
+  h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
   h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C Royal Shop</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
@@ -8034,6 +8061,57 @@ function checkMilestone() {
   }
 }
 
+// ====== ACHIEVEMENTS ======
+function checkAchievements() {
+  if (!D.achievements) D.achievements = [];
+  var days = soberDays();
+  var entries = (D.journal || []).length;
+  var wc = D.warchest || {};
+  var shields = wc.shields || 0;
+  var questsDone = 0;
+  if (D.dailyQuests && D.dailyQuests.done) questsDone += D.dailyQuests.done.length;
+  if (D.weeklyCampaign && D.weeklyCampaign.done) questsDone += D.weeklyCampaign.done.length;
+  var newOnes = [];
+  for (var i = 0; i < ACHIEVEMENTS.length; i++) {
+    var a = ACHIEVEMENTS[i];
+    if (D.achievements.indexOf(a.id) >= 0) continue;
+    if (a.id === 'crown_jewel') {
+      var all = ACHIEVEMENTS.map(function(x){return x.id});
+      var unlocked = D.achievements || [];
+      var others = all.filter(function(x){return x !== 'crown_jewel'});
+      if (others.every(function(x){return unlocked.indexOf(x) >= 0})) {
+        D.achievements.push(a.id);
+        newOnes.push(a);
+      }
+      continue;
+    }
+    if (a.check(days, entries, shields, questsDone)) {
+      D.achievements.push(a.id);
+      newOnes.push(a);
+    }
+  }
+  if (newOnes.length) saveData();
+  for (var qi = 0; qi < newOnes.length; qi++) {
+    (function(ach, idx) {
+      setTimeout(function() { showAchievementPopup(ach); }, idx * 1200);
+    })(newOnes[qi], qi);
+  }
+}
+
+function showAchievementPopup(a) {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.style.background = 'rgba(0,0,0,.5)';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;max-width:320px;padding:24px;background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid #d4a017;border-radius:20px;animation:achievePop .4s ease-out">' +
+    '<div style="font-size:48px;margin-bottom:4px">' + a.icon + '</div>' +
+    '<div style="font-size:22px;font-weight:700;color:#d4a017;font-family:MedievalSharp,serif;margin-bottom:2px">Achievement Unlocked!</div>' +
+    '<div style="font-size:16px;font-weight:600;color:#fff;margin-bottom:4px">' + a.title + '</div>' +
+    '<div style="font-size:12px;color:#aaa;margin-bottom:12px">' + a.desc + '</div>' +
+    '<button class="btn btn-sm" onclick="this.closest(\'.overlay\').remove()" style="background:#d4a017;color:#1a1a2e;font-weight:700;border:none">Huzzah!</button></div>';
+  document.body.appendChild(overlay);
+  setTimeout(function(){ try { overlay.querySelector('.overlay-content').style.transform = 'scale(1)'; } catch(e){} }, 10);
+}
+
 function recoveryGoalsHTML() {
   var h = '<div class="card" id="recovery-goals-card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>'+t('Recovery Goals')+'</h3><button class="btn btn-sm btn-outline" onclick="showNewGoal()">+ '+t('Add')+'</button></div>';
   if (!D.recoveryGoals || !D.recoveryGoals.length) {
@@ -8443,6 +8521,16 @@ function kingdomLevel(days) {
   if (days <= 730) return 14;
   return 15;
 }
+function kingdomPopulation(days) {
+  var lvl = kingdomLevel(days);
+  if (lvl <= 0) return 0;
+  if (lvl <= 2) return 5 + lvl * 3;
+  if (lvl <= 5) return 10 + (lvl - 2) * 8;
+  if (lvl <= 8) return 35 + (lvl - 5) * 15;
+  if (lvl <= 11) return 80 + (lvl - 8) * 25;
+  if (lvl <= 14) return 155 + (lvl - 11) * 40;
+  return 275 + (lvl - 14) * 50;
+}
 function getKingdomWeather() {
   var days=soberDays();var streak=D.streak||0;var hour=new Date().getHours();var isNight=hour<6||hour>=20;
   var today=new Date().toDateString();var cravedToday=D.cravings&&D.cravings.some(function(c){var d=c.date||(c.timestamp?new Date(c.timestamp).toDateString():'');return d===today});
@@ -8847,6 +8935,33 @@ function kingdomHTML() {
       h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#8B4513"/>';
       h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .4s ease-in-out infinite"/>';
       h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .4s ease-in-out infinite .2s"/>';
+      h += '</g>';
+    }
+    // Villager 4 at level 10+
+    if (level >= 10) {
+      h += '<g class="k-villager" style="animation:villagerWalk 14s linear infinite 2s">';
+      h += '<circle cx="0" cy="0" r="2.2" fill="#7a5a3a"/>';
+      h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#4a6a3a"/>';
+      h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .35s ease-in-out infinite"/>';
+      h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .35s ease-in-out infinite .175s"/>';
+      h += '</g>';
+    }
+    // Villager 5 at level 12+
+    if (level >= 12) {
+      h += '<g class="k-villager" style="animation:villagerWalk 20s linear infinite 6s">';
+      h += '<circle cx="0" cy="0" r="1.8" fill="#8a6a4a"/>';
+      h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#6a3a2a"/>';
+      h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .4s ease-in-out infinite .1s"/>';
+      h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .4s ease-in-out infinite .3s"/>';
+      h += '</g>';
+    }
+    // Villager 6 at level 14+
+    if (level >= 14) {
+      h += '<g class="k-villager" style="animation:villagerWalk 16s linear infinite 10s">';
+      h += '<circle cx="0" cy="0" r="2" fill="#5a7a5a"/>';
+      h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#3a5a2a"/>';
+      h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .3s ease-in-out infinite .05s"/>';
+      h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .3s ease-in-out infinite .2s"/>';
       h += '</g>';
     }
     h += '</g>';
@@ -9282,7 +9397,42 @@ var SHOP_ITEMS = [
   {id:'double', cat:'Boosts', name:'Double Coins', desc:'Double schillings earned for 24 hours', cost:75, icon:'\u269C'},
   {id:'bonus', cat:'Boosts', name:'Bonus Quest', desc:'Unlock a 4th daily quest today', cost:40, icon:'\u2766'}
 ];
-function shopHTML() {
+
+// ====== ACHIEVEMENTS PAGE ======
+function achievementsHTML() {
+  if (!D.achievements) D.achievements = [];
+  var h = '<div class="card" style="padding:16px;text-align:center">';
+  h += '<div style="font-size:24px;margin-bottom:2px">&#127942;</div>';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:2px">Achievements</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Feats worthy of legend</div>';
+  var unlocked = D.achievements.length;
+  var total = ACHIEVEMENTS.length;
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">' + unlocked + ' / ' + total + ' unlocked</div>';
+  if (total > 0) {
+    var pct = Math.round(unlocked / total * 100);
+    h += '<div style="width:80%;margin:0 auto 12px;height:4px;background:var(--border);border-radius:2px;overflow:hidden">';
+    h += '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#d4a017,#f0c030);border-radius:2px;transition:width .4s"></div></div>';
+  }
+  h += '</div>';
+  var cats = { 'days':'&#128197; Sobriety','journal':'&#128221; Journal','combat':'&#9876; Combat','social':'&#129309; Social','misc':'&#9879; Special' };
+  for (var i = 0; i < ACHIEVEMENTS.length; i++) {
+    var a = ACHIEVEMENTS[i];
+    var done = D.achievements.indexOf(a.id) >= 0;
+    var cat = 'misc';
+    if (a.id.indexOf('step')>=0||a.id.indexOf('week')>=0||a.id.indexOf('fort')>=0||a.id.indexOf('moon')>=0||a.id.indexOf('season')>=0||a.id.indexOf('half')>=0||a.id.indexOf('year')>=0||a.id.indexOf('iron')>=0||a.id.indexOf('decade')>=0) cat = 'days';
+    if (a.id.indexOf('scribe')>=0||a.id.indexOf('chronicler')>=0||a.id.indexOf('entry')>=0) cat = 'journal';
+    if (a.id.indexOf('shield')>=0||a.id.indexOf('quest')>=0||a.id.indexOf('stone')>=0||a.id.indexOf('dragon')>=0) cat = 'combat';
+    if (a.id.indexOf('comrade')>=0) cat = 'social';
+    if (a.id.indexOf('relapse')>=0||a.id.indexOf('crown')>=0) cat = 'misc';
+    h += '<div class="card" style="padding:10px 12px;margin:4px 0;display:flex;align-items:center;gap:10px;border-left:3px solid ' + (done ? '#d4a017' : 'var(--border)') + ';opacity:' + (done ? '1' : '.55') + '">';
+    h += '<div style="font-size:24px;width:32px;text-align:center">' + (done ? a.icon : '&#9724;') + '</div>';
+    h += '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">' + a.title + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted)">' + a.desc + '</div></div>';
+    h += '<div style="font-size:16px">' + (done ? '&#10003;' : '') + '</div>';
+    h += '</div>';
+  }
+  return h;
+}
   var s = D.shopPurchases||[];var w=getWarchest();var sch=w.schillings||0;var bd=w.boostData||{};
   var activeStr = (bd.streak||0) > 0 ? '<span style="font-size:9px;color:var(--gold)">('+bd.streak+' active)</span>' : '';
   var activeDbl = bd.doubleExpiry > Date.now() ? '<span style="font-size:9px;color:var(--gold)">('+Math.ceil((bd.doubleExpiry-Date.now())/3600000)+'h left)</span>' : '';
@@ -9667,6 +9817,7 @@ function throneRoomHTML() {
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--primary)">' + days + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">DAYS</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:700;color:var(--text)">' + _rankIconHTML(rank.title, 16) + ' ' + rank.title + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">RANK</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--accent)">' + streak + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">STREAK</div></div>';
+  h += '<div style="text-align:center;flex:1"><div style="font-size:22px;font-weight:700;color:#8a6a4a">' + kingdomPopulation(days) + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">VILLAGERS</div></div>';
   h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')" title="' + (shields > 0 ? shields + ' shields' : '') + '"><div style="font-size:22px;font-weight:700;color:#d4a017">' + schillings + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COINS</div></div>';
   // King's Ledger mini widget
   if (D.sobriety.startDate) {
@@ -10290,7 +10441,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop','kingsledger'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop','kingsledger','achievements'];
 var REFLECT_SUB_PAGES = [];
 var CARE_SUB_PAGES = ['relapseplan','relapserescue','relapsegraveyard'];
 
@@ -11310,7 +11461,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML, achievements: achievementsHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
@@ -11339,7 +11490,7 @@ function render() {
       tbEl.textContent = ready;
       tbEl.style.display = ready ? 'block' : 'none';
     }
-    if (curPg === 'home') { setTimeout(function(){ checkMilestone(); if (D.sobriety.startDate) startSoberTimer(); }, 500); }
+    if (curPg === 'home') { setTimeout(function(){ checkMilestone(); checkAchievements(); if (D.sobriety.startDate) startSoberTimer(); }, 500); }
     app.style.opacity = '1';
     app._renderTO = null;
   }
