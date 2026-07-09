@@ -951,7 +951,13 @@ function onAuthReady(email, isNew) {
   });
 }
 
-setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 30000);
+setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 8000);
+if (AUTH_USER) {
+  D = loadData();
+  document.body.classList.add('logged-in');
+  render();
+  document.getElementById('loading-screen').classList.add('hide');
+}
 try { firebase.auth().onAuthStateChanged(function(user) {
   if (user && user.email) {
     AUTH_RESTORED = true;
@@ -967,6 +973,8 @@ try { firebase.auth().onAuthStateChanged(function(user) {
       }).catch(function() {
         onAuthReady(email, isNew);
       });
+    } else {
+      document.getElementById('loading-screen').classList.add('hide');
     }
   } else if (AUTH_RESTORED) {
     localStorage.removeItem('rc_user');
@@ -11214,12 +11222,12 @@ var ONBOARDING_STEPS = [
   {icon:'\u2694',title:'Your Battle',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What would you like to conquer? Choose the battle you\'re ready to fight.</div><div id="onboarding-addiction" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0">'+ADDICTION_TYPES.map(function(at){return'<button data-v="'+at+'" class="btn btn-sm btn-outline" onclick="document.querySelectorAll(\'#onboarding-addiction button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--primary-dark)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';D.addictionType=this.getAttribute(\'data-v\')" style="width:auto;font-size:11px;padding:6px 14px;border-radius:20px;margin:0">'+at+'</button>';}).join('')+'</div>'},
   {icon:'\u2727',title:'Your Goals',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What do you want to achieve? Write down your goals.</div><textarea id="onboarding-goals" placeholder="e.g. Be sober for 30 days, rebuild trust with my family, find healthy hobbies..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0" oninput="D.goals=this.value"></textarea>'},
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What do you want to achieve? Write down your goals.</div><textarea id="onboarding-goals" placeholder="e.g. Be sober for 30 days, rebuild trust with my family, find healthy hobbies..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
   {icon:'\u265C',title:'Your Kingdom',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Choose a kingdom theme that fits your world.</div><div id="onboarding-theme" style="display:flex;gap:12px;justify-content:center;margin:16px 0">'+
      '<button class="btn" onclick="selectOnboardingTheme(\'gothic\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Gothic</span><span style="font-size:11px;color:var(--muted)">Dark stone, candlelight, shadows</span></button>'+
      '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u265B</span><span style="font-weight:700;font-size:15px">Fantasy</span><span style="font-size:11px;color:var(--muted)">Bright banners, green hills, golden light</span></button>'+
-   '</div>'},
+   '</div><div style="margin-top:10px"><input id="onboarding-kingdom-name" placeholder="Name your kingdom (optional)" value="'+(D.kingdomName||'')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;text-align:center"></div>'},
   {icon:'\u269C',title:'Begin Operation Re.Claim',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your battle, set your goals, and claimed your kingdom. The realm is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The crown is heavy, but you were made for this. Every day you show up, the kingdom grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Three friends will guide you:<br>Arthur \u2022 Gertrude \u2022 Oswald</div>'},
 ];
@@ -11239,6 +11247,8 @@ function selectOnboardingTheme(theme, btn) {
 }
 
 function renderOnboardingStep() {
+  var existing = document.getElementById('onboarding-ov');
+  if (existing) existing.remove();
   var s = ONBOARDING_STEPS[ONBOARDING_STEP];
   if (!s) {
     D._onboardingDone = true;
@@ -11267,20 +11277,29 @@ function renderOnboardingStep() {
       (ONBOARDING_STEP > 0 ? '<button class="btn btn-sm btn-outline" onclick="ONBOARDING_STEP--;renderOnboardingStep()" style="flex:1">\u2190 Back</button>' : '') +
       '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1">'+ (isLast ? '\u269C Begin Operation Re.Claim' : 'Next \u2192') +'</button>' +
     '</div>' +
-    '<button onclick="ONBOARDING_STEP=0;document.getElementById(\'onboarding-ov\').remove()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);font-family:serif">\u2715</button>' +
+    '<button onclick="closeOnboarding()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);font-family:serif">\u2715</button>' +
     '</div>';
-  var existing = document.getElementById('onboarding-ov');
-  if (existing) existing.remove();
   document.body.appendChild(overlay);
+}
+
+function closeOnboarding() {
+  var el = document.getElementById('onboarding-ov');
+  if (el) el.remove();
+  if (!D.sobriety.startDate) { pg = 'home'; _pageCache = {}; render(); }
 }
 
 function advanceOnboarding() {
   if (ONBOARDING_STEP === 0 && !D.addictionType) { alert('Pick an addiction to conquer.'); return; }
   if (ONBOARDING_STEP === 1) {
     var goalsEl = document.getElementById('onboarding-goals');
-    if (goalsEl) D.goals = goalsEl.value;
+    D.goals = (goalsEl ? goalsEl.value : '').trim();
+    if (!D.goals) { alert('Set at least one goal to focus on.'); return; }
   }
-  if (ONBOARDING_STEP === 2 && !D.theme) { alert('Choose a kingdom theme.'); return; }
+  if (ONBOARDING_STEP === 2) {
+    if (!D.theme) { alert('Choose a kingdom theme.'); return; }
+    var nameEl = document.getElementById('onboarding-kingdom-name');
+    if (nameEl && nameEl.value.trim()) D.kingdomName = nameEl.value.trim();
+  }
   ONBOARDING_STEP++;
   renderOnboardingStep();
 }
