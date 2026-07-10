@@ -6970,6 +6970,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; Royal Pardon</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
   h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; War Chest</div>';
+  h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#9876; Alliances</div>';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
   h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C Royal Shop</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
@@ -6989,6 +6990,119 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="showShareQR()" style="border-color:var(--primary)">'+t('Share App')+'</div>';
   h += '<div class="sub-item" onclick="promptInstall()" style="border-color:var(--accent)">&#128230; '+t('Install App')+'</div>';
   h += '</div>';
+  return h;
+}
+
+// ====== ALLIANCES ======
+function alliancesHTML() {
+  var days = soberDays();
+  var rank = getRank(days);
+  var level = kingdomLevel(days);
+  var kName = D.kingdomName && D.kingdomName.trim() ? D.kingdomName.trim() : 'My Kingdom';
+  var wc = D.warchest || {};
+  var shields = wc.shields || 0;
+  var h = '<h2 class="page-title">&#9876; Realm Alliances</h2>';
+  h += '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:8px 0">';
+
+  // Kingdom card helper
+  function kingdomCard(opts) {
+    var isUser = opts.isUser;
+    var c = '<div class="card" style="padding:14px;text-align:center;border-left:4px solid ' + (isUser ? '#d4a017' : '#6366f1') + '">';
+    c += '<div style="font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">' + (isUser ? '&#128081; Your Realm' : '&#9876; Allied Realm') + '</div>';
+    c += '<div style="font-size:16px;font-weight:700;font-family:MedievalSharp,serif;color:var(--primary-dark);margin-bottom:2px">' + safe(opts.name) + '</div>';
+    c += '<div style="font-size:24px;margin:4px 0">' + (opts.rank ? opts.rank.icon : '') + '</div>';
+    c += '<div style="font-size:13px;color:var(--text)">' + (opts.rank ? opts.rank.title : '') + '</div>';
+    c += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0">';
+    c += '<div><div style="font-size:18px;font-weight:800;color:var(--primary)">' + opts.days + '</div><div style="font-size:8px;color:var(--muted);letter-spacing:1px">DAYS</div></div>';
+    c += '<div><div style="font-size:18px;font-weight:800;color:var(--accent)">Lv' + opts.level + '</div><div style="font-size:8px;color:var(--muted);letter-spacing:1px">CASTLE</div></div>';
+    c += '<div><div style="font-size:18px;font-weight:800;color:#d4a017">' + opts.shields + '</div><div style="font-size:8px;color:var(--muted);letter-spacing:1px">SHIELDS</div></div>';
+    c += '</div>';
+    if (opts.population) {
+      c += '<div style="font-size:11px;color:var(--muted)">&#128101; ' + opts.population + ' villagers</div>';
+    }
+    c += '</div>';
+    return c;
+  }
+
+  // User's kingdom
+  h += kingdomCard({
+    isUser: true,
+    name: kName,
+    rank: rank,
+    days: days,
+    level: level,
+    shields: shields,
+    population: kingdomPopulation(days)
+  });
+
+  // Buddy kingdoms
+  var buddyShown = 0;
+  var maxBuddies = 2;
+
+  // Current buddy
+  if (D.buddy && D.buddy.name) {
+    var bName = D.buddy.name;
+    var bc = D.buddy.contact || '';
+    (function(name, contact) {
+      try {
+        if (firebase && firebase.auth().currentUser && contact) {
+          DB.collection('progress').doc(contact).get().then(function(doc) {
+            var p = doc.exists ? doc.data() : null;
+            var el = document.getElementById('ally-' + contact.replace(/[^a-z0-9]/gi,''));
+            if (!el) return;
+            if (p) {
+              var bRank = getRank(p.soberDays || 0);
+              var bLevel = kingdomLevel(p.soberDays || 0);
+              el.innerHTML = kingdomCard({
+                name: name,
+                rank: bRank,
+                days: p.soberDays || 0,
+                level: bLevel,
+                shields: p.shields || 0,
+                population: kingdomPopulation(p.soberDays || 0)
+              });
+            } else {
+              el.innerHTML = '<div class="card" style="padding:14px;text-align:center;border-left:4px solid #6366f1"><div style="font-size:10px;color:var(--muted);letter-spacing:2px">ALLIED REALM</div><div style="font-size:16px;font-weight:700;color:var(--primary-dark);margin:4px 0">' + safe(name) + '</div><div style="font-size:12px;color:var(--muted)">Awaiting their first dispatch...</div></div>';
+            }
+          }).catch(function(){});
+
+          // Share current snapshot so buddy can see us
+          var snap = progressSnapshot();
+          DB.collection('progress').doc(AUTH_EMAIL).set(snap).catch(function(){});
+        }
+      } catch(e) {}
+    })(bName, bc);
+
+    var id = 'ally-' + bc.replace(/[^a-z0-9]/gi,'');
+    h += '<div id="' + id + '">' + kingdomCard({ name: bName, rank: {icon:'&#9876;',title:'Comrade'}, days: '?', level: '?', shields: '?', population: '?' }) + '</div>';
+    buddyShown++;
+  }
+
+  // Fill remaining slots
+  while (buddyShown < maxBuddies) {
+    if (buddyShown === 0) {
+      h += '<div class="card" style="padding:20px;text-align:center;border:2px dashed var(--border);background:transparent;cursor:pointer" onclick="goTo(\'buddy\')">';
+      h += '<div style="font-size:32px;margin-bottom:6px">&#9876;</div>';
+      h += '<div style="font-size:14px;font-weight:600;color:var(--muted)">Seek an Ally</div>';
+      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Find a comrade to form a lasting alliance</div>';
+      h += '</div>';
+    } else {
+      h += '<div class="card" style="padding:20px;text-align:center;border:2px dashed var(--border);background:transparent">';
+      h += '<div style="font-size:32px;margin-bottom:6px">&#128736;</div>';
+      h += '<div style="font-size:14px;font-weight:600;color:var(--muted)">Open Throne</div>';
+      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">An alliance seat awaits a new realm</div>';
+      h += '</div>';
+    }
+    buddyShown++;
+  }
+
+  h += '</div>';
+
+  h += '<div class="card" style="padding:12px;margin-top:4px;font-size:12px;color:var(--muted);text-align:center">';
+  h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">&#9876; Alliances are formed through the Comrade page. Progress is shared automatically when you visit this page.</div>';
+  h += '<button class="btn btn-sm btn-outline" onclick="goTo(\'buddy\')" style="margin-top:6px;display:inline-flex">Find or Manage Comrade</button>';
+  h += '</div>';
+
   return h;
 }
 
@@ -10431,7 +10545,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop','kingsledger','achievements'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop','kingsledger','achievements','alliances'];
 var REFLECT_SUB_PAGES = [];
 var CARE_SUB_PAGES = ['relapseplan','relapserescue','relapsegraveyard'];
 
@@ -11451,7 +11565,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML, achievements: achievementsHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML, achievements: achievementsHTML, alliances: alliancesHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
