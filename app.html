@@ -645,19 +645,10 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 @keyframes pardonTextReveal{0%{opacity:0;transform:scaleY(0)}100%{opacity:1;transform:scaleY(1)}}
 @keyframes pardonCrownBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes pardonAmbient{0%,100%{opacity:.3}50%{opacity:.5}}
-#loading-screen{position:fixed;inset:0;z-index:99999;background:var(--bg);display:flex;align-items:center;justify-content:center;transition:opacity .4s ease}
-#loading-screen.hide{opacity:0;pointer-events:none}
-.loader-content{text-align:center}
-.loader-crown{font-size:56px;animation:loaderBob 1.2s ease-in-out infinite}
-.loader-bar{width:160px;height:4px;background:var(--border);border-radius:3px;margin:16px auto 8px;overflow:hidden}
-.loader-fill{height:100%;width:30%;background:var(--grad-primary);border-radius:3px;animation:loaderSlide 1s ease-in-out infinite}
-.loader-text{font-size:12px;color:var(--muted);font-family:MedievalSharp,serif;letter-spacing:1px}
-@keyframes loaderBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes loaderSlide{0%{transform:translateX(-100%)}100%{transform:translateX(430%)}}
+
 </style>
 </head>
 <body>
-<div id="loading-screen"><div class="loader-content"><div class="loader-crown">♛</div><div class="loader-bar"><div class="loader-fill"></div></div><div class="loader-text">Raising the kingdom...</div></div></div>
 <div id="landscape-bg"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5aa8e0"/><stop offset="40%" stop-color="#7ac0f0"/><stop offset="75%" stop-color="#a0d4f8"/><stop offset="100%" stop-color="#c8e8c0"/></linearGradient>
@@ -917,7 +908,6 @@ var AUTH_EMAIL = localStorage.getItem('rc_email') || '';
 var AUTH_RESTORED = false;
 
 function onAuthReady(email, isNew) {
-  document.getElementById('loading-screen').classList.add('hide');
   AUTH_USER = email; AUTH_EMAIL = email;
   localStorage.setItem('rc_user', email); localStorage.setItem('rc_email', email);
   D = loadData();
@@ -952,7 +942,6 @@ function onAuthReady(email, isNew) {
   });
 }
 
-setTimeout(function(){ var ls = document.getElementById('loading-screen'); if (ls) ls.classList.add('hide'); }, 5000);
 try { firebase.auth().onAuthStateChanged(function(user) {
   if (user && user.email) {
     AUTH_RESTORED = true;
@@ -968,8 +957,6 @@ try { firebase.auth().onAuthStateChanged(function(user) {
       }).catch(function() {
         onAuthReady(email, isNew);
       });
-    } else {
-      document.getElementById('loading-screen').classList.add('hide');
     }
   } else if (AUTH_RESTORED) {
     localStorage.removeItem('rc_user');
@@ -978,9 +965,8 @@ try { firebase.auth().onAuthStateChanged(function(user) {
     D = defaultData();
     document.body.classList.remove('logged-in');
     render();
-    document.getElementById('loading-screen').classList.add('hide');
   } else {
-    setTimeout(function(){ document.getElementById('loading-screen').classList.add('hide'); showSignIn(); }, 100);
+    showSignIn();
   }
 }); } catch(e) {}
 
