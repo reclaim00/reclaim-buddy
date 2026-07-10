@@ -968,7 +968,10 @@ try { firebase.auth().onAuthStateChanged(function(user) {
   } else {
     showSignIn();
   }
+  window._authFired = true;
 }); } catch(e) {}
+// Fallback if Firebase auth never fires
+setTimeout(function(){ if (!window._authFired) showSignIn(); }, 3000);
 
 // Register service worker for offline support
 if ('serviceWorker' in navigator) {
