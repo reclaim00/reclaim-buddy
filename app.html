@@ -9922,7 +9922,7 @@ function roundTableHTML() {
   for (var i = 0; i < chars.length; i++) {
     var c = chars[i];
     var isActive = i === activeIdx;
-    h += '<div style="font-size:10px;color:var(--' + (isActive ? 'primary' : 'muted') + ');font-weight:' + (isActive ? '700' : '400') + '">' + c.name + '</div>';
+    h += '<div style="font-size:10px;color:var(--' + (isActive ? 'primary' : 'muted') + ');font-weight:' + (isActive ? '700' : '400') + ';cursor:pointer" onclick="showCharacterLore(\'' + c.name + '\')" title="Learn about ' + c.name + '">' + c.name + '</div>';
   }
   h += '</div>';
 
@@ -9932,7 +9932,7 @@ function roundTableHTML() {
   var hr = new Date().getHours();
   var timeWord = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
   var rank = getRank(soberDays());
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-align:center">Good ' + timeWord + ' from <strong style="color:var(--primary)">' + pick.name + '</strong> \u2014 to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-align:center">Good ' + timeWord + ' from <strong style="color:var(--primary);cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')" title="Learn about ' + pick.name + '">' + pick.name + '</strong> \u2014 to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div>';
   h += '<div style="font-size:13px;line-height:1.5;text-align:center;font-style:italic;color:var(--text-light)">' + msg + '</div>';
   h += '</div>';
   return h;
