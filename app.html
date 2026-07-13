@@ -3188,7 +3188,7 @@ function viewStreakDetails(idx) {
 }
 
 function trackHTML() {
-  var h = '<h2 class="page-title">'+t('Track')+'</h2>';
+  var h = '<h2 class="page-title">Ledger</h2>';
   // Streaks viewer
   h += streaksHTML();
 
@@ -4342,7 +4342,7 @@ function updateWordCount(el) {
 function reflectHTML() {
   var goal = D.journalWordGoal || 50;
   var jStreak = calcJournalStreak();
-  var h = '<h2 class="page-title">'+t('Reflect')+'</h2>';
+  var h = '<h2 class="page-title">Scriptorium</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Arthur is here to help you reflect. Every entry sharpens the map of your recovery.</div></div></div>';
   if (jStreak > 0) {
     h += '<div style="text-align:center;padding:8px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px">';
@@ -4906,7 +4906,7 @@ function addCopingCard() {
 
 // ====== CARE PAGE ======
 function careHTML() {
-  var h = '<h2 class="page-title">'+t('Care & Support')+'</h2>';
+  var h = '<h2 class="page-title">Heal</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div class="breath-circle" style="width:80px;height:80px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);border-radius:50%;font-size:13px;color:var(--primary);font-weight:600">'+t('Breathe')+'</div>';
   h += '<h3 style="font-size:16px;font-weight:700">'+t('Mindful Breathing')+'</h3>';
