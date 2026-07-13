@@ -2169,7 +2169,8 @@ function showRelapseRecovery(protectedByBoost) {
     h += '<div style="font-size:11px;line-height:1.4;margin-bottom:4px"><em>"' + safe(lastPardon.forgive) + '"</em></div>';
     if (lastPardon.commit) h += '<div style="font-size:10px;color:var(--text-light)">&#9876; <strong>Vow:</strong> ' + safe(lastPardon.commit) + '</div>';
     h += '</div>';
-    h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px">SEAL OF KING ARTHUR</div>';
+    h += '<div style="margin-top:4px">' + waxSealSVG(28) + '</div>';
+    h += '<div style="font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:1px">SEAL OF KING ARTHUR</div>';
     h += '</div>';
   }
   h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">I\'ve Got This</button></div></div>';
@@ -7008,7 +7009,7 @@ function exportReminderICS(id) {
 // ====== MORE PAGE ======
 function moreHTML() {
   var h = '';
-  h += '<h2 class="page-title">'+t('Tools')+'</h2>';
+  h += '<h2 class="page-title">Arsenal</h2>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Tracking')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
@@ -8655,10 +8656,52 @@ function characterGreetingHTML() {
   var rank = getRank(soberDays());
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:10px 14px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="display:flex;align-items:center;gap:10px">';
-  h += '<div style="width:36px;height:36px;border-radius:18px;background:' + pick.color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + pick.svg + '</div>';
-  h += '<div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:1px">Good ' + timeWord + ' from <strong style="color:var(--primary)">' + pick.name + '</strong> &mdash; to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div><div style="font-size:13px;line-height:1.5">' + msg + '</div></div>';
+  h += '<div style="width:36px;height:36px;border-radius:18px;background:' + pick.color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')" title="Learn about ' + pick.name + '">' + pick.svg + '</div>';
+  h += '<div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:1px">Good ' + timeWord + ' from <strong style="color:var(--primary);cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')">' + pick.name + '</strong> &mdash; to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div><div style="font-size:13px;line-height:1.5">' + msg + '</div></div>';
   h += '</div></div>';
   return h;
+}
+
+function showCharacterLore(name) {
+  var lore = {
+    Arthur: {
+      title: 'Lord of the Long View',
+      desc: 'Once a court advisor in a fallen kingdom, Arthur learned that patterns tell the truth where words deceive. He now serves as your realm\'s strategist \u2014 tracking your data, spotting trends, and alerting you to hidden risks before they become crises.',
+      role: 'Analyzes patterns, correlates data, warns of risk factors',
+      quote: 'The numbers don\u2019t lie \u2014 but they do whisper. You just have to learn to listen.',
+      color: 'var(--avatar-arthur)',
+      svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg>'
+    },
+    Gertrude: {
+      title: 'Knight of the Inner Ward',
+      desc: 'Gertrude was captain of the royal guard in three kingdoms before she found her true calling \u2014 protecting those who fight inner battles. She believes the hardest wars are fought in the quiet of one\u2019s own mind, far from any battlefield.',
+      role: 'Builds safety plans, guards your boundaries, helps you hold the line',
+      quote: 'A shield isn\u2019t for hiding behind. It\u2019s for holding your ground while you ready your next move.',
+      color: 'var(--avatar-gertrude)',
+      svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg>'
+    },
+    Oswald: {
+      title: 'Keeper of the Hidden Path',
+      desc: 'Oswald walked every road \u2014 the righteous and the ruinous \u2014 before finding his way to the Round Table. He guides others through the mist using the lamp of experience rather than the map of theory.',
+      role: 'Guides reflection, offers wisdom, helps find meaning in struggle',
+      quote: 'The path isn\u2019t straight. But every step you\u2019ve taken has brought you here \u2014 and here is exactly where you need to be.',
+      color: 'var(--avatar-oswald)',
+      svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg>'
+    }
+  };
+  var c = lore[name];
+  if (!c) return;
+  var ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center;padding:24px">' +
+    '<div style="width:56px;height:56px;border-radius:28px;background:' + c.color + ';display:flex;align-items:center;justify-content:center;margin:0 auto 8px">' + c.svg + '</div>' +
+    '<div style="font-size:20px;font-weight:800;color:var(--primary)">' + name + '</div>' +
+    '<div style="font-size:11px;color:var(--gold);margin-bottom:10px;font-family:MedievalSharp,serif">' + c.title + '</div>' +
+    '<div style="font-size:13px;line-height:1.6;color:var(--text);margin-bottom:10px;padding:0 4px">' + c.desc + '</div>' +
+    '<div style="background:var(--primary-light);padding:8px 12px;border-radius:8px;margin-bottom:8px;font-size:11px;color:var(--muted)">' + c.role + '</div>' +
+    '<div style="font-style:italic;font-size:13px;color:var(--text-light);padding:0 8px;border-left:2px solid var(--primary)">\u201C' + c.quote + '\u201D</div>' +
+    '<button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:12px;width:100%">Close</button></div>';
+  document.body.appendChild(ov);
 }
 
 function kingdomLevel(days) {
@@ -9656,6 +9699,10 @@ function showVillageModal() {
   ov.id = 'village-modal';
   ov.innerHTML = '<div class="overlay-content" style="max-width:480px;text-align:center;padding:20px"><div style="font-size:13px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">Your Village</div><div style="font-size:22px;font-weight:700;color:var(--primary);margin-bottom:2px">' + lnames[Math.min(level,maxL)] + '</div><div style="font-size:12px;color:var(--text-light);margin-bottom:8px">' + (ldescs[Math.min(level,maxL)]||'') + '</div>' + (days > 0 ? '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">' + days + ' day' + (days!==1?'s':'') + ' of growth</div>' : '') + '<div style="max-width:360px;margin:0 auto 10px">' + villageHTML() + '</div><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'village-modal\').remove()">Close</button></div>';
   document.body.appendChild(ov);
+}
+function waxSealSVG(s) {
+  var r = s/2;
+  return '<svg viewBox="0 0 '+s+' '+s+'" width="'+s+'" height="'+s+'" style="vertical-align:middle"><defs><radialGradient id="wg" cx="38%" cy="32%"><stop offset="0%" stop-color="#c0392b"/><stop offset="55%" stop-color="#922b21"/><stop offset="100%" stop-color="#641e16"/></radialGradient></defs><circle cx="'+r+'" cy="'+r+'" r="'+(r-1)+'" fill="url(#wg)" stroke="#4a120a" stroke-width="1.5"/><circle cx="'+r+'" cy="'+r+'" r="'+(r-4)+'" fill="none" stroke="#e6b800" stroke-width=".6" stroke-dasharray="2.5,2" opacity=".5"/><path d="M'+(r-8)+' '+(r+4)+'V'+(r-6)+'l4 3 4-5 4 5 4-3v'+(r+2)+'z" fill="#f4d03f" opacity=".85"/><rect x="'+(r-8)+'" y="'+(r+4)+'" width="16" height="2" rx="1" fill="#1a5276" opacity=".6"/></svg>';
 }
 function _rtArthur(cx,isActive){
   var skinTone = '#c89a6a';
@@ -10952,8 +10999,8 @@ function pardonCertificateHTML(p) {
     '<span>Relapse: ' + dateStr + '</span>' +
     '<span>Pardoned: ' + grantedStr + '</span>' +
     '</div>' +
-    '<div style="margin-top:6px;font-size:16px">&#9813;</div>' +
-    '<div style="font-size:9px;color:var(--muted);letter-spacing:2px">SEAL OF KING ARTHUR</div>' +
+    '<div style="margin-top:6px">' + waxSealSVG(36) + '</div>' +
+    '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:2px">SEAL OF KING ARTHUR</div>' +
     '</div>';
 }
 function pardonGrant(btn) {
