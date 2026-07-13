@@ -4679,17 +4679,15 @@ function showReflection(idx) {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.style.background = 'radial-gradient(ellipse at 50% 0%,'+mc+'22, rgba(0,0,0,.98) 70%)';
-  overlay.style.overflow = 'hidden';
+  overlay.style.overflow = 'auto';
   var h = '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.02;background:repeating-conic-gradient(#fff 0% 25%,transparent 0% 50%) 0 0 / 2px 2px;animation:jcGrain .3s steps(3) infinite"></div>';
   h += '<div style="position:fixed;inset:0;pointer-events:none;z-index:1;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.6) 100%);opacity:0;animation:jcVignette 1.5s ease .3s forwards"></div>';
-  // Scene 1: Title card (top)
-  h += '<div class="overlay-content" style="padding:16px 12px 8px;max-width:480px;position:relative;z-index:2;display:flex;flex-direction:column;min-height:100%">';
+  // Main scrollable content
+  h += '<div class="overlay-content" style="padding:16px 12px 24px;max-width:480px;position:relative;z-index:2">';
   h += '<div style="text-align:center;padding:30px 0 6px;opacity:0" id="jc-scene1"><div style="font-size:8px;color:rgba(255,255,255,.25);letter-spacing:5px;margin-bottom:6px">JOURNAL ENTRY</div>';
   h += '<div style="font-size:38px;font-weight:900;background:linear-gradient(135deg,'+mc+','+mc+'88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 60px '+mc+'44">#'+entryNum+'</div></div>';
   // Context chips
   h += '<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px;opacity:0" id="jc-context">'+ctx+'</div>';
-  // Spacer to push content to center
-  h += '<div style="flex:1"></div>';
   // Scene 2: Main content (middle)
   h += '<div id="jc-main" style="opacity:0">';
   // Mood orb
@@ -4698,12 +4696,8 @@ function showReflection(idx) {
   // Mood bars
   h += '<div style="padding:0 4px;opacity:0" id="jc-bars">'+moodBars+'</div>';
   h += '</div>';
-  // Spacer
-  h += '<div style="flex:1"></div>';
-  // Scene 3: Summary (dialogue box style - bottom)
-  h += '<div id="jc-summary-box" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:6px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">SUMMARY</div><div id="jc-summary-text" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);min-height:1.2em"></div></div>';
-  // Spacer
-  h += '<div style="flex:1"></div>';
+  // Scene 3: Summary (dialogue box style)
+  h += '<div id="jc-summary-box" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:10px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">SUMMARY</div><div id="jc-summary-text" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);min-height:1.2em"></div></div>';
   // Scene 4: Additional info (bottom)
   h += '<div id="jc-more" style="opacity:0">';
   // Suggestions
