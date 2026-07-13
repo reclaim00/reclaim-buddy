@@ -996,6 +996,7 @@ function defaultData() {
     screenerGAD7: { taken: false, result: null, progress: null },
     sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '' },
     kingdomName: '',
+    heraldry: { field: '', division: '', charge: '', trim: '', motto: '' },
     // Pre-populated coping cards displayed from defaults; user can add custom
     customCopingCards: [],
     savedArticles: [], savedBooks: [], savedPodcasts: [], savedVideos: [],
@@ -9937,36 +9938,224 @@ function roundTableHTML() {
   return h;
 }
 
+var HERALDIC_CHARGES = [
+  {id:'none',label:'None',svg:''},
+  {id:'lion',label:'Lion',svg:'<path d="M30 16c-2-2-2-6 0-9l2-1c1-2 3-4 6-5 2 1 5 3 6 5l2 1c2 3 1 7 0 9l-2 1-1 4h-2l-1-3h-2l-1 3h-2l-1-4-2-1z" fill="currentColor" transform="translate(28, 10) scale(.8)"/>'},
+  {id:'eagle',label:'Eagle',svg:'<path d="M36 26c2-4 7-7 10-9l2 2c-2 3-4 5-6 7l1 2h-3l-1-2c-2-2-4-4-6-7l2-2c3 2 8 5 10 9z" fill="currentColor" transform="translate(28, 12)"/><path d="M42 18c0-2 2-4 3-4s3 2 3 4-2 4-3 4-3-2-3-4z" fill="currentColor" transform="translate(28, 12)"/>'},
+  {id:'sword',label:'Sword',svg:'<path d="M48 5L38 26h3l2-5 3 5h3L48 5z" fill="currentColor" transform="translate(10, 8)"/><rect x="46" y="27" width="3" height="3" rx="1" fill="currentColor" transform="translate(10, 8)"/>'},
+  {id:'crown',label:'Crown',svg:'<path d="M36 22v-7l3 2 3-5 3 5 3-2v7z" fill="currentColor" transform="translate(10, 10)"/><rect x="35" y="23" width="12" height="2" rx=".5" fill="currentColor" transform="translate(10, 10)"/>'},
+  {id:'star',label:'Star',svg:'<polygon points="40,6 43,14 52,14 45,19 48,28 40,22 32,28 35,19 28,14 37,14" fill="currentColor" transform="translate(10, 6)"/>'},
+  {id:'tower',label:'Tower',svg:'<rect x="38" y="12" width="10" height="18" fill="currentColor" transform="translate(10, 6)"/><rect x="36" y="10" width="14" height="3" fill="currentColor" transform="translate(10, 6)"/><rect x="40" y="15" width="2" height="3" fill="rgba(0,0,0,.2)"/><rect x="44" y="15" width="2" height="3" fill="rgba(0,0,0,.2)"/><rect x="38" y="20" width="10" height="10" fill="rgba(0,0,0,.15)" transform="translate(10, 6)"/>'},
+  {id:'tree',label:'Tree',svg:'<path d="M45 10c-5 0-8 6-6 11h12c2-5-1-11-6-11z" fill="currentColor" transform="translate(10, 8)"/><rect x="44" y="21" width="3" height="8" fill="currentColor" transform="translate(10, 8)"/>'},
+  {id:'cross',label:'Cross',svg:'<path d="M40 8v6h-6v3h6v10h3V17h6v-3h-6V8z" fill="currentColor" transform="translate(10, 6)"/>'},
+  {id:'rose',label:'Rose',svg:'<circle cx="45" cy="38" r="6" fill="currentColor" transform="translate(10, 6)"/><circle cx="45" cy="38" r="4" fill="rgba(0,0,0,.15)"/><circle cx="45" cy="38" r="1.5" fill="currentColor"/><path d="M42 46c2 2 4 2 6 0" fill="none" stroke="currentColor" stroke-width="1" transform="translate(10, 6)"/>'},
+  {id:'keys',label:'Keys',svg:'<circle cx="42" cy="32" r="4" fill="none" stroke="currentColor" stroke-width="1.5" transform="translate(10, 6)"/><line x1="46" y1="32" x2="56" y2="22" stroke="currentColor" stroke-width="1.5" transform="translate(10, 6)"/><line x1="51" y1="27" x2="57" y2="22" stroke="currentColor" stroke-width="1.5" transform="translate(10, 6)"/><circle cx="42" cy="32" r=".5" fill="currentColor" transform="translate(10, 6)"/>'},
+  {id:'dragon',label:'Dragon',svg:'<path d="M34 20c2-3 5-6 8-7l3 2c-2 3-3 6-5 7l1 2h-3l-1-2c-2 1-3 1-4 0l1-2zm8-3c0-2 1-2 3-1" fill="currentColor" transform="translate(10, 8)"/>'}
+];
+var HERALDIC_DIVISIONS = [
+  {id:'plain',label:'Plain',svg:''},
+  {id:'band',label:'Bend',svg:'<path d="M15,90 L40,8 L80,8 L55,90 Z" opacity=".55"/>'},
+  {id:'cross',label:'Cross',svg:'<rect x="54" y="8" width="12" height="122" opacity=".55"/><rect x="15" y="57" width="90" height="12" opacity=".55"/>'},
+  {id:'chevron',label:'Chevron',svg:'<path d="M15,95 L60,40 L105,95 L90,105 L60,58 L30,105 Z" opacity=".55"/>'},
+  {id:'pale',label:'Pale',svg:'<rect x="44" y="8" width="32" height="122" opacity=".55"/>'},
+  {id:'fess',label:'Fess',svg:'<rect x="15" y="52" width="90" height="22" opacity=".55"/>'}
+];
+var HERALDIC_COLORS = [
+  {id:'leather',field:'#8B6B4A',trim:'#A08060',label:'Leather'},
+  {id:'azure',field:'#2D5A7A',trim:'#4A8ABA',label:'Azure'},
+  {id:'crimson',field:'#8A2A2A',trim:'#AA5A5A',label:'Crimson'},
+  {id:'royal',field:'#5B21B6',trim:'#8B51D6',label:'Royal'},
+  {id:'forest',field:'#2D6A3A',trim:'#5A8A5A',label:'Forest'},
+  {id:'charcoal',field:'#3A3A4A',trim:'#6A6A7A',label:'Charcoal'},
+  {id:'golden',field:'#8A7A3A',trim:'#AA9A5A',label:'Golden'},
+  {id:'iron',field:'#6A6A6A',trim:'#9A9A9A',label:'Iron'}
+];
+
+function shieldChargeHTML(id) {
+  var ch = null;
+  for (var i=0;i<HERALDIC_CHARGES.length;i++) { if (HERALDIC_CHARGES[i].id === id) { ch = HERALDIC_CHARGES[i]; break; } }
+  return ch ? ch.svg : '';
+}
+function divisionPathHTML(id, field, w, h) {
+  for (var i=0;i<HERALDIC_DIVISIONS.length;i++) {
+    if (HERALDIC_DIVISIONS[i].id === id) {
+      var s = HERALDIC_DIVISIONS[i].svg;
+      if (s) s = s.replace(/opacity/g, 'fill="' + field + '" opacity');
+      return s;
+    }
+  }
+  return '';
+}
+
 function coatOfArmsHTML() {
   var days = soberDays();
   var rank = getRank(days);
-  // Shield color by rank tier
+  var heraldry = D.heraldry || {};
+  // Determine color scheme
   var tier = days < 14 ? 0 : days < 61 ? 1 : days < 365 ? 2 : 3;
-  var colors = [
+  var defaultColors = [
     {field:'#8B6B4A',band:'#6B4A2A',trim:'#A08060',banner:'#4A2A1A'},
     {field:'#2D5A7A',band:'#1A3A5A',trim:'#4A8ABA',banner:'#0A2A4A'},
     {field:'#8A2A2A',band:'#6A1A1A',trim:'#AA5A5A',banner:'#4A0A0A'},
     {field:'#5B21B6',band:'#3B1186',trim:'#8B51D6',banner:'#2B0176'}
   ];
-  var c = colors[tier];
+  var dc = defaultColors[tier];
+  var fieldColor = heraldry.field || dc.field;
+  var trimColor = heraldry.trim || dc.trim;
+  var bandColor = heraldry.field ? '#00000066' : dc.band;
+  var bannerColor = heraldry.field ? '#00000088' : dc.banner;
+  var division = heraldry.division || 'band';
+  var charge = heraldry.charge || '';
+  var motto = heraldry.motto || '';
   // Draw shield
-  var h = '<div style="text-align:center;margin:8px 0">';
+  var h = '<div style="text-align:center;margin:8px 0;cursor:pointer" onclick="showHeraldryEditor()" title="Customize your coat of arms">';
   h += '<svg viewBox="0 0 120 140" style="width:100px;height:auto">';
   // Shield outline
-  h += '<path d="M60,8 L105,8 L105,65 Q105,105 60,130 Q15,105 15,65 L15,8 Z" fill="' + c.field + '" stroke="' + c.trim + '" stroke-width="2"/>';
-  // Diagonal band
-  h += '<path d="M15,90 L40,8 L80,8 L55,90 Z" fill="' + c.band + '" opacity=".6"/>';
+  h += '<path d="M60,8 L105,8 L105,65 Q105,105 60,130 Q15,105 15,65 L15,8 Z" fill="' + fieldColor + '" stroke="' + trimColor + '" stroke-width="2"/>';
+  // Division overlay
+  if (division !== 'plain') {
+    h += divisionPathHTML(division, bandColor, 120, 140);
+  }
   // Inner shield border
-  h += '<path d="M60,16 L98,16 L98,63 Q98,98 60,120 Q22,98 22,63 L22,16 Z" fill="none" stroke="' + c.trim + '" stroke-width="1" opacity=".4"/>';
-  // Rank charge centered as SVG
-  h += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
-  // Ribbon banner below shield
-  h += '<path d="M30,131 Q60,137 90,131 L95,146 Q60,152 25,146 Z" fill="' + c.banner + '" stroke="' + c.trim + '" stroke-width="1"/>';
-  h += '<text x="60" y="143" text-anchor="middle" fill="#ffd700" font-size="9" font-weight="bold" font-family="MedievalSharp,serif">' + rank.title.toUpperCase() + '</text>';
-  // Days text on ribbon
-  h += '<text x="60" y="126" text-anchor="middle" fill="#ffd700" font-size="7" font-family="MedievalSharp,serif" opacity=".8">' + days + ' DAYS</text>';
+  h += '<path d="M60,16 L98,16 L98,63 Q98,98 60,120 Q22,98 22,63 L22,16 Z" fill="none" stroke="' + trimColor + '" stroke-width="1" opacity=".4"/>';
+  // Charge (custom if set, otherwise rank icon)
+  if (charge && charge !== 'none') {
+    h += '<g color="#fff" opacity=".85">' + shieldChargeHTML(charge) + '</g>';
+  } else {
+    h += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
+  }
+  // Motto on ribbon
+  var displayMotto = motto || rank.title.toUpperCase();
+  var mottoColor = motto ? '#f4d03f' : '#ffd700';
+  h += '<path d="M30,131 Q60,137 90,131 L95,146 Q60,152 25,146 Z" fill="' + bannerColor + '" stroke="' + trimColor + '" stroke-width="1"/>';
+  h += '<text x="60" y="143" text-anchor="middle" fill="' + mottoColor + '" font-size="' + (motto && motto.length > 12 ? 7 : 9) + '" font-weight="bold" font-family="MedievalSharp,serif">' + displayMotto + '</text>';
+  // Days text
+  h += '<text x="60" y="126" text-anchor="middle" fill="' + mottoColor + '" font-size="7" font-family="MedievalSharp,serif" opacity=".8">' + days + ' DAYS</text>';
   h += '</svg></div>';
   return h;
+}
+
+function showHeraldryEditor() {
+  var heraldry = D.heraldry || {};
+  var days = soberDays();
+  var rank = getRank(days);
+  var h = '<div class="overlay-content" style="max-width:440px;padding:20px;">';
+  h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:2px;text-align:center">\u269C Customize Coat of Arms</h3>';
+  h += '<p style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px">Design your personal heraldry. Your shield appears on the home page.</p>';
+  // Live preview
+  h += '<div style="text-align:center;margin-bottom:12px;background:var(--primary-light);padding:8px;border-radius:10px"><div id="heraldry-preview"></div></div>';
+  // Field color
+  h += '<div style="font-size:11px;font-weight:600;margin-bottom:4px">Field Color</div>';
+  h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">';
+  for (var ci=0;ci<HERALDIC_COLORS.length;ci++) {
+    var c = HERALDIC_COLORS[ci];
+    var sel = heraldry.field === c.field || (!heraldry.field && ci === 0) ? '3px solid var(--primary)' : '1px solid var(--border)';
+    h += '<div style="width:36px;height:36px;border-radius:50%;background:' + c.field + ';border:' + sel + ';cursor:pointer" onclick="heraldryPickField(\'' + c.field + '\',\'' + c.trim + '\')" title="' + c.label + '"></div>';
+  }
+  h += '</div>';
+  // Division
+  h += '<div style="font-size:11px;font-weight:600;margin-bottom:4px">Division</div>';
+  h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">';
+  for (var di=0;di<HERALDIC_DIVISIONS.length;di++) {
+    var d = HERALDIC_DIVISIONS[di];
+    var dSel = (heraldry.division || 'band') === d.id ? '2px solid var(--primary)' : '1px solid var(--border)';
+    h += '<div style="padding:4px 10px;border:' + dSel + ';border-radius:6px;cursor:pointer;font-size:11px;background:var(--card)" onclick="heraldryPickDivision(\'' + d.id + '\')">' + d.label + '</div>';
+  }
+  h += '</div>';
+  // Charge
+  h += '<div style="font-size:11px;font-weight:600;margin-bottom:4px">Charge (central symbol)</div>';
+  h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">';
+  for (var chi=0;chi<HERALDIC_CHARGES.length;chi++) {
+    var ch = HERALDIC_CHARGES[chi];
+    var chSel = (heraldry.charge || '') === ch.id ? '2px solid var(--primary)' : '1px solid var(--border)';
+    h += '<div style="padding:2px 8px;border:' + chSel + ';border-radius:6px;cursor:pointer;font-size:11px;background:var(--card);display:flex;align-items:center;gap:3px" onclick="heraldryPickCharge(\'' + ch.id + '\')">';
+    if (ch.svg) { h += '<span style="color:var(--primary);font-size:14px">' + ch.svg.replace(/fill="currentColor"/g,'fill="var(--primary)"').replace(/stroke="currentColor"/g,'stroke="var(--primary)"') + '</span>'; }
+    h += ch.label + '</div>';
+  }
+  h += '</div>';
+  // Motto
+  h += '<div style="font-size:11px;font-weight:600;margin-bottom:4px">Motto (optional)</div>';
+  h += '<input type="text" id="heraldry-motto" placeholder="e.g. Fortis et Fidelis" value="' + (heraldry.motto || '').replace(/"/g,'&quot;') + '" oninput="heraldryUpdatePreview()" style="margin-bottom:12px;max-width:100%">';
+  // Buttons
+  h += '<div style="display:flex;gap:6px">';
+  h += '<button class="btn btn-primary" onclick="heraldrySave()" style="flex:1">Save</button>';
+  h += '<button class="btn btn-outline" onclick="heraldryReset()" style="flex:1">Reset to Default</button>';
+  h += '</div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;width:100%">Cancel</button>';
+  h += '</div>';
+  // Show overlay
+  var ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.id = 'heraldry-overlay';
+  ov.innerHTML = h;
+  document.body.appendChild(ov);
+  // Initial preview
+  heraldryUpdatePreview();
+}
+function heraldryPickField(field, trim) {
+  if (!D.heraldry) D.heraldry = {};
+  D.heraldry.field = field;
+  D.heraldry.trim = trim;
+  heraldryUpdatePreview();
+}
+function heraldryPickDivision(id) {
+  if (!D.heraldry) D.heraldry = {};
+  D.heraldry.division = id;
+  heraldryUpdatePreview();
+}
+function heraldryPickCharge(id) {
+  if (!D.heraldry) D.heraldry = {};
+  D.heraldry.charge = id;
+  heraldryUpdatePreview();
+}
+function heraldryUpdatePreview() {
+  var mottoEl = document.getElementById('heraldry-motto');
+  if (mottoEl && D.heraldry) D.heraldry.motto = mottoEl.value;
+  var preview = document.getElementById('heraldry-preview');
+  if (!preview) return;
+  // Build preview SVG
+  var h = D.heraldry || {};
+  var days = soberDays();
+  var rank = getRank(days);
+  var fieldColor = h.field || '#8B6B4A';
+  var trimColor = h.trim || '#A08060';
+  var bandColor = h.field ? '#00000066' : '#6B4A2A';
+  var bannerColor = h.field ? '#00000088' : '#4A2A1A';
+  var division = h.division || 'band';
+  var charge = h.charge || '';
+  var motto = h.motto || rank.title.toUpperCase();
+  var s = '<svg viewBox="0 0 120 140" style="width:80px;height:auto">';
+  s += '<path d="M60,8 L105,8 L105,65 Q105,105 60,130 Q15,105 15,65 L15,8 Z" fill="' + fieldColor + '" stroke="' + trimColor + '" stroke-width="2"/>';
+  if (division !== 'plain') s += divisionPathHTML(division, bandColor, 120, 140);
+  s += '<path d="M60,16 L98,16 L98,63 Q98,98 60,120 Q22,98 22,63 L22,16 Z" fill="none" stroke="' + trimColor + '" stroke-width="1" opacity=".4"/>';
+  if (charge && charge !== 'none') {
+    s += '<g color="#fff" opacity=".85">' + shieldChargeHTML(charge) + '</g>';
+  } else {
+    s += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
+  }
+  s += '<path d="M30,131 Q60,137 90,131 L95,146 Q60,152 25,146 Z" fill="' + bannerColor + '" stroke="' + trimColor + '" stroke-width="1"/>';
+  s += '<text x="60" y="143" text-anchor="middle" fill="#ffd700" font-size="' + (motto.length > 12 ? 7 : 9) + '" font-weight="bold" font-family="MedievalSharp,serif">' + motto + '</text>';
+  s += '<text x="60" y="126" text-anchor="middle" fill="#ffd700" font-size="7" font-family="MedievalSharp,serif" opacity=".8">' + days + ' DAYS</text>';
+  s += '</svg>';
+  preview.innerHTML = s;
+}
+function heraldrySave() {
+  var mottoEl = document.getElementById('heraldry-motto');
+  if (mottoEl && D.heraldry) D.heraldry.motto = mottoEl.value;
+  if (!D.heraldry) D.heraldry = {};
+  // Remove empty strings
+  for (var k in D.heraldry) { if (D.heraldry[k] === '') delete D.heraldry[k]; }
+  saveData();
+  var ov = document.getElementById('heraldry-overlay');
+  if (ov) ov.remove();
+  render();
+}
+function heraldryReset() {
+  D.heraldry = {};
+  saveData();
+  var ov = document.getElementById('heraldry-overlay');
+  if (ov) ov.remove();
+  render();
 }
 
 function throneRoomHTML() {
