@@ -190,7 +190,7 @@ body.dark .section-title::after{background:linear-gradient(to left,transparent,v
 [theme=rose] body.dark{--primary-light:#2e1420;--primary-dark:#fecdd3}
 [theme=teal] body.dark{--primary-light:#142420;--primary-dark:#99f6e4}
 body.dark .badge-gold{background:rgba(122,106,90,.15);color:var(--gold);border:1px solid rgba(122,106,90,.2)}
-.app{max-width:480px;margin:0 auto;padding:16px 16px 90px;min-height:100vh;background:rgba(242,239,232,.3);transition:opacity .12s;overscroll-behavior:contain}
+.app{max-width:480px;margin:0 auto;padding:16px 16px 90px;min-height:100vh;background:rgba(242,239,232,.3);transition:opacity .18s ease, transform .22s ease;overscroll-behavior:contain}
 body.dark .app{background:rgba(21,18,24,.15)}
 body.logged-in .app{padding-top:0}
 .header{display:flex;justify-content:space-between;align-items:center;padding:8px 0 16px;border-bottom:1px solid var(--border);margin-bottom:8px;position:relative}
@@ -607,25 +607,21 @@ body.dark .overlay-content{background:#1c1612}
 button:disabled,.btn:disabled{cursor:not-allowed;opacity:.4;filter:grayscale(.3);pointer-events:none}
 /* ===== TOAST NOTIFICATION ===== */
 #toast-container{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;max-width:360px;width:90%}
-.toast{padding:12px 16px 12px 28px;border-radius:6px;font-size:13px;font-weight:600;text-align:center;pointer-events:auto;animation:toastIn .35s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 4px 20px rgba(0,0,0,.15);border:1px solid;position:relative;font-family:'Cinzel',serif;letter-spacing:.5px}
-.toast::before{content:'';position:absolute;top:4px;bottom:4px;left:8px;width:8px;border-radius:50%;border:1.5px solid;box-shadow:0 0 4px currentColor}
+.toast{padding:10px 16px 10px 24px;border-radius:4px;font-size:12px;font-weight:600;text-align:center;pointer-events:auto;animation:toastIn .4s cubic-bezier(.22,1,.36,1) forwards;box-shadow:0 2px 8px rgba(0,0,0,.1),0 0 0 1px rgba(138,122,106,.2);border:1px solid;position:relative;font-family:'Cinzel',serif;letter-spacing:.3px;background-image:repeating-linear-gradient(90deg,transparent 14px,rgba(139,26,26,.015) 14px,rgba(139,26,26,.015) 16px),repeating-linear-gradient(0deg,transparent 22px,rgba(139,26,26,.02) 22px,rgba(139,26,26,.02) 23px)}
+.toast::before{content:'\u269C';position:absolute;top:50%;left:4px;transform:translateY(-50%);font-size:8px;opacity:.35}
 .toast-out{animation:toastOut .25s ease forwards}
-.toast-info{background:var(--card);color:var(--text);border-color:var(--stone-border);box-shadow:0 4px 20px rgba(0,0,0,.12),inset 0 0 0 1px rgba(255,255,255,.4)}
-.toast-info::before{background:var(--gold);border-color:var(--gold);color:var(--gold)}
-.toast-success{background:#f5efe6;color:#2d5a2d;border-color:#8a9a7a;box-shadow:0 4px 20px rgba(0,0,0,.12),inset 0 0 0 1px rgba(255,255,255,.4)}
-.toast-success::before{background:#2d5a2d;border-color:#4a7a4a;color:#2d5a2d}
-.toast-warning{background:#f5efe6;color:#7a5a1a;border-color:#c8a86a;box-shadow:0 4px 20px rgba(0,0,0,.12),inset 0 0 0 1px rgba(255,255,255,.4)}
-.toast-warning::before{background:#b8860b;border-color:#d4a030;color:#b8860b}
-.toast-danger{background:#f5efe6;color:#7a1a1a;border-color:#b86a6a;box-shadow:0 4px 20px rgba(0,0,0,.12),inset 0 0 0 1px rgba(255,255,255,.4)}
-.toast-danger::before{background:#b91c1c;border-color:#dc2626;color:#b91c1c}
+.toast-info{background:var(--card);color:var(--text);border-color:var(--stone-border)}
+.toast-success{background:#f5efe6;color:#2d5a2d;border-color:#8a9a7a}
+.toast-warning{background:#f5efe6;color:#7a5a1a;border-color:#c8a86a}
+.toast-danger{background:#f5efe6;color:#7a1a1a;border-color:#b86a6a}
 body.dark .toast{background:#1c1612;box-shadow:0 4px 20px rgba(0,0,0,.3),inset 0 0 0 1px rgba(255,255,255,.06)}
 body.dark .toast::before{filter:brightness(.8)}
 body.dark .toast-info{border-color:#3a3640}
 body.dark .toast-success{color:#8aaa7a;border-color:#4a5a3a}
 body.dark .toast-warning{color:#d4b06a;border-color:#6a5a2a}
 body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
-@keyframes toastIn{0%{opacity:0;transform:translateY(-16px) scale(.95)}100%{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes toastOut{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-12px) scale(.95)}}
+@keyframes toastIn{0%{opacity:0;transform:translateY(-20px) scale(.92) rotate(-1deg)}100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}}
+@keyframes toastOut{0%{opacity:1;transform:translateY(0) scale(1) rotate(0)}100%{opacity:0;transform:translateY(-10px) scale(.95) rotate(.5deg)}}
 /* ===== LOADING PULSE ===== */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 .loading-pulse{animation:pulse 1.5s ease-in-out infinite}
@@ -9934,6 +9930,7 @@ function roundTableHTML() {
   var rank = getRank(soberDays());
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-align:center">Good ' + timeWord + ' from <strong style="color:var(--primary);cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')" title="Learn about ' + pick.name + '">' + pick.name + '</strong> \u2014 to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div>';
   h += '<div style="font-size:13px;line-height:1.5;text-align:center;font-style:italic;color:var(--text-light)">' + msg + '</div>';
+  h += '<div style="font-size:7px;color:var(--muted);text-align:center;margin-top:6px;opacity:.4;letter-spacing:1px">tap a name above to learn their story</div>';
   h += '</div>';
   return h;
 }
@@ -10032,6 +10029,7 @@ function coatOfArmsHTML() {
   // Days text
   h += '<text x="60" y="126" text-anchor="middle" fill="' + mottoColor + '" font-size="7" font-family="MedievalSharp,serif" opacity=".8">' + days + ' DAYS</text>';
   h += '</svg></div>';
+  h += '<div style="font-size:7px;color:var(--muted);text-align:center;margin-top:-2px;opacity:.5;letter-spacing:1px">\u269C tap to customize \u269C</div>';
   return h;
 }
 
@@ -10366,9 +10364,10 @@ function showToast(text, type) {
   type = type || 'info';
   var c = document.getElementById('toast-container');
   if (!c) return;
+  var icons = {info:'\u269C',success:'\u2714',warning:'\u26A0',danger:'\u2716'};
   var t = document.createElement('div');
   t.className = 'toast toast-' + type;
-  t.textContent = text;
+  t.innerHTML = '<span style="opacity:.6;margin-right:6px">' + (icons[type]||'\u269C') + '</span>' + text;
   c.appendChild(t);
   setTimeout(function() {
     t.className += ' toast-out';
@@ -11887,6 +11886,7 @@ function render() {
     }
     if (curPg === 'home') { setTimeout(function(){ checkMilestone(); checkAchievements(); if (D.sobriety.startDate) startSoberTimer(); }, 500); }
     app.style.opacity = '1';
+    app.style.transform = 'translateY(0)';
     app._renderTO = null;
   }
   if (app._renderTO) { clearTimeout(app._renderTO); app._renderTO = null; }
@@ -11894,7 +11894,8 @@ function render() {
     doRender();
   } else {
     app.style.opacity = '0';
-    app._renderTO = setTimeout(doRender, 130);
+    app.style.transform = 'translateY(6px)';
+    app._renderTO = setTimeout(doRender, 170);
   }
 }
 
