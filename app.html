@@ -7200,6 +7200,7 @@ function profileHTML() {
   h += '<div class="card"><h3>'+t('Armoury')+'</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Title')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83C\uDFF0 Kingdom</span><input type="text" value="'+(D.kingdomName||'')+'" onchange="D.kingdomName=this.value;saveData();render()" placeholder="My Kingdom" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83D\uDC51 Title Style</span><select onchange="D.titleStyle=this.value;saveData();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"><option value="king"'+(D.titleStyle!=='queen'?' selected':'')+'>King / Prince</option><option value="queen"'+(D.titleStyle==='queen'?' selected':'')+'>Queen / Princess</option></select></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Messenger (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveData();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
@@ -8717,7 +8718,17 @@ function kingdomLevel(days) {
   if (days <= 365) return 12;
   if (days <= 545) return 13;
   if (days <= 730) return 14;
-  return 15;
+  if (days <= 1000) return 15;
+  if (days <= 1500) return 16;
+  if (days <= 2000) return 17;
+  if (days <= 2500) return 18;
+  if (days <= 3000) return 19;
+  if (days <= 3650) return 20;
+  if (days <= 5000) return 21;
+  if (days <= 7500) return 22;
+  if (days <= 10000) return 23;
+  if (days <= 15000) return 24;
+  return 25;
 }
 function kingdomPopulation(days) {
   var lvl = kingdomLevel(days);
@@ -9203,6 +9214,88 @@ function kingdomHTML() {
     h += '</g>';
   }
   if (level >= 7) h += '<g class="k-birds"><g class="k-bird"><path d="M 60,80 Q 65,76 70,80 Q 75,76 80,80"><animate attributeName="d" dur="0.3s" repeatCount="indefinite" values="M 60,80 Q 65,76 70,80 Q 75,76 80,80;M 60,80 Q 65,84 70,80 Q 75,84 80,80;M 60,80 Q 65,76 70,80 Q 75,76 80,80"/></path></g><g class="k-bird"><path d="M 90,70 Q 95,66 100,70 Q 105,66 110,70"><animate attributeName="d" dur="0.25s" repeatCount="indefinite" values="M 90,70 Q 95,66 100,70 Q 105,66 110,70;M 90,70 Q 95,74 100,70 Q 105,74 110,70;M 90,70 Q 95,66 100,70 Q 105,66 110,70"/></path></g>' + (level>=9?'<g class="k-bird"><path d="M 440,85 Q 445,81 450,85 Q 455,81 460,85"><animate attributeName="d" dur="0.35s" repeatCount="indefinite" values="M 440,85 Q 445,81 450,85 Q 455,81 460,85;M 440,85 Q 445,89 450,85 Q 455,89 460,85;M 440,85 Q 445,81 450,85 Q 455,81 460,85"/></path></g>':'') + '</g>';
+  // Grand tower spires (level 16+)
+  if (level >= 16) {
+    h += '<polygon points="230,23 235,12 240,23" fill="var(--roof-c)" opacity=".8"/>';
+    h += '<polygon points="245,15 250,4 255,15" fill="var(--roof-c)"/>';
+    h += '<polygon points="260,23 265,12 270,23" fill="var(--roof-c)" opacity=".8"/>';
+    h += '<circle cx="250" cy="3" r="1.5" fill="#d4a017"/>';
+  }
+  // Extended outer bailey wall (level 17+)
+  if (level >= 17) {
+    h += '<rect x="90" y="170" width="320" height="8" class="k-keep" opacity=".6"/>';
+    h += '<rect x="90" y="170" width="320" height="8" fill="url(#stone)" opacity=".4"/>';
+    for (var _ci = 0; _ci < 22; _ci++) h += '<rect x="' + (92 + _ci * 14) + '" y="166" width="8" height="4" class="k-keep" opacity=".5"/>';
+    // Gatehouse on outer wall
+    h += '<rect x="232" y="158" width="36" height="20" class="k-tower" opacity=".6"/>';
+    h += '<polygon points="228,158 250,148 272,158" fill="var(--tower-roof-c)" opacity=".6"/>';
+  }
+  // Towering central spire (level 18+)
+  if (level >= 18) {
+    h += '<rect x="242" y="6" width="16" height="30" class="k-keep" opacity=".7"/>';
+    h += '<polygon points="238,6 250,-8 262,6" fill="var(--roof-c)" opacity=".7"/>';
+    h += '<circle cx="250" cy="-9" r="2" fill="#ffd700" opacity=".8"><animate attributeName="r" values="2;3;2" dur="3s" repeatCount="indefinite"/></circle>';
+  }
+  // Great wings on keep sides (level 19+)
+  if (level >= 19) {
+    h += '<rect x="175" y="130" width="20" height="68" class="k-keep" opacity=".5"/>';
+    h += '<polygon points="173,130 185,118 197,130" fill="var(--roof-c)" opacity=".5"/>';
+    h += '<rect x="305" y="130" width="20" height="68" class="k-keep" opacity=".5"/>';
+    h += '<polygon points="303,130 315,118 327,130" fill="var(--roof-c)" opacity=".5"/>';
+  }
+  // Golden dome on central tower (level 20+)
+  if (level >= 20) {
+    h += '<ellipse cx="250" cy="-4" rx="12" ry="6" fill="#d4a017" opacity=".8"/>';
+    h += '<ellipse cx="250" cy="-4" rx="12" ry="6" fill="none" stroke="#ffd700" stroke-width=".8" opacity=".6"/>';
+    h += '<line x1="250" y1="-10" x2="250" y2="-15" stroke="#d4a017" stroke-width="1.5" opacity=".7"/>';
+  }
+  // Cathedral rose window on keep (level 21+)
+  if (level >= 21) {
+    h += '<circle cx="250" cy="130" r="14" fill="rgba(255,200,100,.15)" stroke="var(--roof-c)" stroke-width="1.5" opacity=".7"/>';
+    h += '<circle cx="250" cy="130" r="10" fill="none" stroke="var(--roof-c)" stroke-width=".8" opacity=".5"/>';
+    h += '<circle cx="250" cy="130" r="4" fill="rgba(255,200,100,.25)"/>';
+    for (var _ri = 0; _ri < 6; _ri++) {
+      var _a = _ri * 60;
+      h += '<line x1="250" y1="130" x2="' + (250 + Math.cos(_a * Math.PI / 180) * 10) + '" y2="' + (130 + Math.sin(_a * Math.PI / 180) * 10) + '" stroke="var(--roof-c)" stroke-width=".6" opacity=".4"/>';
+    }
+  }
+  // Viaduct / stone bridge across scene (level 22+)
+  if (level >= 22) {
+    h += '<g opacity=".45">';
+    h += '<path d="M 0,185 Q 30,175 60,182 Q 90,174 120,180 Q 150,173 180,179" fill="none" stroke="#7a6a5a" stroke-width="3"/>';
+    h += '<path d="M 320,179 Q 350,173 380,180 Q 410,174 440,182 Q 470,175 500,185" fill="none" stroke="#7a6a5a" stroke-width="3"/>';
+    for (var _pi = 0; _pi < 6; _pi++) {
+      h += '<rect x="' + (320 + _pi * 30) + '" y="180" width="3" height="10" fill="#6a5a4a" opacity=".5"/>';
+    }
+    h += '</g>';
+  }
+  // Treasure glow from grand tower windows (level 23+)
+  if (level >= 23) {
+    h += '<path d="M 235,55 L 235,45 Q 242,39 250,45 L 250,55 Z" fill="#ffd700" opacity=".6" style="animation:windowGlow 2s ease-in-out infinite"/>';
+    h += '<path d="M 250,55 L 250,45 Q 258,39 265,45 L 265,55 Z" fill="#ffd700" opacity=".4" style="animation:windowGlow 2s ease-in-out infinite .6s"/>';
+    h += '<circle cx="242" cy="50" r="1" fill="#fff" opacity=".8" style="animation:windowGlow 2s ease-in-out infinite .3s"/>';
+    h += '<circle cx="258" cy="50" r="1" fill="#fff" opacity=".6" style="animation:windowGlow 2s ease-in-out infinite .9s"/>';
+  }
+  // Crown-shaped tower top (level 24+)
+  if (level >= 24) {
+    h += '<g opacity=".7">';
+    for (var _crt = 0; _crt < 5; _crt++) {
+      var _cx = 242 + _crt * 4;
+      h += '<polygon points="' + _cx + ',-4 ' + (_cx + 2) + ',-10 ' + (_cx + 4) + ',-4" fill="#d4a017" opacity=".8"/>';
+    }
+    h += '<rect x="239" y="-4" width="22" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
+    h += '</g>';
+  }
+  // Celestial light rays from heavens (level 25+)
+  if (level >= 25) {
+    h += '<g opacity=".15" style="animation:cloudDrift 20s linear infinite">';
+    h += '<polygon points="250,0 150,180 350,180" fill="rgba(255,215,0,.3)"/>';
+    h += '<polygon points="250,0 180,180 320,180" fill="rgba(255,215,0,.2)"/>';
+    h += '<polygon points="250,0 210,180 290,180" fill="rgba(255,215,0,.1)"/>';
+    h += '</g>';
+    h += '<circle cx="250" cy="-12" r="6" fill="#ffd700" opacity=".6" style="animation:sunPulse 3s ease-in-out infinite"/>';
+  }
+
   // Dragon circling at level 15+
   if (level >= 15) {
     h += '<g class="k-dragon"><path d="M 0,40 Q 50,10 100,35 Q 150,55 200,30 Q 250,10 300,35 Q 350,55 400,30 Q 450,10 500,40" fill="none" stroke="#5a3a1a" stroke-width="0" opacity="0"><animate attributeName="opacity" values="0;1;1;0" dur="12s" repeatCount="indefinite"/></path>';
@@ -9235,6 +9328,7 @@ function kingdomFlourish() {
   setTimeout(function() { if (el) el.className = el.className.replace(' flourish', ''); }, 1400);
 }
 function getRank(days) {
+  var queenMode = D.titleStyle === 'queen';
   var ranks = [
     {title:'Peasant',    next:'Page',           sym:'\u2619', threshold:0,  nextThreshold:1},
     {title:'Page',       next:'Squire',         sym:'\u2726', threshold:1,  nextThreshold:7},
@@ -9245,15 +9339,63 @@ function getRank(days) {
     {title:'Baron',      next:'Viscount',       sym:'\u265A', threshold:90, nextThreshold:180},
     {title:'Viscount',   next:'Earl',           sym:'\u265C', threshold:180,nextThreshold:270},
     {title:'Earl',       next:'Duke',           sym:'\u2766', threshold:270,nextThreshold:365},
-    {title:'Duke',       next:'Prince',         sym:'\u2727', threshold:365,nextThreshold:730},
-    {title:'Prince',     next:'King',           sym:'\u265D', threshold:730,nextThreshold:1000},
-    {title:'King',       next:null,             sym:'\u2629', threshold:1000,nextThreshold:1/0}
+    {title:'Duke',       next:queenMode?'Princess':'Prince', sym:'\u2727', threshold:365,nextThreshold:730},
+    {title:queenMode?'Princess':'Prince', next:queenMode?'Queen':'King', sym:queenMode?'\u265C':'\u265D', threshold:730,nextThreshold:1000},
+    {title:queenMode?'Queen':'King',       next:null,             sym:'\u2629', threshold:1000,nextThreshold:1/0}
   ];
   for (var i = ranks.length - 1; i >= 0; i--) {
     if (days >= ranks[i].threshold) return ranks[i];
   }
   return ranks[0];
 }
+function showKingdomMap() {
+  var days = soberDays();
+  var regions = [
+    {name:'The Starting Plains',   min:0,    max:6,    x:75,  y:130, w:140, h:80,  color:'#8aca7a', icon:'\u2619', label:'Begin your journey'},
+    {name:'The Forest of Resolve',  min:7,    max:29,   x:190, y:100, w:110, h:90,  color:'#5a9a5a', icon:'\u2726', label:'Prove your worth'},
+    {name:'The Mountains of Strength',min:30, max:89,  x:280, y:80,  w:120, h:80,  color:'#8a8a7a', icon:'\u2694', label:'Build your foundation'},
+    {name:'The Great River',        min:90,   max:179,  x:310, y:160, w:130, h:70,  color:'#5a8aba', icon:'\u269C', label:'Find your flow'},
+    {name:'The Eastern Shores',     min:180,  max:364,  x:155, y:190, w:120, h:70,  color:'#c8a050', icon:'\u265C', label:'Expand your realm'},
+    {name:'The Highlands of Wisdom',min:365,  max:729,  x:50,  y:70,  w:120, h:90,  color:'#a07ab0', icon:'\u2727', label:'Master your craft'},
+    {name:'The Eternal Throne',     min:730,  max:999,  x:410, y:110, w:80,  h:80,  color:'#d4a017', icon:'\u265D', label:'Claim your legacy'},
+    {name:'The Ancient Peaks',      min:1000, max:1/0,  x:420, y:30,  w:75,  h:60,  color:'#c0392b', icon:'\u2629', label:'Become legend'}
+  ];
+  var h = '<div class="overlay-content" style="max-width:540px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><div style="font-size:20px">\uD83D\uDDFA</div><div><h3 style="margin:0;font-size:16px">The Realm</h3><div style="font-size:11px;color:var(--muted)">' + soberDays() + ' days explored &middot; ' + regions.filter(function(r){return days>=r.min}).length + '/' + regions.length + ' regions</div></div></div>';
+  h += '<svg viewBox="0 0 510 270" style="width:100%;height:auto;border-radius:12px;background:linear-gradient(135deg,#2a1a10,#3a2a1a)">';
+  h += '<defs><filter id="rg-glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+  for (var i = 0; i < regions.length; i++) {
+    var r = regions[i];
+    var unlocked = days >= r.min;
+    var opacity = unlocked ? 1 : 0.25;
+    var fill = unlocked ? r.color : '#3a3a3a';
+    var border = unlocked ? 'rgba(255,255,255,.3)' : 'rgba(255,255,255,.08)';
+    h += '<rect x="' + r.x + '" y="' + r.y + '" width="' + r.w + '" height="' + r.h + '" rx="8" fill="' + fill + '" opacity="' + opacity + '" stroke="' + border + '" stroke-width="1.5"' + (unlocked ? ' filter="url(#rg-glow)"' : '') + '/>';
+    if (unlocked) {
+      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 - 4) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="MedievalSharp,serif">' + r.name + '</text>';
+      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 + 12) + '" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.7)">' + r.label + '</text>';
+    } else {
+      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 + 4) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.3)" font-family="MedievalSharp,serif">???</text>';
+    }
+  }
+  // Compass rose
+  h += '<circle cx="25" cy="25" r="16" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1"/><text x="25" y="7" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">N</text>';
+  h += '<text x="25" y="46" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">S</text><text x="6" y="27" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">W</text><text x="44" y="27" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">E</text>';
+  h += '</svg>';
+  h += '<div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-top:6px">';
+  for (var i = 0; i < regions.length; i++) {
+    var r = regions[i];
+    var unlocked = days >= r.min;
+    h += '<span style="font-size:10px;color:' + (unlocked ? 'var(--accent)' : 'var(--muted)') + ';opacity:' + (unlocked ? '1' : '.4') + '">' + (unlocked ? r.icon : '\u25A1') + ' ' + (unlocked ? r.name : '???') + '</span>';
+    if (i < regions.length - 1) h += '<span style="font-size:9px;color:var(--border)">&middot;</span>';
+  }
+  h += '</div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px;width:100%">Close Map</button></div>';
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+}
+
 function _rankIconHTML(title, size) {
   size = size || 14;
   var c = {
@@ -9268,7 +9410,9 @@ function _rankIconHTML(title, size) {
     'Earl':'<path d="M12,2 L14.5,8.6 L21.5,9 L16,13.5 L17.5,20 L12,16.5 L6.5,20 L8,13.5 L2.5,9 L9.5,8.6 Z" fill="currentColor"/>',
     'Duke':'<rect x="7" y="10" width="10" height="7" rx="2" fill="currentColor"/><circle cx="16" cy="7" r="4" fill="currentColor"/><path d="M7,13 Q3,10 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="17" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="17" width="2.5" height="5" rx="1" fill="currentColor"/>',
     'Prince':'<path d="M7,12 L17,12 L17,20 Q12,24 7,20 Z" fill="currentColor"/><path d="M10,14 L14,14" stroke="currentColor" opacity=".4" stroke-width="1" fill="none"/><path d="M6,4 L9,1 L12,5 L15,1 L18,4 L18,7 L6,7 Z" fill="currentColor"/>',
-    'King':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="currentColor"/><rect x="7" y="9" width="10" height="7" rx="2" fill="currentColor"/><circle cx="15" cy="6" r="3.5" fill="currentColor"/><path d="M7,12 Q3,9 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="16" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="16" width="2.5" height="5" rx="1" fill="currentColor"/>'
+    'King':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="currentColor"/><rect x="7" y="9" width="10" height="7" rx="2" fill="currentColor"/><circle cx="15" cy="6" r="3.5" fill="currentColor"/><path d="M7,12 Q3,9 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="16" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="16" width="2.5" height="5" rx="1" fill="currentColor"/>',
+    'Queen':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="currentColor"/><rect x="7" y="9" width="10" height="7" rx="2" fill="currentColor"/><circle cx="15" cy="6" r="3.5" fill="currentColor"/><path d="M7,12 Q3,9 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M10,19 Q12,21 14,19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="8" y="16" width="8" height="2" rx="1" fill="currentColor"/><circle cx="8" cy="17" r="1" fill="currentColor"/><circle cx="16" cy="17" r="1" fill="currentColor"/>',
+    'Princess':'<path d="M7,12 L17,12 L17,20 Q12,24 7,20 Z" fill="currentColor"/><circle cx="12" cy="15" r="1.5" fill="currentColor" opacity=".6"/><path d="M6,4 L9,1 L12,5 L15,1 L18,4 L18,7 L6,7 Z" fill="currentColor"/><circle cx="12" cy="5" r="1.5" fill="currentColor"/>'
   };
   var charge = c[title];
   if (!charge) return '';
@@ -9631,6 +9775,29 @@ function achievementsHTML() {
   }
   return h;
 }
+function showItemPreview(id) {
+  var item = null;
+  for (var i = 0; i < SHOP_ITEMS.length; i++) { if (SHOP_ITEMS[i].id === id) { item = SHOP_ITEMS[i]; break; } }
+  if (!item) return;
+  var previewSvg = '';
+  var fullDesc = '';
+  if (item.id === 'banners') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="10" y="10" width="80" height="40" rx="4" fill="#6a4a2a"/><rect x="12" y="12" width="8" height="20" rx="1" fill="#8a2a2a"/><rect x="80" y="12" width="8" height="20" rx="1" fill="#8a2a2a"/><polygon points="12,10 16,4 20,10" fill="#8a2a2a"/><polygon points="80,10 84,4 88,10" fill="#8a2a2a"/></svg>'; fullDesc = 'Stone banners hang from the keep walls, adding a regal touch to your castle. Each banner bears your realm\u2019s colors.'; }
+  else if (item.id === 'tapestry') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="20" y="8" width="60" height="44" rx="4" fill="#4a1a2a" opacity=".8"/><rect x="24" y="12" width="52" height="36" rx="2" fill="none" stroke="#d4a017" stroke-width="1" opacity=".6"/><circle cx="50" cy="30" r="10" fill="#d4a017" opacity=".5"/><circle cx="50" cy="30" r="5" fill="#8a2a2a" opacity=".6"/></svg>'; fullDesc = 'A grand royal tapestry hangs behind the throne, embroidered with your heraldic symbols in gold thread.'; }
+  else if (item.id === 'torches') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="38" y="20" width="3" height="15" rx="1" fill="#4a3a2a"/><ellipse cx="39.5" cy="18" rx="4" ry="5" fill="#ff6622" opacity=".8"/><ellipse cx="39.5" cy="19" rx="2.5" ry="3.5" fill="#ffcc00"/><rect x="58" y="20" width="3" height="15" rx="1" fill="#4a3a2a"/><ellipse cx="59.5" cy="18" rx="4" ry="5" fill="#ff6622" opacity=".8"/><ellipse cx="59.5" cy="19" rx="2.5" ry="3.5" fill="#ffcc00"/><rect x="10" y="45" width="80" height="10" rx="2" fill="#6a5a4a" opacity=".5"/></svg>'; fullDesc = 'Animated torch sconces flank the castle door, casting warm light with flickering flame animations.'; }
+  else if (item.id === 'paths') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><ellipse cx="50" cy="50" rx="40" ry="8" fill="rgba(100,90,80,.4)"/><ellipse cx="30" cy="48" rx="6" ry="3" fill="rgba(120,110,100,.3)"/><ellipse cx="50" cy="50" rx="6" ry="3" fill="rgba(120,110,100,.3)"/><ellipse cx="70" cy="48" rx="6" ry="3" fill="rgba(120,110,100,.3)"/></svg>'; fullDesc = 'A winding cobblestone path leads from the castle gate through the village, decorated with rounded stones.'; }
+  else if (item.id === 'flags') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><line x1="20" y1="10" x2="20" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="20,10 40,15 20,20" fill="#cc3a3a"/><line x1="50" y1="10" x2="50" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="50,10 70,15 50,20" fill="#cc3a3a"/><line x1="80" y1="15" x2="80" y2="55" stroke="#6a5a4a" stroke-width="1.5"/><polygon points="80,15 92,18 80,21" fill="#aa3a3a"/></svg>'; fullDesc = 'Your personal heraldic banners fly from every tower and wall, announcing your reign to all who approach.'; }
+  else if (item.id === 'crimson') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="15" width="30" height="30" rx="3" fill="#6a0a0a"/><rect x="15" y="15" width="30" height="6" rx="1.5" fill="#f0e8d0"/><rect x="15" y="42" width="30" height="4" rx="1" fill="#f0e8d0"/><circle cx="30" cy="10" r="8" fill="#c89a6a"/><polygon points="24,2 30,0 36,2" fill="#d4a017"/></svg>'; fullDesc = 'Arthur\u2019s robes are dyed a deep crimson red, signaling authority and the blood of dragons past.'; }
+  else if (item.id === 'silver') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="20" width="30" height="35" rx="3" fill="#c0c0c0"/><rect x="15" y="20" width="30" height="5" rx="1.5" fill="#e8e8e8"/><ellipse cx="30" cy="14" rx="8" ry="6" fill="#d4a574"/><circle cx="28" cy="13" r="1" fill="#333"/><circle cx="32" cy="13" r="1" fill="#333"/></svg>'; fullDesc = 'Gertrude\u2019s armor is polished to gleaming silver, reflecting the light like a beacon of resilience.'; }
+  else if (item.id === 'starry') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="25" width="30" height="30" rx="3" fill="#2a1560"/><ellipse cx="30" cy="18" rx="9" ry="7" fill="#c09a7a"/><polygon points="24,10 30,8 36,10" fill="#2a1560"/><circle cx="20" cy="10" r="1" fill="#fff" opacity=".8"/><circle cx="35" cy="7" r="1.2" fill="#fff" opacity=".9"/><circle cx="28" cy="6" r=".8" fill="#fff" opacity=".7"/><circle cx="40" cy="12" r=".6" fill="#fff" opacity=".6"/></svg>'; fullDesc = 'Oswald\u2019s hat transforms into a starry night sky, with twinkling constellations guiding the way.'; }
+  else if (item.id === 'streak') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="30" cy="30" r="24" fill="none" stroke="#d4a017" stroke-width="2" opacity=".5"/><path d="M30,6 L34,24 L52,28 L38,38 L42,56 L30,44 L18,56 L22,38 L8,28 L26,24 Z" fill="#d4a017" opacity=".8"/></svg>'; fullDesc = 'A Streak Shield protects your streak from one relapse. Your days continue as if unaffected \u2014 a safety net for hard days.'; }
+  else if (item.id === 'double') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="20" cy="30" r="16" fill="#d4a017" opacity=".8"/><circle cx="40" cy="30" r="16" fill="#d4a017" opacity=".6"/><text x="30" y="35" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">x2</text></svg>'; fullDesc = 'Double all schillings earned for 24 hours. Every check-in, quest, and milestone pays twice the treasure.'; }
+  else if (item.id === 'bonus') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><rect x="10" y="10" width="40" height="40" rx="4" fill="#6B4423"/><text x="30" y="38" text-anchor="middle" font-size="22" font-weight="800" fill="#ffd700">+1</text></svg>'; fullDesc = 'Unlock a 4th daily quest slot today only. More quests mean more schillings and faster progress.'; }
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;padding:24px"><div style="font-size:36px;margin-bottom:4px">' + item.icon + '</div><h3 style="font-size:18px;font-weight:700;margin:0 0 2px">' + item.name + '</h3><div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + item.cat + ' &middot; ' + item.cost + ' \u269C</div><div style="background:var(--primary-light);border-radius:12px;padding:12px;margin-bottom:12px">' + previewSvg + '</div><p style="font-size:13px;color:var(--text-light);line-height:1.5;margin-bottom:12px">' + fullDesc + '</p><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">Close</button></div>';
+  document.body.appendChild(overlay);
+}
+
 function shopHTML() {
   var s = D.shopPurchases||[];var w=getWarchest();var sch=w.schillings||0;var bd=w.boostData||{};
   var activeStr = (bd.streak||0) > 0 ? '<span style="font-size:9px;color:var(--gold)">('+bd.streak+' active)</span>' : '';
@@ -9658,6 +9825,7 @@ function shopHTML() {
       h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:6px;background:'+((owned&&!isBoost)?'var(--primary-light)':'var(--card)')+';border:1px solid '+((owned&&!isBoost)?'var(--primary)':'var(--border)')+'">';
       h+='<div style="font-size:18px">'+item.icon+'</div>';
       h+='<div style="flex:1;text-align:left;min-width:0"><div style="font-size:11px;font-weight:600">'+item.name+' '+boostStatus+'</div><div style="font-size:9px;color:var(--muted)">'+item.desc+'</div></div>';
+      h+='<button class="btn btn-sm" onclick="showItemPreview(\''+item.id+'\')" style="font-size:9px;padding:2px 6px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer" title="Preview">\uD83D\uDD0D</button>';
       if(owned&&!isBoost){h+='<span style="font-size:10px;color:var(--accent);font-weight:700">\u2713 Owned</span>';}
       else{h+='<button class="btn btn-sm btn-primary" onclick="buyShopItem(\''+item.id+'\')" style="font-size:9px;padding:3px 8px"'+(sch<item.cost?' disabled':'')+'>'+item.cost+' \u269C</button>';}
       h+='</div>';
@@ -9823,21 +9991,30 @@ function roundTableHTML() {
        "I notice you've been logging regularly. Every entry makes the picture clearer.",
        "Your consistency is building a reliable trend. Keep feeding me data and I'll keep finding insights.",
        "Journal entries are up. Mood tracking is steady. The numbers don't lie \u2014 you're doing the work.",
-       "I cross-referenced your check-ins and habits. Clear pattern: showing up daily builds momentum."
+       "I cross-referenced your check-ins and habits. Clear pattern: showing up daily builds momentum.",
+       "Gertrude tells me your boundaries are holding strong. That aligns with what I'm seeing in the data.",
+       "Oswald mentioned you've been reflecting more. That depth shows in your journaling frequency.",
+       "You and Gertrude both logged strong check-ins yesterday. Her shield discipline is rubbing off on you."
       ]},
     {name:'Gertrude',body:'#2a5a5a',skin:'#d4a574',msgs:[
        "You're ready. You've got your tools. Today, nothing gets through.",
        "You've faced harder days than this and held firm. Today's no different.",
        "Your safety plan is solid. You've prepared for this. Trust yourself.",
        "Another day, another win. You don't need to win every fight \u2014 just this one.",
-       "I've seen your strength. You're tougher than whatever\u2019s in your way today."
+       "I've seen your strength. You're tougher than whatever\u2019s in your way today.",
+       "Arthur showed me your streak data. Consistent. That's the mark of a warrior.",
+       "Oswald told me you had a tough moment and worked through it. That's what real courage looks like.",
+       "The numbers Arthur tracks and the wisdom Oswald shares \u2014 both point to the same truth: you're growing."
       ]},
     {name:'Oswald',body:'#2a1560',skin:'#c09a7a',msgs:[
        "The road might twist, but you've walked through shadow before and come out the other side. Trust your steps.",
        "Every day of recovery adds to your strength. You're building something real.",
        "Look back and see how far you've come. That's not luck \u2014 that's you.",
        "The mist clears day by day. What felt impossible is now just your normal rhythm.",
-       "You carry wisdom you didn't have a month ago. Every struggle taught you something. That knowledge is your staff."
+       "You carry wisdom you didn't have a month ago. Every struggle taught you something. That knowledge is your staff.",
+       "Gertrude is right to be proud of your defenses. But I see something deeper \u2014 you're learning when to lower them too.",
+       "Arthur and I were discussing your progress. The data tells one story, but your journal tells the real one.",
+       "I overheard Arthur telling Gertrude about your consistency. Even the strategist is impressed."
       ]}
   ];
   var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
@@ -9857,7 +10034,6 @@ function roundTableHTML() {
     var cx = xOffsets[i];
     h += '<rect x="' + (cx - 11) + '" y="16" width="22" height="34" rx="4" fill="#3a2010"/>';
     h += '<rect x="' + (cx - 11) + '" y="16" width="22" height="4" rx="2" fill="#4a3020"/>';
-    // Chair back slats
     h += '<line x1="' + (cx - 6) + '" y1="20" x2="' + (cx - 6) + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
     h += '<line x1="' + cx + '" y1="20" x2="' + cx + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
     h += '<line x1="' + (cx + 6) + '" y1="20" x2="' + (cx + 6) + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
@@ -9874,16 +10050,13 @@ function roundTableHTML() {
   // Tabletop
   h += '<rect x="8" y="48" width="194" height="7" rx="2" fill="#8B4513"/>';
   h += '<rect x="8" y="48" width="194" height="3" rx="1" fill="#A0522D"/>';
-  // Table legs
   h += '<rect x="16" y="55" width="5" height="22" fill="#6B3410"/>';
   h += '<rect x="189" y="55" width="5" height="22" fill="#6B3410"/>';
 
   // Chair seats and legs (below table)
   for (var i = 0; i < chars.length; i++) {
     var cx = xOffsets[i];
-    // Chair seat
     h += '<rect x="' + (cx - 12) + '" y="54" width="24" height="3" rx="1" fill="#4a3020"/>';
-    // Chair front legs
     h += '<rect x="' + (cx - 11) + '" y="57" width="3" height="16" rx=".5" fill="#3a2010"/>';
     h += '<rect x="' + (cx + 8) + '" y="57" width="3" height="16" rx=".5" fill="#3a2010"/>';
   }
@@ -9893,14 +10066,12 @@ function roundTableHTML() {
     var c = chars[i];
     var cx = xOffsets[i];
     if (i === 1) {
-      // Gertrude - armored legs
       h += '<rect x="' + (cx - 5) + '" y="55" width="4" height="10" rx="1" fill="#6a7a7a" opacity=".7"/>';
       h += '<rect x="' + (cx + 1) + '" y="55" width="4" height="10" rx="1" fill="#6a7a7a" opacity=".7"/>';
     } else {
       h += '<rect x="' + (cx - 5) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
       h += '<rect x="' + (cx + 1) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
     }
-    // Shoes
     h += '<ellipse cx="' + (cx - 3) + '" cy="66" rx="3" ry="1.5" fill="#2a1a0a"/>';
     h += '<ellipse cx="' + (cx + 3) + '" cy="66" rx="3" ry="1.5" fill="#2a1a0a"/>';
   }
@@ -9922,14 +10093,39 @@ function roundTableHTML() {
   }
   h += '</div>';
 
-  // Message
+  // Conversation mode: every 3rd day, show a cross-character exchange
+  var isConvoDay = Math.floor(dayOfYear / chars.length) % 3 === 2;
   var pick = chars[activeIdx];
   var msg = pick.msgs[dayMod % pick.msgs.length];
   var hr = new Date().getHours();
   var timeWord = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
   var rank = getRank(soberDays());
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-align:center">Good ' + timeWord + ' from <strong style="color:var(--primary);cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')" title="Learn about ' + pick.name + '">' + pick.name + '</strong> \u2014 to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div>';
-  h += '<div style="font-size:13px;line-height:1.5;text-align:center;font-style:italic;color:var(--text-light)">' + msg + '</div>';
+
+  if (isConvoDay) {
+    var responderIdx = (activeIdx + 1) % chars.length;
+    var responder = chars[responderIdx];
+    var respMsgs = [
+      "I couldn't have said it better myself.",
+      "That's exactly right. I was just thinking the same.",
+      "Listen to them \u2014 they speak truth.",
+      "Hear, hear! The realm is stronger when we speak as one.",
+      "I'll stand by that counsel. It's served many before you."
+    ];
+    var respMsg = respMsgs[dayMod % respMsgs.length];
+    h += '<div style="text-align:center;margin-bottom:6px">';
+    h += '<div style="display:inline-block;background:var(--primary-light);border-radius:12px 12px 12px 2px;padding:8px 12px;margin-bottom:4px;max-width:90%">';
+    h += '<div style="font-size:10px;font-weight:700;color:var(--primary);margin-bottom:2px">' + pick.name + '</div>';
+    h += '<div style="font-size:12px;line-height:1.4;font-style:italic;color:var(--text-light)">' + msg + '</div>';
+    h += '</div>';
+    h += '<div style="display:inline-block;background:var(--card);border:1px solid var(--border);border-radius:12px 12px 2px 12px;padding:8px 12px;max-width:90%">';
+    h += '<div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:2px">' + responder.name + '</div>';
+    h += '<div style="font-size:12px;line-height:1.4;font-style:italic;color:var(--text-light)">' + respMsg + '</div>';
+    h += '</div>';
+    h += '</div>';
+  } else {
+    h += '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-align:center">Good ' + timeWord + ' from <strong style="color:var(--primary);cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')" title="Learn about ' + pick.name + '">' + pick.name + '</strong> \u2014 to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div>';
+    h += '<div style="font-size:13px;line-height:1.5;text-align:center;font-style:italic;color:var(--text-light)">' + msg + '</div>';
+  }
   h += '<div style="font-size:7px;color:var(--muted);text-align:center;margin-top:6px;opacity:.4;letter-spacing:1px">tap a name above to learn their story</div>';
   h += '</div>';
   return h;
@@ -10183,6 +10379,7 @@ function throneRoomHTML() {
   h += '<div style="font-size:16px;font-weight:700;font-family:MedievalSharp,serif;color:var(--primary-dark);letter-spacing:2px;text-transform:uppercase">' + safe(kName) + '</div>';
   h += '<div style="font-size:7px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-top:-1px">' + (D.kingdomName ? 'Tap to rename' : 'Tap to name your kingdom') + '</div>';
   h += '</div></div>';
+  h += '<div style="text-align:center;margin-bottom:2px"><span style="font-size:10px;color:var(--accent);cursor:pointer;opacity:.6" onclick="showKingdomMap()" title="Explore the realm">\uD83D\uDDFA View Map</span></div>';
 
   // 0. Medieval date banner (top of throne room)
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--accent);letter-spacing:.5px;font-style:italic;padding:6px 0 4px;font-family:MedievalSharp,serif;border-bottom:1px solid var(--border);margin-bottom:8px">';
@@ -10268,16 +10465,14 @@ function throneRoomHTML() {
 
 function kNamePrompt() {
   var current = D.kingdomName || '';
-  var name = prompt('Name your kingdom:', current);
-  if (name && name.trim()) {
-    D.kingdomName = name.trim();
-    saveData();
-    render();
-  } else if (name !== null && !name.trim()) {
-    D.kingdomName = '';
-    saveData();
-    render();
-  }
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center"><div style="font-size:32px;margin-bottom:4px">\uD83C\uDFF0</div><h3 style="font-size:18px;font-weight:700;margin:0 0 4px">Name Your Kingdom</h3><p style="font-size:12px;color:var(--muted);margin-bottom:12px">What shall your realm be called?</p><input type="text" id="kNameInput" value="' + safe(current) + '" placeholder="My Kingdom" style="text-align:center;font-size:16px;font-weight:600;font-family:MedievalSharp,serif;letter-spacing:1px;margin-bottom:12px"><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary btn-sm" onclick="var v=document.getElementById(\'kNameInput\').value;if(v&&v.trim()){D.kingdomName=v.trim();}else{D.kingdomName=\'\';}saveData();this.closest(\'.overlay\').remove();render()">Save</button></div></div>';
+  document.body.appendChild(overlay);
+  setTimeout(function() {
+    var inp = document.getElementById('kNameInput');
+    if (inp) { inp.focus(); inp.select(); }
+  }, 100);
 }
 
 function homeHTML() {
