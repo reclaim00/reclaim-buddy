@@ -808,7 +808,7 @@ function ordinal(n) {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 function medievalDate() {
-  var months = ['Ã†rra Ä Ä“ola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','Ã†rra-LiÃ°a','Ã†ftera-LiÃ°a','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','Ã†ftera Ä Ä“ola'];
+  var months = ['Ærra Ġēola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','Ærra-Liða','Æftera-Liða','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','Æftera Ġēola'];
   var now = new Date();
   var day = now.getDate();
   var month = months[now.getMonth()];
