@@ -1172,7 +1172,7 @@ function coatOfArmsHTML() {
   h += '<path d="M60,16 L98,16 L98,63 Q98,98 60,120 Q22,98 22,63 L22,16 Z" fill="none" stroke="' + trimColor + '" stroke-width="1" opacity=".4"/>';
   // Charge (custom if set, otherwise rank icon)
   if (charge && charge !== 'none') {
-    h += '<g color="#fff" opacity=".85" transform="translate(32, 32) scale(1.7)">' + shieldChargeHTML(charge) + '</g>';
+    h += '<g color="#fff" opacity=".85" transform="translate(1, 44) scale(1.4)">' + shieldChargeHTML(charge) + '</g>';
   } else {
     h += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
   }
@@ -1226,7 +1226,7 @@ function showHeraldryEditor() {
     if (ch.svg) {
       h += '<svg viewBox="0 0 120 100" style="width:60px;height:auto;color:var(--primary-dark)">';
       h += '<path d="M60,8 L105,8 L105,50 Q105,78 60,95 Q15,78 15,50 L15,8 Z" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".2"/>';
-      h += '<g color="var(--primary-dark)" opacity=".85" transform="translate(35, 28) scale(1.5)">' + ch.svg.replace(/\s*transform="[^"]*"/g,'') + '</g></svg>';
+      h += '<g color="var(--primary-dark)" opacity=".85" transform="translate(10, 30) scale(1.2)">' + ch.svg.replace(/\s*transform="[^"]*"/g,'') + '</g></svg>';
     }
     h += '</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ch.label + '</div>';
@@ -1307,7 +1307,7 @@ function heraldryUpdatePreview() {
   if (division !== 'plain') s += divisionPathHTML(division, bandColor, 120, 140);
   s += '<path d="M60,16 L98,16 L98,63 Q98,98 60,120 Q22,98 22,63 L22,16 Z" fill="none" stroke="' + trimColor + '" stroke-width="1" opacity=".4"/>';
   if (charge && charge !== 'none') {
-    s += '<g color="#fff" opacity=".85" transform="translate(32, 32) scale(1.7)">' + shieldChargeHTML(charge) + '</g>';
+    s += '<g color="#fff" opacity=".85" transform="translate(1, 44) scale(1.4)">' + shieldChargeHTML(charge) + '</g>';
   } else {
     s += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
   }
