@@ -410,6 +410,9 @@ body.dark .music-item .platforms a:hover{background:var(--primary);color:#fff}
 .report-section{padding:12px 0;border-bottom:1px solid var(--border)}
 .report-section:last-child{border:none}
 .report-section h4{font-size:var(--fs-base);font-weight:700;margin-bottom:6px}
+.h-color-swatch{border:1px solid var(--border)}.h-color-swatch.sel{border:3px solid var(--primary)}
+.h-div-item{border:1px solid var(--border)}.h-div-item.sel{border:2px solid var(--primary)}
+.h-charge-item{border:1px solid var(--border)}.h-charge-item.sel{border:2px solid var(--primary)}
 .badge{display:inline-block;padding:3px 12px;clip-path:polygon(5% 0%,95% 0%,100% 50%,95% 100%,5% 100%,0% 50%);font-size:var(--fs-xs);font-weight:700;letter-spacing:.3px;background:var(--border);color:var(--text-light)}
 .badge-green{background:var(--primary-light);color:var(--primary-dark)}
 body.dark .badge-green{background:rgba(138,122,154,.15);color:var(--primary-dark)}

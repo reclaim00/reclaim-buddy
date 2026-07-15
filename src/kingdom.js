@@ -1126,7 +1126,7 @@ var SHOP_ITEMS = [
 function shieldChargeHTML(id) {
   var ch = null;
   for (var i=0;i<HERALDIC_CHARGES.length;i++) { if (HERALDIC_CHARGES[i].id === id) { ch = HERALDIC_CHARGES[i]; break; } }
-  return ch ? ch.svg : '';
+  return ch ? ch.svg.replace(/\s*transform="[^"]*"/g,'') : '';
 }
 function divisionPathHTML(id, field, w, h) {
   for (var i=0;i<HERALDIC_DIVISIONS.length;i++) {
@@ -1172,7 +1172,7 @@ function coatOfArmsHTML() {
   h += '<path d="M60,16 L98,16 L98,63 Q98,98 60,120 Q22,98 22,63 L22,16 Z" fill="none" stroke="' + trimColor + '" stroke-width="1" opacity=".4"/>';
   // Charge (custom if set, otherwise rank icon)
   if (charge && charge !== 'none') {
-    h += '<g color="#fff" opacity=".85">' + shieldChargeHTML(charge) + '</g>';
+    h += '<g color="#fff" opacity=".85" transform="translate(32, 32) scale(1.7)">' + shieldChargeHTML(charge) + '</g>';
   } else {
     h += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
   }
@@ -1202,8 +1202,8 @@ function showHeraldryEditor() {
   h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">';
   for (var ci=0;ci<HERALDIC_COLORS.length;ci++) {
     var c = HERALDIC_COLORS[ci];
-    var sel = heraldry.field === c.field || (!heraldry.field && ci === 0) ? '3px solid var(--primary)' : '1px solid var(--border)';
-    h += '<div style="width:36px;height:36px;border-radius:50%;background:' + c.field + ';border:' + sel + ';cursor:pointer" onclick="heraldryPickField(\'' + c.field + '\',\'' + c.trim + '\',this)" title="' + c.label + '" class="h-color-swatch"></div>';
+    var selCls = heraldry.field === c.field || (!heraldry.field && ci === 0) ? ' sel' : '';
+    h += '<div style="width:36px;height:36px;border-radius:50%;background:' + c.field + ';cursor:pointer" onclick="heraldryPickField(\'' + c.field + '\',\'' + c.trim + '\',this)" title="' + c.label + '" class="h-color-swatch' + selCls + '"></div>';
   }
   h += '</div>';
   // Division
@@ -1211,8 +1211,8 @@ function showHeraldryEditor() {
   h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">';
   for (var di=0;di<HERALDIC_DIVISIONS.length;di++) {
     var d = HERALDIC_DIVISIONS[di];
-    var dSel = (heraldry.division || 'band') === d.id ? '2px solid var(--primary)' : '1px solid var(--border)';
-    h += '<div class="h-div-item" style="padding:4px 10px;border:' + dSel + ';border-radius:6px;cursor:pointer;font-size:11px;background:var(--card)" onclick="heraldryPickDivision(\'' + d.id + '\',this)">' + d.label + '</div>';
+    var dSelCls = (heraldry.division || 'band') === d.id ? ' sel' : '';
+    h += '<div class="h-div-item' + dSelCls + '" style="padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11px;background:var(--card)" onclick="heraldryPickDivision(\'' + d.id + '\',this)">' + d.label + '</div>';
   }
   h += '</div>';
   // Charge
@@ -1220,13 +1220,13 @@ function showHeraldryEditor() {
   h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px">';
   for (var chi=0;chi<HERALDIC_CHARGES.length;chi++) {
     var ch = HERALDIC_CHARGES[chi];
-    var chSel = (heraldry.charge || '') === ch.id ? '2px solid var(--primary)' : '1px solid var(--border)';
-    h += '<div class="h-charge-item" style="border:' + chSel + ';border-radius:8px;cursor:pointer;text-align:center;background:var(--card);padding:6px 2px" onclick="heraldryPickCharge(\'' + ch.id + '\',this)">';
+    var chSelCls = (heraldry.charge || '') === ch.id ? ' sel' : '';
+    h += '<div class="h-charge-item' + chSelCls + '" style="border-radius:8px;cursor:pointer;text-align:center;background:var(--card);padding:6px 2px" onclick="heraldryPickCharge(\'' + ch.id + '\',this)">';
     h += '<div style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center">';
     if (ch.svg) {
       h += '<svg viewBox="0 0 120 100" style="width:60px;height:auto;color:var(--primary-dark)">';
       h += '<path d="M60,8 L105,8 L105,50 Q105,78 60,95 Q15,78 15,50 L15,8 Z" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".2"/>';
-      h += '<g color="var(--primary-dark)" opacity=".85">' + ch.svg + '</g></svg>';
+      h += '<g color="var(--primary-dark)" opacity=".85" transform="translate(35, 28) scale(1.5)">' + ch.svg.replace(/\s*transform="[^"]*"/g,'') + '</g></svg>';
     }
     h += '</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ch.label + '</div>';
@@ -1259,9 +1259,9 @@ function heraldryPickField(field, trim, el) {
   var parent = el && el.parentNode;
   if (parent) {
     var swatches = parent.querySelectorAll('.h-color-swatch');
-    for (var i=0;i<swatches.length;i++) { swatches[i].style.border = '1px solid var(--border)'; }
+    for (var i=0;i<swatches.length;i++) { swatches[i].classList.remove('sel'); }
   }
-  if (el) el.style.border = '3px solid var(--primary)';
+  if (el) el.classList.add('sel');
   heraldryUpdatePreview();
 }
 function heraldryPickDivision(id, el) {
@@ -1270,9 +1270,9 @@ function heraldryPickDivision(id, el) {
   var parent = el && el.parentNode;
   if (parent) {
     var items = parent.querySelectorAll('.h-div-item');
-    for (var i=0;i<items.length;i++) { items[i].style.border = '1px solid var(--border)'; }
+    for (var i=0;i<items.length;i++) { items[i].classList.remove('sel'); }
   }
-  if (el) el.style.border = '2px solid var(--primary)';
+  if (el) el.classList.add('sel');
   heraldryUpdatePreview();
 }
 function heraldryPickCharge(id, el) {
@@ -1281,9 +1281,9 @@ function heraldryPickCharge(id, el) {
   var parent = el && el.parentNode;
   if (parent) {
     var items = parent.querySelectorAll('.h-charge-item');
-    for (var i=0;i<items.length;i++) { items[i].style.border = '1px solid var(--border)'; }
+    for (var i=0;i<items.length;i++) { items[i].classList.remove('sel'); }
   }
-  if (el) el.style.border = '2px solid var(--primary)';
+  if (el) el.classList.add('sel');
   heraldryUpdatePreview();
 }
 function heraldryUpdatePreview() {
@@ -1307,7 +1307,7 @@ function heraldryUpdatePreview() {
   if (division !== 'plain') s += divisionPathHTML(division, bandColor, 120, 140);
   s += '<path d="M60,16 L98,16 L98,63 Q98,98 60,120 Q22,98 22,63 L22,16 Z" fill="none" stroke="' + trimColor + '" stroke-width="1" opacity=".4"/>';
   if (charge && charge !== 'none') {
-    s += '<g color="#fff" opacity=".85">' + shieldChargeHTML(charge) + '</g>';
+    s += '<g color="#fff" opacity=".85" transform="translate(32, 32) scale(1.7)">' + shieldChargeHTML(charge) + '</g>';
   } else {
     s += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
   }
