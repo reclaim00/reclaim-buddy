@@ -1203,7 +1203,7 @@ function showHeraldryEditor() {
   for (var ci=0;ci<HERALDIC_COLORS.length;ci++) {
     var c = HERALDIC_COLORS[ci];
     var sel = heraldry.field === c.field || (!heraldry.field && ci === 0) ? '3px solid var(--primary)' : '1px solid var(--border)';
-    h += '<div style="width:36px;height:36px;border-radius:50%;background:' + c.field + ';border:' + sel + ';cursor:pointer" onclick="heraldryPickField(\'' + c.field + '\',\'' + c.trim + '\')" title="' + c.label + '"></div>';
+    h += '<div style="width:36px;height:36px;border-radius:50%;background:' + c.field + ';border:' + sel + ';cursor:pointer" onclick="heraldryPickField(\'' + c.field + '\',\'' + c.trim + '\',this)" title="' + c.label + '" class="h-color-swatch"></div>';
   }
   h += '</div>';
   // Division
@@ -1212,18 +1212,25 @@ function showHeraldryEditor() {
   for (var di=0;di<HERALDIC_DIVISIONS.length;di++) {
     var d = HERALDIC_DIVISIONS[di];
     var dSel = (heraldry.division || 'band') === d.id ? '2px solid var(--primary)' : '1px solid var(--border)';
-    h += '<div style="padding:4px 10px;border:' + dSel + ';border-radius:6px;cursor:pointer;font-size:11px;background:var(--card)" onclick="heraldryPickDivision(\'' + d.id + '\')">' + d.label + '</div>';
+    h += '<div class="h-div-item" style="padding:4px 10px;border:' + dSel + ';border-radius:6px;cursor:pointer;font-size:11px;background:var(--card)" onclick="heraldryPickDivision(\'' + d.id + '\',this)">' + d.label + '</div>';
   }
   h += '</div>';
   // Charge
   h += '<div style="font-size:11px;font-weight:600;margin-bottom:4px">Charge (central symbol)</div>';
-  h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px">';
+  h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px">';
   for (var chi=0;chi<HERALDIC_CHARGES.length;chi++) {
     var ch = HERALDIC_CHARGES[chi];
     var chSel = (heraldry.charge || '') === ch.id ? '2px solid var(--primary)' : '1px solid var(--border)';
-    h += '<div style="padding:2px 8px;border:' + chSel + ';border-radius:6px;cursor:pointer;font-size:11px;background:var(--card);display:flex;align-items:center;gap:3px" onclick="heraldryPickCharge(\'' + ch.id + '\')">';
-    if (ch.svg) { h += '<span style="color:var(--primary);font-size:14px">' + ch.svg.replace(/fill="currentColor"/g,'fill="var(--primary)"').replace(/stroke="currentColor"/g,'stroke="var(--primary)"') + '</span>'; }
-    h += ch.label + '</div>';
+    h += '<div class="h-charge-item" style="border:' + chSel + ';border-radius:8px;cursor:pointer;text-align:center;background:var(--card);padding:6px 2px" onclick="heraldryPickCharge(\'' + ch.id + '\',this)">';
+    h += '<div style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center">';
+    if (ch.svg) {
+      h += '<svg viewBox="0 0 120 100" style="width:60px;height:auto;color:var(--primary-dark)">';
+      h += '<path d="M60,8 L105,8 L105,50 Q105,78 60,95 Q15,78 15,50 L15,8 Z" fill="none" stroke="currentColor" stroke-width="1.5" opacity=".2"/>';
+      h += '<g color="var(--primary-dark)" opacity=".85">' + ch.svg + '</g></svg>';
+    }
+    h += '</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ch.label + '</div>';
+    h += '</div>';
   }
   h += '</div>';
   // Motto
@@ -1245,20 +1252,38 @@ function showHeraldryEditor() {
   // Initial preview
   heraldryUpdatePreview();
 }
-function heraldryPickField(field, trim) {
+function heraldryPickField(field, trim, el) {
   if (!D.heraldry) D.heraldry = {};
   D.heraldry.field = field;
   D.heraldry.trim = trim;
+  var parent = el && el.parentNode;
+  if (parent) {
+    var swatches = parent.querySelectorAll('.h-color-swatch');
+    for (var i=0;i<swatches.length;i++) { swatches[i].style.border = '1px solid var(--border)'; }
+  }
+  if (el) el.style.border = '3px solid var(--primary)';
   heraldryUpdatePreview();
 }
-function heraldryPickDivision(id) {
+function heraldryPickDivision(id, el) {
   if (!D.heraldry) D.heraldry = {};
   D.heraldry.division = id;
+  var parent = el && el.parentNode;
+  if (parent) {
+    var items = parent.querySelectorAll('.h-div-item');
+    for (var i=0;i<items.length;i++) { items[i].style.border = '1px solid var(--border)'; }
+  }
+  if (el) el.style.border = '2px solid var(--primary)';
   heraldryUpdatePreview();
 }
-function heraldryPickCharge(id) {
+function heraldryPickCharge(id, el) {
   if (!D.heraldry) D.heraldry = {};
   D.heraldry.charge = id;
+  var parent = el && el.parentNode;
+  if (parent) {
+    var items = parent.querySelectorAll('.h-charge-item');
+    for (var i=0;i<items.length;i++) { items[i].style.border = '1px solid var(--border)'; }
+  }
+  if (el) el.style.border = '2px solid var(--primary)';
   heraldryUpdatePreview();
 }
 function heraldryUpdatePreview() {
