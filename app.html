@@ -938,9 +938,11 @@ function onAuthReady(email, isNew) {
   });
 }
 
+var _sessionRestoreTimer = null;
 try { firebase.auth().onAuthStateChanged(function(user) {
   if (user && user.email) {
     AUTH_RESTORED = true;
+    if (_sessionRestoreTimer) { clearTimeout(_sessionRestoreTimer); _sessionRestoreTimer = null; }
     var wasSignedOut = !AUTH_USER;
     var email = user.email;
     if (user.isAnonymous || email.endsWith('@reclaim.local')) {
@@ -955,12 +957,22 @@ try { firebase.auth().onAuthStateChanged(function(user) {
       });
     }
   } else if (AUTH_RESTORED) {
-    localStorage.removeItem('rc_user');
-    AUTH_USER = '';
-    AUTH_EMAIL = '';
-    D = defaultData();
-    document.body.classList.remove('logged-in');
-    render();
+    if (_sessionRestoreTimer) return;
+    _sessionRestoreTimer = setTimeout(function() {
+      _sessionRestoreTimer = null;
+      firebase.auth().currentUser
+        ? null
+        : (function() {
+            console.warn('Firebase auth session lost. If this was unexpected, check your connection.');
+            showToast('Session check failed. Your data is saved locally.','warning');
+            localStorage.removeItem('rc_user');
+            AUTH_USER = '';
+            AUTH_EMAIL = '';
+            D = loadData();
+            document.body.classList.remove('logged-in');
+            render();
+          })();
+    }, 3000);
   } else {
     showSignIn();
   }
@@ -1277,14 +1289,14 @@ function loadData() {
   try {
     var d = JSON.parse(localStorage.getItem(dataKey()));
     if (d) return validateData(d);
-  } catch(e) {}
+  } catch(e) { console.warn('loadData: corrupt localStorage entry, starting fresh', e); }
   return defaultData();
 }
 
 var _pageCache = {};
 function saveData() {
   updateSchillings();
-  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) {}
+  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('saveData: localStorage write failed', e); showToast('Could not save to local storage. Check available space.','error'); }
   syncToFirestore();
   applyTheme();
   _pageCache = {};
@@ -6208,7 +6220,7 @@ function saveRegisteredBuddies(list) {
 
 function fetchGlobalBuddies(callback) {
   if (!firebase || !firebase.auth().currentUser) { callback(null); return; }
-  DB.collection('users').get()
+  DB.collection('users').limit(100).get()
     .then(function(snapshot){
       var list = [];
       snapshot.forEach(function(doc){ list.push(doc.data()); });
@@ -6325,10 +6337,10 @@ function findBuddyAuto() {
   var btn = event && event.target ? event.target : document.getElementById('find-buddy-btn');
   if (btn) { btn.textContent = 'Searching...'; btn.disabled = true; }
   var lang = D.language || 'English';
-  DB.collection('users').get().then(function(snapshot){
+  DB.collection('users').where('language','==',lang).limit(50).get().then(function(snapshot){
     var available = [];
     snapshot.forEach(function(doc){
-      if (doc.id !== AUTH_EMAIL && doc.data().language === lang) available.push(doc.data());
+      if (doc.id !== AUTH_EMAIL) available.push(doc.data());
     });
     if (btn) { btn.textContent = 'Find Me a comrade'; btn.disabled = false; }
     if (!available.length) {
