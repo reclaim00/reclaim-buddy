@@ -331,7 +331,7 @@ function showMilestoneParty(days) {
   ];
   var label = days + ' Day' + (days !== 1 ? 's' : '') + ' Sober';
   var subtitle = days >= 365 ? 'ONE YEAR! Incredible!' : days >= 90 ? 'Quarter of a year - massive!' : days >= 30 ? 'One month strong!' : days >= 7 ? 'One week down!' : 'Amazing start!';
-  var emojis = ['â­','âœ¨','ðŸŽ‰','ðŸŽŠ','ðŸŒŸ','ðŸŒˆ','ðŸŽˆ','âœ¨','â­','ðŸŽŠ'];
+  var emojis = ['⭐','✨','🎉','🎊','🌟','🌈','🎈','✨','⭐','🎊'];
   overlay.innerHTML =
     '<div class="overlay-content" style="background:linear-gradient(135deg,#0f0f1a 0%,#1a0a2e 100%);border:2px solid rgba(255,215,0,.3);padding:14px;overflow:hidden;text-align:center;max-width:460px">' +
     '<div style="font-size:13px;font-weight:700;color:#ffd700;margin-bottom:2px;text-shadow:0 0 20px rgba(255,215,0,.4)">?? ' + label + '! ??</div>' +
@@ -562,7 +562,7 @@ function relapsePlanHTML() {
   var h = '';
   var rp = D.relapsePlan;
   h += '<h2 class="page-title">Relapse Plan</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-oswald);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg></div><div style="font-size:12px;color:var(--muted)">Oswald is with you. This plan is your staff and your compass â€” forged through preparation, ready when called upon.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-oswald);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg></div><div style="font-size:12px;color:var(--muted)">Oswald is with you. This plan is your staff and your compass — forged through preparation, ready when called upon.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Guided by Oswald  your relapse prevention coach.</p>';
   if (rp && rp.triggers && rp.triggers.length) {
     h += '<div class="card" style="border-left:3px solid var(--accent)">';
@@ -596,7 +596,7 @@ function chivalryCodeHTML() {
   var h = '';
   h += '<h2 class="page-title">&#9876; Chivalry Code</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Gertrude says: <em>"A knight without a code is a wanderer. Define your principles, and every choice becomes clear."</em></div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code â€” not goals, but the kind of person you are becoming.</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
 
   // Code list
   h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">&#128221; My Code</h3>';
@@ -709,7 +709,7 @@ function relapseGraveyardHTML() {
   var h = '';
   h += '<h2 class="page-title">&#9904; Relapse Graveyard</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(42,42,42,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Every fallen knight teaches the next how to stand. Honor the dead, keep walking."</em></div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Past relapses are not failures â€” they are fallen comrades who taught you something. Mark them here with respect, and carry their lesson forward.</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Past relapses are not failures — they are fallen comrades who taught you something. Mark them here with respect, and carry their lesson forward.</p>';
 
   // Import existing relapse dates
   var existingDates = D.sobriety && D.sobriety.relapseDates ? D.sobriety.relapseDates : [];
@@ -728,7 +728,7 @@ function relapseGraveyardHTML() {
   // Grave grid
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px" id="grave-grid">';
   if (!rg.graves || !rg.graves.length) {
-    h += '<div style="grid-column:1/-1" class="empty-state">No graves yet. Past relapses can be laid to rest here â€” with honor, not shame.</div>';
+    h += '<div style="grid-column:1/-1" class="empty-state">No graves yet. Past relapses can be laid to rest here — with honor, not shame.</div>';
   } else {
     for (var gi=0;gi<rg.graves.length;gi++) {
       var g = rg.graves[gi];
@@ -751,7 +751,7 @@ function relapseGraveyardHTML() {
   // Epitaph inspiration
   h += '<div class="card" style="border-left:3px solid var(--border);padding:10px;font-size:11px;color:var(--muted);line-height:1.6">';
   h += '<strong style="font-size:12px">Epitaph ideas:</strong><br>';
-  h += '"Here lies a lesson I will not unlearn." &bull; "Fell so I could rise stronger." &bull; "This grave marks where shame dies." &bull; "Not my end â€” my teacher." &bull; "I carried this stone so others won\'t have to."';
+  h += '"Here lies a lesson I will not unlearn." &bull; "Fell so I could rise stronger." &bull; "This grave marks where shame dies." &bull; "Not my end — my teacher." &bull; "I carried this stone so others won\'t have to."';
   h += '</div>';
 
   return h;
@@ -805,7 +805,7 @@ function graveRandom() {
     'Here lies a lesson I will not unlearn.',
     'Fell so I could rise stronger.',
     'This grave marks where shame died.',
-    'Not my end â€” my teacher.',
+    'Not my end — my teacher.',
     'I carried this stone so others won\'t have to.',
     'A stumble, not a fall.',
     'This day broke me. I rebuilt.',
@@ -822,8 +822,8 @@ function royalPardonHTML() {
   var pardons = D.royalPardons || [];
   var h = '';
   h += '<h2 class="page-title">&#128081; Royal Pardon</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)">King Arthur says: <em>"By the crown I carry and the realm we are building â€” you are pardoned. Rise and begin again with my blessing."</em></div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Arthur grants you a Royal Pardon â€” not to erase what happened, but to sanctify your fresh start. This is your certificate of amnesty.</p>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)">King Arthur says: <em>"By the crown I carry and the realm we are building — you are pardoned. Rise and begin again with my blessing."</em></div></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Arthur grants you a Royal Pardon — not to erase what happened, but to sanctify your fresh start. This is your certificate of amnesty.</p>';
 
   // Grant a new pardon
   var lastRelapseDate = D.sobriety && D.sobriety.relapseDates && D.sobriety.relapseDates.length ? new Date(D.sobriety.relapseDates[D.sobriety.relapseDates.length-1]).toISOString().split('T')[0] : '';

@@ -8,7 +8,7 @@ function characterGreetingHTML() {
        "I've been watching your patterns. You're showing up more. That's the data that matters.",
        "I notice you've been logging regularly. Every entry sharpens the map of your recovery.",
        "Your consistency is building a reliable trend. Keep feeding me data and I'll keep finding insights.",
-       "Journal entries are up. Mood tracking is steady. The numbers don't lie â€” you're putting in the work.",
+       "Journal entries are up. Mood tracking is steady. The numbers don't lie — you're putting in the work.",
        "I cross-referenced your check-ins and habits. There's a clear correlation: showing up daily builds momentum."
      ]},
     {name:'Gertrude',color:'var(--avatar-gertrude)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg>',
@@ -16,14 +16,14 @@ function characterGreetingHTML() {
        "Stand ready. Your shield is forged. Today, nothing gets past you.",
        "You've faced worse battles than this and held the line. Today is no different.",
        "Your safety plan is your armor. You've prepared for this. Trust your training.",
-       "Another day, another victory. You don't need to win every fight â€” just this one.",
+       "Another day, another victory. You don't need to win every fight — just this one.",
        "I've seen your strength. You are more resilient than whatever faces you today."
      ]},
      {name:'Oswald',color:'var(--avatar-oswald)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg>',
      msgs:[
        "The path ahead may twist, but you've already walked through shadow and emerged. Trust your steps.",
        "Every day of recovery adds to your power. You're weaving strength stronger than any darkness.",
-       "Look back and see how far you've come. That is not luck â€” it is your own will, recognized and claimed.",
+       "Look back and see how far you've come. That is not luck — it is your own will, recognized and claimed.",
        "The mist clears day by day. What felt impossible is now your daily rhythm.",
        "You carry wisdom you didn't have a month ago. Each struggle taught you something. That knowledge is your staff."
      ]}
@@ -166,7 +166,7 @@ function kingdomHTML() {
     h += '<rect x="195" y="105" width="110" height="93" fill="url(#stone)"/>';
     h += '<rect x="278" y="105" width="27" height="93" fill="rgba(0,0,0,.1)"/>';
     h += '<rect x="193" y="186" width="114" height="12" class="k-keep" opacity=".7"/><rect x="193" y="186" width="114" height="12" fill="url(#stone)" opacity=".7"/>';
-    // Damage features â€” cracked walls and rubble for levels 1-2, fading with time
+    // Damage features — cracked walls and rubble for levels 1-2, fading with time
     if (level <= 2) {
       if (level === 1) {
         h += '<path d="M208,120 L216,118 L218,130 L226,126 L228,138 L236,134" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
@@ -1065,7 +1065,7 @@ function warchestHTML() {
       h += '<span style="font-size:9px;background:var(--primary-light);padding:1px 5px;border-radius:4px;margin:1px;display:inline-block">' + (mIdx>=0?mNames[mIdx]:'') + '</span>';
     }
   }
-  // King's Ledger â€” real-world savings calculator
+  // King's Ledger — real-world savings calculator
   var cpDay = D.sobriety.costPerDay || 0;
   var dQty = D.sobriety.dailyQuantity || 0;
   var uLabel = D.sobriety.unitLabel || '';
@@ -1084,7 +1084,7 @@ function warchestHTML() {
   h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Unit label</label>';
   h += '<input type="text" value="' + safe(uLabel) + '" onchange="D.sobriety.unitLabel=this.value;saveData();render()" placeholder="drinks" style="font-size:12px;padding:4px 6px;margin:0"></div>';
   h += '</div>';
-  // Results â€” always visible
+  // Results — always visible
   h += '<div class="stat-grid">';
   h += '<div class="stat-card"><div class="num" style="color:#d4a017">$' + moneySaved.toLocaleString() + '</div><div class="label">Money Saved</div></div>';
   var unitDisplay = uLabel ? safe(uLabel) + ' Avoided' : 'Units Avoided';
@@ -1425,7 +1425,7 @@ function throneRoomHTML() {
   }
   h += '</div>';
 
-  // 3. Level card (medieval rank, clickable â†’ profile)
+  // 3. Level card (medieval rank, clickable → profile)
   var _lvl = soberLevel();
   var _prog = soberLevelProgress();
   h += '<div class="card" style="margin-top:8px;padding:10px;text-align:center;cursor:pointer" onclick="goTo(\'profile\')">';
@@ -1470,7 +1470,7 @@ function kNamePrompt() {
 function homeHTML() {
   var h = '';
 
-  // Throne Room â€” the central hub
+  // Throne Room — the central hub
   h += throneRoomHTML();
 
   h += pledgeHTML();
