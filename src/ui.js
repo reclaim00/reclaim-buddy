@@ -33,6 +33,7 @@ function showToast(text, type) {
   type = type || 'info';
   var c = document.getElementById('toast-container');
   if (!c) return;
+  while (c.children.length >= 3) { c.removeChild(c.firstChild); }
   var icons = {info:'\u269C',success:'\u2714',warning:'\u26A0',danger:'\u2716'};
   var t = document.createElement('div');
   t.className = 'toast toast-' + type;
@@ -1608,6 +1609,17 @@ function promptInstall() {
 }
 // ====== INIT ======
 applyTheme();
+var connEl = document.getElementById('conn-status');
+function updateConnStatus() {
+  if (!connEl) return;
+  if (!navigator.onLine) { connEl.style.display = 'block'; return; }
+  if (typeof DB !== 'undefined' && DB) {
+    try { DB.enableNetwork().then(function(){ connEl.style.display = 'none'; }).catch(function(){ connEl.style.display = 'block'; }); } catch(e) { connEl.style.display = 'none'; }
+  } else { connEl.style.display = 'none'; }
+}
+window.addEventListener('online', updateConnStatus);
+window.addEventListener('offline', function(){ if (connEl) connEl.style.display = 'block'; });
+if (!navigator.onLine && connEl) connEl.style.display = 'block';
 setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
 if (AUTH_USER && !isLockSet()) {
   document.body.classList.add('logged-in');
