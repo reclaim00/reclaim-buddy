@@ -2289,9 +2289,10 @@ function showJournalLetter(idx) {
     if (!body || !entryText) return;
     var words = entryText.split(/(\s+)/);
     var wi = 0;
+    var batchSize = 8;
     var penDelay = 80;
 
-    function typeWord() {
+    function typeBatch() {
       if (wi >= words.length) {
         // Show after-entry sections
         var after = document.getElementById('letter-after');
@@ -2308,12 +2309,19 @@ function showJournalLetter(idx) {
         setTimeout(showSchillingNotification, 1000);
         return;
       }
-      body.innerHTML += '<span>' + words[wi] + '</span>';
-      wi++;
+      var chunk = '';
+      var extraDelay = 0;
+      for (var b=0;b<batchSize && wi < words.length;b++) {
+        chunk += words[wi];
+        if (words[wi].trim().endsWith('.')||words[wi].trim().endsWith('!')||words[wi].trim().endsWith('?')) extraDelay += 300;
+        else if (words[wi].trim().endsWith(',')||words[wi].trim().endsWith(';')) extraDelay += 120;
+        wi++;
+      }
+      body.innerHTML += '<span>' + chunk + '</span>';
       var lc = document.getElementById('journal-letter'); if (lc) lc.scrollTop = lc.scrollHeight;
-      setTimeout(typeWord, penDelay + (words[wi-1].trim().endsWith('.')||words[wi-1].trim().endsWith('!')||words[wi-1].trim().endsWith('?')?300:0) + (words[wi-1].trim().endsWith(',')||words[wi-1].trim().endsWith(';')?120:0));
+      setTimeout(typeBatch, penDelay + extraDelay);
     }
-    typeWord();
+    typeBatch();
   }
 
   // Close handler
@@ -2468,6 +2476,7 @@ function showReflection(idx) {
       textEl.innerHTML = '';
       var segs = summaryText.split(/(<[^>]*>)/);
       var si = 0, ci = 0;
+      var charBatch = 8;
       function typeHTML(){
         if (si >= segs.length) return;
         var s = segs[si];
@@ -2477,10 +2486,15 @@ function showReflection(idx) {
           setTimeout(typeHTML, 0);
         } else {
           if (ci < s.length) {
-            textEl.innerHTML += s.charAt(ci);
-            var ch = s.charAt(ci);
-            ci++;
-            setTimeout(typeHTML, 18 + (ch===' '||ch==='.'||ch===','||ch==='\u2014'?40:0));
+            var batch = s.substring(ci, ci + charBatch);
+            textEl.innerHTML += batch;
+            ci += charBatch;
+            var delay = 18;
+            for (var bi=0;bi<batch.length;bi++) {
+              var ch = batch.charAt(bi);
+              if (ch===' '||ch==='.'||ch===','||ch==='\u2014') delay += 40;
+            }
+            setTimeout(typeHTML, delay);
           } else {
             ci = 0;
             si++;

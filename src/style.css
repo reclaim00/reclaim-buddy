@@ -2,7 +2,7 @@
 html{scroll-behavior:smooth}
 /* ===== PARCHMENT & INK (light) ===== */
 :root{--bg:#b5dff5;--card:#f2efe8;--primary:#7a1a1a;--primary-dark:#a83030;--primary-light:#f5ece8;--text:#1a1612;--text-light:#5a564c;--muted:#8a867a;--border:#c4c0b4;--radius:16px;--radius-sm:10px;--accent:#2d5a5a;--danger:#b91c1c;--danger-bg:#fce8e8;--purple:#5b21b6;--purple-light:#ede9fe;--blue:#1e3a5f;--blue-light:#dbeafe;--rose:#9f1239;--rose-light:#ffe4e6;--gold:#8a7a6a;--gold-light:#ece6de;--shadow-card:0 1px 3px rgba(26,22,18,.06),0 4px 16px rgba(26,22,18,.04);--shadow-btn:0 2px 8px rgba(26,22,18,.1);--shadow-hover:0 6px 24px rgba(26,22,18,.12);--focus-ring:0 0 0 3px rgba(122,26,26,.15);--grad-primary:linear-gradient(135deg,#7a1a1a,#a83030);--grad-accent:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-buddy:linear-gradient(135deg,#7a1a1a,#a83030);--avatar-gertrude:linear-gradient(135deg,#2d5a5a,#3d7a7a);--avatar-arthur:linear-gradient(135deg,#5b21b6,#7c3aed);--avatar-oswald:linear-gradient(135deg,#4338ca,#6366f1);--scrollbar-thumb:#c4c0b4;--scrollbar-track:transparent;--stone-base:#d4cabc;--stone-border:#a89888;--parchment-bg:#f5f0e8;--fs-2xs:10px;--fs-xs:11px;--fs-sm:12px;--fs-body:13px;--fs-base:14px;--fs-md:16px;--fs-lg:17px;--fs-xl:20px;--fs-2xl:24px;--fs-3xl:36px;--fs-title:48px;--space-xs:4px;--space-sm:6px;--space-md:8px;--space-lg:12px;--space-xl:14px;--space-2xl:16px;--space-3xl:20px;--space-4xl:24px;--space-5xl:28px;--space-6xl:32px;--space-7xl:36px;--radius-xs:4px;--radius-sm:6px;--radius-md:8px;--radius-lg:10px;--radius-xl:12px;
-#landscape-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+#landscape-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;will-change:opacity;transition:opacity .35s ease}
 #landscape-bg svg{width:100%;height:100%;display:block}
 #moon-overlay{position:fixed;top:8px;left:5%;z-index:1;pointer-events:none;opacity:0;transition:opacity .6s}
 body.dark #moon-overlay{opacity:1}
@@ -13,8 +13,10 @@ body.dark #moon-overlay{opacity:1}
 @keyframes villageShake{0%,100%{transform:translateX(0)}10%{transform:translateX(-4px)}20%{transform:translateX(3px)}30%{transform:translateX(-2px)}50%{transform:translateX(1px)}70%{transform:translateX(-1px)}}
 body.dark #village-overlay svg{opacity:.6}
 @media(max-width:600px){#village-overlay{width:92vw;right:-6%;bottom:0}}@media(max-width:480px){#village-overlay{width:98vw;right:-8%}#moon-overlay{left:2%;top:4px}}
-.day-scene{opacity:.5}
-.night-scene{display:none}
+.day-scene{opacity:.5;transition:opacity .35s ease}
+.night-scene{opacity:0;pointer-events:none;transition:opacity .35s ease}
+body.dark .day-scene{opacity:0}
+body.dark .night-scene{opacity:1}
 .app,.top-bar,.tabs{position:relative;z-index:1}
 [theme=blue]{--primary:#1e3a5f;--primary-dark:#2b5a8c;--primary-light:#dbeafe;--grad-primary:linear-gradient(135deg,#1e3a5f,#2b5a8c);--focus-ring:0 0 0 3px rgba(30,58,95,.15)}
 [theme=purple]{--primary:#5b21b6;--primary-dark:#7c3aed;--primary-light:#ede9fe;--grad-primary:linear-gradient(135deg,#5b21b6,#7c3aed);--focus-ring:0 0 0 3px rgba(91,33,182,.15)}
@@ -36,6 +38,7 @@ body.dark ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8a7
 /* ===== KINGDOM VISUALIZATION ===== */
 .kingdom-scene{position:relative;width:100%;max-width:460px;margin:0 auto 10px;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04)}
 .kingdom-scene svg{width:100%;height:auto;display:block}.k-sky{fill:var(--sky-c)}.k-ground{fill:var(--ground-c)}.k-hills{fill:var(--hill-c)}.k-keep{fill:var(--keep-c)}.k-roof{fill:var(--roof-c)}.k-tower{fill:var(--tower-c)}.k-tower-roof{fill:var(--tower-roof-c)}.k-door{fill:var(--door-c)}.k-tree{fill:var(--tree-c)}.k-tree-trunk{fill:var(--tree-trunk-c)}.k-flag-l,.k-flag-r{fill:var(--flag-c)}.k-flagpole{stroke:var(--flagpole-c)}.k-window{fill:var(--window-c)}.k-sun{fill:var(--sun-c)}.k-clouds ellipse{fill:var(--cloud-c);opacity:.6}.k-birds path{stroke:var(--bird-c);fill:none;stroke-linecap:round}.k-rubble{fill:var(--rubble-c)}.k-cren rect{fill:var(--keep-c)}.k-path{fill:var(--path-c)}.k-damage-overlay{fill:#ff4444}
+.kingdom-scene .k-flag-l,.kingdom-scene .k-flag-r,.kingdom-scene .k-birds,.kingdom-scene .k-trees,.kingdom-scene .k-clouds,.kingdom-scene .k-sun,.kingdom-scene .k-window{will-change:transform}
 .kingdom-scene{--sky-c:#2a1a10;--ground-c:#3a2a1a;--hill-c:#2a2a2a;--keep-c:#3a2a1a;--roof-c:#4a2a1a;--tower-c:#3a2a1a;--tower-roof-c:#4a2a1a;--door-c:#1a0a00;--tree-c:#2a1a0a;--tree-trunk-c:#1a0a00;--flag-c:#6a1a1a;--flagpole-c:#3a2a1a;--window-c:#ffdd8844;--sun-c:#ffcc44;--cloud-c:#555;--bird-c:#3a3a4a;--rubble-c:#4a3a2a;--path-c:#5a4a3a}
 .kingdom-scene.tier-1{--sky-c:#2a2a40;--ground-c:#4a3a2a;--hill-c:#3a3a4a;--keep-c:#5a4a3a;--roof-c:#5a3a2a;--tower-c:#5a4a3a;--tower-roof-c:#5a3a2a;--door-c:#2a1a0a;--flag-c:#7a2a2a;--tree-c:#3a5a3a;--tree-trunk-c:#2a1a0a;--window-c:#ffdd8833;--rubble-c:#5a4a3a;--path-c:#6a5a4a;--flagpole-c:#4a3a2a}
 .kingdom-scene.tier-2{--sky-c:#4a5a7a;--ground-c:#5a7a4a;--hill-c:#4a5a5a;--keep-c:#6a5a4a;--roof-c:#7a4a2a;--tower-c:#6a5a4a;--tower-roof-c:#7a4a2a;--door-c:#3a2a1a;--flag-c:#8a2a2a;--tree-c:#4a7a4a;--tree-trunk-c:#3a2a1a;--window-c:#ffdd8866;--cloud-c:#7a8a9a;--path-c:#8a7a6a;--flagpole-c:#5a4a3a}
