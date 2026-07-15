@@ -1188,7 +1188,9 @@ function coatOfArmsHTML() {
   return h;
 }
 
+var _heraldrySnapshot = null;
 function showHeraldryEditor() {
+  _heraldrySnapshot = JSON.parse(JSON.stringify(D.heraldry || {}));
   var heraldry = D.heraldry || {};
   var days = soberDays();
   var rank = getRank(days);
@@ -1241,7 +1243,7 @@ function showHeraldryEditor() {
   h += '<button class="btn btn-primary" onclick="heraldrySave()" style="flex:1">Save</button>';
   h += '<button class="btn btn-outline" onclick="heraldryReset()" style="flex:1">Reset to Default</button>';
   h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;width:100%">Cancel</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="heraldryCancel()" style="margin-top:6px;width:100%">Cancel</button>';
   h += '</div>';
   // Show overlay
   var ov = document.createElement('div');
@@ -1317,10 +1319,16 @@ function heraldryUpdatePreview() {
   s += '</svg>';
   preview.innerHTML = s;
 }
+function heraldryCancel() {
+  D.heraldry = JSON.parse(JSON.stringify(_heraldrySnapshot));
+  var ov = document.getElementById('heraldry-overlay');
+  if (ov) ov.remove();
+  render();
+}
 function heraldrySave() {
+  D.heraldry = D.heraldry || {};
   var mottoEl = document.getElementById('heraldry-motto');
-  if (mottoEl && D.heraldry) D.heraldry.motto = mottoEl.value;
-  if (!D.heraldry) D.heraldry = {};
+  if (mottoEl) D.heraldry.motto = mottoEl.value;
   // Remove empty strings
   for (var k in D.heraldry) { if (D.heraldry[k] === '') delete D.heraldry[k]; }
   saveData();

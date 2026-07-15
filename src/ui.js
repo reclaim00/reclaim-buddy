@@ -1,4 +1,12 @@
-﻿// ====== NOTIFICATIONS ======
+﻿// ====== GLOBAL ERROR HANDLING ======
+window.onerror = function(msg, url, line, col, err) {
+  console.error('Uncaught error:', msg, 'at', url, line + ':' + col);
+  try { showToast('Something went wrong. The app will try to recover.','error'); } catch(e) {}
+};
+window.addEventListener('unhandledrejection', function(e) {
+  console.warn('Unhandled rejection:', e.reason);
+});
+// ====== NOTIFICATIONS ======
 function notifRowHTML(key, emoji, label, desc) {
   var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',checkinReminder:false,checkinReminderTime:'18:00',buddyCheckin:false,streakMilestone:false};
   var enabled = n[key] || false;

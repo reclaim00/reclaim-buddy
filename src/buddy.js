@@ -1,6 +1,8 @@
 ﻿
 // ====== PAIRING SYSTEM ======
 var PAIRING_STORAGE_KEY = 'rc_buddies';
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;').replace(/\\/g,'&#92;'); }
+
 
 function getRegisteredBuddies() {
   try { return JSON.parse(localStorage.getItem(PAIRING_STORAGE_KEY)) || []; } catch(e) { return []; }
@@ -45,8 +47,9 @@ function generatePairingCode() {
   var code = '';
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   for (var i=0;i<6;i++) code += chars[Math.floor(Math.random() * chars.length)];
-   var shareBtn = (navigator.share ? '<button class="btn btn-sm btn-primary" onclick="navigator.share({title:\'Re.Claim comrade code\',text:\'Connect with me on Re.Claim! My pairing code: ' + code + ' (Language: ' + (D.language || 'English') + ')\'}).catch(function(e){ console.warn(e) })" style="margin-top:4px;width:auto;margin-right:4px">Share</button>' : '');
-  document.getElementById('pairing-result').innerHTML = '<div style="background:var(--primary-light);padding:12px;border-radius:10px;text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Share this code with your comrade anywhere in the world:</div><div style="font-size:32px;font-weight:900;color:var(--primary);letter-spacing:6px">' + code + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Your language: <strong>' + (D.language || 'English') + '</strong></div><div style="margin-top:6px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">' + shareBtn + '<button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText(\'' + code + '\');this.textContent=\'Copied!\'" style="width:auto">Copy Code</button></div></div>';
+  var lang = D.language || 'English';
+  var shareBtn = (navigator.share ? '<button class="btn btn-sm btn-primary" onclick="navigator.share({title:\'Re.Claim comrade code\',text:\'Connect with me on Re.Claim! My pairing code: ' + code + ' (Language: ' + lang.replace(/'/g,"\\'") + ')\'}).catch(function(e){ console.warn(e) })" style="margin-top:4px;width:auto;margin-right:4px">Share</button>' : '');
+  document.getElementById('pairing-result').innerHTML = '<div style="background:var(--primary-light);padding:12px;border-radius:10px;text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Share this code with your comrade anywhere in the world:</div><div style="font-size:32px;font-weight:900;color:var(--primary);letter-spacing:6px">' + esc(code) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Your language: <strong>' + esc(lang) + '</strong></div><div style="margin-top:6px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">' + shareBtn + '<button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText(\'' + code + '\');this.textContent=\'Copied!\'" style="width:auto">Copy Code</button></div></div>';
   // Save code globally
   DB.collection('pairingCodes').doc(AUTH_EMAIL).set({ code: code }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
