@@ -1,4 +1,4 @@
-﻿var APP_VERSION = '2026-07-06';
+﻿var APP_VERSION = '2026-07-15';
 // ====== FIREBASE ======
 var firebaseConfig = {
   apiKey: "AIzaSyDX0CdgdB8lmjRq8QmJAMkE3WgC_OB7zB0",

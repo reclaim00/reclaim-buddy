@@ -6272,7 +6272,7 @@ function buyShopItem(id) {
   if(!item)return;var w=getWarchest();var sch=w.schillings||0;
   if(sch<item.cost){alert('Not enough schillings! Need '+item.cost+'.');return;}
   D.warchest.schillings=sch-item.cost;
-  // Boost items are consumable ΓÇö track in boostData, not shopPurchases
+  // Boost items are consumable — track in boostData, not shopPurchases
   if (id==='streak') { D.warchest.boostData.streak = (D.warchest.boostData.streak||0) + 1; }
   else if (id==='double') { D.warchest.boostData.doubleExpiry = Date.now() + 86400000; }
   else if (id==='bonus') { D.warchest.boostData.bonusDate = new Date().toDateString(); }
