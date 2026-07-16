@@ -2716,6 +2716,7 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; Relapse Rescue</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; Relapse Graveyard</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'oswald\')" style="border-color:#4338ca">&#127987; Oswald\'s Tower</div>';
   h += '</div>';
 
   // Journal-based insights
@@ -4903,6 +4904,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   }
   h += '</div></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Night Watch')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveData();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">&#128220; '+t('Parchment Mode')+'</span><input type="checkbox" onchange="D.parchmentMode=this.checked;saveData();applyTheme()" '+(D.parchmentMode?'checked':'')+' style="width:auto"></div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Your Quests')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Arthur creates safety plans based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
   var addictions = D.targetAddictions || [];
   for (var ati=0;ati<ADDICTION_TYPES.length;ati++) {
@@ -6290,6 +6292,7 @@ function applyTheme() {
     el.style.setProperty('--border','#e5e7eb');
     el.style.setProperty('--primary-light', c.light);
   }
+  if (D.parchmentMode) { el.classList.add('parchment'); } else { el.classList.remove('parchment'); }
   // Theme-based kingdom scene colors
   var ks = document.querySelector('.kingdom-scene');
   if (ks) {
@@ -6314,12 +6317,115 @@ function applyTheme() {
 }
 
 function updateTabLabels() {
-  var labels = {home:'Home',reflect:'Scriptorium',care:'Heal',track:'Ledger',more:'Arsenal'};
+  var labels = {home:'Throne Room',reflect:'Scriptorium',care:'Infirmary',track:'Chronicle',more:'Armory'};
   [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
     if (span && labels[page]) span.textContent = labels[page];
   });
+}
+
+// ====== OSWALD'S TOWER ======
+function oswaldTowerHTML() {
+  var h = '<h2 class="page-title">&#127987; Oswald\'s Tower</h2>';
+  h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,rgba(67,56,202,.04),var(--card))">';
+  h += '<div class="oswald-crystal-ball">&#10024;</div>';
+  h += '<h3 style="font-size:16px;font-weight:700;margin-bottom:2px">The Wizard\'s Wisdom</h3>';
+  h += '<p style="font-size:12px;color:var(--muted);margin:0 0 4px">Oswald peers into the patterns of your realm...</p></div>';
+
+  // Omens based on user data
+  var journalCount = (D.journal||[]).length;
+  var moodCount = (D.moods||[]).length;
+  var streak = D.streak || 0;
+  var soberStart = D.sobriety && D.sobriety.startDate;
+  var soberDays = soberStart ? Math.floor((Date.now() - soberStart) / 86400000) : 0;
+  var cravingCount = (D.cravings||[]).length;
+  var breatheCount = D.breatheCount || 0;
+  var checkinCount = (D.checkins||[]).length;
+  var relapses = (D.sobriety && D.sobriety.relapseDates) ? D.sobriety.relapseDates.length : 0;
+  var sosUsed = D.sosUsed || false;
+  var planExists = !!(D.relapsePlan && D.relapsePlan.statement);
+  var buddyExists = !!D.buddy;
+  var phqScore = D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result.total : null;
+  var achCount = (D.achievements||[]).length;
+
+  var omens = [];
+
+  // Journaling frequency
+  if (journalCount >= 30) omens.push({type:'good', text:'The scribes report a full chronicle. Your consistency in journaling builds clarity like a well-tended library.'});
+  else if (journalCount >= 10) omens.push({type:'good', text:'Your quill moves often. Each entry adds a thread to the tapestry of your recovery.'});
+  else if (journalCount > 0) omens.push({type:'neutral', text:'The pages are few but they exist. Consider writing more \u2014 even three sentences can shift the winds.'});
+  else omens.push({type:'neutral', text:'The chronicle is bare. A single entry today would begin your annals. Arthur awaits your words.'});
+
+  // Sobriety streak
+  if (soberDays >= 90) omens.push({type:'good', text: 'A season of strength! ' + soberDays + ' days unbroken. The kingdom remembers this resolve.'});
+  else if (soberDays >= 30) omens.push({type:'good', text: 'A full moon cycle of clarity \u2014 ' + soberDays + ' days. The foundation is solid.'});
+  else if (soberDays >= 7) omens.push({type:'good', text: 'A week of reign. Each day strengthens the walls of your keep.'});
+  else if (soberDays >= 1) omens.push({type:'neutral', text: 'You are in the early days of your reign. The first steps are the most important.'});
+  else omens.push({type:'neutral', text: 'The reign has not yet begun. Every journey starts with a single stride.'});
+
+  // Relapse patterns
+  if (relapses >= 3) omens.push({type:'warning', text: 'The shadows have visited ' + relapses + ' times. Each fall is a teacher \u2014 what patterns do you see across them? Visit the Relapse Graveyard to honor the lessons.'});
+  else if (relapses >= 1) omens.push({type:'warning', text: 'A single fall does not undo your growth. What did that moment teach you? The lesson is worth more than the stumble.'});
+  else omens.push({type:'good', text: 'No falls recorded. Your shield holds strong. But remain vigilant \u2014 the wise knight never lowers their guard.'});
+
+  // Breathing exercise
+  if (breatheCount >= 20) omens.push({type:'good', text: 'You have breathed with intention ' + breatheCount + ' times. Each breath is a meditation \u2014 a reset of the spirit.'});
+  else if (breatheCount >= 5) omens.push({type:'good', text: 'You have turned to the breath ' + breatheCount + ' times. This is a powerful tool \u2014 keep it honed.'});
+  else omens.push({type:'neutral', text: 'The breathing exercises are a quiet refuge. Try one today and feel the difference.'});
+
+  // Safety plan
+  if (planExists) omens.push({type:'good', text: 'Your safety plan is forged and ready. In the chaos of craving, it will be your compass.'});
+  else omens.push({type:'warning', text: 'You have no safety plan yet. I urge you \u2014 visit Oswald in the Infirmary and build one before the storm arrives.'});
+
+  // Buddy
+  if (buddyExists) omens.push({type:'good', text: 'A comrade walks beside you. The road is lighter with another set of footsteps.'});
+  else omens.push({type:'neutral', text: 'You walk this road alone for now. A comrade could share the burden \u2014 consider finding one in the Armory.'});
+
+  // SOS used
+  if (sosUsed) omens.push({type:'good', text: 'You have reached out for help before. That is not weakness \u2014 it is the highest form of courage. The tower salutes you.'});
+
+  // PHQ-9
+  if (phqScore !== null) {
+    if (phqScore <= 4) omens.push({type:'good', text: 'Your PHQ-9 signals minimal depression. The skies above your kingdom are clear.'});
+    else if (phqScore <= 9) omens.push({type:'neutral', text: 'Your PHQ-9 shows mild shadows. Nothing a steady routine cannot address.'});
+    else if (phqScore <= 14) omens.push({type:'warning', text: 'Your PHQ-9 suggests a moderate fog. Consider speaking with a healer beyond these walls.'});
+    else omens.push({type:'danger', text: 'Your PHQ-9 signals a heavy mist. Please seek counsel \u2014 you need not face this alone.'});
+  }
+
+  // Achievements
+  if (achCount >= 10) omens.push({type:'good', text: achCount + ' achievements earned! Your reign is gathering legend.'});
+  else if (achCount >= 3) omens.push({type:'good', text: achCount + ' achievements shine on your banner. Each one represents a battle won.'});
+
+  // Mood logging
+  if (moodCount >= 20) omens.push({type:'good', text: 'You have logged ' + moodCount + ' moods. This data is the lifeblood of insight \u2014 Arthur reads it well.'});
+
+  // Cravings
+  if (cravingCount > 0) omens.push({type:'neutral', text: cravingCount + ' cravings recorded. Naming them is the first victory. Each logged craving is a dragon spotted before it burns the village.'});
+
+  // Check-ins
+  if (checkinCount >= 30) omens.push({type:'good', text: checkinCount + ' daily check-ins. Your presence is a ritual now \u2014 the kingdom thrives on it.'});
+
+  // Current streak
+  if (streak >= 14) omens.push({type:'good', text: 'A ' + streak + '-day streak! The war horn sounds \u2014 your consistency inspires the realm.'});
+
+  // Show omens (limit to 6 most relevant)
+  var priority = {danger:0, warning:1, good:2, neutral:3};
+  omens.sort(function(a,b){return priority[a.type]-priority[b.type]});
+  var shown = omens.slice(0, 6);
+
+  for (var oi=0;oi<shown.length;oi++) {
+    h += '<div class="oswald-omen ' + shown[oi].type + '">';
+    var icons = {good:'&#10003;', warning:'&#9888;', danger:'&#10006;', neutral:'&#10022;'};
+    h += '<span style="margin-right:6px">' + (icons[shown[oi].type] || '&#10022;') + '</span>';
+    h += shown[oi].text + '</div>';
+  }
+
+  h += '<div class="card" style="text-align:center;padding:12px;margin-top:8px">';
+  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">"The stars do not decide your fate \u2014 they merely illuminate the path you are already walking."</div>';
+  h += '<div style="font-size:11px;font-style:italic;color:var(--muted)">\u2014 Oswald, Keeper of the Tower</div></div>';
+
+  return h;
 }
 
 function monthlyChallengeHTML() {

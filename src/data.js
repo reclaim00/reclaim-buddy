@@ -248,6 +248,7 @@ function defaultData() {
     royalPardons: [],
     researchOptIn: false,
     researchLastSubmitted: null,
+    parchmentMode: false,
     warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
     weeklyCampaign: { id: null, weekStart: '', done: [], rewardClaimed: false },
     shopPurchases: [],

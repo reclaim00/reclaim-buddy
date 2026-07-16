@@ -634,3 +634,29 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 @keyframes pardonTextReveal{0%{opacity:0;transform:scaleY(0)}100%{opacity:1;transform:scaleY(1)}}
 @keyframes pardonCrownBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes pardonAmbient{0%,100%{opacity:.3}50%{opacity:.5}}
+/* ===== PARCHMENT MODE ===== */
+body.parchment{--parchment:#f5efe0;--parchment-dark:#e8dcc8;--ink:#3a2a1a;--ink-muted:#7a6a5a;--seal:#8b1a1a;--illumination:#c8a86a}
+body.parchment{background:var(--parchment)!important;color:var(--ink)!important}
+body.parchment .card,body.parchment .overlay-content,body.parchment .si-card,body.parchment .coping-card,body.parchment .buddy-card,body.parchment .sub-item{background:var(--parchment-dark)!important;border-color:#c8b898!important;box-shadow:0 1px 4px rgba(0,0,0,.06),0 0 0 1px #d8c8a8,inset 0 0 0 1px #e8dcc8!important}
+body.parchment .top-bar{background:transparent!important}
+body.parchment .tab,body.parchment .tabs{background:var(--parchment)!important;border-color:#c8b898!important}
+body.parchment .tab.active{background:var(--parchment-dark)!important;color:var(--ink)!important}
+body.parchment .btn-primary{background:var(--seal)!important;color:#fff!important;border-color:#6a0a0a!important}
+body.parchment .btn-outline{border-color:#c8b898!important;color:var(--ink)!important}
+body.parchment .tab-label{color:var(--ink)!important}
+body.parchment .overlay{background:rgba(58,42,26,.35)!important}
+body.parchment .overlay-content{background:var(--parchment)!important}
+body.parchment input,body.parchment textarea,body.parchment select{background:var(--parchment-dark)!important;border-color:#c8b898!important;color:var(--ink)!important}
+body.parchment ::-webkit-input-placeholder{color:var(--ink-muted)!important}
+body.parchment .logo-text{color:var(--seal)!important}
+body.parchment .sos-btn-float{background:var(--seal)!important}
+body.parchment .progress-bar .fill{background:var(--seal)!important}
+body.parchment .empty-state{color:var(--ink-muted)!important}
+/* ===== OSWALD'S TOWER ===== */
+.oswald-crystal-ball{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;background:radial-gradient(circle at 35% 35%,#a78bfa,#6d28d9);box-shadow:0 0 30px rgba(109,40,217,.3),inset 0 -8px 20px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;font-size:32px;animation:oswaldGlow 3s ease-in-out infinite;position:relative}
+.oswald-crystal-ball::after{content:'';position:absolute;top:8px;left:20px;width:16px;height:10px;border-radius:50%;background:rgba(255,255,255,.3);transform:rotate(-30deg)}
+@keyframes oswaldGlow{0%,100%{box-shadow:0 0 30px rgba(109,40,217,.3)}50%{box-shadow:0 0 50px rgba(109,40,217,.5)}}
+.oswald-omen{padding:10px;margin:6px 0;background:rgba(109,40,217,.06);border-left:3px solid #6d28d9;border-radius:8px;font-size:13px;line-height:1.5}
+.oswald-omen.good{border-left-color:var(--primary)}
+.oswald-omen.warning{border-left-color:#ca8a04}
+.oswald-omen.danger{border-left-color:var(--danger)}

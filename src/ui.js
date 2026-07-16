@@ -1531,7 +1531,7 @@ function render() {
     more: moreHTML, journal: journalHTML, library: libraryHTML, music: musicHTML,
     reports: reportsHTML, buddy: buddyHTML, coping: copingHTML,
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
-    calendar: calendarHTML, safety: safetyHTML,
+    calendar: calendarHTML, safety: safetyHTML, oswald: oswaldTowerHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
     insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML, achievements: achievementsHTML, alliances: alliancesHTML,
   };
