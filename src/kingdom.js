@@ -1473,6 +1473,9 @@ function homeHTML() {
   // Throne Room — the central hub
   h += throneRoomHTML();
 
+  // Crisis widget — always visible on home
+  h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS — crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
+
   h += pledgeHTML();
 
   h += dailyQuote();

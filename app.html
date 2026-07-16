@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-<!-- v2.5 - bump v= param in script tags to force cache refresh -->
+<!-- v2.6 - crisis protocol, sync status, progress report, 4-week program, install prompt, research opt-in -->
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -161,7 +161,8 @@
 <div id="conn-status" style="position:fixed;bottom:76px;left:50%;transform:translateX(-50%);z-index:199;pointer-events:none;display:none"><span style="display:inline-block;padding:4px 12px;border-radius:6px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;letter-spacing:.5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15)">&#x26A0; No connection</span></div>
 <div class="top-bar">
   <div><div class="logo-text">Re.<span style="color:var(--primary)">Claim</span></div><div id="regnal-header" style="font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:-2px"></div></div>
-  <div style="display:flex;gap:8px">
+  <div style="display:flex;gap:6px;align-items:center">
+    <span id="sync-indicator" class="sync-indicator" onclick="if(_syncStatus==='error'){syncToFirestore()}" style="display:none" title="Sync status">?</span>
     <button class="sos-btn-float" onclick="showSOS()" title="SOS - Get help now" style="font-size:12px;font-weight:900;letter-spacing:1px">SOS</button>
     <button class="profile-btn-float" onclick="goTo('profile')" title="Profile"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1L3 5v6c0 6.5 4.5 10.5 9 12 4.5-1.5 9-5.5 9-12V5z"/><path d="M8 10c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z"/><path d="M8 10c0 2.2 1.8 4 4 4s4-1.8 4-4"/></svg></button>
   </div>

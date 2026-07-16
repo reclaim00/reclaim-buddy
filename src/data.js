@@ -35,10 +35,11 @@ function unsubscribePush() {
 
 // ====== CLOUD SYNC (Firestore cross-device) ======
 function syncToFirestore(retries) {
-  if (!AUTH_EMAIL) return;
-  if (!firebase || !firebase.auth().currentUser) return;
+  if (!AUTH_EMAIL) { syncStatusOffline(); return; }
+  if (!firebase || !firebase.auth().currentUser) { syncStatusOffline(); return; }
   D._lastSync = Date.now();
   if (retries === undefined) retries = 0;
+  syncStatusSyncing();
   // Debounce: clear pending sync and schedule a new one
   if (window._syncTimer) clearTimeout(window._syncTimer);
   window._syncTimer = setTimeout(function(){
@@ -46,19 +47,24 @@ function syncToFirestore(retries) {
       DB.collection('appData').doc(AUTH_EMAIL).set({
         data: JSON.parse(JSON.stringify(D)),
         lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(function(){
+        syncStatusSynced();
       }).catch(function(e){
         console.warn(e);
         if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1); }, 1000 * (retries + 1));
+        else syncStatusError();
       });
     }).catch(function(e){
       console.warn(e);
       if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1); }, 1000 * (retries + 1));
+      else syncStatusError();
     });
   }, 500);
 }
 
 function loadFromFirestore(callback) {
-  if (!AUTH_EMAIL) { if (callback) callback(null); return; }
+  if (!AUTH_EMAIL) { if (callback) callback(null); syncStatusOffline(); return; }
+  syncStatusSyncing();
   DB.collection('appData').doc(AUTH_EMAIL).get().then(function(doc) {
     if (doc.exists && doc.data().data && doc.data().data.joinDate) {
       var cloudData = validateData(doc.data().data);
@@ -70,11 +76,18 @@ function loadFromFirestore(callback) {
         D._lastSync = cloudTime;
         saveData();
       }
+      syncStatusSynced();
       if (callback) callback(cloudData);
+      // First sync welcome
+      if (cloudTime > 0 && AUTH_EMAIL && !localStorage.getItem('rc_welcome_sync_'+AUTH_EMAIL)) {
+        localStorage.setItem('rc_welcome_sync_'+AUTH_EMAIL, '1');
+        setTimeout(function(){ showToast('Cloud data restored. Your progress is safe.', 'info'); }, 1000);
+      }
     } else {
+      syncStatusSynced();
       if (callback) callback(null);
     }
-  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); if (callback) callback(null); });
+  }).catch(function(e){ console.warn(e); syncStatusError(); if (callback) callback(null); });
 }
 
 // ====== AUTH ======
@@ -118,6 +131,35 @@ function onAuthReady(email, isNew) {
     if (AUTH_EMAIL && firebase && firebase.auth().currentUser) { DB.collection('appData').doc(AUTH_EMAIL).set({ data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(){}); }
   });
 }
+
+// ====== SYNC STATUS TRACKING ======
+var _syncStatus = 'unknown'; // 'syncing' | 'synced' | 'error' | 'offline' | 'unknown'
+var _lastSyncTime = '';
+
+function updateSyncUI() {
+  if (typeof D === 'undefined' || !D) return;
+  var el = document.getElementById('sync-indicator');
+  var timeEl = document.getElementById('sync-time-display');
+  if (!AUTH_EMAIL || !firebase || !firebase.auth().currentUser) {
+    if (el) el.style.display = 'none';
+    if (timeEl) timeEl.textContent = 'Offline';
+    return;
+  }
+  if (el) {
+    el.style.display = 'inline-flex';
+    if (_syncStatus === 'syncing') { el.innerHTML = '&#8987;'; el.className = 'sync-indicator syncing'; el.title = 'Syncing...'; }
+    else if (_syncStatus === 'synced') { el.innerHTML = '&#10003;'; el.className = 'sync-indicator synced'; el.title = 'Synced ' + _lastSyncTime; }
+    else if (_syncStatus === 'error') { el.innerHTML = '&#9888;'; el.className = 'sync-indicator error'; el.title = 'Sync failed. Tap to retry.'; }
+    else if (_syncStatus === 'offline') { el.innerHTML = '&#9888;'; el.className = 'sync-indicator offline'; el.title = 'No connection'; }
+    else { el.innerHTML = '?'; el.className = 'sync-indicator'; el.title = 'Sync status unknown'; }
+  }
+  if (timeEl) timeEl.textContent = _lastSyncTime || 'Never';
+}
+
+function syncStatusSyncing() { _syncStatus = 'syncing'; updateSyncUI(); }
+function syncStatusSynced() { _syncStatus = 'synced'; _lastSyncTime = new Date().toLocaleTimeString(); updateSyncUI(); }
+function syncStatusError() { _syncStatus = 'error'; updateSyncUI(); if (AUTH_EMAIL) showToast('Cloud sync failed. Data is safe locally.', 'error'); }
+function syncStatusOffline() { _syncStatus = 'offline'; updateSyncUI(); }
 
 var _sessionRestoreTimer = null;
 try { firebase.auth().onAuthStateChanged(function(user) {
@@ -199,9 +241,13 @@ function defaultData() {
     timeCapsules: [],
     recoveryPrograms: { active: null, programs: {} },
     relapseRescue: { logs: [] },
+    emergencyContacts: [],
+    _postCrisisPending: false,
     chivalryCode: { code: [], checkins: [] },
     relapseGraveyard: { graves: [] },
     royalPardons: [],
+    researchOptIn: false,
+    researchLastSubmitted: null,
     warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
     weeklyCampaign: { id: null, weekStart: '', done: [], rewardClaimed: false },
     shopPurchases: [],
@@ -709,6 +755,7 @@ function showLockScreen() {
     '<button class="si-btn" onclick="unlockApp()">'+t('Unseal')+'</button>' +
     '<div id="lock-error" style="font-size:12px;color:var(--danger);margin-top:4px"></div>' +
     (bioAvailable ? '<button class="btn btn-outline btn-sm" onclick="unlockWithBiometric()" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Face ID</button>' : '<button class="btn btn-outline btn-sm" onclick="setupBiometric()" id="bio-setup-btn" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Set Up Face ID</button>') +
+    '<button class="btn btn-danger btn-sm" onclick="showLockScreenSOS()" style="margin-top:8px;width:auto;display:inline-flex">&#128222; SOS</button>' +
     '<button class="btn btn-outline btn-sm" onclick="if(confirm(\''+t('This will erase all local data and let you sign in again.')+'\')){localStorage.removeItem(\'rc_lock_hash\');localStorage.removeItem(\'rc_lock_salt\');localStorage.removeItem(\'rc_user\');localStorage.removeItem(\'rc_email\');sessionStorage.clear();location.reload()}" style="margin-top:12px;width:auto;display:inline-flex">Reset &amp; Sign Out</button>' +
     '</div></div>';
   document.getElementById('tabs').style.display = 'none';
@@ -716,6 +763,13 @@ function showLockScreen() {
   if (tb) tb.style.display = 'none';
   setTimeout(function(){var el=document.getElementById('lock-pin-input');if(el)el.focus()}, 100);
   LOCK_ENABLED = true;
+}
+
+function showLockScreenSOS() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:4px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:18px">'+t('You are not alone.')+'</h3><p style="font-size:13px;color:var(--text);margin:8px 0;line-height:1.5">'+t('Help is available 24/7. Reach out right now.')+'</p><div style="text-align:left;margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">988 Suicide & Crisis Lifeline</div><a href="tel:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">988</a></div><div style="background:var(--danger-bg);padding:10px;border-radius:10px"><div style="font-weight:600;font-size:13px">Crisis Text Line</div><div style="font-size:11px;color:var(--muted)">'+t('Text HOME to')+'</div><a href="tel:741741" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">741741</a></div></div><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t('Close')+'</button></div>';
+  document.body.appendChild(overlay);
 }
 
 async function unlockApp() {
@@ -970,6 +1024,24 @@ function signOut() {
   document.body.classList.remove('logged-in');
   showSignIn();
 }
+// ====== URL ACTION HANDLER (for manifest shortcuts) ======
+function handleUrlAction() {
+  var params = new URLSearchParams(window.location.search);
+  var action = params.get('action');
+  if (!action) return;
+  // Wait for auth and render before handling action
+  var check = function() {
+    if (typeof goTo !== 'function' || typeof startBreathe !== 'function') { setTimeout(check, 200); return; }
+    if (action === 'journal') { setTimeout(function(){ goTo('journal') }, 600); }
+    else if (action === 'breathe') { setTimeout(function(){ startBreathe() }, 600); }
+    else if (action === 'sos') { setTimeout(function(){ showSOS() }, 600); }
+    else if (action === 'mood') { setTimeout(function(){ goTo('track') }, 600); }
+  };
+  check();
+}
+// Call after auth is set up
+if (AUTH_USER) { setTimeout(handleUrlAction, 1000); }
+
 // ====== UI ======
 function showSignIn() {
   SIGN_IN_MODE = 'in';
@@ -1015,4 +1087,107 @@ function setSignInTab(mode) {
     if (label) label.textContent = t('Sign Up');
   }
 }
+
+// ====== INSTALL PROMPT ======
+var _deferredInstallPrompt = null;
+var _appInstalled = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone || false;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+  if (!_appInstalled && AUTH_USER && !localStorage.getItem('rc_install_dismissed')) {
+    showInstallBanner();
+  }
+});
+
+window.addEventListener('appinstalled', function() {
+  _appInstalled = true;
+  _deferredInstallPrompt = null;
+  var banner = document.getElementById('install-banner');
+  if (banner) banner.remove();
+});
+
+function showInstallBanner() {
+  var existing = document.getElementById('install-banner');
+  if (existing) return;
+  var banner = document.createElement('div');
+  banner.id = 'install-banner';
+  banner.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:199;background:var(--card);border:1px solid var(--primary);border-radius:14px;padding:12px 16px;box-shadow:0 4px 24px rgba(0,0,0,.12);max-width:360px;width:90%;display:flex;align-items:center;gap:10px;animation:overlaySlide .3s ease';
+  banner.innerHTML = '<div style="flex:1"><div style="font-weight:700;font-size:13px">'+t('Install Re.Claim')+'</div><div style="font-size:11px;color:var(--muted)">'+t('Works offline. Your data stays on your device.')+'</div></div><button class="btn btn-sm btn-primary" onclick="confirmInstall()" style="width:auto;padding:8px 16px;white-space:nowrap">'+t('Install')+'</button><button class="btn btn-sm" onclick="dismissInstallBanner()" style="width:auto;padding:8px;font-size:18px;line-height:1;background:none;border:none;color:var(--muted);cursor:pointer">&times;</button>';
+  document.body.appendChild(banner);
+}
+
+function confirmInstall() {
+  if (!_deferredInstallPrompt) { showToast(t('Open browser menu and tap "Add to Home Screen"'), 'info'); return; }
+  _deferredInstallPrompt.prompt();
+  _deferredInstallPrompt.userChoice.then(function(choice) {
+    if (choice.outcome === 'accepted') { _appInstalled = true; }
+    _deferredInstallPrompt = null;
+    var banner = document.getElementById('install-banner');
+    if (banner) banner.remove();
+  });
+}
+
+function dismissInstallBanner() {
+  localStorage.setItem('rc_install_dismissed', '1');
+  var banner = document.getElementById('install-banner');
+  if (banner) banner.remove();
+}
+
+// ====== KEYBOARD SHORTCUTS ======
+document.addEventListener('keydown', function(e) {
+  if (e.altKey && e.key === '1') { e.preventDefault(); goTo('journal'); }
+  if (e.altKey && e.key === '2') { e.preventDefault(); startBreathe(); }
+  if (e.altKey && e.key === '3') { e.preventDefault(); goTo('home'); }
+  if (e.altKey && e.key === '4') { e.preventDefault(); goTo('profile'); }
+  if (e.key === 'Escape') {
+    var overlay = document.querySelector('.overlay');
+    if (overlay) overlay.remove();
+  }
+});
+
+// ====== ANONYMIZED RESEARCH DATA ======
+function collectResearchData() {
+  if (!D.researchOptIn) return;
+  var soberStart = D.sobriety && D.sobriety.startDate || null;
+  var data = {
+    v: 1,
+    t: Date.now(),
+    // Anonymized — no emails, no names, no journal text
+    soberDays: soberStart ? Math.floor((Date.now() - soberStart) / 86400000) : 0,
+    streak: D.streak || 0,
+    journalCount: (D.journal||[]).length,
+    moodCount: (D.moods||[]).length,
+    cravingCount: (D.cravings||[]).length,
+    checkinCount: (D.checkins||[]).length,
+    breatheCount: D.breatheCount || 0,
+    copingCardCount: (D.customCopingCards||[]).length,
+    habitCount: (D.habits||[]).length,
+    buddyPaired: !!D.buddy,
+    hasSafetyPlan: !!(D.relapsePlan && D.relapsePlan.statement),
+    hasSOS: D.sosUsed || false,
+    phq9Score: D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result.total : null,
+    gad7Score: D.screenerGAD7 && D.screenerGAD7.result ? D.screenerGAD7.result.total : null,
+    achievementsCount: (D.achievements||[]).length,
+    encrypted: D.encryption && D.encryption.enabled || false,
+    programActive: !!D.recoveryPrograms && !!D.recoveryPrograms.active
+  };
+  // Store latest anonymized snapshot
+  D._researchSnapshot = data;
+  D.researchLastSubmitted = Date.now();
+  saveData();
+  // In production, this would POST to an endpoint:
+  // fetch('https://research.reclaim.app/submit', { method:'POST', body: JSON.stringify(data), headers:{'Content-Type':'application/json'} });
+  console.log('[Research] Anonymized data snapshot:', data);
+}
+
+// Auto-collect research data periodically if opted in
+setInterval(function() {
+  if (D && D.researchOptIn) collectResearchData();
+}, 86400000); // once per day
+
+// Migration: ensure researchOptIn and researchLastSubmitted exist
+if (D && typeof D.researchOptIn === 'undefined') { D.researchOptIn = false; saveData(); }
+if (D && typeof D.researchLastSubmitted === 'undefined') { D.researchLastSubmitted = null; saveData(); }
+
 

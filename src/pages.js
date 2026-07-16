@@ -420,6 +420,11 @@ function screenerSubmit() {
   var sel = document.querySelector('.sq-body input[type=radio]:checked');
   if (sel) data.progress[idx] = parseInt(sel.value);
   var result = screenerScore(questions, data.progress);
+  // Archive previous result to history
+  if (data.result && data.result.date) {
+    if (!data._history) data._history = [];
+    data._history.push({ total: data.result.total, date: data.result.date, answers: data.result.answers });
+  }
   data.taken = true;
   data.result = { total: result.total, date: Date.now(), answers: data.progress.slice() };
   data.progress = null;
@@ -502,10 +507,45 @@ var RECOVERY_PROGRAMS = {
       'Reserve daily time with God  Self-examination, prayer, and reading to know His will.',
       'Yield to serve  Share this Good News with others by example and by words.'
     ]
+  },
+  journey: {
+    id: 'journey', name: "Re.Claim Journey", icon: '&#128154;', color: '#2d6a4f',
+    minDaysPerStep: 1,
+    steps: [
+      'Week 1: Foundation — Journal for 5 minutes about why you started this journey. What matters most to you?',
+      'Week 1: Foundation — Log your mood 3 times today. Notice how it shifts throughout the day.',
+      'Week 1: Foundation — Practice the breathing exercise for 2 minutes. Just focus on the air moving in and out.',
+      'Week 1: Foundation — Identify one trigger from your past. Write it down without judgment.',
+      'Week 1: Foundation — Read your safety plan or create one if you haven\'t yet.',
+      'Week 1: Foundation — Call or text someone who supports your recovery. Connection matters.',
+      'Week 1: Foundation — Write down one thing you accomplished this week. Celebrate it.',
+      'Week 2: Tools — Create a coping card for a situation that challenges you.',
+      'Week 2: Tools — Practice urge surfing: notice a craving, describe it, watch it pass.',
+      'Week 2: Tools — Use the SOS helplines page. Save a number to your phone.',
+      'Week 2: Tools — Complete a daily check-in. What was your win today?',
+      'Week 2: Tools — Write a commitment statement to yourself. Read it aloud.',
+      'Week 2: Tools — Try the grounding exercise: name 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.',
+      'Week 2: Tools — Review your week. What coping tools worked best for you?',
+      'Week 3: Connection — Reach out to your comrade or accountability partner.',
+      'Week 3: Connection — Read a recovery story from the Library. Let their journey inspire yours.',
+      'Week 3: Connection — Write a journal entry as a letter to someone who helped you.',
+      'Week 3: Connection — Explore the meetings page. Find a meeting you could attend.',
+      'Week 3: Connection — Send an encouraging message to someone in recovery.',
+      'Week 3: Connection — Review your relapse prevention plan. Update it if needed.',
+      'Week 3: Connection — Reflect on how connection has helped your recovery this week.',
+      'Week 4: Growth — Take the PHQ-9 or GAD-7 screening. Compare to your last result.',
+      'Week 4: Growth — Write a letter to your future self. Arthur will deliver it as a time capsule.',
+      'Week 4: Growth — Review your insights page. What patterns do you see?',
+      'Week 4: Growth — Set one recovery goal for the next month. Make it specific.',
+      'Week 4: Growth — Share your progress with someone you trust.',
+      'Week 4: Growth — Plan a small reward for reaching a milestone. You deserve it.',
+      'Week 4: Growth — Write a final journal entry reflecting on your 4-week journey.'
+    ]
   }
 };
 
-var PROGRAMS_IDS = ['12step', 'smart', 'dharma', 'celebrate'];
+var PROGRAMS_IDS = ['12step', 'smart', 'dharma', 'celebrate', 'journey'];
+
 
 function programData(pid) {
   if (!D.recoveryPrograms) D.recoveryPrograms = { active: null, programs: {} };
@@ -1032,25 +1072,75 @@ function checkCrisis(text) {
 }
 
 function showCrisisAlert(text) {
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:4px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:18px">'+t('I hear you. You are not alone.')+'</h3><p style="font-size:13px;color:var(--text);margin:8px 0;line-height:1.5">'+t('I noticed something in your journal that concerns me. These feelings are real and they matter. Please reach out  help is available right now.')+'</p><div style="text-align:left;margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">988 Suicide & Crisis Lifeline</div><a href="tel:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">988</a></div><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">Crisis Text Line</div><div style="font-size:11px;color:var(--muted)">'+t('Text HOME to')+'</div><a href="tel:741741" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">741741</a></div></div><button class="btn btn-primary btn-sm" onclick="startBreathe()" style="width:100%;margin-bottom:4px">'+t('Start Breathing Exercise')+'</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t("I'm okay for now")+'</button></div>';
-
-  document.body.appendChild(overlay);
-  if (AUTH_EMAIL && D.buddy) {
-    setTimeout(function() {
-      var notifyBtn = document.createElement('button');
-      notifyBtn.className = 'btn btn-sm btn-outline';
-      notifyBtn.textContent = t('Notify my comrade');
-      notifyBtn.style.cssText = 'margin-top:4px;width:100%';
-      notifyBtn.onclick = function() {
-        var msg = t('I need support right now. Your comrade may be in distress. Please reach out.');
-        if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your comrade has been notified.'));notifyBtn.remove();}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
-      };
-      overlay.querySelector('.overlay-content').appendChild(notifyBtn);
-    }, 300);
+  D._postCrisisPending = true;
+  var steps = ['sos', 'breathe', 'contacts', 'plan'];
+  var stepIdx = 0;
+  function renderCrisisStep() {
+    var overlay = document.querySelector('#crisis-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.className = 'overlay';
+      overlay.id = 'crisis-overlay';
+      document.body.appendChild(overlay);
+    }
+    var h = '<div class="overlay-content" style="max-width:440px">';
+    if (steps[stepIdx] === 'sos') {
+      h += '<div style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:2px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:17px">'+t('I hear you. You are not alone.')+'</h3><p style="font-size:13px;color:var(--muted);margin:6px 0;line-height:1.4">'+t('These feelings are real. Help is available right now.')+'</p></div><div style="margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">988 Suicide & Crisis Lifeline</div><a href="tel:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">988</a></div><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">Crisis Text Line</div><div style="font-size:11px;color:var(--muted)">'+t('Text HOME to')+'</div><a href="tel:741741" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">741741</a></div></div>';
+      if (D.emergencyContacts && D.emergencyContacts.length) {
+        h += '<div style="margin:6px 0"><div style="font-weight:600;font-size:12px;color:var(--muted);margin-bottom:4px">'+t('Your emergency contacts')+'</div>';
+        for (var ei=0;ei<D.emergencyContacts.length;ei++) {
+          var ec = D.emergencyContacts[ei];
+          h += '<div style="display:flex;align-items:center;gap:6px;padding:6px;border-bottom:1px solid var(--border);font-size:13px"><span>'+safe(ec.name)+'</span><a href="tel:'+ec.num+'" style="font-size:16px;font-weight:600;color:var(--primary);text-decoration:none;margin-left:auto">'+ec.num+'</a></div>';
+        }
+        h += '</div>';
+      }
+      h += '<div style="display:flex;gap:6px;margin:8px 0">';
+      h += '<button class="btn btn-primary btn-sm" onclick="startBreathe();document.getElementById(\'crisis-overlay\').remove();D._postCrisisPending=false;saveData()" style="flex:1">'+t('Breathe')+'</button>';
+      if (AUTH_EMAIL && D.buddy) {
+        h += '<button class="btn btn-outline btn-sm" onclick="crisisNotifyBuddy()" style="flex:1">'+t('Call Comrade')+'</button>';
+      }
+      h += '</div>';
+      h += '<div style="display:flex;gap:6px;margin-top:4px">';
+      h += '<button class="btn btn-outline btn-sm" onclick="stepIdx=2;renderCrisisStep()" style="flex:1">'+t('My Contacts')+'</button>';
+      h += '<button class="btn btn-outline btn-sm" onclick="stepIdx=3;renderCrisisStep()" style="flex:1">'+t('Safety Plan')+'</button>';
+      h += '</div>';
+    } else if (steps[stepIdx] === 'breathe') {
+      h += '<div style="text-align:center"><div style="font-size:40px;margin-bottom:6px">&#128166;</div><h3 style="font-size:18px;font-weight:700">'+t('Breathe with me')+'</h3><p style="font-size:13px;color:var(--muted);margin:4px 0 12px">'+t('A guided breathing exercise to calm your nervous system.')+'</p><button class="btn btn-primary btn-sm" onclick="startBreathe();document.getElementById(\'crisis-overlay\').remove();D._postCrisisPending=false;saveData()" style="width:100%;margin-bottom:4px">'+t('Start Breathing')+'</button></div>';
+    } else if (steps[stepIdx] === 'contacts') {
+      h += '<div style="text-align:center"><div style="font-size:40px;margin-bottom:6px">&#128222;</div><h3 style="font-size:18px;font-weight:700">'+t('Your Emergency Contacts')+'</h3><p style="font-size:13px;color:var(--muted);margin:4px 0 10px">'+t('People you trust who can support you right now.')+'</p>';
+      if (D.emergencyContacts && D.emergencyContacts.length) {
+        for (var ei2=0;ei2<D.emergencyContacts.length;ei2++) {
+          var ec2 = D.emergencyContacts[ei2];
+          h += '<div style="display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:14px">'+safe(ec2.name)+'</div></div><a href="tel:'+ec2.num+'" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">'+ec2.num+'</a></div>';
+        }
+      } else {
+        h += '<p style="font-size:13px;color:var(--muted)">'+t('No emergency contacts set. Add them in Settings.')+'</p>';
+      }
+    } else if (steps[stepIdx] === 'plan') {
+      var sp = D.relapsePlan;
+      h += '<div style="text-align:center"><div style="font-size:40px;margin-bottom:6px">&#128737;</div><h3 style="font-size:18px;font-weight:700">'+t('Your Safety Plan')+'</h3></div>';
+      if (sp && sp.statement) {
+        h += '<div class="card" style="background:var(--primary-light);padding:10px;font-size:13px;font-style:italic;line-height:1.5">"'+safe(sp.statement)+'"</div>';
+        if (sp.coping && sp.coping.length) h += '<div style="margin-top:8px"><div style="font-weight:600;font-size:12px;color:var(--muted);margin-bottom:4px">'+t('What helps:')+'</div>'+sp.coping.map(function(c){return '<div style="font-size:13px;padding:4px 0">&bull; '+safe(c)+'</div>'}).join('')+'</div>';
+      } else {
+        h += '<p style="font-size:13px;color:var(--muted)">'+t('Build a safety plan in the Care section when you\'re ready.')+'</p>';
+      }
+    }
+    h += '<div style="display:flex;gap:6px;margin-top:12px">';
+    if (stepIdx > 0) h += '<button class="btn btn-outline btn-sm" onclick="stepIdx--;renderCrisisStep()" style="flex:1">'+t('Back')+'</button>';
+    if (stepIdx < steps.length-1) h += '<button class="btn btn-primary btn-sm" onclick="stepIdx++;renderCrisisStep()" style="flex:1">'+t('Next')+'</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="document.getElementById(\'crisis-overlay\').remove();D._postCrisisPending=false;saveData()" style="flex:1">'+t("I'm okay")+'</button>';
+    h += '</div></div>';
+    overlay.innerHTML = h;
   }
+  renderCrisisStep();
   D.sosUsed = true; saveData();
+}
+
+function crisisNotifyBuddy() {
+  if (!AUTH_EMAIL || !D.buddy) return;
+  var msg = t('I need support right now. Your comrade may be in distress. Please reach out.');
+  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your comrade has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
 function deleteJournalEntry(idx) {
@@ -2873,6 +2963,50 @@ function rescueRecommit() {
 
 function rescueSkip() {
   document.getElementById('rescue-ov').remove();
+}
+
+// ====== POST-CRISIS FOLLOW-UP ======
+function checkPostCrisis() {
+  if (D._postCrisisPending && D.sosUsed) {
+    D._postCrisisPending = false; saveData();
+    var overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center"><div style="font-size:40px;margin-bottom:6px">&#129309;</div><h3 style="font-size:18px;font-weight:700">'+t('How are you feeling now?')+'</h3><p style="font-size:13px;color:var(--muted);margin:6px 0;line-height:1.5">'+t('You reached out for help earlier. That took strength. Would you like to check in with yourself?')+'</p><div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'journal\')" style="flex:1">'+t('Journal about it')+'</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="flex:1">'+t("I'm good")+'</button></div></div>';
+    document.body.appendChild(overlay);
+  }
+}
+
+// ====== EMERGENCY CONTACTS SETTINGS ======
+function emergencyContactsSettingsHTML() {
+  var h = '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Emergency Contacts')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('People you can call when you need support. These appear in the SOS crisis flow.')+'</p>';
+  if (D.emergencyContacts && D.emergencyContacts.length) {
+    for (var ei=0;ei<D.emergencyContacts.length;ei++) {
+      var ec = D.emergencyContacts[ei];
+      h += '<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+safe(ec.name)+'</div><div style="font-size:11px;color:var(--muted)">'+ec.num+'</div></div><button class="btn btn-sm btn-outline" onclick="removeEmergencyContact('+ei+')" style="font-size:10px">'+t('Remove')+'</button></div>';
+    }
+  } else {
+    h += '<p style="font-size:12px;color:var(--muted);font-style:italic">'+t('No emergency contacts yet.')+'</p>';
+  }
+  h += '<div style="display:flex;gap:6px;margin-top:6px"><input type="text" id="ec-name" placeholder="'+t('Name')+'" style="flex:1;padding:6px;font-size:13px"><input type="tel" id="ec-num" placeholder="'+t('Phone number')+'" style="flex:1;padding:6px;font-size:13px"><button class="btn btn-sm btn-primary" onclick="addEmergencyContact()" style="white-space:nowrap">'+t('Add')+'</button></div></div>';
+  return h;
+}
+
+function addEmergencyContact() {
+  var name = document.getElementById('ec-name');
+  var num = document.getElementById('ec-num');
+  if (!name || !num || !name.value.trim() || !num.value.trim()) { showToast(t('Enter name and phone number'), 'error'); return; }
+  if (!D.emergencyContacts) D.emergencyContacts = [];
+  D.emergencyContacts.push({name: name.value.trim(), num: num.value.trim()});
+  saveData();
+  name.value = ''; num.value = '';
+  render();
+}
+
+function removeEmergencyContact(idx) {
+  if (!D.emergencyContacts) return;
+  D.emergencyContacts.splice(idx, 1);
+  saveData();
+  render();
 }
 
 // ====== ACCOUNTABILITY CHECK-IN ======
@@ -4825,12 +4959,19 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
     }
   }
   h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:8px">'+t('Export My Data')+'</button>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Cloud Sync')+'</h3>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Your data syncs automatically to the cloud when you\'re signed in.')+'</p>';
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:12px;color:var(--muted)">'+t('Last sync')+':</span><span id="sync-time-display" style="font-size:12px;font-weight:600">'+(_lastSyncTime||t('Never'))+'</span></div>';
+  h += '<button class="btn btn-sm btn-primary" onclick="syncToFirestore()" style="margin-bottom:6px">'+t('Sync Now')+'</button></div>';
+  h += '<button class="btn btn-primary btn-sm" onclick="showProgressReport()" style="margin-top:8px">&#128202; '+t('Progress Report')+'</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:6px">'+t('Export My Data')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportJournalText()" style="margin-top:6px">'+t('Journal')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">'+t('Import Data')+'</button>';
   if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">'+t('Sign Out')+'</button>';
   if (AUTH_USER && firebase && firebase.auth().currentUser) h += '<button class="btn btn-danger btn-sm" onclick="deleteAccount()" style="margin-top:6px">Delete Account</button>';
   h += '</div>';
+  h += emergencyContactsSettingsHTML();
+  h += '<div class="card" style="border-left:3px solid #8a7a6a"><h3>'+t('Help Improve Re.Claim')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">'+t('Optionally share anonymous usage data to help us understand recovery patterns and improve the app. No personal information, journal text, or identifying data is ever collected.')+'</p><div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--primary-light);border-radius:10px"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+t('Share anonymous data')+'</div><div style="font-size:11px;color:var(--muted)">'+t('Anonymized mood trends, streak lengths, tool usage counts')+'</div></div><input type="checkbox" onchange="D.researchOptIn=this.checked;saveData();if(this.checked)collectResearchData()" '+(D.researchOptIn?'checked':'')+' style="width:auto;transform:scale(1.2)"></div></div>';
   h += '<div class="card" style="border-left:3px solid #f59e0b"><h3>'+t('Privacy & Security')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">'+t('All your journal entries, moods, habits, cravings, goals, and pledges are stored only on this device (localStorage). Nothing is sent to any server. Your password is hashed with SHA-256 and a random salt. Comrade features (pairing, messaging) sync through Firebase Firestore with encrypted transmission.')+'</p></div>';
   return h;
 }
@@ -4862,7 +5003,22 @@ function changeAvatar() {
   input.click();
 }
 function exportData() {
-  var blob = new Blob([JSON.stringify(D, null, 2)], {type:'application/json'});
+  var exportObj = {
+    _exportedAt: new Date().toISOString(),
+    _exportVersion: 2,
+    _dataVersion: D.version || 1,
+    _stats: {
+      journalEntries: (D.journal||[]).length,
+      moodsLogged: (D.moods||[]).length,
+      cravingsLogged: (D.cravings||[]).length,
+      soberDays: D.sobriety && D.sobriety.startDate ? Math.floor((Date.now() - D.sobriety.startDate) / 86400000) : 0,
+      checkinsCount: (D.checkins||[]).length,
+      copingCardsCount: (D.copingCards||[]).length + (D.customCopingCards||[]).length,
+      habitsTracked: (D.habits||[]).length
+    },
+    data: D
+  };
+  var blob = new Blob([JSON.stringify(exportObj, null, 2)], {type:'application/json'});
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'reclaim-data-' + new Date().toISOString().split('T')[0] + '.json';
@@ -4880,8 +5036,16 @@ function importData() {
     var reader = new FileReader();
     reader.onload = function(ev) {
       try {
-        var data = JSON.parse(ev.target.result);
-        if (!data || typeof data !== 'object' || Array.isArray(data)) { alert(t('Invalid file format.')); return; }
+        var parsed = JSON.parse(ev.target.result);
+        var data;
+        // Handle wrapped export format (v2+)
+        if (parsed && parsed._exportVersion && parsed.data) {
+          data = parsed.data;
+        } else if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+          data = parsed;
+        } else {
+          alert(t('Invalid file format.')); return;
+        }
         data = validateData(data);
         for (var k in data) D[k] = data[k];
         saveData();
@@ -4901,6 +5065,162 @@ function exportJournalText() {
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'reclaim-journal-' + new Date().toISOString().split('T')[0] + '.txt';
+  a.click();
+}
+
+// ====== PROGRESS REPORT ======
+function showProgressReport() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var today = new Date();
+  var soberStart = D.sobriety && D.sobriety.startDate ? new Date(D.sobriety.startDate) : null;
+  var soberDays = soberStart ? Math.floor((Date.now() - soberStart.getTime()) / 86400000) : 0;
+  var moodAvg = (D.moods||[]).length ? Math.round((D.moods||[]).reduce(function(s,m){return s+m.mood},0) / (D.moods||[]).length * 10) / 10 : 'N/A';
+  var journalCount = (D.journal||[]).length;
+  var cravingCount = (D.cravings||[]).length;
+  var checkinCount = (D.checkins||[]).length;
+  var streakDays = D.streak || 0;
+  var phq = D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result : null;
+  var gad = D.screenerGAD7 && D.screenerGAD7.result ? D.screenerGAD7.result : null;
+  var phqHistory = (D.screenerPHQ9 && D.screenerPHQ9._history) || [];
+  var gadHistory = (D.screenerGAD7 && D.screenerGAD7._history) || [];
+
+  function severityLabelPHQ(s) {
+    if (s <= 4) return {label:'Minimal', color:'var(--primary)'};
+    if (s <= 9) return {label:'Mild', color:'#ca8a04'};
+    if (s <= 14) return {label:'Moderate', color:'#ea580c'};
+    if (s <= 19) return {label:'Moderately Severe', color:'#dc2626'};
+    return {label:'Severe', color:'#991b1b'};
+  }
+  function severityLabelGAD(s) {
+    if (s <= 4) return {label:'Minimal', color:'var(--primary)'};
+    if (s <= 9) return {label:'Mild', color:'#ca8a04'};
+    if (s <= 14) return {label:'Moderate', color:'#ea580c'};
+    return {label:'Severe', color:'#dc2626'};
+  }
+
+  var h = '<div class="overlay-content" style="max-width:500px"><div style="text-align:center;margin-bottom:8px"><div style="font-size:32px;margin-bottom:4px">&#128202;</div><h3 style="font-size:20px;font-weight:700">'+t('Your Progress Report')+'</h3><p style="font-size:12px;color:var(--muted)">Generated ' + today.toLocaleDateString() + '</p></div>';
+
+  // Sobriety streak
+  h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px;margin-bottom:8px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128200; '+t('Recovery Overview')+'</div><div style="font-size:12px;line-height:1.8">';
+  h += '<div><span style="color:var(--muted)">'+t('Sober streak')+':</span> <strong>' + soberDays + ' '+t('days')+'</strong></div>';
+  h += '<div><span style="color:var(--muted)">'+t('Journal entries')+':</span> <strong>' + journalCount + '</strong></div>';
+  h += '<div><span style="color:var(--muted)">'+t('Moods logged')+':</span> <strong>' + (D.moods||[]).length + '</strong> ('+(moodAvg!=='N/A'?t('avg ')+moodAvg+'/5':'N/A')+')</div>';
+  h += '<div><span style="color:var(--muted)">'+t('Cravings logged')+':</span> <strong>' + cravingCount + '</strong></div>';
+  h += '<div><span style="color:var(--muted)">'+t('Daily check-ins')+':</span> <strong>' + checkinCount + '</strong></div>';
+  h += '<div><span style="color:var(--muted)">'+t('Current streak')+':</span> <strong>' + streakDays + ' '+t('days')+'</strong></div>';
+  h += '</div></div>';
+
+  // PHQ-9
+  h += '<div class="card" style="padding:12px;margin-bottom:6px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128555; PHQ-9 '+t('Depression Screening')+'</div>';
+  if (phq) {
+    var sev = severityLabelPHQ(phq.total);
+    h += '<div style="font-size:13px"><span style="color:var(--muted)">'+t('Latest')+':</span> <strong style="color:'+sev.color+'">'+phq.total+'/27 ('+sev.label+')</strong> <span style="font-size:11px;color:var(--muted)">'+new Date(phq.date).toLocaleDateString()+'</span></div>';
+    // Trend
+    var allPHQ = phqHistory.concat([{total:phq.total,date:phq.date}]);
+    if (allPHQ.length >= 2) {
+      var first = allPHQ[0].total, lastPHQ = allPHQ[allPHQ.length-1].total;
+      var dir = lastPHQ < first ? '&#8595; '+t('improving') : lastPHQ > first ? '&#8593; '+t('worsening') : '&#8594; '+t('stable');
+      var change = Math.abs(lastPHQ - first);
+      h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+t('Trend over')+' '+allPHQ.length+' '+t('sessions')+': '+dir+' ('+change+' '+t('point change')+')</div>';
+    }
+    if (allPHQ.length > 1) {
+      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">'+t('History')+': ';
+      for (var pi=0;pi<allPHQ.length;pi++) {
+        h += '<span style="margin-right:4px">'+allPHQ[pi].total+'/'+27+' <span style="font-size:9px">'+new Date(allPHQ[pi].date).toLocaleDateString()+'</span></span>';
+      }
+      h += '</div>';
+    }
+  } else {
+    h += '<p style="font-size:12px;color:var(--muted);font-style:italic">'+t('Take the PHQ-9 screening to see results here.')+'</p>';
+  }
+  h += '</div>';
+
+  // GAD-7
+  h += '<div class="card" style="padding:12px;margin-bottom:6px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128534; GAD-7 '+t('Anxiety Screening')+'</div>';
+  if (gad) {
+    var sev2 = severityLabelGAD(gad.total);
+    h += '<div style="font-size:13px"><span style="color:var(--muted)">'+t('Latest')+':</span> <strong style="color:'+sev2.color+'">'+gad.total+'/21 ('+sev2.label+')</strong> <span style="font-size:11px;color:var(--muted)">'+new Date(gad.date).toLocaleDateString()+'</span></div>';
+    var allGAD = gadHistory.concat([{total:gad.total,date:gad.date}]);
+    if (allGAD.length >= 2) {
+      var firstG = allGAD[0].total, lastG = allGAD[allGAD.length-1].total;
+      var dirG = lastG < firstG ? '&#8595; '+t('improving') : lastG > firstG ? '&#8593; '+t('worsening') : '&#8594; '+t('stable');
+      var changeG = Math.abs(lastG - firstG);
+      h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+t('Trend over')+' '+allGAD.length+' '+t('sessions')+': '+dirG+' ('+changeG+' '+t('point change')+')</div>';
+    }
+    if (allGAD.length > 1) {
+      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">'+t('History')+': ';
+      for (var gi=0;gi<allGAD.length;gi++) {
+        h += '<span style="margin-right:4px">'+allGAD[gi].total+'/'+21+' <span style="font-size:9px">'+new Date(allGAD[gi].date).toLocaleDateString()+'</span></span>';
+      }
+      h += '</div>';
+    }
+  } else {
+    h += '<p style="font-size:12px;color:var(--muted);font-style:italic">'+t('Take the GAD-7 screening to see results here.')+'</p>';
+  }
+  h += '</div>';
+
+  // Recent achievements
+  if ((D.achievements||[]).length) {
+    h += '<div class="card" style="padding:12px;margin-bottom:6px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#127942; '+t('Achievements')+'</div><div style="font-size:12px">';
+    var recentAch = (D.achievements||[]).slice(-5);
+    for (var ai=0;ai<recentAch.length;ai++) {
+      h += '<div style="padding:3px 0">&#10003; '+recentAch[ai].name+'</div>';
+    }
+    h += '</div></div>';
+  }
+
+  // Share/export
+  h += '<div style="display:flex;gap:6px;margin-top:4px">';
+  h += '<button class="btn btn-primary btn-sm" onclick="exportProgressReport()" style="flex:1">'+t('Share or Save')+'</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="flex:1">'+t('Close')+'</button>';
+  h += '</div></div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+}
+
+function exportProgressReport() {
+  var lines = [];
+  lines.push('=== RE.CLAIM PROGRESS REPORT ===');
+  lines.push('Generated: ' + new Date().toLocaleString());
+  lines.push('');
+  lines.push('--- Recovery Overview ---');
+  var soberStart = D.sobriety && D.sobriety.startDate ? new Date(D.sobriety.startDate) : null;
+  lines.push('Sober streak: ' + (soberStart ? Math.floor((Date.now() - soberStart.getTime()) / 86400000) + ' days' : 'Not started'));
+  lines.push('Journal entries: ' + (D.journal||[]).length);
+  lines.push('Moods logged: ' + (D.moods||[]).length);
+  lines.push('Cravings logged: ' + (D.cravings||[]).length);
+  lines.push('Daily check-ins: ' + (D.checkins||[]).length);
+  lines.push('Current streak: ' + (D.streak||0) + ' days');
+
+  var phq = D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result : null;
+  var gad = D.screenerGAD7 && D.screenerGAD7.result ? D.screenerGAD7.result : null;
+  if (phq) {
+    lines.push('');
+    lines.push('--- PHQ-9 Depression Screening ---');
+    lines.push('Latest score: ' + phq.total + '/27 on ' + new Date(phq.date).toLocaleDateString());
+    var hist = (D.screenerPHQ9 && D.screenerPHQ9._history) || [];
+    if (hist.length) {
+      lines.push('History:');
+      for (var hpi=0;hpi<hist.length;hpi++) lines.push('  ' + hist[hpi].total + '/27 on ' + new Date(hist[hpi].date).toLocaleDateString());
+    }
+  }
+  if (gad) {
+    lines.push('');
+    lines.push('--- GAD-7 Anxiety Screening ---');
+    lines.push('Latest score: ' + gad.total + '/21 on ' + new Date(gad.date).toLocaleDateString());
+    var histG = (D.screenerGAD7 && D.screenerGAD7._history) || [];
+    if (histG.length) {
+      lines.push('History:');
+      for (var hgi=0;hgi<histG.length;hgi++) lines.push('  ' + histG[hgi].total + '/21 on ' + new Date(histG[hgi].date).toLocaleDateString());
+    }
+  }
+  lines.push('');
+  lines.push('=== END REPORT ===');
+  var blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'reclaim-progress-' + new Date().toISOString().split('T')[0] + '.txt';
   a.click();
 }
 

@@ -1562,7 +1562,7 @@ function render() {
       tbEl.textContent = ready;
       tbEl.style.display = ready ? 'block' : 'none';
     }
-    if (curPg === 'home') { setTimeout(function(){ checkMilestone(); checkAchievements(); if (D.sobriety.startDate) startSoberTimer(); }, 500); }
+    if (curPg === 'home') { setTimeout(function(){ checkMilestone(); checkAchievements(); checkPostCrisis(); if (D.sobriety.startDate) startSoberTimer(); }, 500); }
     app.style.opacity = '1';
     app.style.transform = 'translateY(0)';
     app._renderTO = null;
