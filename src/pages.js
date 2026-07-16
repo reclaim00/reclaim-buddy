@@ -358,7 +358,8 @@ function screenerStart(type) {
   data.progress = new Array(questions.length).fill(null);
   data.taken = false;
   data.result = null;
-  saveData();
+  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) {}
+  syncToFirestore();
   screenerRenderQuiz();
 }
 
@@ -407,7 +408,8 @@ function screenerNav(dir) {
   if (next < 0 || next >= questions.length) return;
   quiz.setAttribute('data-idx', next);
   screenerRenderItem(next);
-  saveData();
+  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) {}
+  syncToFirestore();
 }
 
 function screenerSubmit() {
