@@ -1023,8 +1023,8 @@ function warchestHTML() {
       w.shields = (w.shields||0) + 1;
     }
   }
-  var h = '<div class="card" style="text-align:center;padding:16px">';
-  h += '<div style="font-size:13px;color:var(--muted);letter-spacing:1px;margin-bottom:2px">&#128176; The Royal War Chest</div>';
+  var h = '<h2 class="page-title">&#128176; War Chest</h2>';
+  h += '<div class="card" style="text-align:center;padding:16px">';
   h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px">Earn schillings by staying sober and writing journal entries</div>';
   // Schilling display
   h += '<div style="background:linear-gradient(135deg,#d4a017,#f0c030);border-radius:16px;padding:14px;margin-bottom:10px">';

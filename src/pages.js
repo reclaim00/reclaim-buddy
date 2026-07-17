@@ -729,8 +729,8 @@ function programAddNote(pid, idx) {
 
 // ====== HABITS ======
 function habitHTML() {
-  var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0">';
-  h += '<h2 style="font-size:20px;font-weight:700">Habits</h2>';
+  var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px">';
+  h += '<h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left;font-size:18px;padding:8px 0">Habits</h2>';
   h += '<button class="btn btn-sm btn-primary" onclick="addHabit()">+ New</button></div>';
   var today = new Date().toDateString();
   if (!D.habits.length) {
@@ -971,8 +971,8 @@ function logMood(val) {
 
 // ====== JOURNAL ======
 function journalHTML() {
-  var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0">';
-  h += '<h2 style="font-size:20px;font-weight:700">'+t('Journal')+'</h2>';
+  var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px">';
+  h += '<h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left;font-size:18px;padding:8px 0">'+t('Journal')+'</h2>';
   h += '<div style="display:flex;gap:4px">';
   if (D.journal.length) h += '<button class="btn btn-sm btn-danger" onclick="deleteAllJournalEntries()" style="padding:4px 8px;font-size:10px;width:auto">'+t('Delete All')+'</button>';
   h += '<button class="btn btn-sm btn-primary" onclick="showNewJournal()">+ '+t('New')+'</button></div></div>';
@@ -2649,7 +2649,7 @@ function showRelapsePlan() {
   for (var i=0;i<steps.length;i++) {
     var val = D[steps[i].key] || '';
     h += '<div style="margin-bottom:8px"><label style="font-size:13px;font-weight:600">' + (i+1) + '. ' + steps[i].q + '</label>';
-    h += '<textarea placeholder="' + steps[i].pl + '" oninput="D[\'' + steps[i].key + '\']=this.value;saveData()" style="min-height:50px;margin-top:4px">' + val.replace(/</g,'&lt;') + '</textarea></div>';
+    h += '<textarea placeholder="' + steps[i].pl + '" oninput="D[\'' + steps[i].key + '\']=this.value;saveDataSilent()" style="min-height:50px;margin-top:4px">' + val.replace(/</g,'&lt;') + '</textarea></div>';
   }
   h += '<button class="btn btn-sm btn-primary" onclick="showRelapsePlanSummary()">'+t('View Plan Summary')+'</button>';
   h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button></div>';
@@ -3397,7 +3397,7 @@ function buildArthurInsights() {
 function insightsHTML() {
   var insights = buildArthurInsights();
   var risk = buildRiskAssessment();
-  var h = '';
+  var h = '<h2 class="page-title">&#128302; Insights</h2>';
 
   // Risk assessment summary
   var riskIcon = risk.level === 'high' ? '&#128308;' : risk.level === 'medium' ? '&#128992;' : '&#128994;';
@@ -3493,7 +3493,7 @@ function showFollowUp(fuIdx) {
       var idx = parseInt(this.getAttribute('data-fuidx'));
       if (D.relapseRescue && D.relapseRescue.followUps && D.relapseRescue.followUps[fuIdx] && D.relapseRescue.followUps[fuIdx].questions[idx]) {
         D.relapseRescue.followUps[fuIdx].questions[idx].a = this.value;
-        saveData();
+        saveDataSilent();
       }
     });
   }
@@ -4875,7 +4875,7 @@ function submitRecommendation() {
 
 // ====== PROFILE ======
 function profileHTML() {
-  var h = '';
+  var h = '<h2 class="page-title">Profile</h2>';
   h += '<div class="card" style="text-align:center;padding:24px">';
   h += '<div style="position:relative;display:inline-block">';
   if (D.avatar) {
@@ -4891,21 +4891,21 @@ function profileHTML() {
   h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
   h += '</div></div>';
   h += '<div class="card"><h3>'+t('Armoury')+'</h3>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Title')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveData()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83C\uDFF0 Kingdom</span><input type="text" value="'+(D.kingdomName||'')+'" onchange="D.kingdomName=this.value;saveData();render()" placeholder="My Kingdom" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83D\uDC51 Title Style</span><select onchange="D.titleStyle=this.value;saveData();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"><option value="king"'+(D.titleStyle!=='queen'?' selected':'')+'>King / Prince</option><option value="queen"'+(D.titleStyle==='queen'?' selected':'')+'>Queen / Princess</option></select></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Messenger (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveData()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveData();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Title')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveDataSilent()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83C\uDFF0 Kingdom</span><input type="text" value="'+(D.kingdomName||'')+'" onchange="D.kingdomName=this.value;saveDataSilent();render()" placeholder="My Kingdom" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83D\uDC51 Title Style</span><select onchange="D.titleStyle=this.value;saveDataSilent();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"><option value="king"'+(D.titleStyle!=='queen'?' selected':'')+'>King / Prince</option><option value="queen"'+(D.titleStyle==='queen'?' selected':'')+'>Queen / Princess</option></select></div>';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Messenger (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveDataSilent()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveDataSilent();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Heraldic Colours')+'</span><div style="display:flex;gap:4px">';
   var colorOpts = {green:'#34d399',blue:'#60a5fa',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
   for (var co in colorOpts) {
-    h += '<div style="width:28px;height:28px;border-radius:14px;background:'+colorOpts[co]+';cursor:pointer;border:'+(D.accentColor===co?'3px solid var(--text)':'2px solid transparent')+'" onclick="D.accentColor=\''+co+'\';saveData();applyTheme();render()"></div>';
+    h += '<div style="width:28px;height:28px;border-radius:14px;background:'+colorOpts[co]+';cursor:pointer;border:'+(D.accentColor===co?'3px solid var(--text)':'2px solid transparent')+'" onclick="D.accentColor=\''+co+'\';saveDataSilent();applyTheme();render()"></div>';
   }
   h += '</div></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Night Watch')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveData();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">&#128220; '+t('Parchment Mode')+'</span><input type="checkbox" onchange="D.parchmentMode=this.checked;saveData();applyTheme()" '+(D.parchmentMode?'checked':'')+' style="width:auto"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Night Watch')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveDataSilent();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">&#128220; '+t('Parchment Mode')+'</span><input type="checkbox" onchange="D.parchmentMode=this.checked;saveDataSilent();applyTheme()" '+(D.parchmentMode?'checked':'')+' style="width:auto"></div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Your Quests')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Arthur creates safety plans based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
   var addictions = D.targetAddictions || [];
   for (var ati=0;ati<ADDICTION_TYPES.length;ati++) {
@@ -4913,7 +4913,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
     h += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleTargetAddiction(\''+ADDICTION_TYPES[ati]+'\')" style="font-size:10px;padding:6px">' + ADDICTION_TYPES[ati] + '</button>';
   }
   h += '</div></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t("The Scribe's Tome")+'</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">'+t('Scroll length')+'</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveData()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t("The Scribe's Tome")+'</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">'+t('Scroll length')+'</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveDataSilent()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('The Vault')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.')+'</p>';
   if (isLockSet()) {
     var bioReady = !!localStorage.getItem('rc_bio_cred');
@@ -6602,10 +6602,8 @@ function habitBarsHTML() {
 // ====== ACHIEVEMENTS PAGE ======
 function achievementsHTML() {
   if (!D.achievements) D.achievements = [];
-  var h = '<div class="card" style="padding:16px;text-align:center">';
-  h += '<div style="font-size:24px;margin-bottom:2px">&#127942;</div>';
-  h += '<div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:2px">Achievements</div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Feats worthy of legend</div>';
+  var h = '<h2 class="page-title">&#127942; Achievements</h2>';
+  h += '<div class="card" style="padding:16px;text-align:center">';
   var unlocked = D.achievements.length;
   var total = ACHIEVEMENTS.length;
   h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">' + unlocked + ' / ' + total + ' unlocked</div>';
@@ -6662,9 +6660,8 @@ function shopHTML() {
   var activeStr = (bd.streak||0) > 0 ? '<span style="font-size:9px;color:var(--gold)">('+bd.streak+' active)</span>' : '';
   var activeDbl = bd.doubleExpiry > Date.now() ? '<span style="font-size:9px;color:var(--gold)">('+Math.ceil((bd.doubleExpiry-Date.now())/3600000)+'h left)</span>' : '';
   var activeBon = bd.bonusDate === new Date().toDateString() ? '<span style="font-size:9px;color:var(--gold)">(active today)</span>' : '';
-  var h='<div class="card" style="padding:16px;text-align:center">';
-  h+='<div style="font-size:18px;margin-bottom:2px">\u269C</div>';
-  h+='<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">The Royal Shop</div>';
+  var h='<h2 class="page-title">&#128717; Shop</h2>';
+  h+='<div class="card" style="padding:16px;text-align:center">';
   h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Spend schillings on decor, skins, and boosts</div>';
   h+='<div style="font-size:24px;font-weight:800;color:#d4a017;margin-bottom:10px">'+sch+' \u269C</div>';
   var cats=['Decor','Skins','Boosts'];

@@ -531,6 +531,12 @@ function saveData() {
   render();
   setTimeout(updateVillage, 50);
 }
+function saveDataSilent() {
+  updateSchillings();
+  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('saveDataSilent: localStorage write failed', e); }
+  syncToFirestore();
+  applyTheme();
+}
 function updateSchillings() {
   D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
   var days = soberDays();
