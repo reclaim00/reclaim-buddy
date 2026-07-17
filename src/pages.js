@@ -322,8 +322,8 @@ function screenerOptionsHTML(name, savedVal) {
 }
 
 function screenerHTML() {
-  if (!D.screenerPHQ9) { D.screenerPHQ9 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
-  if (!D.screenerGAD7) { D.screenerGAD7 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
+  if (!D.screenerPHQ9) { D.screenerPHQ9 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){ console.warn('screenerPHQ9 sync failed:', e); } }
+  if (!D.screenerGAD7) { D.screenerGAD7 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){ console.warn('screenerGAD7 sync failed:', e); } }
   var h = '<h2 class="page-title">Self-Check Screeners</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">These brief questionnaires can help you check in on your well-being. Results are private and not a diagnosis.</p>';
 
@@ -358,7 +358,7 @@ function screenerStart(type) {
   data.progress = new Array(questions.length).fill(null);
   data.taken = false;
   data.result = null;
-  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) {}
+  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('screenerStart: localStorage write failed', e); }
   syncToFirestore();
   screenerRenderQuiz();
 }
@@ -408,7 +408,7 @@ function screenerNav(dir) {
   if (next < 0 || next >= questions.length) return;
   quiz.setAttribute('data-idx', next);
   screenerRenderItem(next);
-  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) {}
+  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('screenerNav: localStorage write failed', e); }
   syncToFirestore();
 }
 
@@ -561,7 +561,7 @@ function programData(pid) {
 function programsHTML() {
   var h = '<h2 class="page-title">&#127891; Recovery Programs</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Follow a structured program to guide your recovery journey step by step.</p>';
-  if (!D.recoveryPrograms) { D.recoveryPrograms = { active: null, programs: {} }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){} }
+  if (!D.recoveryPrograms) { D.recoveryPrograms = { active: null, programs: {} }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){ console.warn('recoveryPrograms sync failed:', e); } }
   var active = D.recoveryPrograms.active;
   if (active && RECOVERY_PROGRAMS[active]) {
     h += programActiveHTML(active);
@@ -4810,13 +4810,13 @@ function alliancesHTML() {
             } else {
               el.innerHTML = '<div class="card" style="padding:14px;text-align:center;border-left:4px solid #6366f1"><div style="font-size:10px;color:var(--muted);letter-spacing:2px">ALLIED REALM</div><div style="font-size:16px;font-weight:700;color:var(--primary-dark);margin:4px 0">' + safe(name) + '</div><div style="font-size:12px;color:var(--muted)">Awaiting their first dispatch...</div></div>';
             }
-          }).catch(function(){});
+          }).catch(function(e){ console.warn('Ally data fetch failed for', contact, e); });
 
           // Share current snapshot so buddy can see us
           var snap = progressSnapshot();
-          DB.collection('progress').doc(AUTH_EMAIL).set(snap).catch(function(){});
+          DB.collection('progress').doc(AUTH_EMAIL).set(snap).catch(function(e){ console.warn('Ally snapshot share failed:', e); });
         }
-      } catch(e) {}
+      } catch(e) { console.warn('Ally block error:', e); }
     })(bName, bc);
 
     var id = 'ally-' + bc.replace(/[^a-z0-9]/gi,'');

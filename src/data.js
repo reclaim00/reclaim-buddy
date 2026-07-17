@@ -11,8 +11,8 @@ var firebaseConfig = {
 };
 try { firebase.initializeApp(firebaseConfig); } catch(e) { console.warn('Firebase init failed:', e); }
 var DB = null; var MESSAGING = null;
-try { if (firebase) { DB = firebase.firestore(); } } catch(e) {}
-try { if (firebase) { MESSAGING = firebase.messaging(); } } catch(e) {}
+try { if (firebase) { DB = firebase.firestore(); } } catch(e) { console.warn('Firestore init failed:', e); }
+try { if (firebase) { MESSAGING = firebase.messaging(); } } catch(e) { console.warn('Messaging init failed:', e); }
 // Set your VAPID key below from Firebase Console > Cloud Messaging > Web Push certificates
 var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHOSCA7l4_ZUvy4RMvxDVaUFI84';
 
@@ -128,7 +128,7 @@ function onAuthReady(email, isNew) {
   }, 120000);
   // Sync on page unload
   window.addEventListener('beforeunload', function(){
-    if (AUTH_EMAIL && firebase && firebase.auth().currentUser) { DB.collection('appData').doc(AUTH_EMAIL).set({ data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(){}); }
+    if (AUTH_EMAIL && firebase && firebase.auth().currentUser) { DB.collection('appData').doc(AUTH_EMAIL).set({ data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(e){ console.warn('beforeunload save failed:', e); }); }
   });
 }
 
@@ -200,7 +200,7 @@ try { firebase.auth().onAuthStateChanged(function(user) {
     showSignIn();
   }
   window._authFired = true;
-}); } catch(e) {}
+}); } catch(e) { console.warn('onAuthStateChanged setup failed:', e); }
 // Fallback if Firebase auth never fires
 setTimeout(function(){ if (!window._authFired) showSignIn(); }, 3000);
 
@@ -533,7 +533,7 @@ function saveData() {
 }
 function saveDataSilent() {
   updateSchillings();
-  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('saveDataSilent: localStorage write failed', e); }
+  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('saveDataSilent: localStorage write failed', e); showToast('Could not save to local storage. Check available space.','error'); }
   syncToFirestore();
   applyTheme();
 }

@@ -1622,8 +1622,11 @@ function updateConnStatus() {
   if (!connEl) return;
   if (!navigator.onLine) { connEl.style.display = 'block'; return; }
   if (typeof DB !== 'undefined' && DB) {
-    try { DB.enableNetwork().then(function(){ connEl.style.display = 'none'; }).catch(function(){ connEl.style.display = 'block'; }); } catch(e) { connEl.style.display = 'none'; }
-  } else { connEl.style.display = 'none'; }
+    try { DB.enableNetwork().then(function(){ if (navigator.onLine) connEl.style.display = 'none'; }).catch(function(){ if (navigator.onLine) connEl.style.display = 'block'; }); } catch(e) { connEl.style.display = 'block'; console.warn('enableNetwork threw:', e); }
+  } else {
+    connEl.style.display = 'block';
+    connEl.querySelector('span').textContent = '\u26A0 No database connection';
+  }
 }
 window.addEventListener('online', updateConnStatus);
 window.addEventListener('offline', function(){ if (connEl) connEl.style.display = 'block'; });
