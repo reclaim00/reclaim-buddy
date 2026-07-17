@@ -6324,7 +6324,22 @@ function updateTabLabels() {
     var span = el.querySelector('.tab-label');
     if (span && labels[page]) span.textContent = labels[page];
   });
+  // Add keyboard accessibility to sub-items
+  [].forEach.call(document.querySelectorAll('.sub-item'), function(el){
+    if (!el.getAttribute('tabindex')) { el.setAttribute('tabindex', '0'); el.setAttribute('role', 'button'); }
+  });
 }
+// Global keyboard handler for sub-items and cards
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' || e.key === ' ') {
+    var target = e.target.closest('.sub-item, .card[onclick]');
+    if (target && target.getAttribute('onclick')) {
+      e.preventDefault();
+      var fn = target.getAttribute('onclick');
+      if (fn) { try { new Function(fn)(); } catch(ex) {} }
+    }
+  }
+});
 
 // ====== OSWALD'S TOWER ======
 function oswaldTowerHTML() {

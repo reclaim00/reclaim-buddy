@@ -1603,6 +1603,30 @@ document.getElementById('tabs').addEventListener('click', function(e) {
   }
 });
 
+// ====== OVERLAY ACCESSIBILITY ======
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var ov = document.querySelector('.overlay:not(.fade-out)');
+    if (ov) { animateCloseOverlay(ov); e.preventDefault(); }
+  }
+});
+// Auto-add ARIA attributes to new overlays
+var _ovObs = new MutationObserver(function(muts) {
+  for (var mi = 0; mi < muts.length; mi++) {
+    for (var ni = 0; ni < (muts[mi].addedNodes || []).length; ni++) {
+      var n = muts[mi].addedNodes[ni];
+      if (n.nodeType === 1 && n.classList && n.classList.contains('overlay')) {
+        n.setAttribute('role', 'dialog');
+        n.setAttribute('aria-modal', 'true');
+      }
+    }
+  }
+});
+setTimeout(function() {
+  var appEl = document.getElementById('app');
+  if (appEl) { _ovObs.observe(appEl.parentNode || document.body, { childList: true, subtree: true }); }
+}, 1000);
+
 // ====== PWA INSTALL ======
 var _installPrompt = null;
 window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); _installPrompt = e; });
