@@ -430,9 +430,8 @@ function screenerSubmit() {
   data.taken = true;
   data.result = { total: result.total, date: Date.now(), answers: data.progress.slice() };
   data.progress = null;
-  saveData();
   screenerActive = null;
-  render();
+  saveData();
 }
 
 function screenerRenderItem(idx) {
@@ -921,7 +920,7 @@ function viewStreakDetails(idx) {
 }
 
 function trackHTML() {
-  var h = '<h2 class="page-title">Ledger</h2>';
+  var h = '<h2 class="page-title">Chronicle</h2>';
   // Streaks viewer
   h += streaksHTML();
 
@@ -2703,7 +2702,7 @@ function addCopingCard() {
 
 // ====== CARE PAGE ======
 function careHTML() {
-  var h = '<h2 class="page-title">Heal</h2>';
+  var h = '<h2 class="page-title">Infirmary</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div class="breath-circle" style="width:80px;height:80px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);border-radius:50%;font-size:13px;color:var(--primary);font-weight:600">'+t('Breathe')+'</div>';
   h += '<h3 style="font-size:16px;font-weight:700">'+t('Mindful Breathing')+'</h3>';
@@ -4700,7 +4699,7 @@ function exportReminderICS(id) {
 // ====== MORE PAGE ======
 function moreHTML() {
   var h = '';
-  h += '<h2 class="page-title">Arsenal</h2>';
+  h += '<h2 class="page-title">Armory</h2>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Tracking')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
