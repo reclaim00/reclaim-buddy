@@ -1,6 +1,5 @@
 var CACHE = 'reclaim-20260715';
-var SHELL = ['/reclaim-buddy/', '/reclaim-buddy/index.html', '/reclaim-buddy/app.html', '/reclaim-buddy/manifest.json', '/reclaim-buddy/icon-192.png', '/reclaim-buddy/icon-512.png', '/reclaim-buddy/icon.svg', '/reclaim-buddy/src/style.css', '/reclaim-buddy/src/data.js', '/reclaim-buddy/src/buddy.js', '/reclaim-buddy/src/sober.js', '/reclaim-buddy/src/pages.js', '/reclaim-buddy/src/kingdom.js', '/reclaim-buddy/src/ui.js'];
-var NETWORK_FIRST = ['/reclaim-buddy/src/'];
+var SHELL = ['/', '/app.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon.svg', '/src/style.css', '/src/data.js', '/src/buddy.js', '/src/sober.js', '/src/pages.js', '/src/kingdom.js', '/src/ui.js'];
 
 self.addEventListener('install', function(e) {
   e.waitUntil(caches.open(CACHE).then(function(c) { return c.addAll(SHELL); }));
@@ -18,13 +17,21 @@ self.addEventListener('activate', function(e) {
 self.addEventListener('fetch', function(e) {
   var req = e.request;
   if (req.method !== 'GET') return;
+
   // Network-first for JS files (always get latest), cache-first for everything else
-  if (req.url.indexOf('/src/') > 0 || req.url.indexOf('.js?v=') > 0) {
+  if (req.url.indexOf('/src/') !== -1 || (req.url.indexOf('.js?v=') !== -1)) {
     e.respondWith(
       fetch(req).then(function(res) {
         return caches.open(CACHE).then(function(c) { c.put(req, res.clone()); return res; });
       }).catch(function() {
-        return caches.match(req).then(function(hit) { return hit || caches.match('/reclaim-buddy/'); });
+        return caches.match(req).then(function(hit) { return hit || caches.match('/app.html'); });
+      })
+    );
+  } else if (req.mode === 'navigate') {
+    // Navigation requests: serve cached app.html when offline
+    e.respondWith(
+      fetch(req).catch(function() {
+        return caches.match('/app.html');
       })
     );
   } else {
@@ -33,7 +40,7 @@ self.addEventListener('fetch', function(e) {
         return hit || fetch(req).then(function(res) {
           return caches.open(CACHE).then(function(c) { c.put(req, res.clone()); return res; });
         }).catch(function() {
-          return caches.match('/reclaim-buddy/');
+          return caches.match('/app.html');
         });
       })
     );
@@ -49,6 +56,6 @@ self.addEventListener('notificationclick', function(e) {
   e.notification.close();
   e.waitUntil(clients.matchAll({type:'window'}).then(function(ws) {
     if (ws.length) { ws[0].focus(); return; }
-    clients.openWindow('/reclaim-buddy/');
+    clients.openWindow('/');
   }));
 });

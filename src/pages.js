@@ -232,7 +232,7 @@ function showAssessmentAfterSignIn() {
     h += '<p style="font-size:13px;color:var(--muted)">You\'ve already taken the assessment. You can retake it anytime from the More menu.</p>';
     h += '<button class="btn btn-outline" onclick="D.assessmentTaken=false;D.assessmentProgress=null;saveData();this.closest(\'.overlay\').remove();showAssessmentAfterSignIn()" style="margin-top:4px">Retake Assessment</button>';
   }
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
+h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
   if (!D.assessmentTaken) {
@@ -559,7 +559,7 @@ function programData(pid) {
 }
 
 function programsHTML() {
-  var h = '<h2 class="page-title">&#127891; Recovery Programs</h2>';
+  var h = '<h2 class="page-title">&#127891; '+t('Recovery Programs')+'</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Follow a structured program to guide your recovery journey step by step.</p>';
   if (!D.recoveryPrograms) { D.recoveryPrograms = { active: null, programs: {} }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){ console.warn('recoveryPrograms sync failed:', e); } }
   var active = D.recoveryPrograms.active;
@@ -730,8 +730,8 @@ function programAddNote(pid, idx) {
 // ====== HABITS ======
 function habitHTML() {
   var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px">';
-  h += '<h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left;font-size:18px;padding:8px 0">Habits</h2>';
-  h += '<button class="btn btn-sm btn-primary" onclick="addHabit()">+ New</button></div>';
+  h += '<h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left;font-size:18px;padding:8px 0">'+t('Habits')+'</h2>';
+h += '<button class="btn btn-sm btn-primary" onclick="addHabit()">+ '+t('New')+'</button></div>';
   var today = new Date().toDateString();
   if (!D.habits.length) {
     h += '<div class="card"><div class="empty-state">No habits yet. Create one to start tracking!</div></div>';
@@ -920,7 +920,7 @@ function viewStreakDetails(idx) {
 }
 
 function trackHTML() {
-  var h = '<h2 class="page-title">Chronicle</h2>';
+  var h = '<h2 class="page-title">'+t('Chronicle')+'</h2>';
   // Streaks viewer
   h += streaksHTML();
 
@@ -2138,7 +2138,7 @@ function updateWordCount(el) {
 function reflectHTML() {
   var goal = D.journalWordGoal || 50;
   var jStreak = calcJournalStreak();
-  var h = '<h2 class="page-title">Scriptorium</h2>';
+  var h = '<h2 class="page-title">'+t('Scriptorium')+'</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Arthur is here to help you reflect. Every entry sharpens the map of your recovery.</div></div></div>';
   if (jStreak > 0) {
     h += '<div style="text-align:center;padding:8px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px">';
@@ -2185,7 +2185,7 @@ function reflectHTML() {
     h += '<div class="card" style="text-align:center;cursor:pointer;padding:10px" onclick="var e=document.getElementById(\'past-journals\');if(e){var v=e.style.display!==\'none\';e.style.display=v?\'none\':\'block\';this.querySelector(\'.pj-toggle\').textContent=v?\'Show All (' + D.journal.length + ' entries)\':\'Hide Past Journals\'}">';
     h += '<span class="pj-toggle" style="font-weight:600;font-size:13px;color:var(--primary)">Show All (' + D.journal.length + ' entries)</span></div>';
     h += '<div id="past-journals" style="display:none">';
-    h += '<div style="display:flex;gap:6px;margin-bottom:8px"><input type="text" id="journal-search" placeholder="Search entries..." oninput="filterJournals(this.value)" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);box-sizing:border-box"><button class="btn btn-sm btn-danger" onclick="deleteAllJournalEntries()" style="padding:4px 8px;font-size:10px;width:auto;white-space:nowrap">Delete All</button></div>';
+    h += '<div style="display:flex;gap:6px;margin-bottom:8px"><input type="text" id="journal-search" placeholder="'+t('Search entries...')+'" oninput="filterJournals(this.value)" style="flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);box-sizing:border-box"><button class="btn btn-sm btn-danger" onclick="deleteAllJournalEntries()" style="padding:4px 8px;font-size:10px;width:auto;white-space:nowrap">'+t('Delete All')+'</button></div>';
     h += '<div id="journal-list">';
     var entries = D.journal.slice().reverse();
     for (var i=0;i<entries.length;i++) {
@@ -2532,7 +2532,7 @@ function showReflection(idx) {
   h += '<details style="padding:6px 0;border-top:1px solid rgba(255,255,255,.05)"><summary style="font-size:9px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.4);letter-spacing:1px;padding:2px 0">READ YOUR ENTRY</summary>';
   h += '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;white-space:pre-wrap;margin-top:4px;padding:4px 0">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p></details>';
   // Close
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="jc-close">Close</button></div>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="jc-close">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 
@@ -2637,7 +2637,7 @@ var DEFAULT_COPING = [
 ];
 
 function copingHTML() {
-  var h = '<h2 class="page-title">Coping Cards</h2>';
+  var h = '<h2 class="page-title">'+t('Coping Cards')+'</h2>';
   h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">Gertrude has your back. These cards are tools for your kit — use them when the battle is hard.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Tap a card to expand. Use these when you need support.</p>';
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="margin-bottom:8px">Breathing Exercise</button>';
@@ -2716,7 +2716,7 @@ function addCopingCard() {
 
 // ====== CARE PAGE ======
 function careHTML() {
-  var h = '<h2 class="page-title">Infirmary</h2>';
+  var h = '<h2 class="page-title">'+t('Infirmary')+'</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div class="breath-circle" style="width:80px;height:80px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);border-radius:50%;font-size:13px;color:var(--primary);font-weight:600">'+t('Breathe')+'</div>';
   h += '<h3 style="font-size:16px;font-weight:700">'+t('Mindful Breathing')+'</h3>';
@@ -2727,9 +2727,9 @@ function careHTML() {
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'coping\')">'+t('Coping Cards')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')">'+t('Assessment')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">Relapse Plan</div>';
-  h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; Relapse Rescue</div>';
-  h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; Relapse Graveyard</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">'+t('Relapse Plan')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; '+t('Relapse Rescue')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; '+t('Relapse Graveyard')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'oswald\')" style="border-color:#4338ca">&#127987; Oswald\'s Tower</div>';
   h += '</div>';
@@ -2890,7 +2890,7 @@ function showSOS() {
   var h = '<div class="overlay-content" style="text-align:center"><div style="font-size:52px;font-weight:900;color:var(--danger);margin-bottom:4px;letter-spacing:8px">SOS</div><h3 style="font-size:20px;font-weight:700;color:var(--danger)">You are not alone.</h3><p style="font-size:14px;color:var(--muted);margin:8px 0 16px">Reach out. Help is available 24/7.</p><div style="text-align:left">';
   h += '<div class="card" style="cursor:pointer;padding:12px;margin:6px 0" onclick="var b=document.getElementById(\'sos-breathe-body\');var i=this.querySelector(\'.toggle-icon\');if(b.style.display===\'none\'){b.style.display=\'block\';i.textContent=\'&#9660;\'}else{b.style.display=\'none\';i.textContent=\'&#9654;\'}"><div style="display:flex;justify-content:space-between;align-items:center"><strong>&#128166; Breathe</strong><span class="toggle-icon">&#9654;</span></div><div id="sos-breathe-body" style="display:none;margin-top:10px;text-align:center"><div style="font-size:13px;color:var(--muted);margin-bottom:8px">A quick guided breathing exercise to calm your nervous system.</div><button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();setTimeout(function(){startBreathe()},100)" style="width:auto">Start Breathing Exercise</button></div></div>';
   h += '<div class="card" style="cursor:pointer;padding:12px;margin:6px 0" onclick="var b=document.getElementById(\'sos-helplines-body\');var i=this.querySelector(\'.toggle-icon\');if(b.style.display===\'none\'){b.style.display=\'block\';i.textContent=\'&#9660;\'}else{b.style.display=\'none\';i.textContent=\'&#9654;\'}"><div style="display:flex;justify-content:space-between;align-items:center"><strong>&#128222; Crisis Helplines</strong><span class="toggle-icon">&#9654;</span></div><div id="sos-helplines-body" style="display:none;margin-top:8px">' + helplinesHTML() + '</div></div>';
-  h += '</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:12px">Close</button></div>';
+  h += '</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:12px">'+t('Close')+'</button></div>';
   D.sosUsed = true;
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
@@ -3173,7 +3173,7 @@ function accPendingHTML() {
 function relapseRescueHTML() {
   if (!D.relapseRescue) D.relapseRescue = { logs: [] };
   var logs = D.relapseRescue.logs || [];
-  var h = '<h2 class="page-title">&#129309; Relapse Recovery</h2>';
+  var h = '<h2 class="page-title">&#129309; '+t('Relapse Recovery')+'</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">A place to process slips and re-commit to your journey.</p>';
 
   h += '<div class="card" style="border-left:3px solid var(--primary);text-align:center">';
@@ -3411,7 +3411,7 @@ function buildArthurInsights() {
 function insightsHTML() {
   var insights = buildArthurInsights();
   var risk = buildRiskAssessment();
-  var h = '<h2 class="page-title">&#128302; Insights</h2>';
+  var h = '<h2 class="page-title">&#128302; '+t('Insights')+'</h2>';
 
   // Risk assessment summary
   var riskIcon = risk.level === 'high' ? '&#128308;' : risk.level === 'medium' ? '&#128992;' : '&#128994;';
@@ -3884,21 +3884,21 @@ var LIB_VIDEOS = [
 function libraryHTML() {
   var h = '<h2 class="page-title">Library</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Curated resources to support your recovery journey.</p>';
-  h += '<div class="card"><h3>Articles</h3>';
+h += '<div class="card"><h3>'+t('Articles')+'</h3>';
   for (var i=0;i<LIB_ARTICLES.length;i++) {
     h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_ARTICLES[i].title+'</div><div class="desc">'+LIB_ARTICLES[i].desc+'</div><a class="link" href="'+LIB_ARTICLES[i].url+'" target="_blank">Read</a></div></div>';
   }
-  h += '</div><div class="card"><h3>Books</h3>';
+  h += '</div><div class="card"><h3>'+t('Books')+'</h3>';
   for (var i=0;i<LIB_BOOKS.length;i++) {
     h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_BOOKS[i].title+'</div><div class="desc">'+LIB_BOOKS[i].desc+'</div><a class="link" href="'+LIB_BOOKS[i].url+'" target="_blank">Amazon</a>';
     if (LIB_BOOKS[i].alt) h += ' <span style="color:var(--muted);font-size:10px">|</span> <a class="link" href="'+LIB_BOOKS[i].alt+'" target="_blank">Barnes &amp; Noble</a>';
     h += '</div></div>';
   }
-  h += '</div><div class="card"><h3>Podcasts</h3>';
+  h += '</div><div class="card"><h3>'+t('Podcasts')+'</h3>';
   for (var i=0;i<LIB_PODCASTS.length;i++) {
     h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_PODCASTS[i].title+'</div><div class="desc">'+LIB_PODCASTS[i].desc+'</div><a class="link" href="'+LIB_PODCASTS[i].url+'" target="_blank">Listen</a></div></div>';
   }
-  h += '</div><div class="card"><h3>Videos</h3>';
+  h += '</div><div class="card"><h3>'+t('Videos')+'</h3>';
   for (var i=0;i<LIB_VIDEOS.length;i++) {
     h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_VIDEOS[i].title+'</div><div class="desc">'+LIB_VIDEOS[i].desc+'</div><a class="link" href="'+LIB_VIDEOS[i].url+'" target="_blank">Watch</a></div></div>';
   }
@@ -4058,7 +4058,7 @@ function reportsHTML() {
 function buddyHTML() {
   if (!D.buddy || !D.buddy.name) return setupBuddyHTML();
   var h = '';
-  h += '<h2 class="page-title">Your Comrade</h2>';
+  h += '<h2 class="page-title">'+t('Your Comrade')+'</h2>';
   h += '<div class="comrade-card"><div class="comrade-avatar">' + D.buddy.name[0].toUpperCase() + '</div><div><div style="font-weight:700;font-size:16px">' + D.buddy.name + '</div><div style="font-size:12px;color:var(--muted)">' + (D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + D.buddy.contact : '') + (D.buddy.language ? ' &middot; ' + D.buddy.language : '') + '</div></div></div>';
   h += '<div class="stat-grid" style="margin:8px 0">';
   h += '<div class="stat-card"><div class="num">' + buddyStreak() + '</div><div class="label">Buddy Streak</div></div>';
@@ -4305,7 +4305,7 @@ window.addCompetitionProgress = function(idx) {
 
 function setupBuddyHTML() {
   var h = '';
-  h += '<h2 class="page-title" style="margin:16px 0 8px">Find Your Comrade</h2>';
+  h += '<h2 class="page-title" style="margin:16px 0 8px">'+t('Find Your Comrade')+'</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:16px">An accountability partner helps you stay on track. Connect with someone who speaks your language anywhere in the world.</p>';
   h += '<div class="card"><h3>Add Buddy Manually</h3>';
   h += '<input type="text" id="comrade-name" placeholder="comrade\'s name">';
@@ -4547,7 +4547,7 @@ function showDayDetail(dateStr) {
   h += '<div><strong>Check-in:</strong> '+(check.length?'Yes':'No')+'</div>';
   h += '<div><strong>Habits done:</strong> '+(habits.length?habits.map(function(h){return h.name}).join(', '):'None')+'</div>';
   h += '<div><strong>Journal entries:</strong> '+(journal.length?journal.length:'None')+'</div>';
-  h += '</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
+  h += '</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
@@ -4577,7 +4577,7 @@ function showAddictionPrompt() {
 var REPEAT_OPTIONS = [{v:'none',l:'Never'},{v:'daily',l:'Daily'},{v:'weekly',l:'Weekly'},{v:'monthly',l:'Monthly'}];
 function remindersHTML() {
   var h = '';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px"><h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left;font-size:18px;padding:8px 0">Reminders</h2><button class="btn btn-sm btn-primary" onclick="showNewReminder()" style="width:auto;padding:8px 16px">+ New</button></div>';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px"><h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left;font-size:18px;padding:8px 0">Reminders</h2><button class="btn btn-sm btn-primary" onclick="showNewReminder()" style="width:auto;padding:8px 16px">'+t('New')+'</button></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Set reminders and add them to your device calendar.</p>';
   var reminders = D.reminders || [];
   if (reminders.length === 0) {
@@ -4713,28 +4713,28 @@ function exportReminderICS(id) {
 // ====== MORE PAGE ======
 function moreHTML() {
   var h = '';
-  h += '<h2 class="page-title">Armory</h2>';
+  h += '<h2 class="page-title">'+t('Armory')+'</h2>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Tracking')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">'+t('Calendar')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'reminders\')">'+t('Reminders')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 King\u2019s Ledger</div>';
+  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 '+t('King\u0027s Ledger')+'</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Recovery')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Comrade')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; Chivalry Code</div>';
-  h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; Royal Pardon</div>';
-  h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; Time Capsule</div>';
-  h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; War Chest</div>';
-  h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#9876; Alliances</div>';
+  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; '+t('Chivalry Code')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; '+t('Royal Pardon')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; '+t('War Chest')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#9876; '+t('Alliances')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
-  h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C Royal Shop</div>';
-  h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; Programs</div>';
-  h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; Screeners</div>';
+  h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C '+t('Royal Shop')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; '+t('Programs')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; '+t('Screeners')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Resources')+'</h3>';
@@ -5279,7 +5279,7 @@ function showShareQR() {
     '<p style="font-size:12px;color:var(--muted);margin-bottom:12px">Scan to open the app on your device</p>' +
     '<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://reclaim00.github.io/reclaim-buddy/" alt="QR Code" style="width:240px;height:240px;border-radius:12px;margin:0 auto;display:block">' +
     '<p style="font-size:11px;color:var(--muted);margin-top:10px">reclaim00.github.io/reclaim-buddy</p>' +
-    '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()" style="margin-top:12px">Close</button>' +
+    '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()" style="margin-top:12px">'+t('Close')+'</button>' +
     '</div>';
   document.body.appendChild(overlay);
 }
@@ -6364,8 +6364,9 @@ document.addEventListener('keydown', function(e) {
     var target = e.target.closest('.sub-item, .card[onclick]');
     if (target && target.getAttribute('onclick')) {
       e.preventDefault();
-      var fn = target.getAttribute('onclick');
-      if (fn) { try { new Function(fn)(); } catch(ex) {} }
+      var tmp = document.createElement('div');
+      tmp.setAttribute('onclick', target.getAttribute('onclick'));
+      tmp.click();
     }
   }
 });
@@ -6646,7 +6647,7 @@ function habitBarsHTML() {
 // ====== ACHIEVEMENTS PAGE ======
 function achievementsHTML() {
   if (!D.achievements) D.achievements = [];
-  var h = '<h2 class="page-title">&#127942; Achievements</h2>';
+  var h = '<h2 class="page-title">&#127942; '+t('Achievements')+'</h2>';
   h += '<div class="card" style="padding:16px;text-align:center">';
   var unlocked = D.achievements.length;
   var total = ACHIEVEMENTS.length;
@@ -6695,7 +6696,7 @@ function showItemPreview(id) {
   else if (item.id === 'bonus') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><rect x="10" y="10" width="40" height="40" rx="4" fill="#6B4423"/><text x="30" y="38" text-anchor="middle" font-size="22" font-weight="800" fill="#ffd700">+1</text></svg>'; fullDesc = 'Unlock a 4th daily quest slot today only. More quests mean more schillings and faster progress.'; }
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;padding:24px"><div style="font-size:36px;margin-bottom:4px">' + item.icon + '</div><h3 style="font-size:18px;font-weight:700;margin:0 0 2px">' + item.name + '</h3><div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + item.cat + ' &middot; ' + item.cost + ' \u269C</div><div style="background:var(--primary-light);border-radius:12px;padding:12px;margin-bottom:12px">' + previewSvg + '</div><p style="font-size:13px;color:var(--text-light);line-height:1.5;margin-bottom:12px">' + fullDesc + '</p><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">Close</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;padding:24px"><div style="font-size:36px;margin-bottom:4px">' + item.icon + '</div><h3 style="font-size:18px;font-weight:700;margin:0 0 2px">' + item.name + '</h3><div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + item.cat + ' &middot; ' + item.cost + ' \u269C</div><div style="background:var(--primary-light);border-radius:12px;padding:12px;margin-bottom:12px">' + previewSvg + '</div><p style="font-size:13px;color:var(--text-light);line-height:1.5;margin-bottom:12px">' + fullDesc + '</p><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t('Close')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -6704,7 +6705,7 @@ function shopHTML() {
   var activeStr = (bd.streak||0) > 0 ? '<span style="font-size:9px;color:var(--gold)">('+bd.streak+' active)</span>' : '';
   var activeDbl = bd.doubleExpiry > Date.now() ? '<span style="font-size:9px;color:var(--gold)">('+Math.ceil((bd.doubleExpiry-Date.now())/3600000)+'h left)</span>' : '';
   var activeBon = bd.bonusDate === new Date().toDateString() ? '<span style="font-size:9px;color:var(--gold)">(active today)</span>' : '';
-  var h='<h2 class="page-title">&#128717; Shop</h2>';
+  var h='<h2 class="page-title">&#128717; '+t('Shop')+'</h2>';
   h+='<div class="card" style="padding:16px;text-align:center">';
   h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Spend schillings on decor, skins, and boosts</div>';
   h+='<div style="font-size:24px;font-weight:800;color:#d4a017;margin-bottom:10px">'+sch+' \u269C</div>';
@@ -6762,7 +6763,7 @@ function showVillageModal() {
   var ov = document.createElement('div');
   ov.className = 'overlay';
   ov.id = 'village-modal';
-  ov.innerHTML = '<div class="overlay-content" style="max-width:480px;text-align:center;padding:20px"><div style="font-size:13px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">Your Village</div><div style="font-size:22px;font-weight:700;color:var(--primary);margin-bottom:2px">' + lnames[Math.min(level,maxL)] + '</div><div style="font-size:12px;color:var(--text-light);margin-bottom:8px">' + (ldescs[Math.min(level,maxL)]||'') + '</div>' + (days > 0 ? '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">' + days + ' day' + (days!==1?'s':'') + ' of growth</div>' : '') + '<div style="max-width:360px;margin:0 auto 10px">' + villageHTML() + '</div><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'village-modal\').remove()">Close</button></div>';
+  ov.innerHTML = '<div class="overlay-content" style="max-width:480px;text-align:center;padding:20px"><div style="font-size:13px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">Your Village</div><div style="font-size:22px;font-weight:700;color:var(--primary);margin-bottom:2px">' + lnames[Math.min(level,maxL)] + '</div><div style="font-size:12px;color:var(--text-light);margin-bottom:8px">' + (ldescs[Math.min(level,maxL)]||'') + '</div>' + (days > 0 ? '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">' + days + ' day' + (days!==1?'s':'') + ' of growth</div>' : '') + '<div style="max-width:360px;margin:0 auto 10px">' + villageHTML() + '</div><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'village-modal\').remove()">'+t('Close')+'</button></div>';
   document.body.appendChild(ov);
 }
 function waxSealSVG(s) {
