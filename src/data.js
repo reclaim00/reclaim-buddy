@@ -1031,18 +1031,19 @@ function handleAuth() {
   var email = document.getElementById('si-email');
   var password = document.getElementById('si-password');
   var error = document.getElementById('si-error');
-  if (!email || !email.value || !email.value.includes('@')) { alert(t('Enter a valid email.')); return; }
-  if (!password || !password.value || password.value.length < 4) { alert(t('Password must be at least 4 characters.')); return; }
+  var emailStr = email ? email.value.trim() : '';
+  var pwdStr = password ? password.value.trim() : '';
+  if (!emailStr || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { alert(t('Enter a valid email.')); return; }
+  if (!pwdStr || pwdStr.length < 4) { alert(t('Password must be at least 4 characters.')); return; }
   if (error) error.textContent = '';
   var isSignUp = SIGN_IN_MODE === 'up';
-  var emailStr = email.value.trim();
   if (isSignUp) {
-    firebase.auth().createUserWithEmailAndPassword(emailStr, password.value)
+    firebase.auth().createUserWithEmailAndPassword(emailStr, pwdStr)
       .catch(function(err) {
         if (error) error.textContent = err.message;
       });
   } else {
-    firebase.auth().signInWithEmailAndPassword(emailStr, password.value)
+    firebase.auth().signInWithEmailAndPassword(emailStr, pwdStr)
       .catch(function(err) {
         if (error) error.textContent = err.message;
       });
