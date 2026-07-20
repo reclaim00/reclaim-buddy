@@ -926,10 +926,11 @@ function trackHTML() {
 
   // Mood history
   h += '<div class="card"><h3>'+t('Mood History')+'</h3>';
+  h += '<input type="text" id="ms" placeholder="'+t('Search moods...')+'" oninput="filterMoods(this.value)" style="margin-bottom:8px;width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box">';
   var allMoods = D.moods.slice().reverse().slice(0,15);
   if (!allMoods.length) h += '<div class="empty-state">'+t('No moods logged yet.')+'</div>';
   for (var i=0;i<allMoods.length;i++) {
-    h += '<div class="entry-item"><span style="font-size:13px;font-weight:600;color:var(--primary)">' + MOODS[allMoods[i].val-1].label + '</span> <span style="font-size:13px;color:var(--muted)">' + allMoods[i].date + ' at ' + allMoods[i].time + '</span></div>';
+    h += '<div class="mood-item"><span style="font-size:13px;font-weight:600;color:var(--primary)">' + MOODS[allMoods[i].val-1].label + '</span> <span style="font-size:13px;color:var(--muted)">' + allMoods[i].date + ' at ' + allMoods[i].time + '</span></div>';
   }
   h += '</div>';
 
@@ -969,6 +970,14 @@ function logMood(val) {
   saveData();
 }
 
+function filterMoods(val) {
+  var q = val.toLowerCase();
+  var items = document.querySelectorAll('.mood-item');
+  for (var i=0;i<items.length;i++) {
+    items[i].style.display = !q || items[i].textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+  }
+}
+
 // ====== JOURNAL ======
 function journalHTML() {
   var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px">';
@@ -983,23 +992,28 @@ function journalHTML() {
     h += '<span style="font-size:16px">&#128302;</span><span style="font-size:12px;font-weight:600;color:var(--primary)">Journal Insights</span><span style="font-size:10px;color:var(--muted)">(click to toggle)</span></div>';
     h += '<div id="journal-insights-body" style="display:none">' + insightsHTML() + '</div></div>';
   }
-  h += '<input type="text" id="journal-search" placeholder="'+t('Search entries...')+'" oninput="render()" style="margin-bottom:8px">';
+  h += '<input type="text" id="js" placeholder="'+t('Search entries...')+'" oninput="filterJournal(this.value)" style="margin-bottom:8px;width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box">';
   if (!D.journal.length) {
     h += '<div class="card"><div class="empty-state">'+t('No journal entries yet. Start writing!')+'</div></div>';
   } else {
-    var search = (document.getElementById('journal-search') && document.getElementById('journal-search').value.toLowerCase()) || '';
     var entries = D.journal.slice().reverse();
-    var shown = 0;
-    for (var i=0;i<entries.length && shown<50;i++) {
+    for (var i=0;i<entries.length && i<50;i++) {
       var idx = D.journal.length - 1 - i;
       var entryText = getEntryText(entries[i]);
-      if (search && entryText.toLowerCase().indexOf(search) === -1) continue;
-      shown++;
-      h += '<div class="card"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryText.replace(/\n/g,'<br>') + '</div></div></div>';
+      var searchData = (entryText + ' ' + regnalDate(entries[i].date) + ' ' + (entries[i].mood ? MOODS[entries[i].mood-1].label : '')).toLowerCase().replace(/"/g,'&quot;');
+      h += '<div class="journal-entry card" data-search="' + searchData + '"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryText.replace(/\n/g,'<br>') + '</div></div></div>';
     }
-    if (search && shown === 0) h += '<div class="card"><div class="empty-state">'+t('No entries matching')+' "' + search + '"</div></div>';
   }
   return h;
+}
+
+function filterJournal(val) {
+  var q = val.toLowerCase();
+  var entries = document.querySelectorAll('.journal-entry');
+  for (var i=0;i<entries.length;i++) {
+    var searchData = entries[i].getAttribute('data-search');
+    entries[i].style.display = !q || (searchData && searchData.indexOf(q) !== -1) ? '' : 'none';
+  }
 }
 
 function showNewJournal() {
@@ -5413,13 +5427,28 @@ function cravingCardHTML() {
     h += '<div class="empty-state">'+t('Log your first craving to start seeing patterns. Arthur will analyze your triggers over time.')+'</div>';
   } else {
     h += '<p style="font-size:12px;color:var(--muted);margin-bottom:6px">' + D.cravings.length + ' '+t('cravings logged')+'</p>';
-    var last = D.cravings[D.cravings.length-1];
-    h += '<div style="background:var(--primary-light);padding:10px;border-radius:10px;font-size:12px;line-height:1.5;margin-bottom:6px"><strong>'+t('Last craving:')+'</strong> ' + last.date + ' at ' + last.time + ' &mdash; '+t('intensity')+' ' + last.intensity + '/10' + (last.trigger ? ' (' + last.trigger + ')' : '') + '</div>';
-    h += '<button class="btn btn-sm btn-primary" onclick="logCraving()">'+t('Log Craving')+'</button>';
-    h += '<button class="btn btn-sm btn-outline" onclick="showCravingPatterns()" style="margin-left:4px">'+t('View Patterns')+'</button>';
+    h += '<input type="text" id="cs" placeholder="'+t('Search cravings...')+'" oninput="filterCravings(this.value)" style="margin-bottom:8px;width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box">';
+    var cravings = D.cravings.slice().reverse();
+    for (var i=0;i<cravings.length;i++) {
+      var cr = cravings[i];
+      var survived = cr.survived ? ' <span style="color:#22c55e">&#10003;</span>' : '';
+      h += '<div class="craving-entry" style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">';
+      h += '<span style="font-weight:600">' + cr.date + ' at ' + cr.time + '</span> &mdash; '+t('intensity')+' ' + cr.intensity + '/10' + (cr.trigger ? ' (' + cr.trigger + ')' : '') + survived;
+      h += '</div>';
+    }
+    h += '<button class="btn btn-sm btn-primary" onclick="logCraving()" style="margin-top:6px">'+t('Log Craving')+'</button>';
+    h += '<button class="btn btn-sm btn-outline" onclick="showCravingPatterns()" style="margin-left:4px;margin-top:6px">'+t('View Patterns')+'</button>';
   }
   h += '</div>';
   return h;
+}
+
+function filterCravings(val) {
+  var q = val.toLowerCase();
+  var items = document.querySelectorAll('.craving-entry');
+  for (var i=0;i<items.length;i++) {
+    items[i].style.display = !q || items[i].textContent.toLowerCase().indexOf(q) !== -1 ? '' : 'none';
+  }
 }
 
 // ====== MONTHLY CHALLENGE ======
