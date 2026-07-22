@@ -467,17 +467,8 @@ body.dark .profile-btn-float{background:rgba(20,16,30,.6);border-color:#2d223a;b
 .oswald-svg{width:75px;height:105px;transform-origin:bottom center}
 .arthur-svg{width:75px;height:105px;transform-origin:bottom center}
 .erin-svg{width:75px;height:105px;transform-origin:bottom center}
-.mtn-climber{transition:all .6s cubic-bezier(.34,1.2,.64,1)}.mtn-climber svg{filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
-.mtn-climb-char{animation:climbBob .55s ease-in-out infinite}.mtn-climb-char .climb-arm{animation:climbArm .65s ease-in-out infinite;transform-origin:center 8px}.mtn-climb-char .climb-arm.d2{animation-delay:.33s}
-.mtn-scroll-bg{animation:mtnBgScroll 2s linear infinite}.mtn-scroll-bg2{animation:mtnBgScroll 2.8s linear infinite}
-.mtn-ledge{animation:ledgeScroll 3s linear infinite}
-.mtn-day-num{animation:mtnDayPop .4s cubic-bezier(.34,1.2,.64,1) forwards}
-@keyframes climbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes climbArm{0%,100%{transform:rotate(-25deg)}50%{transform:rotate(25deg)}}
-@keyframes mtnBgScroll{0%{transform:translateY(0)}100%{transform:translateY(80px)}}
-@keyframes ledgeScroll{0%{transform:translateY(0)}100%{transform:translateY(280px)}}
-@keyframes rockFall{0%{transform:translateY(-10px) rotate(0deg);opacity:0}15%{opacity:.5}85%{opacity:.3}100%{transform:translateY(320px) rotate(360deg);opacity:0}}
-@keyframes mtnDayPop{0%{transform:scale(0) rotate(-15deg);opacity:0}60%{transform:scale(1.15) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+.map-avatar{animation:mapBob 1.8s ease-in-out infinite;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+@keyframes mapBob{0%,100%{transform:translate(-50%,-60%)}50%{transform:translate(-50%,-65%)}}
 
 /* Oswald state-based limb animations */
 

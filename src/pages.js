@@ -3587,103 +3587,132 @@ function showCheckinReaction(mood) {
   overlay.innerHTML = '<div style="background:var(--card);border-radius:20px;max-width:340px;width:90%;padding:28px 24px;text-align:center;border:2px solid ' + colors[pick] + ';animation:scaleIn .3s ease;box-shadow:0 12px 40px rgba(0,0,0,.2)">' +
     '<div style="width:48px;height:48px;border-radius:24px;background:' + colors[pick] + ';margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:20px">' + pick[0] + '</div>' +
     '<p style="font-size:13px;line-height:1.6;color:var(--text);margin-bottom:16px">' + msg + '</p>' +
-    '<button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();showStreakMountain()" style="width:100%">Continue</button></div>';
+    '<button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();showJourneyMap()" style="width:100%">Continue</button></div>';
   document.body.appendChild(overlay);
 }
-function showStreakMountain() {
+function showJourneyMap() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.id = 'streak-mtn';
-  overlay.style.background = 'rgba(0,0,0,.5)';
+  overlay.id = 'journey-map-ol';
+  overlay.style.background = 'rgba(0,0,0,.55)';
   overlay.style.alignItems = 'flex-start';
-  overlay.style.paddingTop = '20px';
-  overlay.innerHTML = '<div id="mtn-inner"></div>';
-  document.body.appendChild(overlay);
-  runClimbPhase(overlay);
-}
-function runClimbPhase(overlay) {
-  var streak = D.streak || 1;
-  var atop = streak >= 30;
-  var acs = '<svg viewBox="0 0 20 30" style="width:30px"><ellipse cx="7" cy="28" rx="5" ry="1.5" fill="rgba(0,0,0,.3)"/><path d="M5 18 L4 26 L6 27 L7 26 L8 27 L10 26 L9 18" fill="#6b7280"/><ellipse cx="5" cy="26.5" rx="1.8" ry="1.2" fill="#4a3728"/><ellipse cx="9" cy="26.5" rx="1.8" ry="1.2" fill="#4a3728"/><rect x="5.3" y="7" width="3.5" height="12" rx="1.5" fill="#2563eb"/><line x1="7" y1="7" x2="7" y2="18" stroke="#1d4ed8" stroke-width=".5"/><rect x="8.8" y="8" width="2" height="5" rx=".6" fill="#059669"/><path d="M3.5 5 Q4 1.5 7 1.5 Q10 1.5 10.5 5 Z" fill="#fbbf24"/><line x1="3.5" y1="5" x2="10.5" y2="5" stroke="#d97706" stroke-width=".5"/><circle cx="5.5" cy="4" r=".5" fill="#333"/><circle cx="8.5" cy="4" r=".5" fill="#333"/><g class="climb-arm" style="transform-origin:6px 8px"><path d="M6 8 L8 1" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" fill="none"/><g transform="translate(8,1)"><use href="#star4" transform="scale(1)" fill="#fff"/></g></g><g class="climb-arm d2" style="transform-origin:8px 8px"><path d="M8 8 L3 2" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" fill="none"/><g transform="translate(3,2)"><use href="#star4" transform="scale(1)" fill="#fff"/></g></g></svg>';
-  var pcs = '<svg viewBox="0 0 20 30" style="width:30px"><ellipse cx="7" cy="28" rx="5" ry="1.5" fill="rgba(0,0,0,.3)"/><path d="M5 18 L4 26 L6 27 L7 26 L8 27 L10 26 L9 18" fill="#e5e7eb"/><ellipse cx="5" cy="26.5" rx="1.8" ry="1.2" fill="#4a3728"/><ellipse cx="9" cy="26.5" rx="1.8" ry="1.2" fill="#4a3728"/><rect x="5.3" y="7" width="3.5" height="12" rx="1.5" fill="#059669"/><line x1="7" y1="7" x2="7" y2="18" stroke="#047857" stroke-width=".5"/><rect x="3" y="8" width="2" height="5" rx=".6" fill="#2563eb"/><path d="M3.5 5 Q4 1.5 7 1.5 Q10 1.5 10.5 5 Z" fill="#ef4444"/><line x1="3.5" y1="5" x2="10.5" y2="5" stroke="#dc2626" stroke-width=".5"/><circle cx="5.5" cy="4" r=".5" fill="#333"/><circle cx="8.5" cy="4" r=".5" fill="#333"/><g class="climb-arm" style="transform-origin:6px 8px"><path d="M6 8 L8 1" stroke="#059669" stroke-width="2.5" stroke-linecap="round" fill="none"/><g transform="translate(8,1)"><use href="#star4" transform="scale(1)" fill="#f0d5b0"/></g></g><g class="climb-arm d2" style="transform-origin:8px 8px"><path d="M8 8 L3 2" stroke="#059669" stroke-width="2.5" stroke-linecap="round" fill="none"/><g transform="translate(3,2)"><use href="#star4" transform="scale(1)" fill="#f0d5b0"/></g></g></svg>';
-  var ecs = '<svg viewBox="0 0 20 30" style="width:28px"><ellipse cx="7" cy="28" rx="5" ry="1.5" fill="rgba(0,0,0,.3)"/><path d="M5 18 L4 26 L6 27 L7 26 L8 27 L10 26 L9 18" fill="#1f2937"/><ellipse cx="5" cy="26.5" rx="1.8" ry="1.2" fill="#4a3728"/><ellipse cx="9" cy="26.5" rx="1.8" ry="1.2" fill="#4a3728"/><rect x="5.3" y="7" width="3.5" height="12" rx="1.5" fill="#ec4899"/><line x1="7" y1="7" x2="7" y2="18" stroke="#db2777" stroke-width=".5"/><rect x="8.8" y="8" width="2" height="5" rx=".6" fill="#fbbf24"/><path d="M3.5 5 Q4 1.5 7 1.5 Q10 1.5 10.5 5 Z" fill="#8b5cf6"/><line x1="3.5" y1="5" x2="10.5" y2="5" stroke="#7c3aed" stroke-width=".5"/><path d="M10 3 Q12 2 12.5 4" stroke="#8b5cf6" stroke-width="1.5" stroke-linecap="round" fill="none"/><circle cx="5.5" cy="4" r=".5" fill="#333"/><circle cx="8.5" cy="4" r=".5" fill="#333"/><g class="climb-arm" style="transform-origin:6px 8px"><path d="M6 8 L8 1" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" fill="none"/><g transform="translate(8,1)"><use href="#star4" transform="scale(1)" fill="#f0d5b0"/></g></g><g class="climb-arm d2" style="transform-origin:8px 8px"><path d="M8 8 L3 2" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round" fill="none"/><g transform="translate(3,2)"><use href="#star4" transform="scale(1)" fill="#f0d5b0"/></g></g></svg>';
-  document.getElementById('mtn-inner').innerHTML =
-    '<div style="background:transparent;padding:10px;overflow:hidden;text-align:center">' +
-    '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#9968; Streak Mountain</div>' +
-    '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:8px">'+(atop?'&#x265B; Summit celebration!':'The climb continues...')+'</div>' +
-    '<div style="position:relative;height:280px;border-radius:16px;overflow:hidden;margin-bottom:6px;border:1px solid var(--border);box-shadow:inset 0 0 40px rgba(0,0,0,.5)">' +
-    '<div style="position:absolute;bottom:0;left:0;right:0;height:60px;background:linear-gradient(0deg,rgba(255,180,50,.08),transparent);z-index:1"></div>' +
-    '<div style="position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(180deg,rgba(74,144,196,.4),transparent);z-index:1"></div>' +
-    '<div class="mtn-scroll-bg" style="position:absolute;inset:-40px 0;background:linear-gradient(180deg,#3d2b1f,#2a1f15,#3d2b1f,#2a1f15);background-size:100% 80px"></div>' +
-    '<div class="mtn-scroll-bg2" style="position:absolute;inset:-40px 0;background:repeating-linear-gradient(0deg,transparent,transparent 16px,rgba(0,0,0,.06) 16px,rgba(0,0,0,.06) 17px),repeating-linear-gradient(90deg,transparent,transparent 35px,rgba(255,255,255,.015) 35px,rgba(255,255,255,.015) 36px)"></div>' +
-    '<div class="mtn-ledge" style="position:absolute;left:15%;right:45%;height:4px;top:30%;background:linear-gradient(90deg,#6b4c3b,#8B6914,#6b4c3b);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.4)"></div>' +
-    '<div class="mtn-ledge" style="position:absolute;left:30%;right:35%;height:4px;top:50%;background:linear-gradient(90deg,#6b4c3b,#8B6914,#6b4c3b);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.4)"></div>' +
-    '<div class="mtn-ledge" style="position:absolute;left:20%;right:50%;height:4px;top:70%;background:linear-gradient(90deg,#6b4c3b,#8B6914,#6b4c3b);border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.4)"></div>' +
-    '<div class="mtn-rock" style="position:absolute;left:60%;top:-10px;width:4px;height:4px;border-radius:1px;background:#6b4c3b;animation:rockFall 1.8s linear infinite"></div>' +
-    '<div class="mtn-rock" style="position:absolute;left:25%;top:-10px;width:3px;height:3px;border-radius:1px;background:#5c4033;animation:rockFall 2.2s linear infinite .6s"></div>' +
-    '<div class="mtn-rock" style="position:absolute;left:72%;top:-10px;width:5px;height:5px;border-radius:1px;background:#6b4c3b;animation:rockFall 1.5s linear infinite 1.2s"></div>' +
-    '<div style="position:absolute;top:0;left:15%;right:15%;height:80px;background:linear-gradient(180deg,rgba(255,255,255,.06),transparent);z-index:2"></div>' +
-    '<div class="mtn-climb-char" style="position:absolute;left:35%;top:25%;z-index:5;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))">'+acs+'</div>' +
-    '<div class="mtn-climb-char" style="position:absolute;left:52%;top:43%;z-index:5;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))">'+pcs+'</div>' +
-    '<div class="mtn-climb-char" style="position:absolute;left:38%;top:63%;z-index:5;filter:drop-shadow(0 2px 6px rgba(0,0,0,.6))">'+ecs+'</div>' +
-    '<div style="position:absolute;left:47%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,rgba(139,69,19,.3) 10%,rgba(139,69,19,.3) 90%,transparent);z-index:1"></div>' +
-    '<div style="position:absolute;top:10px;right:12px;z-index:10;text-align:right">' +
-    '<div class="mtn-day-num" style="font-size:28px;font-weight:900;color:#fbbf24;text-shadow:0 0 15px rgba(251,191,36,.4),0 2px 6px rgba(0,0,0,.5);line-height:1">'+streak+'</div>' +
-    '<div style="font-size:8px;color:rgba(255,255,255,.5);text-shadow:0 1px 2px rgba(0,0,0,.5)">DAY</div></div>' +
-    '</div>' +
-    '<div style="font-size:9px;color:rgba(255,255,255,.5);margin-bottom:6px">Climbing...</div>' +
-    '<div style="display:flex;gap:8px;justify-content:center;min-height:36px"><div id="mtn-continue-placeholder"></div></div></div>';
-  setTimeout(function() { showMapPhase(overlay); }, 3800);
-}
-function showMapPhase(overlay) {
-  if (!document.getElementById('streak-mtn')) return;
+  overlay.style.paddingTop = '16px';
   var streak = D.streak || 1;
   var maxDays = 30;
   var progress = Math.min((streak - 1) / (maxDays - 1), 1);
-  var wps = [{x:28,y:148,p:0},{x:55,y:128,p:0.17},{x:65,y:108,p:0.34},{x:40,y:88,p:0.5},{x:35,y:68,p:0.66},{x:55,y:48,p:0.83},{x:50,y:18,p:1}];
-  var cx = wps[0].x, cy = wps[0].y;
-  for (var i = 0; i < wps.length - 1; i++) {
-    if (progress >= wps[i].p && progress <= wps[i+1].p) {
-      var t = (progress - wps[i].p) / (wps[i+1].p - wps[i].p);
-      cx = wps[i].x + (wps[i+1].x - wps[i].x) * t; cy = wps[i].y + (wps[i+1].y - wps[i].y) * t;
-      break;
-    }
-  }
   var atop = streak >= maxDays;
-  var charP = atop ? [{x:47,y:17},{x:41,y:19},{x:53,y:19}] : [{x:cx,y:cy},{x:cx-3,y:cy+5},{x:cx-5,y:cy+10}];
-  var ms = '', msD = [5,10,15,20,25,30];
-  for (var mi=0;mi<msD.length;mi++) {
-    var mp = (msD[mi]-1)/(maxDays-1), mx=wps[0].x, my=wps[0].y;
-    for (var j=0;j<wps.length-1;j++) { if (mp>=wps[j].p&&mp<=wps[j+1].p) { var t2=(mp-wps[j].p)/(wps[j+1].p-wps[j].p); mx=wps[j].x+(wps[j+1].x-wps[j].x)*t2; my=wps[j].y+(wps[j+1].y-wps[j].y)*t2; break; } }
-    ms += '<div style="position:absolute;left:'+(mx)+'%;top:'+(my/160*100)+'%;z-index:2;transform:translate(-50%,-50%);pointer-events:none"><div style="width:7px;height:7px;border-radius:4px;background:'+(streak>=msD[mi]?'#fbbf24':'rgba(255,255,255,.12)')+';border:1px solid '+(streak>=msD[mi]?'#f59e0b':'rgba(255,255,255,.2)')+'"></div><div style="font-size:6px;color:'+(streak>=msD[mi]?'#fbbf24':'rgba(255,255,255,.3)')+';font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.5);margin-top:1px">'+msD[mi]+'</div></div>';
+  // Kingdoms along the journey
+  var kingdoms = [
+    {name:"The Shire", icon:"🌳", days:"1-5", desc:"Home. Safe. Familiar."},
+    {name:"The Darkwood", icon:"🌲", days:"6-10", desc:"Shadows gather. Temptations lurk."},
+    {name:"Stone Pass", icon:"⛰️", days:"11-15", desc:"Steep. Grit builds here."},
+    {name:"Silver River", icon:"🌊", days:"16-20", desc:"Flow. Momentum carries you."},
+    {name:"Golden Plains", icon:"🌾", days:"21-25", desc:"Warmth. The reward nears."},
+    {name:"Celestial Citadel", icon:"🏰", days:"26-30", desc:"Mastery. You made it."}
+  ];
+  // Path waypoints (x%, y%) mapping the route across kingdoms
+  var wps = [
+    {x:10, y:78}, {x:22, y:68}, {x:34, y:74},
+    {x:45, y:60}, {x:55, y:66}, {x:68, y:52},
+    {x:78, y:56}, {x:85, y:38}
+  ];
+  var totalSegments = wps.length - 1;
+  var dayProgress = progress; // 0 to 1
+  // Calculate character position along the path
+  var segIdx = Math.min(Math.floor(dayProgress * totalSegments), totalSegments - 1);
+  var segT = (dayProgress * totalSegments) - segIdx;
+  var cx = wps[segIdx].x + (wps[segIdx+1].x - wps[segIdx].x) * segT;
+  var cy = wps[segIdx].y + (wps[segIdx+1].y - wps[segIdx].y) * segT;
+  // Kingdom territory boxes on the map
+  var kd = [
+    {x1:-2, x2:22, y1:60, y2:95, ki:0},
+    {x1:18, x2:38, y1:55, y2:88, ki:1},
+    {x1:30, x2:50, y1:45, y2:80, ki:2},
+    {x1:42, x2:62, y1:42, y2:76, ki:3},
+    {x1:55, x2:76, y1:35, y2:68, ki:4},
+    {x1:70, x2:92, y1:20, y2:55, ki:5}
+  ];
+  var dayMarkers = [];
+  for (var d=1;d<=maxDays;d++) {
+    var dp = (d-1)/(maxDays-1);
+    var si = Math.min(Math.floor(dp * totalSegments), totalSegments - 1);
+    var st = (dp * totalSegments) - si;
+    var dx = wps[si].x + (wps[si+1].x - wps[si].x) * st;
+    var dy = wps[si].y + (wps[si+1].y - wps[si].y) * st;
+    var reached = d <= streak;
+    dayMarkers.push({x:dx, y:dy, day:d, reached:reached});
   }
-  var ma = '<svg viewBox="0 0 30 54" style="width:14px"><ellipse cx="15" cy="52" rx="4" ry="1" fill="rgba(0,0,0,.2)"/><path d="M12 12 L13 28 L17 28 L18 12 Z" fill="#2563eb"/><ellipse cx="15" cy="7" rx="4" ry="3.5" fill="#f0d5b0"/><path d="M11 6 L11 3 Q15 1 19 3 L19 6" fill="#fbbf24"/><circle cx="13" cy="6.5" r=".5" fill="#333"/><circle cx="17" cy="6.5" r=".5" fill="#333"/><path d="M14 29 L11 38" stroke="#f0d5b0" stroke-width="2" stroke-linecap="round"/><path d="M16 29 L19 38" stroke="#f0d5b0" stroke-width="2" stroke-linecap="round"/></svg>';
-  var mp = '<svg viewBox="0 0 30 54" style="width:14px"><ellipse cx="15" cy="52" rx="4" ry="1" fill="rgba(0,0,0,.2)"/><path d="M11 12 L12 42 L18 42 L19 12 Z" fill="#4338ca"/><ellipse cx="15" cy="7" rx="4" ry="3.5" fill="#f0d5b0"/><path d="M10 6 L15 -1 L20 6" fill="#1e1b4b"/><circle cx="13" cy="6.5" r=".5" fill="#333"/><circle cx="17" cy="6.5" r=".5" fill="#333"/><path d="M13 29 L10 39" stroke="#4338ca" stroke-width="2" stroke-linecap="round"/><path d="M17 29 L20 39" stroke="#4338ca" stroke-width="2" stroke-linecap="round"/></svg>';
-  var me = '<svg viewBox="0 0 30 54" style="width:14px"><ellipse cx="15" cy="52" rx="4" ry="1" fill="rgba(0,0,0,.2)"/><path d="M12 12 L13 28 L17 28 L18 12 Z" fill="#ec4899"/><ellipse cx="15" cy="7" rx="4" ry="3.5" fill="#f0d5b0"/><path d="M7.5 4.5 L15 -1 L22.5 4.5" fill="#8B4513"/><circle cx="13" cy="6.5" r=".5" fill="#333"/><circle cx="17" cy="6.5" r=".5" fill="#333"/><path d="M13 29 L10 39" stroke="#f0d5b0" stroke-width="2" stroke-linecap="round"/><path d="M17 29 L20 39" stroke="#f0d5b0" stroke-width="2" stroke-linecap="round"/></svg>';
-  document.getElementById('mtn-inner').innerHTML =
-    '<div style="background:transparent;padding:10px;overflow:hidden;text-align:center">' +
-    '<div style="font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;text-shadow:0 1px 4px rgba(0,0,0,.5)">&#9968; Streak Mountain</div>' +
-    '<div style="font-size:10px;color:rgba(255,255,255,.6);margin-bottom:8px">'+(atop?'&#x265B; You reached the summit!':'Day '+streak+' of the climb')+'</div>' +
-    '<div style="position:relative;height:280px;background:linear-gradient(180deg,#0f1a2e,#4a90c4 40%,#87ceeb 60%,#b8d4e8);border-radius:16px;overflow:hidden;margin-bottom:6px;border:1px solid var(--border);box-shadow:inset 0 0 40px rgba(0,0,0,.3)">' +
-    '<svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 100 160" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f1a2e"/><stop offset="40%" stop-color="#4a90c4"/><stop offset="100%" stop-color="#b8d4e8"/></linearGradient><linearGradient id="mtnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a5568"/><stop offset="40%" stop-color="#5a7d5a"/><stop offset="100%" stop-color="#3d6b3d"/></linearGradient></defs>' +
-    '<rect width="100" height="160" fill="url(#skyG)"/><polygon points="0,120 25,60 50,100 75,50 100,90 100,160 0,160" fill="#3a6b3a" opacity="0.4"/><polygon points="0,100 35,50 70,80 100,40 100,160 0,160" fill="#2d5a2d" opacity="0.25"/>' +
-    '<polygon points="5,160 50,12 95,160" fill="url(#mtnG)"/><path d="M 20 130 Q 35 120 45 105" stroke="rgba(0,0,0,.08)" stroke-width=".5" fill="none"/><path d="M 55 110 Q 65 100 75 85" stroke="rgba(0,0,0,.08)" stroke-width=".5" fill="none"/><path d="M 35 95 Q 45 85 55 70" stroke="rgba(0,0,0,.08)" stroke-width=".5" fill="none"/>' +
-    '<polygon points="40,30 50,12 60,30 56,32 50,25 44,32" fill="#fff" opacity=".85"/><polygon points="43,28 50,16 57,28 53,30 50,24 47,30" fill="#e8f0f8"/>' +
-    '<path d="M 28 148 L 55 128 L 65 108 L 40 88 L 35 68 L 55 48 L 50 18" fill="none" stroke="#d4a574" stroke-width="2" stroke-dasharray="3,3" opacity=".7"/>' +
-    '<polygon points="8,155 10,145 12,155" fill="#1a4a1a"/><polygon points="14,153 16,140 18,153" fill="#2d5a27"/><polygon points="82,152 85,138 88,152" fill="#1a4a1a"/><polygon points="90,154 92,143 94,154" fill="#2d5a27"/>' +
-    '<ellipse cx="25" cy="35" rx="12" ry="4" fill="rgba(255,255,255,.35)"/><ellipse cx="75" cy="28" rx="14" ry="5" fill="rgba(255,255,255,.25)"/><ellipse cx="85" cy="22" rx="8" ry="3" fill="rgba(255,255,255,.2)"/>' +
-    '<circle cx="80" cy="12" r="6" fill="#fbbf24" opacity=".4"/><line x1="50" y1="12" x2="50" y2="3" stroke="#8B4513" stroke-width="1.5"/><polygon points="50,3 62,7 50,11" fill="#22c55e"/>' +
-    '</svg>' + ms +
-    '<div class="mtn-climber" style="position:absolute;left:'+(charP[0].x)+'%;top:'+(charP[0].y/160*100)+'%;z-index:5;transform:translate(-50%,-50%)">'+ma+'</div>' +
-    '<div class="mtn-climber" style="position:absolute;left:'+(charP[1].x)+'%;top:'+(charP[1].y/160*100)+'%;z-index:5;transform:translate(-50%,-50%)">'+mp+'</div>' +
-    '<div class="mtn-climber" style="position:absolute;left:'+(charP[2].x)+'%;top:'+(charP[2].y/160*100)+'%;z-index:5;transform:translate(-50%,-50%)">'+me+'</div>' +
-    '<div style="position:absolute;bottom:6px;left:12%;right:12%;z-index:10"><div style="display:flex;justify-content:space-between;font-size:7px;color:rgba(255,255,255,.6);margin-bottom:1px;text-shadow:0 1px 3px rgba(0,0,0,.5)"><span>Base</span><span>Summit</span></div><div style="height:3px;background:rgba(0,0,0,.25);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+Math.round(progress*100)+'%;background:linear-gradient(90deg,#22c55e,#eab308);border-radius:2px;transition:width .8s cubic-bezier(.22,1,.36,1)"></div></div></div>' +
+  // Build the map HTML
+  var kh = '';
+  for (var k=0;k<kd.length;k++) {
+    var kdD = kd[k];
+    var kg = kingdoms[kdD.ki];
+    var active = (streak > kdD.ki * 5);
+    kh += '<div style="position:absolute;left:'+kdD.x1+'%;top:'+kdD.y1+'%;width:'+(kdD.x2-kdD.x1)+'%;height:'+(kdD.y2-kdD.y1)+'%;border:1px dashed '+(active?'rgba(180,140,60,.3)':'rgba(180,140,60,.12)')+';border-radius:8px;z-index:1;pointer-events:none"></div>';
+    kh += '<div style="position:absolute;left:'+(kdD.x1+1)+'%;top:'+(kdD.y1+1)+'%;z-index:2;pointer-events:none;font-size:8px;color:'+(active?'#b88a3a':'rgba(140,120,80,.3)')+';font-family:\'Cinzel\',serif;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.6)" data-kingdom="'+kg.name+'">'+kg.icon+' '+kg.name+'</div>';
+  }
+  // Path SVG
+  var pathD = '';
+  for (var pi=0;pi<wps.length;pi++) {
+    pathD += (pi===0?'M':'L') + wps[pi].x + ' ' + wps[pi].y + ' ';
+  }
+  // Day marker dots along path
+  var dotsHtml = '';
+  for (var di=0;di<dayMarkers.length;di++) {
+    var dm = dayMarkers[di];
+    dotsHtml += '<div style="position:absolute;left:'+dm.x+'%;top:'+dm.y+'%;z-index:6;transform:translate(-50%,-50%);pointer-events:none;width:4px;height:4px;border-radius:2px;background:'+(dm.reached?'#fbbf24':'rgba(200,180,120,.15)')+';border:1px solid '+(dm.reached?'#d97706':'rgba(200,180,120,.2)')+'"></div>';
+  }
+  // Avatar marker - clothmap character
+  var avatarSvg = '<svg viewBox="0 0 24 32" style="width:20px;height:26px"><ellipse cx="12" cy="30" rx="4" ry="1.5" fill="rgba(0,0,0,.2)"/><path d="M9 14 L10 26 L14 26 L15 14 Z" fill="#2563eb"/><ellipse cx="12" cy="8" rx="4.5" ry="4" fill="#f0d5b0"/><path d="M8.5 6 L8.5 3 Q12 1 15.5 3 L15.5 6" fill="#1e3a5f"/><circle cx="10.5" cy="7.5" r=".6" fill="#333"/><circle cx="13.5" cy="7.5" r=".6" fill="#333"/><path d="M11 7 L12 9 L13 7" stroke="#333" stroke-width=".5" fill="none"/><path d="M11.5 11 L9 17" stroke="#f0d5b0" stroke-width="1.5" stroke-linecap="round"/><path d="M12.5 11 L15 17" stroke="#f0d5b0" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  // Compass rose
+  var compass = '<svg viewBox="0 0 40 40" style="width:32px;height:32px"><circle cx="20" cy="20" r="18" fill="none" stroke="rgba(180,140,60,.25)" stroke-width=".5"/><polygon points="20,4 23,18 20,20 17,18" fill="#b88a3a" opacity=".8"/><polygon points="20,36 17,22 20,20 23,22" fill="#8a6a2a" opacity=".6"/><polygon points="36,20 22,17 20,20 22,23" fill="#b88a3a" opacity=".5"/><polygon points="4,20 18,23 20,20 18,17" fill="#b88a3a" opacity=".5"/><circle cx="20" cy="20" r="1.5" fill="#d4a574"/></svg>';
+  // Legend
+  var legendHtml = '';
+  for (var li=0;li<kingdoms.length;li++) {
+    var kg = kingdoms[li];
+    var unlocked = streak >= (li * 5 + 1);
+    legendHtml += '<div style="display:flex;align-items:center;gap:4px;font-size:8px;color:'+(unlocked?'var(--text)':'rgba(140,120,80,.3)')+'"><span>'+kg.icon+'</span><span>'+kg.name+'</span><span style="color:rgba(140,120,80,.5)">('+kg.days+')</span></div>';
+  }
+  var scrollHint = '<div style="font-size:9px;color:rgba(180,140,60,.4);margin:4px 0;text-align:center">~ The Kingdoms of Recovery ~</div>';
+  overlay.innerHTML =
+    '<div style="background:linear-gradient(180deg,#1a1410,#2a2018);border:1px solid rgba(180,140,60,.25);border-radius:18px;max-width:480px;width:94%;padding:14px 12px 12px;box-shadow:0 12px 48px rgba(0,0,0,.5);margin:0 auto">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
+    '<div style="font-size:14px;font-weight:700;color:#b88a3a;font-family:\'Cinzel\',serif;text-shadow:0 1px 4px rgba(0,0,0,.4)">&#128214; Journeymap</div>' +
+    '<div style="display:flex;align-items:center;gap:6px">' +
+    '<div style="font-size:18px;font-weight:900;color:#fbbf24;text-shadow:0 0 10px rgba(251,191,36,.3)">'+streak+'</div>' +
+    '<div style="font-size:7px;color:rgba(180,140,60,.6);line-height:1.2"><div>DAY</div><div>STREAK</div></div>' +
+    '</div></div>' +
+    scrollHint +
+    // Map container
+    '<div style="position:relative;height:280px;background:radial-gradient(ellipse at 50% 80%, #3a2a1a, #1e1810);border-radius:12px;overflow:hidden;border:1px solid rgba(180,140,60,.15);margin-bottom:6px">' +
+    // Map texture overlay
+    '<div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 8px,rgba(0,0,0,.04) 8px,rgba(0,0,0,.04) 9px),repeating-linear-gradient(90deg,transparent,transparent 8px,rgba(0,0,0,.03) 8px,rgba(0,0,0,.03) 9px);z-index:2;pointer-events:none"></div>' +
+    // Kingdom regions
+    kh +
+    // Path line
+    '<svg style="position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none" viewBox="0 0 100 100" preserveAspectRatio="none">' +
+    '<path d="'+pathD+'" fill="none" stroke="rgba(180,140,60,.2)" stroke-width=".8" stroke-dasharray="2,3"/>' +
+    '<path d="'+pathD+'" fill="none" stroke="rgba(251,191,36,.4)" stroke-width=".6" stroke-dasharray="2,4" stroke-dashoffset="-3"/>' +
+    '</svg>' +
+    // Day markers
+    dotsHtml +
+    // Character on map
+    '<div class="map-avatar" style="position:absolute;left:'+cx+'%;top:'+cy+'%;z-index:8;transform:translate(-50%,-60%);filter:drop-shadow(0 2px 6px rgba(0,0,0,.6));transition:left .6s cubic-bezier(.34,1.2,.64,1),top .6s cubic-bezier(.34,1.2,.64,1)">'+avatarSvg+'</div>' +
+    // Compass rose
+    '<div style="position:absolute;right:6px;bottom:6px;z-index:5;opacity:.5">'+compass+'</div>' +
+    // Title scroll
+    '<div style="position:absolute;top:4px;left:50%;z-index:5;transform:translateX(-50%);background:rgba(26,20,16,.8);padding:2px 10px;border-radius:4px;border:1px solid rgba(180,140,60,.2);font-size:7px;color:rgba(180,140,60,.6);font-family:\'Cinzel\',serif;white-space:nowrap">The Quest of '+(D.name||'the Wanderer')+'</div>' +
     '</div>' +
-    '<div style="font-size:9px;color:rgba(255,255,255,.5);margin-bottom:6px">'+(atop?'&#x269C; Summit celebration! '+streak+' day streak!':streak+' day streak &middot; '+Math.round(progress*100)+'% to summit')+'</div>' +
-    '<div style="display:flex;gap:8px;justify-content:center">' +
-    '<button onclick="var el=document.getElementById(\'streak-mtn\');if(el){el.remove();render();}" style="background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:600;cursor:pointer">Continue &#8594;</button>' +
-    '<button onclick="runClimbPhase(document.getElementById(\'streak-mtn\'))" style="background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer">&#8635; Replay</button>' +
-    '</div></div>';
+    // Legend / progress
+    '<div style="display:flex;gap:8px;align-items:stretch">' +
+    '<div style="flex:1;display:flex;flex-wrap:wrap;gap:1px 6px;padding:4px 6px;background:rgba(180,140,60,.06);border-radius:8px;border:1px solid rgba(180,140,60,.1)">' + legendHtml + '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:4px;justify-content:center">' +
+    '<button onclick="var el=document.getElementById(\'journey-map-ol\');if(el){el.remove();render();}" style="background:#b88a3a;color:#1a1410;border:none;border-radius:8px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:\'Cinzel\',serif">Continue &#8594;</button>' +
+    '<button onclick="showJourneyMap()" style="background:rgba(180,140,60,.12);color:rgba(180,140,60,.6);border:1px solid rgba(180,140,60,.15);border-radius:8px;padding:4px 10px;font-size:9px;cursor:pointer;font-family:\'Cinzel\',serif">&#8635; Revisit</button>' +
+    '</div></div>' +
+    '<div style="font-size:7px;color:rgba(180,140,60,.3);text-align:center;margin-top:4px;font-style:italic">"Not all who wander are lost"</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
 }
 
 // ====== BREATHING ======
