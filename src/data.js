@@ -527,6 +527,17 @@ var TRANS = {
 'Books':{es:'Libros',fr:'Livres',de:'Bücher',it:'Libri',pt:'Livros','tr':'Kitaplar','nl':'Boeken','pl':'Książki','ja':'本','ru':'Книги','zh-cn':'书籍',ko:'도서',ar:'كتب',hi:'पुस्तकें',bn:'বই',sv:'Böcker',no:'Bøker',da:'Bøger',fi:'Kirjat',el:'Βιβλία',he:'ספרים',th:'หนังสือ',vi:'Sách',id:'Buku',ms:'Buku',sw:'Vitabu',tl:'Mga Aklat',ro:'Cărți',cs:'Knihy',hu:'Könyvek',uk:'Книги'},
 'Podcasts':{es:'Podcasts',fr:'Podcasts',de:'Podcasts',it:'Podcast',pt:'Podcasts','tr':'Podcastler','nl':'Podcasts','pl':'Podcasty','ja':'ポッドキャスト','ru':'Подкасты','zh-cn':'播客',ko:'팟캐스트',ar:'بودكاست',hi:'पॉडकास्ट',bn:'পডকাস্ট',sv:'Poddsändningar',no:'Podkaster',da:'Podcasts',fi:'Podcastit',el:'Podcasts',he:'פודקאסטים',th:'พอดแคสต์',vi:'Podcast',id:'Podcast',ms:'Podcast',sw:'Podikasti',tl:'Mga Podcast',ro:'Podcasturi',cs:'Podcasty',hu:'Podcastek',uk:'Подкасти'},
 'Videos':{es:'Videos',fr:'Vidéos',de:'Videos',it:'Video',pt:'Vídeos','tr':'Videolar','nl':'Videos','pl':'Filmy','ja':'動画','ru':'Видео','zh-cn':'视频',ko:'동영상',ar:'فيديو',hi:'वीडियो',bn:'ভিডিও',sv:'Videor',no:'Videoer',da:'Videoer',fi:'Videot',el:'Βίντεο',he:'סרטונים',th:'วิดีโอ',vi:'Video',id:'Video',ms:'Video',sw:'Video',tl:'Mga Video',ro:'Videoclipuri',cs:'Videa',hu:'Videók',uk:'Відео'},
+'Forgot password?':{es:'¿Olvidaste tu contraseña?',fr:'Mot de passe oublié ?',de:'Passwort vergessen?',it:'Password dimenticata?',pt:'Esqueceu a senha?','tr':'Şifrenizi mi unuttunuz?','nl':'Wachtwoord vergeten?','pl':'Zapomniałeś hasła?','ja':'パスワードをお忘れですか？','ru':'Забыли пароль?','zh-cn':'忘记密码？',ko:'비밀번호를 잊으셨나요?',ar:'هل نسيت كلمة المرور؟',hi:'पासवर्ड भूल गए?',bn:'পাসওয়ার্ড ভুলে গেছেন?',sv:'Glömt lösenordet?',no:'Glemt passord?',da:'Glemt adgangskode?',fi:'Unohditko salasanan?',el:'Forgot password?',he:'שכחת סיסמה?',th:'ลืมรหัสผ่าน?',vi:'Quên mật khẩu?',id:'Lupa kata sandi?',ms:'Lupa kata laluan?',sw:'Umesahau nywila?',tl:'Nakalimutan ang password?',ro:'Ai uitat parola?',cs:'Zapomněli jste heslo?',hu:'Elfelejtetted a jelszót?',uk:'Забули пароль?'},
+'Sending...':{es:'Enviando...',fr:'Envoi...',de:'Senden...',it:'Invio...',pt:'Enviando...','tr':'Gönderiliyor...','nl':'Verzenden...','pl':'Wysyłanie...','ja':'送信中...','ru':'Отправка...','zh-cn':'发送中...',ko:'보내는 중...',ar:'جارٍ الإرسال...',hi:'भेज रहा है...',bn:'পাঠানো হচ্ছে...',sv:'Skickar...',no:'Sender...',da:'Sender...',fi:'Lähetetään...',el:'Sending...',he:'שולח...',th:'กำลังส่ง...',vi:'Đang gửi...',id:'Mengirim...',ms:'Menghantar...',sw:'Inatuma...',tl:'Nagpapadala...',ro:'Se trimite...',cs:'Odesílání...',hu:'Küldés...',uk:'Надсилання...'},
+'Enter your email address first.':{es:'Ingresa tu correo electrónico primero.',fr:'Entrez votre adresse e-mail d\'abord.',de:'Geben Sie zuerst Ihre E-Mail-Adresse ein.',it:'Inserisci prima il tuo indirizzo email.',pt:'Digite seu endereço de e-mail primeiro.','tr':'Önce e-posta adresinizi girin.','nl':'Voer eerst uw e-mailadres in.','pl':'Najpierw wpisz swój adres e-mail.','ja':'最初にメールアドレスを入力してください。','ru':'Сначала введите свой адрес электронной почты.','zh-cn':'请先输入您的电子邮件地址。',ko:'먼저 이메일 주소를 입력하세요.',ar:'أدخل بريدك الإلكتروني أولاً.',hi:'पहले अपना ईमेल पता दर्ज करें।',bn:'প্রথমে আপনার ইমেল ঠিকানা লিখুন।',sv:'Ange din e-postadress först.',no:'Skriv inn e-postadressen din først.',da:'Indtast din e-mailadresse først.',fi:'Syötä sähköpostiosoitteesi ensin.',el:'Enter your email address first.',he:'הכנס קודם את כתובת המייל שלך.',th:'กรุณากรอกที่อยู่อีเมลของคุณก่อน',vi:'Vui lòng nhập địa chỉ email của bạn trước.',id:'Masukkan alamat email Anda terlebih dahulu.',ms:'Masukkan alamat e-mel anda terlebih dahulu.',sw:'Ingiza anwani yako ya barua pepe kwanza.',tl:'Ilagay muna ang iyong email address.',ro:'Introduceți mai întâi adresa de e-mail.',cs:'Nejprve zadejte svou e-mailovou adresu.',hu:'Először add meg az e-mail címedet.',uk:'Спочатку введіть свою електронну адресу.'},
+'Enter a valid email address.':{es:'Ingresa un correo electrónico válido.',fr:'Entrez une adresse e-mail valide.',de:'Geben Sie eine gültige E-Mail-Adresse ein.',it:'Inserisci un indirizzo email valido.',pt:'Digite um endereço de e-mail válido.','tr':'Geçerli bir e-posta adresi girin.','nl':'Voer een geldig e-mailadres in.','pl':'Wprowadź prawidłowy adres e-mail.','ja':'有効なメールアドレスを入力してください。','ru':'Введите действительный адрес электронной почты.','zh-cn':'请输入有效的电子邮件地址。',ko:'유효한 이메일 주소를 입력하세요.',ar:'أدخل عنوان بريد إلكتروني صحيح.',hi:'एक वैध ईमेल पता दर्ज करें।',bn:'একটি বৈধ ইমেল ঠিকানা লিখুন।',sv:'Ange en giltig e-postadress.',no:'Angi en gyldig e-postadresse.',da:'Indtast en gyldig e-mailadresse.',fi:'Syötä voimassa oleva sähköpostiosoite.',el:'Enter a valid email address.',he:'הכנס כתובת אימייל תקינה.',th:'กรุณากรอกที่อยู่อีเมลที่ถูกต้อง',vi:'Vui lòng nhập địa chỉ email hợp lệ.',id:'Masukkan alamat email yang valid.',ms:'Masukkan alamat e-mel yang sah.',sw:'Ingiza anwani halali ya barua pepe.',tl:'Maglagay ng wastong email address.',ro:'Introduceți o adresă de e-mail validă.',cs:'Zadejte platnou e-mailovou adresu.',hu:'Adj meg egy érvényes e-mail címet.',uk:'Введіть дійсну адресу електронної пошти.'},
+'Cloud authentication is not available.':{es:'La autenticación en la nube no está disponible.',fr:'L\'authentification cloud n\'est pas disponible.',de:'Cloud-Authentifizierung ist nicht verfügbar.',it:'L\'autenticazione cloud non è disponibile.',pt:'A autenticação na nuvem não está disponível.','tr':'Bulut kimlik doğrulaması kullanılamıyor.','nl':'Cloud-authenticatie is niet beschikbaar.','pl':'Uwierzytelnianie w chmurze nie jest dostępne.','ja':'クラウド認証が利用できません。','ru':'Облачная аутентификация недоступна.','zh-cn':'云身份验证不可用。',ko:'클라우드 인증을 사용할 수 없습니다.',ar:'المصادقة السحابية غير متوفرة.',hi:'क्लाउड प्रमाणीकरण उपलब्ध नहीं है।',bn:'ক্লাউড প্রমাণীকরণ উপলব্ধ নয়।',sv:'Molnautentisering är inte tillgänglig.',no:'Skyautentisering er ikke tilgjengelig.',da:'Skygodkendelse er ikke tilgængelig.',fi:'Pilvitodennus ei ole käytettävissä.',el:'Cloud authentication is not available.',he:'אימות ענן אינו זמין.',th:'การรับรองความถูกต้องของคลาวด์ไม่พร้อมใช้งาน',vi:'Xác thực đám mây không khả dụng.',id:'Autentikasi cloud tidak tersedia.',ms:'Pengesahan awan tidak tersedia.',sw:'Uthibitishaji wa wingu haupatikani.',tl:'Hindi available ang cloud authentication.',ro:'Autentificarea în cloud nu este disponibilă.',cs:'Cloudová autentizace není k dispozici.',hu:'A felhő-hitelesítés nem érhető el.',uk:'Хмарна автентифікація недоступна.'},
+'Password reset email sent. Check your inbox.':{es:'Correo de restablecimiento de contraseña enviado. Revisa tu bandeja de entrada.',fr:'E-mail de réinitialisation du mot de passe envoyé. Vérifiez votre boîte de réception.',de:'E-Mail zum Zurücksetzen des Passworts gesendet. Überprüfen Sie Ihren Posteingang.',it:'Email di reimpostazione della password inviata. Controlla la tua posta in arrivo.',pt:'E-mail de redefinição de senha enviado. Verifique sua caixa de entrada.','tr':'Şifre sıfırlama e-postası gönderildi. Gelen kutunuzu kontrol edin.','nl':'E-mail voor wachtwoordherstel verzonden. Controleer uw inbox.','pl':'E-mail z resetowaniem hasła wysłany. Sprawdź swoją skrzynkę odbiorczą.','ja':'パスワードリセットメールを送信しました。受信箱を確認してください。','ru':'Письмо для сброса пароля отправлено. Проверьте свой почтовый ящик.','zh-cn':'密码重置邮件已发送。请检查您的收件箱。',ko:'비밀번호 재설정 이메일이 전송되었습니다. 받은 편지함을 확인하세요.',ar:'تم إرسال بريد إعادة تعيين كلمة المرور. تحقق من صندوق الوارد الخاص بك.',hi:'पासवर्ड रीसेट ईमेल भेज दिया गया है। अपना इनबॉक्स जांचें।',bn:'পাসওয়ার্ড রিসেট ইমেল পাঠানো হয়েছে। আপনার ইনবক্স চেক করুন।',sv:'E-post för återställning av lösenord skickad. Kontrollera din inkorg.',no:'E-post for tilbakestilling av passord sendt. Sjekk innboksen din.',da:'E-mail til nulstilling af adgangskode sendt. Tjek din indbakke.',fi:'Salasanan palautussähköposti lähetetty. Tarkista postilaatikkosi.',el:'Password reset email sent. Check your inbox.',he:'מייל איפוס סיסמה נשלח. בדוק את תיבת הדואר שלך.',th:'ส่งอีเมลรีเซ็ตรหัสผ่านแล้ว ตรวจสอบกล่องจดหมายของคุณ',vi:'Email đặt lại mật khẩu đã được gửi. Kiểm tra hộp thư đến của bạn.',id:'Email pengaturan ulang kata sandi telah dikirim. Periksa kotak masuk Anda.',ms:'E-mel set semula kata laluan dihantar. Periksa peti masuk anda.',sw:'Barua pepe ya kuweka upya nenosiri imetumwa. Angalia kikasha chako.',tl:'Naipadala ang email sa pag-reset ng password. Suriin ang iyong inbox.',ro:'E-mailul de resetare a parolei a fost trimis. Verificați-vă căsuța de primire.',cs:'E-mail pro obnovení hesla byl odeslán. Zkontrolujte svou doručenou poštu.',hu:'A jelszó-visszaállítási e-mail elküldve. Ellenőrizze a beérkezett üzeneteket.',uk:'Електронний лист для скидання пароля надіслано. Перевірте свою поштову скриньку.'},
+'Email verified':{es:'Correo verificado',fr:'E-mail vérifié',de:'E-Mail verifiziert',it:'Email verificata',pt:'E-mail verificado','tr':'E-posta doğrulandı','nl':'E-mail geverifieerd','pl':'E-mail zweryfikowany','ja':'メール確認済み','ru':'Электронная почта подтверждена','zh-cn':'邮箱已验证',ko:'이메일 인증됨',ar:'تم التحقق من البريد الإلكتروني',hi:'ईमेल सत्यापित',bn:'ইমেল যাচাই করা হয়েছে',sv:'E-post verifierad',no:'E-post bekreftet',da:'E-mail bekræftet',fi:'Sähköposti vahvistettu',el:'Email verified',he:'אימייל אומת',th:'ยืนยันอีเมลแล้ว',vi:'Email đã được xác minh',id:'Email terverifikasi',ms:'E-mel disahkan',sw:'Barua pepe imethibitishwa',tl:'Na-verify ang email',ro:'E-mail verificat',cs:'E-mail ověřen',hu:'E-mail ellenőrizve',uk:'Електронну пошту підтверджено'},
+'Email not verified':{es:'Correo no verificado',fr:'E-mail non vérifié',de:'E-Mail nicht verifiziert',it:'Email non verificata',pt:'E-mail não verificado','tr':'E-posta doğrulanmadı','nl':'E-mail niet geverifieerd','pl':'E-mail niezweryfikowany','ja':'メール未確認','ru':'Электронная почта не подтверждена','zh-cn':'邮箱未验证',ko:'이메일 미인증',ar:'البريد الإلكتروني غير مُحقق',hi:'ईमेल सत्यापित नहीं',bn:'ইমেল যাচাই করা হয়নি',sv:'E-post inte verifierad',no:'E-post ikke bekreftet',da:'E-mail ikke bekræftet',fi:'Sähköposti vahvistamaton',el:'Email not verified',he:'אימייל לא אומת',th:'ยังไม่ได้ยืนยันอีเมล',vi:'Email chưa được xác minh',id:'Email belum diverifikasi',ms:'E-mel belum disahkan',sw:'Barua pepe haijathibitishwa',tl:'Hindi na-verify ang email',ro:'E-mail neverificat',cs:'E-mail neověřen',hu:'E-mail nincs ellenőrizve',uk:'Електронну пошту не підтверджено'},
+'Verify now':{es:'Verificar ahora',fr:'Vérifier maintenant',de:'Jetzt verifizieren',it:'Verifica ora',pt:'Verificar agora','tr':'Şimdi doğrula','nl':'Nu verifiëren','pl':'Zweryfikuj teraz','ja':'今すぐ確認','ru':'Подтвердить сейчас','zh-cn':'立即验证',ko:'지금 인증하기',ar:'تحقق الآن',hi:'अब सत्यापित करें',bn:'এখন যাচাই করুন',sv:'Verifiera nu',no:'Bekreft nå',da:'Bekræft nu',fi:'Vahvista nyt',el:'Verify now',he:'אמת עכשיו',th:'ยืนยันตอนนี้',vi:'Xác minh ngay',id:'Verifikasi sekarang',ms:'Sahkan sekarang',sw:'Thibitisha sasa',tl:'I-verify ngayon',ro:'Verifică acum',cs:'Ověřit nyní',hu:'Ellenőrzés most',uk:'Підтвердити зараз'},
+'Verification email sent. Check your inbox.':{es:'Correo de verificación enviado. Revisa tu bandeja de entrada.',fr:'E-mail de vérification envoyé. Vérifiez votre boîte de réception.',de:'Bestätigungs-E-Mail gesendet. Überprüfen Sie Ihren Posteingang.',it:'Email di verifica inviata. Controlla la tua posta in arrivo.',pt:'E-mail de verificação enviado. Verifique sua caixa de entrada.','tr':'Doğrulama e-postası gönderildi. Gelen kutunuzu kontrol edin.','nl':'Verificatie-e-mail verzonden. Controleer uw inbox.','pl':'E-mail weryfikacyjny wysłany. Sprawdź swoją skrzynkę odbiorczą.','ja':'確認メールを送信しました。受信箱を確認してください。','ru':'Письмо с подтверждением отправлено. Проверьте свой почтовый ящик.','zh-cn':'验证邮件已发送。请检查您的收件箱。',ko:'인증 이메일이 전송되었습니다. 받은 편지함을 확인하세요.',ar:'تم إرسال بريد التحقق. تحقق من صندوق الوارد الخاص بك.',hi:'सत्यापन ईमेल भेज दिया गया है। अपना इनबॉक्स जांचें।',bn:'যাচাইকরণ ইমেল পাঠানো হয়েছে। আপনার ইনবক্স চেক করুন।',sv:'Verifieringsmejl skickat. Kontrollera din inkorg.',no:'Bekreftelses-e-post sendt. Sjekk innboksen din.',da:'Bekræftigelses-e-mail sendt. Tjek din indbakke.',fi:'Vahvistussähköposti lähetetty. Tarkista postilaatikkosi.',el:'Verification email sent. Check your inbox.',he:'מייל אימות נשלח. בדוק את תיבת הדואר שלך.',th:'ส่งอีเมลยืนยันแล้ว ตรวจสอบกล่องจดหมายของคุณ',vi:'Email xác minh đã được gửi. Kiểm tra hộp thư đến của bạn.',id:'Email verifikasi telah dikirim. Periksa kotak masuk Anda.',ms:'E-mel pengesahan dihantar. Periksa peti masuk anda.',sw:'Barua pepe ya uthibitishaji imetumwa. Angalia kikasha chako.',tl:'Naipadala ang email sa pag-verify. Suriin ang iyong inbox.',ro:'E-mailul de verificare a fost trimis. Verificați-vă căsuța de primire.',cs:'Ověřovací e-mail byl odeslán. Zkontrolujte svou doručenou poštu.',hu:'Ellenőrző e-mail elküldve. Ellenőrizze a beérkezett üzeneteket.',uk:'Електронний лист для підтвердження надіслано. Перевірте свою поштову скриньку.'},
+'You are not signed in.':{es:'No has iniciado sesión.',fr:'Vous n\'êtes pas connecté.',de:'Sie sind nicht angemeldet.',it:'Non hai effettuato l\'accesso.',pt:'Você não está conectado.','tr':'Giriş yapmadınız.','nl':'U bent niet aangemeld.','pl':'Nie jesteś zalogowany.','ja':'サインインしていません。','ru':'Вы не вошли в систему.','zh-cn':'您未登录。',ko:'로그인되어 있지 않습니다.',ar:'أنت غير مسجل الدخول.',hi:'आप साइन इन नहीं हैं।',bn:'আপনি সাইন ইন করেননি।',sv:'Du är inte inloggad.',no:'Du er ikke logget inn.',da:'Du er ikke logget ind.',fi:'Et ole kirjautunut sisään.',el:'You are not signed in.',he:'אתה לא מחובר.',th:'คุณยังไม่ได้ลงชื่อเข้าใช้',vi:'Bạn chưa đăng nhập.',id:'Anda belum masuk.',ms:'Anda tidak log masuk.',sw:'Hujaingia ndani.',tl:'Hindi ka naka-sign in.',ro:'Nu sunteți autentificat.',cs:'Nejste přihlášeni.',hu:'Nincs bejelentkezve.',uk:'Ви не увійшли в систему.'},
 };
 var LANG_CODE = {'English':'en','Español':'es','Français':'fr','Deutsch':'de','Italiano':'it','Português':'pt','Русский':'ru','中文':'zh-cn','日本語':'ja','한국어':'ko','العربية':'ar','हिन्दी':'hi','বাংলা':'bn','Türkçe':'tr','Nederlands':'nl','Polski':'pl','Svenska':'sv','Norsk':'no','Dansk':'da','Suomi':'fi','Ελληνικά':'el','עברית':'he','ไทย':'th','Tiếng Việt':'vi','Bahasa Indonesia':'id','Bahasa Melayu':'ms','Kiswahili':'sw','Tagalog':'tl','Română':'ro','Čeština':'cs','Magyar':'hu','Українська':'uk'};
 function t(key) {
@@ -733,8 +744,32 @@ function validateData(d) {
     else if (typeof def[k] === 'object' && def[k] !== null && !Array.isArray(def[k]) && (typeof d[k] !== 'object' || d[k] === null || Array.isArray(d[k]))) d[k] = JSON.parse(JSON.stringify(def[k]));
   }
   if (!d.version || d.version < 1) d.version = 1;
-  // Future migrations: add else-if blocks here as schema evolves
-  // if (d.version < 2) { /* migrate logic */ d.version = 2; }
+  // Schema migrations — bump version in defaultData() when schema changes
+  if (d.version < 2) {
+    if (!d.journalWordGoal) d.journalWordGoal = 50;
+    if (!d.accentColor) d.accentColor = 'green';
+    if (!d.parchmentMode) d.parchmentMode = false;
+    if (!d.warchest) d.warchest = { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
+    if (!d.achievements) d.achievements = [];
+    if (!d.shopPurchases) d.shopPurchases = [];
+    if (!d.weeklyCampaign) d.weeklyCampaign = { id: null, weekStart: '', done: [], rewardClaimed: false };
+    d.version = 2;
+  }
+  if (d.version < 3) {
+    if (!d.timeCapsules) d.timeCapsules = [];
+    if (!d.recoveryPrograms) d.recoveryPrograms = { active: null, programs: {} };
+    if (!d.relapseRescue) d.relapseRescue = { logs: [] };
+    if (!d.emergencyContacts) d.emergencyContacts = [];
+    if (!d.chivalryCode) d.chivalryCode = { code: [], checkins: [] };
+    if (!d.relapseGraveyard) d.relapseGraveyard = { graves: [] };
+    if (!d.royalPardons) d.royalPardons = [];
+    d.version = 3;
+  }
+  if (d.version < 4) {
+    if (!d.researchOptIn) d.researchOptIn = false;
+    if (!d.researchLastSubmitted) d.researchLastSubmitted = null;
+    d.version = 4;
+  }
   return d;
 }
 
@@ -1049,6 +1084,15 @@ function handleAuth() {
       });
   }
 }
+function sendEmailVerification() {
+  var user = firebase && firebase.auth().currentUser;
+  if (!user) { alert(t('You are not signed in.')); return; }
+  user.sendEmailVerification().then(function() {
+    alert(t('Verification email sent. Check your inbox.'));
+  }).catch(function(err) {
+    alert(err.message);
+  });
+}
 function signOut() {
   firebase.auth().signOut().catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
   localStorage.removeItem('rc_user');
@@ -1093,6 +1137,7 @@ function showSignIn() {
     '<div id="si-email-mode">' +
     '<input class="si-input" type="email" id="si-email" placeholder="'+t('your@email.com')+'">' +
     '<input class="si-input" type="password" id="si-password" placeholder="'+t('Password')+'" onkeydown="if(event.key===\'Enter\')handleAuth()">' +
+    '<div id="si-forgot-container" style="text-align:right;font-size:11px;margin:2px 0 4px"><span id="si-forgot-link" style="color:var(--primary);cursor:pointer;display:none" onclick="handleForgotPassword()">'+t('Forgot password?')+'</span></div>' +
     '<div id="si-error" style="font-size:12px;color:var(--danger);margin:4px 0;text-align:center"></div>' +
     '<button class="si-btn" onclick="handleAuth()"><span id="si-btn-label">'+t('Sign In')+'</span></button>' +
     '</div>' +
@@ -1105,20 +1150,40 @@ function showSignIn() {
   if (tb) tb.style.display = 'none';
 }
 
+function handleForgotPassword() {
+  var email = document.getElementById('si-email');
+  if (!email || !email.value.trim()) { alert(t('Enter your email address first.')); email.focus(); return; }
+  var emailStr = email.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { alert(t('Enter a valid email address.')); return; }
+  if (!firebase || !firebase.auth) { alert(t('Cloud authentication is not available.')); return; }
+  document.getElementById('si-btn-label').textContent = t('Sending...');
+  firebase.auth().sendPasswordResetEmail(emailStr).then(function() {
+    alert(t('Password reset email sent. Check your inbox.'));
+    document.getElementById('si-btn-label').textContent = t('Sign In');
+  }).catch(function(err) {
+    var errorEl = document.getElementById('si-error');
+    if (errorEl) errorEl.textContent = err.message;
+    document.getElementById('si-btn-label').textContent = t('Sign In');
+  });
+}
+
 var SIGN_IN_MODE = 'in';
 function setSignInTab(mode) {
   SIGN_IN_MODE = mode;
   var btnIn = document.getElementById('si-tab-in');
   var btnUp = document.getElementById('si-tab-up');
   var label = document.getElementById('si-btn-label');
+  var forgotLink = document.getElementById('si-forgot-link');
   if (mode === 'in') {
     if (btnIn) { btnIn.style.background = 'var(--primary)'; btnIn.style.color = '#fff'; }
     if (btnUp) { btnUp.style.background = 'transparent'; btnUp.style.color = 'var(--text)'; }
     if (label) label.textContent = t('Sign In');
+    if (forgotLink) forgotLink.style.display = 'inline';
   } else {
     if (btnUp) { btnUp.style.background = 'var(--primary)'; btnUp.style.color = '#fff'; }
     if (btnIn) { btnIn.style.background = 'transparent'; btnIn.style.color = 'var(--text)'; }
     if (label) label.textContent = t('Sign Up');
+    if (forgotLink) forgotLink.style.display = 'none';
   }
 }
 

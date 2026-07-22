@@ -4929,6 +4929,11 @@ function profileHTML() {
   h += '<button class="btn btn-sm btn-outline" onclick="changeAvatar()" style="position:absolute;bottom:4px;right:-8px;width:28px;height:28px;border-radius:14px;padding:0;font-size:14px;line-height:1;min-width:0;background:var(--card);border:1px solid var(--border)">&#9998;</button></div>';
   h += '<div style="font-weight:700;font-size:18px">' + (D.name || 'You') + '</div>';
   h += '<div style="font-size:13px;color:var(--muted)">' + (AUTH_EMAIL || t('Local User')) + '</div>';
+  if (AUTH_USER) {
+    var cu = firebase && firebase.auth().currentUser;
+    var verified = cu && cu.emailVerified;
+    h += '<div style="font-size:11px;margin-top:2px;color:' + (verified ? 'var(--green,#22c55e)' : 'var(--danger)') + '">' + (verified ? '&#10003; ' + t('Email verified') : '&#9888; ' + t('Email not verified') + ' <span style="text-decoration:underline;cursor:pointer;color:var(--primary)" onclick="sendEmailVerification()">' + t('Verify now') + '</span>') + '</div>';
+  }
   h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">Joined ' + (D.joinDate ? new Date(D.joinDate).toLocaleDateString() : 'today') + '</div>';
   h += '<div style="font-size:12px;color:var(--muted)">Sober ' + soberDays() + ' days</div>';
   h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
