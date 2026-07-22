@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-const PAGES = ['home', 'journal', 'track', 'care', 'reflect', 'more'];
+const PAGES = ['home', 'journal', 'track', 'care', 'reflect', 'more', 'mywhy'];
 
 beforeEach(() => {
   localStorage.clear();

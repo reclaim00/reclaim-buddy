@@ -2358,7 +2358,8 @@ function showJournalLetter(idx) {
     h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">';
     h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Spotify</a>';
     h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; YouTube</a>';
-    h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a></div>';
+    h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a>';
+    h += '<button class="btn btn-sm btn-primary" onclick="saveToPlaylist({title:\'' + song.title.replace(/'/g,"\\'") + '\',artist:\'' + song.artist.replace(/'/g,"\\'") + '\',url_spotify:\'' + song.url_spotify.replace(/'/g,"\\'") + '\',url_youtube:\'' + song.url_youtube.replace(/'/g,"\\'") + '\',url_apple:\'' + song.url_apple.replace(/'/g,"\\'") + '\'})" style="width:auto;font-size:9px;padding:4px 8px">+ Save</button></div>';
   } else {
     h += '<div style="font-size:12px;color:var(--muted)">Finding the perfect song...</div>';
   }
@@ -2523,7 +2524,8 @@ function showReflection(idx) {
     h += '<div style="display:flex;gap:5px;justify-content:center;margin-top:5px;flex-wrap:wrap">';
     h += '<a href="'+song.url_spotify+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Spotify</a>';
     h += '<a href="'+song.url_youtube+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; YouTube</a>';
-    h += '<a href="'+song.url_apple+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a></div>';
+    h += '<a href="'+song.url_apple+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a>';
+    h += '<button class="btn btn-sm btn-primary" onclick="saveToPlaylist({title:\''+song.title.replace(/'/g,"\\'")+'\',artist:\''+song.artist.replace(/'/g,"\\'")+'\',url_spotify:\''+song.url_spotify.replace(/'/g,"\\'")+'\',url_youtube:\''+song.url_youtube.replace(/'/g,"\\'")+'\',url_apple:\''+song.url_apple.replace(/'/g,"\\'")+'\'})" style="width:auto;font-size:9px;padding:4px 8px">+ Save</button></div>';
   } else {
     h += '<div style="font-size:11px;color:rgba(255,255,255,.4);padding:3px 0">Finding the perfect song...</div>';
   }
@@ -3945,11 +3947,12 @@ var MUSIC_SUGGESTIONS = [
   {mood:'Meditation & Sleep', desc:'Rest and restore', platforms:[{name:'Spotify',url:'https://open.spotify.com/search/sleep%20meditation%20music'},{name:'YouTube',url:'https://www.youtube.com/results?search_query=sleep+meditation+music'},{name:'Apple Music',url:'https://music.apple.com/search?term=sleep%20music'}]}
 ];
 
-function saveToPlaylist(title, artist, spotify, apple) {
+function saveToPlaylist(song) {
   if (!D.playlist) D.playlist = [];
-  if (D.playlist.some(function(s){return s.title === title && s.artist === artist})) return;
-  D.playlist.push({ title: title, artist: artist, url_spotify: spotify, url_apple: apple, dateAdded: new Date().toDateString() });
+  if (D.playlist.some(function(s){return s.title === song.title && s.artist === song.artist})) { showToast('Already in your playlist','info'); return; }
+  D.playlist.push({ title: song.title, artist: song.artist, url_spotify: song.url_spotify, url_apple: song.url_apple, url_youtube: song.url_youtube, dateAdded: new Date().toDateString() });
   saveData();
+  showToast('Saved to your Recovery Playlist!','success');
 }
 
 function musicHTML() {
@@ -3960,7 +3963,7 @@ function musicHTML() {
     h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#9835;</div><h3 style="margin:0">My Recovery Playlist</h3></div><p style="font-size:12px;color:var(--muted);margin-bottom:6px">Songs Arthur recommended from your journal reflections.</p>';
     for (var pi=0;pi<D.playlist.length;pi++) {
       var s = D.playlist[pi];
-      h += '<div class="music-item" style="padding:8px"><div class="info"><div class="mood">' + safe(s.title) + '</div><div class="desc">' + safe(s.artist) + ' &middot; ' + safe(s.dateAdded) + '</div><div class="platforms"><a href="' + safe(s.url_spotify) + '" target="_blank">Spotify</a>' + (s.url_apple ? '<a href="' + safe(s.url_apple) + '" target="_blank">Apple Music</a>' : '') + '</div></div></div>';
+      h += '<div class="music-item" style="padding:8px"><div class="info"><div class="mood">' + safe(s.title) + '</div><div class="desc">' + safe(s.artist) + ' &middot; ' + safe(s.dateAdded) + '</div><div class="platforms"><a href="' + safe(s.url_spotify) + '" target="_blank">Spotify</a>' + (s.url_youtube ? '<a href="' + safe(s.url_youtube) + '" target="_blank">YouTube</a>' : '') + (s.url_apple ? '<a href="' + safe(s.url_apple) + '" target="_blank">Apple Music</a>' : '') + '</div></div></div>';
     }
     h += '</div>';
   }
@@ -4757,6 +4760,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; '+t('Chivalry Code')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; '+t('Royal Pardon')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#be185d">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; '+t('War Chest')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#9876; '+t('Alliances')+'</div>';
@@ -4914,6 +4918,86 @@ function submitRecommendation() {
     alert(t("Thanks! We've saved your feedback locally."));
     text.closest('.overlay').remove(); 
   });
+}
+
+// ====== MY WHY ======
+function pickWhyIcon(el) {
+  var all = document.querySelectorAll('#why-icon-picker .why-icon-opt');
+  for (var i=0;i<all.length;i++) all[i].style.borderColor = 'transparent';
+  el.style.borderColor = 'var(--primary)';
+  el.style.background = 'var(--primary-light)';
+  window._selectedWhyIcon = el.textContent;
+}
+function saveWhyReason() {
+  var input = document.getElementById('why-input');
+  if (!input || !input.value.trim()) { alert(t('Write a reason first.')); return; }
+  if (!D.myWhy) D.myWhy = { reasons: [], createdAt: null };
+  if (!D.myWhy.reasons) D.myWhy.reasons = [];
+  if (!D.myWhy.createdAt) D.myWhy.createdAt = Date.now();
+  D.myWhy.reasons.push({
+    text: input.value.trim(),
+    icon: window._selectedWhyIcon || '&#10084;',
+    createdAt: Date.now()
+  });
+  window._selectedWhyIcon = null;
+  input.value = '';
+  saveData();
+  showToast(t('Reason pinned to your board!'), 'success');
+}
+function deleteWhyReason(idx) {
+  if (!D.myWhy || !D.myWhy.reasons || idx < 0 || idx >= D.myWhy.reasons.length) return;
+  if (!confirm(t('Remove this reason?'))) return;
+  D.myWhy.reasons.splice(idx, 1);
+  saveData();
+}
+var WHY_ICONS = ['&#10084;','&#9889;','&#9733;','&#10017;','&#9786;','&#128170;','&#127775;','&#128153;','&#128154;','&#128155;','&#128156;','&#128081;','&#128214;','&#127758;','&#128640;','&#127800;','&#127942;','&#128293;','&#129309;','&#127748;'];
+function myWhyHTML() {
+  var w = D.myWhy || {};
+  if (!w.reasons) w.reasons = [];
+  var h = '<h2 class="page-title">&#10084; '+t('My Why')+'</h2>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#10084;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Every knight needs to know what they\'re fighting for. When the road gets dark, this board will remind you why you picked up the sword."</em></div></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t("What's your why?")+' Pin the reasons you chose recovery here. These will appear when cravings hit to remind you what\'s at stake.</p>';
+
+  // Stats
+  h += '<div class="stat-grid" style="margin-bottom:8px">';
+  h += '<div class="stat-card"><div class="num">' + w.reasons.length + '</div><div class="label">'+t('Reasons')+'</div></div>';
+  h += '<div class="stat-card"><div class="num">' + (w.createdAt ? (function(){var d=new Date(w.createdAt);var now=new Date();return Math.floor((now-d)/86400000)+'d'})() : '-') + '</div><div class="label">'+t('Since started')+'</div></div>';
+  h += '</div>';
+
+  // Add reason
+  h += '<div class="card"><h3 style="font-size:14px;margin-bottom:6px">&#10133; '+t('Add Reason')+'</h3>';
+  h += '<div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap" id="why-icon-picker">';
+  for (var ii=0;ii<WHY_ICONS.length;ii++) {
+    h += '<span class="why-icon-opt" onclick="pickWhyIcon(this)" style="font-size:22px;cursor:pointer;padding:4px 6px;border-radius:6px;display:inline-block;border:1px solid transparent">'+WHY_ICONS[ii]+'</span>';
+  }
+  h += '</div>';
+  h += '<input type="text" id="why-input" placeholder="'+t("I'm recovering because...")+'" style="margin-bottom:6px">';
+  h += '<button class="btn btn-sm btn-primary" onclick="saveWhyReason()" style="width:100%">'+t('Pin to Board')+'</button>';
+  h += '</div>';
+
+  // Board
+  if (!w.reasons.length) {
+    h += '<div class="card"><div class="empty-state" style="font-size:12px">'+t('No reasons yet. Add your first one above.')+'</div></div>';
+  } else {
+    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+    for (var ri=0;ri<w.reasons.length;ri++) {
+      var r = w.reasons[ri];
+      var icon = r.icon || '&#10084;';
+      h += '<div class="card" style="padding:14px;text-align:center;border:1px solid var(--primary-light);position:relative">';
+      h += '<div style="font-size:32px;margin-bottom:4px">' + icon + '</div>';
+      h += '<div style="font-size:13px;line-height:1.5;font-weight:600">' + safe(r.text) + '</div>';
+      h += '<button class="btn btn-sm btn-danger" onclick="deleteWhyReason('+ri+')" style="position:absolute;top:4px;right:4px;font-size:10px;padding:2px 6px;min-width:0;border-color:transparent">&#10005;</button>';
+      h += '</div>';
+    }
+    h += '</div>';
+  }
+
+  // Preview during cravings note
+  h += '<div class="card" style="border-left:3px solid var(--accent);background:var(--primary-light);padding:12px;margin-top:8px">';
+  h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px">&#128161;</span><div><div style="font-weight:700;font-size:13px">'+t('How this helps')+'</div><p style="font-size:12px;color:var(--muted);line-height:1.4;margin:2px 0 0">'+t('When you log a craving, Arthur will show your Why board to remind you what you\'re fighting for.')+'</p></div></div>';
+  h += '</div>';
+
+  return h;
 }
 
 // ====== PROFILE ======
@@ -5340,6 +5424,24 @@ function saveCraving(btn) {
   saveData();
   btn.closest('.overlay').remove();
   showCravingPatterns();
+  showWhyReminder();
+}
+function showWhyReminder() {
+  var reasons = D.myWhy && D.myWhy.reasons;
+  if (!reasons || !reasons.length) return;
+  var pick = reasons[Math.floor(Math.random() * reasons.length)];
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.style.background = 'rgba(0,0,0,.7)';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;animation:scaleIn .3s;padding:28px 20px">' +
+    '<div style="font-size:40px;margin-bottom:6px">&#10084;</div>' +
+    '<div style="font-size:14px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">' + t('Remember why you started') + '</div>' +
+    '<div style="font-size:22px;margin:10px 0;line-height:1.4">' + pick.icon + '</div>' +
+    '<div style="font-size:16px;font-weight:700;line-height:1.5;margin-bottom:12px">"' + safe(pick.text) + '"</div>' +
+    '<div style="display:flex;gap:6px">' +
+    '<button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();showCravingBreaker()" style="flex:1">' + t('Fight It') + '</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="flex:1">' + t("I'm okay") + '</button></div></div>';
+  document.body.appendChild(overlay);
 }
 
 var _cravingBreakerState = { timer: null, seconds: 0, step: 0, trigger: '' };

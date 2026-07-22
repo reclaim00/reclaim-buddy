@@ -513,16 +513,71 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop','kingsledger','achievements','alliances'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop','kingsledger','achievements','alliances','mywhy'];
 var REFLECT_SUB_PAGES = [];
 var CARE_SUB_PAGES = ['relapseplan','relapserescue','relapsegraveyard'];
 
+var MEETING_TYPES = [
+  { id: 'aa', label: 'AA', icon: '&#10017;' },
+  { id: 'na', label: 'NA', icon: '&#10018;' },
+  { id: 'smart', label: 'SMART', icon: '&#9889;' },
+  { id: 'ca', label: 'CA', icon: '&#10017;' },
+  { id: 'dharma', label: 'Dharma', icon: '&#9786;' },
+  { id: 'therapy', label: 'Therapy', icon: '&#128104;' },
+  { id: 'other', label: 'Other', icon: '&#128204;' }
+];
 function meetingsHTML() {
+  var log = D.meetingLog || [];
+  var streak = calcMeetingStreak(log);
+  var total = log.length;
   var h = '';
   h += '<h2 class="page-title">'+t('Meetings')+'</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Online and local meetings to support your recovery.</p>';
+
+  // Stats bar
+  h += '<div class="stat-grid" style="margin-bottom:8px">';
+  h += '<div class="stat-card"><div class="num">' + total + '</div><div class="label">'+t('Total')+'</div></div>';
+  h += '<div class="stat-card"><div class="num">' + streak + '</div><div class="label">'+t('Week Streak')+'</div></div>';
+  var typesUsed = {};
+  for (var si=0;si<log.length;si++) { var tid = log[si].type || 'other'; typesUsed[tid] = (typesUsed[tid]||0) + 1; }
+  var topType = Object.keys(typesUsed).sort(function(a,b){return typesUsed[b]-typesUsed[a]})[0];
+  var topLabel = topType ? MEETING_TYPES.reduce(function(r,t){return t.id===topType?t.label:r},'') : '-';
+  h += '<div class="stat-card"><div class="num">' + topLabel + '</div><div class="label">'+t('Favorite')+'</div></div>';
+  h += '</div>';
+
+  // Log a Meeting button + list
+  h += '<div class="card" style="border-left:3px solid var(--primary)">';
+  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
+  h += '<h3 style="margin:0;font-size:14px">&#128220; '+t('My Meeting Log')+'</h3>';
+  h += '<div style="display:flex;gap:4px">';
+  if (log.length) h += '<button class="btn btn-sm btn-danger" onclick="deleteAllMeetings()" style="font-size:10px;padding:4px 8px;width:auto">'+t('Clear All')+'</button>';
+  h += '<button class="btn btn-sm btn-primary" onclick="showLogMeeting()" style="font-size:11px;padding:6px 12px;width:auto">+ '+t('Log Meeting')+'</button>';
+  h += '</div></div>';
+  if (!log.length) {
+    h += '<div class="empty-state" style="font-size:12px">'+t('No meetings logged yet. Tap "Log Meeting" to record one.')+'</div>';
+  } else {
+    var sorted = log.slice().reverse();
+    for (var mi=0;mi<sorted.length;mi++) {
+      var m = sorted[mi];
+      var mtype = MEETING_TYPES.reduce(function(r,t){return t.id===(m.type||'other')?t:r}, MEETING_TYPES[MEETING_TYPES.length-1]);
+      var mdate = m.date ? (m.date.split('-').length===3 ? (function(d){var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];return months[parseInt(d[1])-1]+' '+parseInt(d[2])+', '+d[0];})(m.date.split('-')) : m.date) : '';
+      h += '<div class="music-item" style="padding:8px 0;border-bottom:1px solid var(--border)">';
+      h += '<div class="info"><div class="mood">' + mtype.icon + ' ' + mtype.label + (m.online!==undefined?(m.online?' &#127760; '+t('Online'):' &#128205; '+t('In Person')):'') + '</div>';
+      h += '<div class="desc">' + mdate + (m.topic?' &middot; '+safe(m.topic):'') + '</div>';
+      if (m.notes) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4">' + safe(m.notes).substring(0,80) + (m.notes.length>80?'...':'') + '</div>';
+      h += '</div>';
+      var realIdx = log.indexOf(m);
+      h += '<div style="display:flex;gap:4px;flex-shrink:0;margin-left:8px">';
+      h += '<button class="btn btn-sm btn-outline" onclick="showLogMeeting('+realIdx+')" title="Edit" style="font-size:11px;padding:4px 8px;width:auto">&#9998;</button>';
+      h += '<button class="btn btn-sm btn-danger" onclick="deleteMeeting('+realIdx+')" title="Delete" style="font-size:11px;padding:4px 8px;width:auto">&#10005;</button>';
+      h += '</div></div>';
+    }
+  }
+  h += '</div>';
+
+  // External directories (collapsible)
+  h += '<details style="margin-top:8px"><summary style="font-weight:600;font-size:13px;color:var(--primary);cursor:pointer;padding:8px 0">&#128279; '+t('Meeting Directories &amp; Resources')+'</summary>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px">';
-  h += '<div style="font-weight:700;font-size:14px;margin-bottom:8px">Meeting Directories</div>';
+  h += '<div style="font-weight:700;font-size:14px;margin-bottom:8px">'+t('Online Meetings')+'</div>';
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
   h += '<a href="https://aa-intergroup.org/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">AA Online</a>';
   h += '<a href="https://virtual-na.org/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">NA Online</a>';
@@ -531,32 +586,130 @@ function meetingsHTML() {
   h += '<a href="https://www.intherooms.com/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">In The Rooms</a>';
   h += '<a href="https://recoverydharma.online/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Dharma</a>';
   h += '</div>';
-  h += '<a href="https://maps.apple.com/?q=AA+meetings+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">Find Meetings Near Me</a>';
+  h += '<a href="https://maps.apple.com/?q=AA+meetings+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">'+t('Find Meetings Near Me')+'</a>';
   h += '</div>';
   h += '<div class="card" style="border-left:3px solid var(--rose);padding:14px;text-align:center">';
   h += '<div style="font-size:24px;margin-bottom:4px">&#128663;</div>';
-  h += '<div style="font-weight:700;font-size:14px;margin-bottom:4px">Need immediate help?</div>';
+  h += '<div style="font-weight:700;font-size:14px;margin-bottom:4px">'+t('Need immediate help?')+'</div>';
   h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">988 - Suicide and Crisis Lifeline. Call or text 24/7.</p>';
-  h += '<button class="btn btn-danger btn-sm" onclick="showSOS()" style="width:100%">Crisis Helplines</button>';
+  h += '<button class="btn btn-danger btn-sm" onclick="showSOS()" style="width:100%">'+t('Crisis Helplines')+'</button>';
   h += '</div>';
   h += '<div class="card" style="border-left:3px solid var(--accent);padding:14px;background:var(--primary-light)">';
-  h += '<div style="font-weight:700;font-size:14px;margin-bottom:6px">&#128104;&#8205;&#127979; Licensed Therapist Near Me</div>';
-  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">Find a licensed therapist who specializes in addiction and mental health.</p>';
-  h += '<a href="https://maps.apple.com/?q=licensed+therapist+addiction" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="text-decoration:none;display:block;text-align:center">&#128205; Find Licensed Therapists Near Me</a>';
+  h += '<div style="font-weight:700;font-size:14px;margin-bottom:6px">&#128104;&#8205;&#127979; '+t('Licensed Therapist Near Me')+'</div>';
+  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">'+t('Find a licensed therapist who specializes in addiction and mental health.')+'</p>';
+  h += '<a href="https://maps.apple.com/?q=licensed+therapist+addiction" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="text-decoration:none;display:block;text-align:center">&#128205; '+t('Find Licensed Therapists Near Me')+'</a>';
   h += '</div>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px">';
-  h += '<div style="font-weight:700;font-size:14px;margin-bottom:8px">Mental Health Resources</div>';
+  h += '<div style="font-weight:700;font-size:14px;margin-bottom:8px">'+t('Mental Health Resources')+'</div>';
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
   h += '<a href="https://www.samhsa.gov/find-help/national-helpline" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">SAMHSA Helpline</a>';
   h += '<a href="https://www.nami.org/help" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">NAMI Helpline</a>';
-  h += '<a href="https://mhanational.org/get-involved/find-help" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Mental Health America</a>';
-  h += '<a href="https://www.psychologytoday.com/us/therapists" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Therapist Finder</a>';
+  h += '<a href="https://mhanational.org/get-involved/find-help" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">'+t('Mental Health America')+'</a>';
+  h += '<a href="https://www.psychologytoday.com/us/therapists" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">'+t('Therapist Finder')+'</a>';
   h += '<a href="https://openpathcollective.org/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Open Path (low-cost)</a>';
   h += '<a href="https://www.7cups.com/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">7 Cups (free support)</a>';
   h += '</div>';
-  h += '<a href="https://maps.apple.com/?q=mental+health+services+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">Find Facilities Near Me</a>';
+  h += '<a href="https://maps.apple.com/?q=mental+health+services+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">&#128205; '+t('Find Facilities Near Me')+'</a>';
   h += '</div>';
+  h += '</details>';
   return h;
+}
+function calcMeetingStreak(log) {
+  if (!log || !log.length) return 0;
+  var weeks = {};
+  for (var i=0;i<log.length;i++) {
+    if (!log[i].date) continue;
+    var d = new Date(log[i].date);
+    if (isNaN(d.getTime())) continue;
+    var y = d.getFullYear();
+    // Get ISO week number
+    var jan1 = new Date(y,0,1);
+    var days = Math.floor((d - jan1) / 86400000);
+    var week = Math.ceil((days + jan1.getDay() + 1) / 7);
+    var key = y + '-W' + String(week).padStart(2,'0');
+    weeks[key] = true;
+  }
+  var sorted = Object.keys(weeks).sort();
+  var streak = 1;
+  var maxStreak = 1;
+  for (var w=1;w<sorted.length;w++) {
+    var prev = sorted[w-1];
+    var curr = sorted[w];
+    var pYear = parseInt(prev.split('-W')[0]);
+    var pWeek = parseInt(prev.split('-W')[1]);
+    var cYear = parseInt(curr.split('-W')[0]);
+    var cWeek = parseInt(curr.split('-W')[1]);
+    var diff = (cYear - pYear) * 52 + (cWeek - pWeek);
+    if (diff === 1) { streak++; maxStreak = Math.max(maxStreak, streak); }
+    else { streak = 1; }
+  }
+  return maxStreak;
+}
+function showLogMeeting(editIdx) {
+  var m = (editIdx!==undefined && D.meetingLog && D.meetingLog[editIdx]) ? D.meetingLog[editIdx] : null;
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var dateVal = m ? m.date : new Date().toISOString().split('T')[0];
+  var typeOpts = '';
+  for (var i=0;i<MEETING_TYPES.length;i++) {
+    var sel = m && m.type === MEETING_TYPES[i].id ? ' selected' : '';
+    typeOpts += '<option value="'+MEETING_TYPES[i].id+'"'+sel+'>'+MEETING_TYPES[i].label+'</option>';
+  }
+  var onlineChecked = m ? (m.online?' checked':'') : ' checked';
+  var topicVal = m ? safe(m.topic||'') : '';
+  var notesVal = m ? safe(m.notes||'') : '';
+  var locationVal = m ? safe(m.location||'') : '';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:10px"><div style="font-size:36px">&#128220;</div><h3 style="font-size:18px;font-weight:700;margin:4px 0">'+(m?t('Edit Meeting'):t('Log Meeting'))+'</h3></div>' +
+    '<label style="font-size:12px;font-weight:600;display:block;margin:2px 0">'+t('Date')+'</label><input type="date" id="mtg-date" value="'+dateVal+'">' +
+    '<label style="font-size:12px;font-weight:600;display:block;margin:6px 0 2px">'+t('Meeting Type')+'</label><select id="mtg-type">'+typeOpts+'</select>' +
+    '<label style="font-size:12px;font-weight:600;display:block;margin:6px 0 2px">'+t('Format')+'</label><div style="display:flex;gap:8px;margin-bottom:6px"><label style="font-size:12px"><input type="radio" name="mtg-format" value="1"'+onlineChecked+'> &#127760; '+t('Online')+'</label><label style="font-size:12px"><input type="radio" name="mtg-format" value="0"'+(m&&!m.online?' checked':'')+'> &#128205; '+t('In Person')+'</label></div>' +
+    '<label style="font-size:12px;font-weight:600;display:block;margin:2px 0">'+t('Topic')+'</label><input type="text" id="mtg-topic" placeholder="e.g. Step 1, Gratitude, Recovery" value="'+topicVal+'">' +
+    '<label style="font-size:12px;font-weight:600;display:block;margin:6px 0 2px">'+t('Location')+'</label><input type="text" id="mtg-location" placeholder="e.g. St. Mary\'s Church, Zoom link" value="'+locationVal+'">' +
+    '<label style="font-size:12px;font-weight:600;display:block;margin:6px 0 2px">'+t('Notes')+'</label><textarea id="mtg-notes" placeholder="How did it go? What stood out?" style="min-height:60px">'+notesVal+'</textarea>' +
+    '<button class="btn btn-primary" onclick="saveMeeting(this'+(editIdx!==undefined?','+editIdx:'')+')">'+(m?t('Save'):t('Log Meeting'))+'</button>' +
+    '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
+  document.body.appendChild(overlay);
+}
+function saveMeeting(btn, editIdx) {
+  var date = document.getElementById('mtg-date');
+  var type = document.getElementById('mtg-type');
+  var formatRadios = document.getElementsByName('mtg-format');
+  var topic = document.getElementById('mtg-topic');
+  var location = document.getElementById('mtg-location');
+  var notes = document.getElementById('mtg-notes');
+  if (!date||!date.value) { alert(t('Please select a date.')); return; }
+  var onlineVal = '1';
+  for (var i=0;i<formatRadios.length;i++) { if (formatRadios[i].checked) { onlineVal = formatRadios[i].value; break; } }
+  if (!D.meetingLog) D.meetingLog = [];
+  var obj = {
+    date: date.value,
+    type: type ? type.value : 'other',
+    online: onlineVal === '1',
+    topic: topic ? topic.value.trim() : '',
+    location: location ? location.value.trim() : '',
+    notes: notes ? notes.value.trim() : ''
+  };
+  if (editIdx !== undefined && editIdx >= 0 && editIdx < D.meetingLog.length) {
+    D.meetingLog[editIdx] = obj;
+    showToast(t('Meeting updated'), 'info');
+  } else {
+    D.meetingLog.push(obj);
+    showToast(t('Meeting logged!'), 'success');
+  }
+  saveData();
+  btn.closest('.overlay').remove();
+}
+function deleteMeeting(idx) {
+  if (!D.meetingLog || idx < 0 || idx >= D.meetingLog.length) return;
+  if (!confirm(t('Delete this meeting log?'))) return;
+  D.meetingLog.splice(idx, 1);
+  saveData();
+}
+function deleteAllMeetings() {
+  if (!D.meetingLog || !D.meetingLog.length) return;
+  if (!confirm(t('Delete all meeting logs?'))) return;
+  D.meetingLog = [];
+  saveData();
 }
 function relapsePlanHTML() {
   var h = '';
@@ -1533,7 +1686,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML, oswald: oswaldTowerHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML, achievements: achievementsHTML, alliances: alliancesHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML, achievements: achievementsHTML, alliances: alliancesHTML, mywhy: myWhyHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
