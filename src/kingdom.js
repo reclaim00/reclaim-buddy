@@ -1470,7 +1470,7 @@ function kNamePrompt() {
 function homeHTML() {
   var h = '';
 
-  // Throne Room — the central hub
+  // Atlas — the central hub
   h += throneRoomHTML();
 
   // Crisis widget — always visible on home

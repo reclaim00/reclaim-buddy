@@ -6427,7 +6427,7 @@ function shareCardImage() {
 
 function applyTheme() {
   var pal = {
-    green:{primary:'#34d399',dark:'#059669',light:'#d1fae5',lightDark:'rgba(138,122,154,0.15)'},
+    green:{primary:'#3a8a35',dark:'#1a6a18',light:'#e8f0e0',lightDark:'rgba(58,138,53,0.15)'},
     blue:{primary:'#60a5fa',dark:'#2563eb',light:'#dbeafe',lightDark:'rgba(96,165,250,0.15)'},
     purple:{primary:'#a78bfa',dark:'#7c3aed',light:'#ede9fe',lightDark:'rgba(167,139,250,0.15)'},
     pink:{primary:'#f472b6',dark:'#db2777',light:'#fce7f3',lightDark:'rgba(244,114,182,0.15)'},
@@ -6441,17 +6441,17 @@ function applyTheme() {
   el.style.setProperty('--primary-dark', c.dark);
   if (D.darkMode) {
     el.classList.add('dark');
-    root.style.background = '#0f0f13';
-    el.style.setProperty('--bg','#0f0f13');
-    el.style.setProperty('--card','#1a1a24');
+    root.style.background = '#0a120a';
+    el.style.setProperty('--bg','#0a120a');
+    el.style.setProperty('--card','#121812');
     el.style.setProperty('--text','#e4e4e7');
     el.style.setProperty('--muted','#8a8a9a');
-    el.style.setProperty('--border','#2a2a3a');
+    el.style.setProperty('--border','#2a2a2a');
     el.style.setProperty('--primary-light', c.lightDark);
   } else {
     el.classList.remove('dark');
-    root.style.background = '#f5f5f0';
-    el.style.setProperty('--bg','#f5f5f0');
+    root.style.background = '#f0f5ea';
+    el.style.setProperty('--bg','#f0f5ea');
     el.style.setProperty('--card','#ffffff');
     el.style.setProperty('--text','#1a1a2e');
     el.style.setProperty('--muted','#6b7280');
@@ -6483,7 +6483,7 @@ function applyTheme() {
 }
 
 function updateTabLabels() {
-  var labels = {home:'Throne Room',reflect:'Scriptorium',care:'Infirmary',track:'Chronicle',more:'Armory'};
+  var labels = {home:'Atlas',reflect:'Scriptorium',care:'Infirmary',track:'Chronicle',more:'Armory'};
   [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
