@@ -30,7 +30,7 @@ function regnalDate(rawDate) {
   var day = d.getDate();
   var daySuffix = suffixes[day % 10] || 'th';
   if (day >= 11 && day <= 13) daySuffix = 'th';
-  return day + daySuffix + ' of ' + mName + ', ' + reignYear + suffix + ' Year of Your Reign';
+  return day + daySuffix + ' ' + mName + ' \u2022 Year ' + reignYear + suffix + ' of Your Journey';
 }
 
 function plantStage() {
@@ -60,16 +60,16 @@ function plantStageInfo() {
 var SOBER_LEVELS = [
   {level:1, minDays:0, title:'Peasant', icon:'\u2619', desc:'The journey begins'},
   {level:2, minDays:1, title:'Page', icon:'\u2726', desc:'Learning the ways of the court'},
-  {level:3, minDays:7, title:'Squire', icon:'\u2694', desc:'Proving your worth'},
-  {level:4, minDays:14, title:'Knight Errant', icon:'\u2720', desc:'Riding toward a cause'},
-  {level:5, minDays:30, title:'Knight', icon:'\u269C', desc:'Sworn to the realm'},
-  {level:6, minDays:60, title:'Knight of the Realm', icon:'\u265B', desc:'Honored across the land'},
-  {level:7, minDays:90, title:'Baron', icon:'\u265A', desc:'A lord of the kingdom'},
-  {level:8, minDays:180, title:'Viscount', icon:'\u265C', desc:'A trusted advisor'},
-  {level:9, minDays:270, title:'Earl', icon:'\u2766', desc:'Noble and steadfast'},
-  {level:10, minDays:365, title:'Duke', icon:'\u2727', desc:'A pillar of the realm'},
-  {level:11, minDays:730, title:'Prince', icon:'\u265D', desc:'Heir to the throne'},
-  {level:12, minDays:1000, title:'King', icon:'\u2629', desc:'Long may you reign'},
+  {level:3, minDays:7, title:'Apprentice', icon:'\u2694', desc:'Proving your worth'},
+  {level:4, minDays:14, title:'Seeker', icon:'\u2720', desc:'Moving toward a goal'},
+  {level:5, minDays:30, title:'Achiever', icon:'\u269C', desc:'Committed to the path'},
+  {level:6, minDays:60, title:'Champion', icon:'\u265B', desc:'Honored across the community'},
+  {level:7, minDays:90, title:'Leader', icon:'\u265A', desc:'A leader in recovery'},
+  {level:8, minDays:180, title:'Mentor', icon:'\u265C', desc:'A trusted advisor'},
+  {level:9, minDays:270, title:'Guide', icon:'\u2766', desc:'A pillar of the community'},
+  {level:10, minDays:365, title:'Sage', icon:'\u2727', desc:'A pillar of the community'},
+  {level:11, minDays:730, title:'Royal', icon:'\u265D', desc:'A true royal'},
+  {level:12, minDays:1000, title:'Master', icon:'\u2629', desc:'Long may you thrive'},
   {level:13, minDays:1825, title:'Emperor', icon:'\u265E', desc:'Five years â€” an immortal legend'}
 ];
 
@@ -81,20 +81,20 @@ var ACHIEVEMENTS = [
   {id:'moons_silver',   icon:'\u269C',  title:'Silver Moon',      desc:'Stay sober for 30 days',         check:function(d){return d>=30}},
   {id:'moons_golden',   icon:'\u265B',  title:'Golden Moon',      desc:'Stay sober for 60 days',         check:function(d){return d>=60}},
   {id:'season_king',    icon:'\u265C',  title:'Seasoned King',    desc:'Stay sober for 90 days',         check:function(d){return d>=90}},
-  {id:'half_crown',     icon:'\u2766',  title:'Half a Crown',     desc:'Stay sober for 180 days',        check:function(d){return d>=180}},
+  {id:'half_crown',     icon:'\u2766',  title:'Halfway There',     desc:'Stay sober for 180 days',        check:function(d){return d>=180}},
   {id:'year_ring',      icon:'\u2727',  title:'Year Ring',        desc:'Stay sober for 1 year',          check:function(d){return d>=365}},
-  {id:'iron_throne',    icon:'\u265D',  title:'Iron Throne',      desc:'Stay sober for 2 years',         check:function(d){return d>=730}},
+  {id:'iron_throne',    icon:'\u265D',  title:'Iron Will',      desc:'Stay sober for 2 years',         check:function(d){return d>=730}},
   {id:'decade_early',   icon:'\u2629',  title:'Millennium',       desc:'Stay sober for 1000 days',       check:function(d){return d>=1000}},
-  {id:'scribe',         icon:'\u270D',  title:'Royal Scribe',     desc:'Write 10 journal entries',       check:function(d,j){return j>=10}},
-  {id:'chronicler',     icon:'\u270D',  title:'Chronicler',       desc:'Write 50 journal entries',       check:function(d,j){return j>=50}},
+  {id:'scribe',         icon:'\u270D',  title:'Scribe',     desc:'Write 10 journal entries',       check:function(d,j){return j>=10}},
+  {id:'chronicler',     icon:'\u270D',  title:'Journaler',       desc:'Write 50 journal entries',       check:function(d,j){return j>=50}},
   {id:'shield_bearer',  icon:'\u265A',  title:'Shield Bearer',    desc:'Earn 3 shields',                 check:function(d,j,s){return s>=3}},
-  {id:'quest_knight',   icon:'\u269C',  title:'Quest Knight',     desc:'Complete 10 quests',             check:function(d,j,s,q){return q>=10}},
-  {id:'comrade',        icon:'\u2726',  title:'True Comrade',     desc:'Pair with a buddy',              check:function(){return D.buddyPair && D.buddyPair.partnerId}},
+  {id:'quest_knight',   icon:'\u269C',  title:'Quest Seeker',     desc:'Complete 10 quests',             check:function(d,j,s,q){return q>=10}},
+  {id:'comrade',        icon:'\u2726',  title:'True Partner',     desc:'Pair with a buddy',              check:function(){return D.buddyPair && D.buddyPair.partnerId}},
   {id:'stone_wall',     icon:'\u265E',  title:'Stone Wall',       desc:'Reach castle level 5',           check:function(d){return kingdomLevel(d)>=5}},
-  {id:'dragon_lord',    icon:'\u265B',  title:'Dragon Lord',      desc:'Reach castle level 15',          check:function(d){return kingdomLevel(d)>=15}},
+  {id:'dragon_lord',    icon:'\u265B',  title:'Peak Lord',      desc:'Reach castle level 15',          check:function(d){return kingdomLevel(d)>=15}},
   {id:'first_entry',    icon:'\u270D',  title:'First Scroll',     desc:'Write your first journal entry', check:function(d,j){return j>=1}},
   {id:'relapse_rise',   icon:'\u2629',  title:'Phoenix',          desc:'Come back after a relapse',      check:function(){return D.relapseHistory && D.relapseHistory.length > 0}},
-  {id:'crown_jewel',    icon:'\u2727',  title:'Crown Jewel',      desc:'Unlock all achievements',        check:function(d,j,s,q){var all=ACHIEVEMENTS.map(function(a){return a.id});return all.every(function(i){return(D.achievements||[]).indexOf(i)>=0})}},
+  {id:'crown_jewel',    icon:'\u2727',  title:'Crowning Achievement',      desc:'Unlock all achievements',        check:function(d,j,s,q){var all=ACHIEVEMENTS.map(function(a){return a.id});return all.every(function(i){return(D.achievements||[]).indexOf(i)>=0})}},
 ];
 
 function soberLevel() {
@@ -336,7 +336,7 @@ function showRelapseRecovery(protectedByBoost) {
     h += '<div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:14px;margin-top:8px;text-align:center;box-shadow:0 2px 12px rgba(138,122,106,.15)">';
     h += '<div style="font-size:28px;margin-bottom:2px">&#128081;</div>';
     h += '<div style="font-size:12px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Royal Pardon</div>';
-    h += '<div style="font-size:9px;color:var(--gold);margin-bottom:6px;font-style:italic">"By the crown I carry and the realm we are building â€” you are pardoned. Rise and begin again with my blessing."</div>';
+    h += '<div style="font-size:9px;color:var(--gold);margin-bottom:6px;font-style:italic">"On the path I walk and the journey we are building â€” you are pardoned. Rise and begin again with my blessing."</div>';
     h += '<div style="border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:6px 4px;margin-bottom:4px">';
     h += '<div style="font-size:11px;line-height:1.4;margin-bottom:4px"><em>"' + safe(lastPardon.forgive) + '"</em></div>';
     if (lastPardon.commit) h += '<div style="font-size:10px;color:var(--text-light)">&#9876; <strong>Vow:</strong> ' + safe(lastPardon.commit) + '</div>';
@@ -429,7 +429,7 @@ function doResetTimer() {
   saveData();
   render();
   setTimeout(function(){
-    showToast('&#128081; A new chapter begins. The realm stands with you.','success');
+    showToast('&#128081; A new chapter begins. The community stands with you.','success');
   }, 300);
 }
 

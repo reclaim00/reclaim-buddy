@@ -527,7 +527,7 @@ var RECOVERY_PROGRAMS = {
       'Week 2: Tools — Write a commitment statement to yourself. Read it aloud.',
       'Week 2: Tools — Try the grounding exercise: name 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.',
       'Week 2: Tools — Review your week. What coping tools worked best for you?',
-      'Week 3: Connection — Reach out to your comrade or accountability partner.',
+      'Week 3: Connection — Reach out to your partner or accountability partner.',
       'Week 3: Connection — Read a recovery story from the Library. Let their journey inspire yours.',
       'Week 3: Connection — Write a journal entry as a letter to someone who helped you.',
       'Week 3: Connection — Explore the meetings page. Find a meeting you could attend.',
@@ -832,7 +832,7 @@ function timelineHTML() {
   for (var bci=0;bci<D.buddyCheckins.length;bci++) {
     var bd = new Date(D.buddyCheckins[bci].date);
     if (!isNaN(bd.getTime())) {
-      events.push({date: bd, type:'buddy', label:'Comrade check-in', detail:D.buddyCheckins[bci].note || ''});
+      events.push({date: bd, type:'buddy', label:'Partner check-in', detail:D.buddyCheckins[bci].note || ''});
     }
   }
   // Sort by date (oldest first)
@@ -920,7 +920,7 @@ function viewStreakDetails(idx) {
 }
 
 function trackHTML() {
-  var h = '<h2 class="page-title">'+t('Chronicle')+'</h2>';
+  var h = '<h2 class="page-title">'+t('History')+'</h2>';
   // Streaks viewer
   h += streaksHTML();
 
@@ -1112,7 +1112,7 @@ function showCrisisAlert(text) {
       h += '<div style="display:flex;gap:6px;margin:8px 0">';
       h += '<button class="btn btn-primary btn-sm" onclick="startBreathe();document.getElementById(\'crisis-overlay\').remove();D._postCrisisPending=false;saveData()" style="flex:1">'+t('Breathe')+'</button>';
       if (AUTH_EMAIL && D.buddy) {
-        h += '<button class="btn btn-outline btn-sm" onclick="crisisNotifyBuddy()" style="flex:1">'+t('Call Comrade')+'</button>';
+        h += '<button class="btn btn-outline btn-sm" onclick="crisisNotifyBuddy()" style="flex:1">'+t('Call Partner')+'</button>';
       }
       h += '</div>';
       h += '<div style="display:flex;gap:6px;margin-top:4px">';
@@ -1154,8 +1154,8 @@ function showCrisisAlert(text) {
 
 function crisisNotifyBuddy() {
   if (!AUTH_EMAIL || !D.buddy) return;
-  var msg = t('I need support right now. Your comrade may be in distress. Please reach out.');
-  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your comrade has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  var msg = t('I need support right now. Your partner may be in distress. Please reach out.');
+  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
 function deleteJournalEntry(idx) {
@@ -1524,7 +1524,7 @@ var ART_REFLECTIONS = {
     "I'm reminded of Anthony Hopkins  he was a severe alcoholic for decades until 1975 when he realized he was going to die if he didn't stop. He's been sober for over 45 years. What got him through was something simple: he stopped putting himself in situations where he'd be tempted. He built a new life instead of trying to fit recovery into his old one. My advice for you: when sadness hits, don't fight it alone. Change your environment, even if it's just moving to a different room. And remember  Hopkins won two Oscars after getting sober. Your best chapters aren't behind you.",
     "Demi Lovato nearly died from a heroin overdose in 2018. They went to rehab multiple times, relapsed, and kept going anyway. What they've said is key: 'Recovery is not a straight line.' When sadness makes you feel like you've failed, you haven't. You're still here. Still trying. That's what matters. Try this: write down one small thing you did today that took courage. Even getting out of bed counts. Demi's still standing. So are you.",
     "Brad Pitt hit rock bottom with alcohol in 2016. He joined AA, but he also found a surprising outlet: sculpting. He started working with clay because it forced him to be present with his hands. When words won't come, do something physical. Sculpt, draw, run, clean  anything that gets you out of your head and into your body. The sadness will still be there when you're done, but it'll feel more manageable. Pitt says art saved him. Find your version of that.",
-    "Robert Downey Jr. spent years in and out of prison, lost every job, was completely written off by Hollywood. He said the turning point was realizing he couldn't do it alone. He needed structure, accountability, and people who believed in him before he believed in himself. When you're in a dark place, your instinct is to isolate. That's the addiction talking. Reach out to someone  your comrade, a friend, a helpline. Downey's been sober since 2003. He didn't do it alone, and neither should you."
+    "Robert Downey Jr. spent years in and out of prison, lost every job, was completely written off by Hollywood. He said the turning point was realizing he couldn't do it alone. He needed structure, accountability, and people who believed in him before he believed in himself. When you're in a dark place, your instinct is to isolate. That's the addiction talking. Reach out to someone  your partner, a friend, a helpline. Downey's been sober since 2003. He didn't do it alone, and neither should you."
   ],
   angry: [
     "Samuel L. Jackson struggled with cocaine and heroin addiction in the 80s. He was a functioning addict, but his daughter walked in on him in a bad state, and that was his wake-up call. He got clean in 1990 and channeled that anger into his work. He became one of the most iconic actors in history. Here's what I'd suggest: your anger is fuel. Don't suppress it  direct it. Write the angry letter (don't send it), do a brutal workout, clean your space aggressively. Let the fire work for you, not against you.",
@@ -1683,7 +1683,7 @@ var MOTIVATION_POOL = [
   {q:'"The greatest weapon against stress is our ability to choose one thought over another."', p:'William James', c:'History', m:'anxious', t:'You can\'t control every trigger, but you can choose which thoughts you feed. That\'s power.'},
   {q:'"A chain is only as strong as its weakest link."', p:'Proverb', c:'Motivation', m:'reflective', t:'Recovery is about strengthening every link  sleep, nutrition, connection, purpose. Identify your weakest link today and give it one minute of attention.'},
   {q:'"Smooth seas do not make skillful sailors."', p:'African Proverb', c:'History', m:'angry', t:'Every storm you weather in recovery makes you more capable. The hard days are the ones building your strength.'},
-  {q:'"If you want to go fast, go alone. If you want to go far, go together."', p:'African Proverb', c:'History', m:'reflective', t:'Recovery is a long road. your comrade, your sponsor, your community  they\'re not optional, they\'re how you go the distance.'},
+  {q:'"If you want to go fast, go alone. If you want to go far, go together."', p:'African Proverb', c:'History', m:'reflective', t:'Recovery is a long road. your partner, your sponsor, your community  they\'re not optional, they\'re how you go the distance.'},
   {q:'"When there is no enemy within, the enemies outside cannot hurt you."', p:'African Proverb', c:'History', m:'anxious', t:'The real battle is internal. When you make peace with yourself, external triggers lose their power.'},
   {q:'"However long the night, the dawn will break."', p:'African Proverb', c:'History', m:'sad', t:'No matter how dark things feel right now, this is not the end of the story. Dawn always comes.'},
   {q:'"The child who is not embraced by the village will burn it down to feel its warmth."', p:'African Proverb', c:'History', m:'sad', t:'Connection isn\'t a luxury  it\'s a survival need. If you\'re feeling isolated, reach out. Your village is waiting.'},
@@ -1767,7 +1767,7 @@ var DAILY_SPARKS = [
   {type:'challenge', text:'Challenge: Set an alarm for 3 hours from now. When it goes off, take 3 deep breaths and Check in with yourself.', c:'Challenge'},
   {type:'tip', text:'Tip: You can\'t think your way out of a feeling. Move your body  a walk, stretches, or dancing for 2 minutes shifts your state.', c:'Tip'},
   {type:'affirmation', text:'I am not alone. There are people who understand and want to help.', c:'Affirmation'},
-  {type:'challenge', text:'Challenge: Send a message to your comrade just saying "thinking of you."', c:'Challenge'},
+  {type:'challenge', text:'Challenge: Send a message to your partner just saying "thinking of you."', c:'Challenge'},
   {type:'tip', text:'Tip: The STOP technique: Stop, Take a breath, Observe your thoughts, Proceed with intention.', c:'Tip'},
   {type:'affirmation', text:'Healing takes time. I give myself permission to take that time.', c:'Affirmation'},
   {type:'challenge', text:'Challenge: Identify one trigger you faced today and one thing you did (or could do) to handle it.', c:'Challenge'},
@@ -1947,12 +1947,12 @@ var TOPIC_SUGGESTIONS = {
   work: ['Try setting a clear boundary between work and rest  even 10 minutes of silence between tasks can reset your mind.', 'Write down three things you accomplished today at work, no matter how small.', 'Consider talking to your manager or a trusted coworker about what you\'re feeling.', 'Open the Coping Cards in the Care section and try the grounding exercise  it helps with work overwhelm.'],
   relationships: ['Reach out to someone you trust and tell them how you feel. Connection is medicine.', 'Write down what you wish you could say  sometimes the page is the safest place to start.', 'Consider setting a small boundary this week that protects your peace.', 'Name one person who makes you feel seen. Reach out to them today, even with a short text.'],
   health: ['Be proud of yourself for tracking your health. Small steps compound into big changes.', 'Try the breathing exercise in the Care section  it supports both mental and physical calm.', 'If you haven\'t already, consider scheduling a check-up. Taking action reduces anxiety.', 'Your health journey deserves celebration. Open your Progress page and look at how far you\'ve come.'],
-  craving: ['You just acknowledged a craving  that\'s a win. Awareness is the first line of defense.', 'Try the Urge Surfing card in Coping Cards. Ride the wave  it will pass.', 'Call or text your comrade right now. Connection breaks the craving cycle.', 'Remind yourself why you started. Open your relapse prevention plan in the Care section.'],
+  craving: ['You just acknowledged a craving  that\'s a win. Awareness is the first line of defense.', 'Try the Urge Surfing card in Coping Cards. Ride the wave  it will pass.', 'Call or text your partner right now. Connection breaks the craving cycle.', 'Remind yourself why you started. Open your relapse prevention plan in the Care section.'],
   school: ['Learning is growth. Even when it\'s hard, every class page you read moves you forward.', 'Break your study time into 25-minute focused blocks with 5-minute breaks.', 'Reach out to a classmate or professor  asking for help is strength, not weakness.'],
   wellness: ['You\'re taking care of yourself, and that\'s everything. Keep showing up for you.', 'Try a 5-minute walk or stretch  your body and mind will thank you.', 'Hydrate, eat something nourishing, and give yourself permission to rest.'],
   finances: ['Money stress is real and heavy. Naming it here is the first step to managing it.', 'Focus on what you can control today  even a $5 decision made intentionally is a win.', 'Consider listing out your expenses. Seeing them on paper often reduces their power over you.'],
-  progress: ['Reading your own progress is powerful. You\'ve earned these words.', 'Share this win with someone  your comrade, a friend, or write it in your journal again.', 'Take a moment to feel this. You worked for it. Let yourself be proud.'],
-  loneliness: ['I hear you. You\'re not as alone as it feels right now.', 'Consider reaching out to your comrade or just sending a text to someone you trust.', 'Sometimes presence helps  go somewhere with people, even if you don\'t talk to anyone.', 'Open your coping cards and try the self-compassion break. You deserve kindness from yourself.'],
+  progress: ['Reading your own progress is powerful. You\'ve earned these words.', 'Share this win with someone  your partner, a friend, or write it in your journal again.', 'Take a moment to feel this. You worked for it. Let yourself be proud.'],
+  loneliness: ['I hear you. You\'re not as alone as it feels right now.', 'Consider reaching out to your partner or just sending a text to someone you trust.', 'Sometimes presence helps  go somewhere with people, even if you don\'t talk to anyone.', 'Open your coping cards and try the self-compassion break. You deserve kindness from yourself.'],
   general: ['Try putting on a song that matches your mood and letting yourself feel it for 3 minutes.', 'Write one thing you\'re grateful for  even if it feels small.', 'Take 5 slow, deep breaths. In through your nose, out through your mouth.']
 };
 
@@ -2009,7 +2009,7 @@ function buildSuggestions(entry, mood, entries, idx) {
   var streak = D.streak || 0;
   if (streak > 5) suggestions.push('You\'re on a ' + streak + '-day journaling streak. Consistency like this is how recovery becomes a lifestyle, not just a goal.');
 
-  if (D.name && D.buddyCode) suggestions.push('Have you shared this entry with your comrade yet? Sometimes the people closest to us see our growth before we do.');
+  if (D.name && D.buddyCode) suggestions.push('Have you shared this entry with your partner yet? Sometimes the people closest to us see our growth before we do.');
 
   suggestions.push('Check in with the Coping Cards or Breathing Exercise in the Care section whenever you need a reset.');
 
@@ -2138,7 +2138,7 @@ function updateWordCount(el) {
 function reflectHTML() {
   var goal = D.journalWordGoal || 50;
   var jStreak = calcJournalStreak();
-  var h = '<h2 class="page-title">'+t('Scriptorium')+'</h2>';
+  var h = '<h2 class="page-title">'+t('Journal')+'</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Arthur is here to help you reflect. Every entry sharpens the map of your recovery.</div></div></div>';
   if (jStreak > 0) {
     h += '<div style="text-align:center;padding:8px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px">';
@@ -2329,7 +2329,7 @@ function showJournalLetter(idx) {
   // Scroll header (no wax seal)
   h += '<div class="scroll-header">';
   h += '<div class="scroll-date">' + dateStr + '</div>';
-  h += '<div class="scroll-title">Chronicle Entry</div>';
+  h += '<div class="scroll-title">History Entry</div>';
   h += '</div>';
   // Scroll body (where text appears)
   h += '<div class="letter-body" id="letter-body"></div>';
@@ -2718,7 +2718,7 @@ function addCopingCard() {
 
 // ====== CARE PAGE ======
 function careHTML() {
-  var h = '<h2 class="page-title">'+t('Infirmary')+'</h2>';
+  var h = '<h2 class="page-title">'+t('Wellness')+'</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div class="breath-circle" style="width:80px;height:80px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border:3px solid var(--primary);border-radius:50%;font-size:13px;color:var(--primary);font-weight:600">'+t('Breathe')+'</div>';
   h += '<h3 style="font-size:16px;font-weight:700">'+t('Mindful Breathing')+'</h3>';
@@ -2733,7 +2733,7 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; '+t('Relapse Rescue')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; '+t('Relapse Graveyard')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'oswald\')" style="border-color:#4338ca">&#127987; Oswald\'s Tower</div>';
+  h += '<div class="sub-item" onclick="goTo(\'oswald\')" style="border-color:#4338ca">&#127987; Oswald\'s View</div>';
   h += '</div>';
 
   // Journal-based insights
@@ -2976,7 +2976,7 @@ function rescueRecommit() {
   saveData();
   setTimeout(kingdomDamage, 150);
   setTimeout(villageDamage, 200);
-  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'royalpardon\')">&#128081; Royal Pardon</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
+  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'royalpardon\')">&#128081; Fresh Start</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
 }
 
 function rescueSkip() {
@@ -3034,8 +3034,8 @@ function accountabilityHTML() {
     h += '<div class="card" style="text-align:center;padding:20px">';
     h += '<div style="font-size:32px;margin-bottom:8px">&#128104;&#8205;&#128104;</div>';
     h += '<div style="font-size:14px;font-weight:600;margin-bottom:4px">No accountability partner yet</div>';
-    h += '<div style="font-size:12px;color:var(--muted)">Set up a comrade to use accountability check-ins.</div>';
-    h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'buddy\')" style="margin-top:8px">Go to Comrade</button>';
+    h += '  <div style="font-size:12px;color:var(--muted)">Set up a partner to use accountability check-ins.</div>';
+    h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'buddy\')" style="margin-top:8px">Go to Partner</button>';
     h += '</div>';
     return h;
   }
@@ -3121,7 +3121,7 @@ function accCheckin() {
   overlay.className = 'overlay';
   overlay.id = 'acc-ov';
   var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:4px">&#128170; Accountability Check-In</h3>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did the interaction with ' + (D.buddy?D.buddy.name:'your comrade') + ' go?</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did the interaction with ' + (D.buddy?D.buddy.name:'your partner') + ' go?</p>';
   h += '<div style="margin-bottom:10px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">How are you feeling about your recovery right now?</label>';
   h += '<div class="mood-row" id="acc-moods">';
   var labels = ['Struggling','Tough','Okay','Good','Strong'];
@@ -3675,7 +3675,7 @@ function showJourneyMap() {
     var unlocked = streak >= (li * 5 + 1);
     legendHtml += '<div style="display:flex;align-items:center;gap:4px;font-size:8px;color:'+(unlocked?'var(--text)':'rgba(140,120,80,.3)')+'"><span>'+kg.icon+'</span><span>'+kg.name+'</span><span style="color:rgba(140,120,80,.5)">('+kg.days+')</span></div>';
   }
-  var scrollHint = '<div style="font-size:9px;color:rgba(180,140,60,.4);margin:4px 0;text-align:center">~ The Kingdoms of Recovery ~</div>';
+  var scrollHint = '<div style="font-size:9px;color:rgba(180,140,60,.4);margin:4px 0;text-align:center">~ The Path of Recovery ~</div>';
   overlay.innerHTML =
     '<div style="background:linear-gradient(180deg,#1a1410,#2a2018);border:1px solid rgba(180,140,60,.25);border-radius:18px;max-width:480px;width:94%;padding:14px 12px 12px;box-shadow:0 12px 48px rgba(0,0,0,.5);margin:0 auto">' +
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">' +
@@ -4090,7 +4090,7 @@ function reportsHTML() {
 function buddyHTML() {
   if (!D.buddy || !D.buddy.name) return setupBuddyHTML();
   var h = '';
-  h += '<h2 class="page-title">'+t('Your Comrade')+'</h2>';
+  h += '<h2 class="page-title">'+t('Your Partner')+'</h2>';
   h += '<div class="comrade-card"><div class="comrade-avatar">' + D.buddy.name[0].toUpperCase() + '</div><div><div style="font-weight:700;font-size:16px">' + D.buddy.name + '</div><div style="font-size:12px;color:var(--muted)">' + (D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + D.buddy.contact : '') + (D.buddy.language ? ' &middot; ' + D.buddy.language : '') + '</div></div></div>';
   h += '<div class="stat-grid" style="margin:8px 0">';
   h += '<div class="stat-card"><div class="num">' + buddyStreak() + '</div><div class="label">Buddy Streak</div></div>';
@@ -4164,7 +4164,7 @@ function buddyHTML() {
   // Previously paired buddies
   var past = D.pairedBuddies || [];
   if (past.length > 0) {
-    h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:16px">&#128101;</div><h3 style="margin:0;font-size:14px">Past Comrades</h3></div>';
+    h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:16px">&#128101;</div><h3 style="margin:0;font-size:14px">Past Partners</h3></div>';
     for (var pi=0;pi<past.length;pi++) {
       if (past[pi].email === (D.buddy && D.buddy.contact)) continue;
       h += '<div style="display:flex;align-items:center;gap:6px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="flex:1">' + safe(past[pi].name) + '</span><span style="font-size:11px;color:var(--muted)">' + (past[pi].language || '') + '</span></div>';
@@ -4195,7 +4195,7 @@ function buddyCompetitionHTML() {
   // Fetch buddy's progress for comparison
   setTimeout(function(){
     var buddyEmail = D.buddy ? D.buddy.contact : '';
-    if (!buddyEmail) { var el = document.getElementById('buddy-competition-content'); if (el) el.innerHTML = '<div class="empty-state">No comrade contact found.</div>'; return; }
+    if (!buddyEmail) { var el = document.getElementById('buddy-competition-content'); if (el) el.innerHTML = '<div class="empty-state">No partner contact found.</div>'; return; }
     DB.collection('progress').doc(buddyEmail).get().then(function(doc){
       var p = doc.exists ? doc.data() : null;
       var buddyStreakData = p ? p.streak : 0;
@@ -4221,7 +4221,7 @@ function buddyChallengesHTML() {
   var challenges = D.buddyGoals || [];
   var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#x265B;</div><h3 style="margin:0">Shared Challenges</h3></div>';
   if (!challenges.length) {
-    h += '<div class="empty-state">No challenges yet. Create one to compete with ' + (D.buddy ? D.buddy.name : 'your comrade') + '!</div>';
+    h += '<div class="empty-state">No challenges yet. Create one to compete with ' + (D.buddy ? D.buddy.name : 'your partner') + '!</div>';
     h += '<button class="btn btn-outline btn-sm" onclick="newChallenge()">+ New Challenge</button></div>';
     return h;
   }
@@ -4251,7 +4251,7 @@ function competitionsHTML() {
   var now = Date.now();
   var active = comps.filter(function(c){ return c.status === 'active' && c.endDate > now; });
   if (!active.length) {
-    h += '<div class="empty-state">No active competitions. Start one with your comrade!</div>';
+    h += '<div class="empty-state">No active competitions. Start one with your partner!</div>';
     h += '<button class="btn btn-outline btn-sm" onclick="createCompetition()">+ New Competition</button></div>';
     return h;
   }
@@ -4279,7 +4279,7 @@ function competitionsHTML() {
 function createCompetition() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var buddyName = D.buddy ? D.buddy.name : 'your comrade';
+  var buddyName = D.buddy ? D.buddy.name : 'your partner';
   var types = [
     {id:'streak', label:'Check-in Streak', desc:'Who keeps the longest streak'},
     {id:'journal', label:'Journal Entries', desc:'Who writes more entries'},
@@ -4337,25 +4337,25 @@ window.addCompetitionProgress = function(idx) {
 
 function setupBuddyHTML() {
   var h = '';
-  h += '<h2 class="page-title" style="margin:16px 0 8px">'+t('Find Your Comrade')+'</h2>';
+  h += '<h2 class="page-title" style="margin:16px 0 8px">'+t('Find Your Partner')+'</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:16px">An accountability partner helps you stay on track. Connect with someone who speaks your language anywhere in the world.</p>';
   h += '<div class="card"><h3>Add Buddy Manually</h3>';
-  h += '<input type="text" id="comrade-name" placeholder="comrade\'s name">';
+  h += '<input type="text" id="comrade-name" placeholder="partner\'s name">';
   h += '<input type="text" id="comrade-contact" placeholder="Phone, email, or username (optional)">';
   h += '<input type="text" id="comrade-relationship" placeholder="e.g. Friend, Therapist, Sponsor">';
   h += '<div style="font-size:12px;color:var(--muted);margin:6px 0 2px">Buddy\'s language</div>';
   h += '<select id="comrade-language" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select>';
-  h += '<button class="btn btn-primary" onclick="saveBuddy()">Add Comrade</button></div>';
+  h += '<button class="btn btn-primary" onclick="saveBuddy()">Add Partner</button></div>';
   // Find buddies by pairing code (works across the world)
-  h += '<div class="card" style="border:2px solid var(--accent);text-align:center"><h3>Find Me a comrade</h3>';
+  h += '<div class="card" style="border:2px solid var(--accent);text-align:center"><h3>Find Me a partner</h3>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">I\'ll automatically match you with someone who speaks <strong>' + (D.language || 'English') + '</strong>.</p>';
-  h += '<button class="btn btn-primary" id="find-buddy-btn" onclick="findBuddyAuto()" style="margin-bottom:6px">Find Me a comrade</button>';
+  h += '<button class="btn btn-primary" id="find-buddy-btn" onclick="findBuddyAuto()" style="margin-bottom:6px">Find Me a partner</button>';
   h += '<div id="auto-buddy-result"></div></div>';
   h += '<div class="card" style="border:2px solid var(--primary)"><h3>Worldwide Buddy Pairing</h3>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Your language: <strong>' + (D.language || 'English') + '</strong></p>';
-  h += '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">Generate a pairing code to share with your comrade anywhere in the world. When they enter the same code, you\'ll be connected automatically via our global directory.</div>';
+  h += '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">Generate a pairing code to share with your partner anywhere in the world. When they enter the same code, you\'ll be connected automatically via our global directory.</div>';
   h += '<div style="display:flex;gap:8px;margin-bottom:6px"><input type="text" id="pairing-code" placeholder="Enter pairing code" style="flex:1"><button class="btn btn-sm btn-primary" onclick="connectPairingCode()">Connect</button></div>';
   h += '<button class="btn btn-sm btn-outline" onclick="generatePairingCode()">Generate My Code</button>';
   h += '<div id="pairing-result" style="margin-top:8px;font-size:13px;color:var(--muted)"></div>';
@@ -4365,32 +4365,32 @@ function setupBuddyHTML() {
   var lang = D.language || 'English';
   var matches = registered.filter(function(b){return b.language === lang && b.email !== AUTH_EMAIL});
   var totalLocal = matches.length;
-  h += '<div class="card" id="buddies-local"><h3>Available Comrades (' + lang + ') <span id="comrade-count" style="font-size:12px;color:var(--muted);font-weight:400">(local)</span></h3>';
+  h += '<div class="card" id="buddies-local"><h3>Available Partners (' + lang + ') <span id="comrade-count" style="font-size:12px;color:var(--muted);font-weight:400">(local)</span></h3>';
   if (matches.length) {
     for (var mi=0;mi<matches.length;mi++) {
       h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">' + safe(matches[mi].name) + '</div><div style="font-size:11px;color:var(--muted)">' + safe(matches[mi].language) + ' speaker</div></div><button class="btn btn-sm btn-primary" onclick="connectToBuddy(\'' + matches[mi].email.replace(/'/g,'\\\'') + '\')">Connect</button></div>';
     }
   } else {
-    h += '<div class="empty-state">No local comrades found yet.</div>';
+    h += '<div class="empty-state">No local partners found yet.</div>';
   }
   h += '</div>';
   // Global buddies (fetched from worldwide directory)
-  h += '<div class="card" id="buddies-global"><h3>Worldwide Comrades <span style="font-size:12px;color:var(--muted);font-weight:400">(global directory)</span></h3>';
+  h += '<div class="card" id="buddies-global"><h3>Worldwide Partners <span style="font-size:12px;color:var(--muted);font-weight:400">(global directory)</span></h3>';
   h += '<div id="global-buddies-list"><div class="empty-state">Loading global buddies...</div></div>';
   h += '</div>';
-  h += '<div class="card"><p style="font-size:12px;color:var(--muted);line-height:1.5">Set your language in Profile to find comrades who speak your language. The global directory connects you with people on the same journey worldwide.</p></div>';
+  h += '<div class="card"><p style="font-size:12px;color:var(--muted);line-height:1.5">Set your language in Profile to find partners who speak your language. The global directory connects you with people on the same journey worldwide.</p></div>';
   // Fetch global buddies asynchronously
   setTimeout(function(){
     fetchGlobalBuddies(function(globalList){
       var listEl = document.getElementById('global-buddies-list');
       if (!listEl) return;
       if (globalList === null) {
-        listEl.innerHTML = '<div class="empty-state">Could not reach global directory. Comrades will appear when connected to the internet.</div>';
+        listEl.innerHTML = '<div class="empty-state">Could not reach global directory. Partners will appear when connected to the internet.</div>';
         return;
       }
       var globalMatches = globalList.filter(function(b){return b.language === lang && b.email !== AUTH_EMAIL && !matches.some(function(lb){return lb.email === b.email})});
       if (!globalMatches.length) {
-        listEl.innerHTML = '<div class="empty-state">No Worldwide Comrades in your language yet. Be the first  share your pairing code!</div>';
+        listEl.innerHTML = '<div class="empty-state">No Worldwide Partners in your language yet. Be the first  share your pairing code!</div>';
         return;
       }
       var gh = '';
@@ -4407,7 +4407,7 @@ function setupBuddyHTML() {
 
 function saveBuddy() {
   var name = document.getElementById('buddy-name');
-  if (!name || !name.value.trim()) { alert(t('Enter your comrade\'s name.')); return; }
+  if (!name || !name.value.trim()) { alert(t('Enter your partner\'s name.')); return; }
   D.buddy = { name: name.value.trim(), contact: document.getElementById('buddy-contact') ? document.getElementById('buddy-contact').value.trim() : '', relationship: document.getElementById('buddy-relationship') ? document.getElementById('buddy-relationship').value.trim() : '', language: document.getElementById('buddy-language') ? document.getElementById('buddy-language').value : (D.language || 'English') };
   saveData();
 }
@@ -4415,7 +4415,7 @@ function saveBuddy() {
 function buddyCheckin() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Send Word to ' + (D.buddy ? D.buddy.name : 'your comrade') + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did your interaction go?</p><div class="mood-row" id="checkin-moods">';
+  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Send Word to ' + (D.buddy ? D.buddy.name : 'your partner') + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did your interaction go?</p><div class="mood-row" id="checkin-moods">';
   var labels = ['Tough','Hard','Okay','Good','Great'];
   for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#checkin-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
   h += '</div><textarea id="checkin-note" placeholder="What did you talk about? Any wins?" style="min-height:80px"></textarea><button class="btn btn-primary" onclick="saveBuddyCheckin(this)">Seal the Record</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
@@ -4435,7 +4435,7 @@ function saveBuddyCheckin(btn) {
 function addGoal() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('New Shared Goal')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">'+t('Set a goal with')+' ' + (D.buddy ? D.buddy.name : t('your comrade')) + '</p><input type="text" id="goal-title" placeholder="'+t('Goal title')+'"><textarea id="goal-desc" placeholder="'+t('Description')+'" style="min-height:60px"></textarea><button class="btn btn-primary" onclick="saveGoal(this)">'+t('Save Goal')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
+  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('New Shared Goal')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">'+t('Set a goal with')+' ' + (D.buddy ? D.buddy.name : t('your partner')) + '</p><input type="text" id="goal-title" placeholder="'+t('Goal title')+'"><textarea id="goal-desc" placeholder="'+t('Description')+'" style="min-height:60px"></textarea><button class="btn btn-primary" onclick="saveGoal(this)">'+t('Save Goal')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -4454,7 +4454,7 @@ function editBuddy() {
   overlay.className = 'overlay';
   var opts = '';
   for (var li=0;li<LANGUAGES.length;li++) opts += '<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.buddy.language||D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>';
-  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('Edit Comrade')+'</h3><input type="text" id="eb-name" value="'+(D.buddy.name||'')+'" placeholder="'+t('Name')+'"><input type="text" id="eb-contact" value="'+(D.buddy.contact||'')+'" placeholder="'+t('Contact')+'"><input type="text" id="eb-rel" value="'+(D.buddy.relationship||'')+'" placeholder="'+t('Relationship')+'"><div style="font-size:12px;color:var(--muted);margin:6px 0 2px">'+t('Tongue')+'</div><select id="eb-lang" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">'+opts+'</select><button class="btn btn-primary" onclick="saveBuddyEdit(this)">'+t('Save')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
+  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('Edit Partner')+'</h3><input type="text" id="eb-name" value="'+(D.buddy.name||'')+'" placeholder="'+t('Name')+'"><input type="text" id="eb-contact" value="'+(D.buddy.contact||'')+'" placeholder="'+t('Contact')+'"><input type="text" id="eb-rel" value="'+(D.buddy.relationship||'')+'" placeholder="'+t('Relationship')+'"><div style="font-size:12px;color:var(--muted);margin:6px 0 2px">'+t('Tongue')+'</div><select id="eb-lang" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">'+opts+'</select><button class="btn btn-primary" onclick="saveBuddyEdit(this)">'+t('Save')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -4473,7 +4473,7 @@ function removeBuddy() {
   if (!confirm(t('Remove your accountability partner?'))) return;
   D.buddy = null;
   saveData();
-  alert(t('Comrade removed.'));
+  alert(t('Partner removed.'));
   render();
 }
 
@@ -4496,14 +4496,14 @@ function shareProgressWithBuddy(quiet) {
   DB.collection('progress').doc(AUTH_EMAIL).set(progress).then(function(){
     var btn = document.getElementById('share-progress-btn');
     if (btn) { btn.textContent = '? Shared! (' + progress.updated + ')'; btn.style.background = 'var(--primary-light)'; btn.style.color = 'var(--primary-dark)'; }
-    if (!quiet) { alert(t('Your progress has been shared with') + ' ' + (D.buddy ? D.buddy.name : t('your comrade')) + '!'); }
+    if (!quiet) { alert(t('Your progress has been shared with') + ' ' + (D.buddy ? D.buddy.name : t('your partner')) + '!'); }
     fetchBuddyProgress();
   }).catch(function(){ if (!quiet) alert(t('Could not share. Check your internet connection.')); });
 }
 
 function fetchBuddyProgress() {
   var buddyEmail = D.buddy ? D.buddy.contact : '';
-  if (!buddyEmail) { var el = document.getElementById('buddy-progress'); if (el) el.innerHTML = '<div class="empty-state">No comrade contact found.</div>'; return; }
+  if (!buddyEmail) { var el = document.getElementById('buddy-progress'); if (el) el.innerHTML = '<div class="empty-state">No partner contact found.</div>'; return; }
   DB.collection('progress').doc(buddyEmail).get().then(function(doc){
     var p = doc.exists ? doc.data() : null;
     var el = document.getElementById('buddy-progress');
@@ -4745,27 +4745,27 @@ function exportReminderICS(id) {
 // ====== MORE PAGE ======
 function moreHTML() {
   var h = '';
-  h += '<h2 class="page-title">'+t('Armory')+'</h2>';
+  h += '<h2 class="page-title">'+t('Tools')+'</h2>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Tracking')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">'+t('Calendar')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'reminders\')">'+t('Reminders')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 '+t('King\u0027s Ledger')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 '+t('Master Ledger')+'</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Recovery')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Comrade')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; '+t('Chivalry Code')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; '+t('Royal Pardon')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; '+t('Personal Code')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; '+t('Fresh Start')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#be185d">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; '+t('War Chest')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#9876; '+t('Alliances')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
-  h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C '+t('Royal Shop')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C '+t('Shop')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; '+t('Programs')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; '+t('Screeners')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
@@ -4791,18 +4791,18 @@ function alliancesHTML() {
   var days = soberDays();
   var rank = getRank(days);
   var level = kingdomLevel(days);
-  var kName = D.kingdomName && D.kingdomName.trim() ? D.kingdomName.trim() : 'My Kingdom';
+  var kName = D.kingdomName && D.kingdomName.trim() ? D.kingdomName.trim() : 'My Space';
   var wc = D.warchest || {};
   var shields = wc.shields || 0;
-  var h = '<h2 class="page-title">&#9876; Realm Alliances</h2>';
+  var h = '<h2 class="page-title">&#9876; Support Alliances</h2>';
   h += '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:8px 0">';
 
   // Kingdom card helper
   function kingdomCard(opts) {
     var isUser = opts.isUser;
     var c = '<div class="card" style="padding:14px;text-align:center;border-left:4px solid ' + (isUser ? '#d4a017' : '#6366f1') + '">';
-    c += '<div style="font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">' + (isUser ? '&#128081; Your Realm' : '&#9876; Allied Realm') + '</div>';
-    c += '<div style="font-size:16px;font-weight:700;font-family:MedievalSharp,serif;color:var(--primary-dark);margin-bottom:2px">' + safe(opts.name) + '</div>';
+    c += '<div style="font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">' + (isUser ? '&#128081; Your Space' : '&#9876; Allied Space') + '</div>';
+    c += '<div style="font-size:16px;font-weight:700;font-family:Georgia,serif;color:var(--primary-dark);margin-bottom:2px">' + safe(opts.name) + '</div>';
     c += '<div style="font-size:24px;margin:4px 0">' + (opts.rank ? opts.rank.icon : '') + '</div>';
     c += '<div style="font-size:13px;color:var(--text)">' + (opts.rank ? opts.rank.title : '') + '</div>';
     c += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0">';
@@ -4867,7 +4867,7 @@ function alliancesHTML() {
     })(bName, bc);
 
     var id = 'ally-' + bc.replace(/[^a-z0-9]/gi,'');
-    h += '<div id="' + id + '">' + kingdomCard({ name: bName, rank: {icon:'&#9876;',title:'Comrade'}, days: '?', level: '?', shields: '?', population: '?' }) + '</div>';
+    h += '<div id="' + id + '">' + kingdomCard({ name: bName, rank: {icon:'&#9876;',title:'Partner'}, days: '?', level: '?', shields: '?', population: '?' }) + '</div>';
     buddyShown++;
   }
 
@@ -4877,13 +4877,13 @@ function alliancesHTML() {
       h += '<div class="card" style="padding:20px;text-align:center;border:2px dashed var(--border);background:transparent;cursor:pointer" onclick="goTo(\'buddy\')">';
       h += '<div style="font-size:32px;margin-bottom:6px">&#9876;</div>';
       h += '<div style="font-size:14px;font-weight:600;color:var(--muted)">Seek an Ally</div>';
-      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Find a comrade to form a lasting alliance</div>';
+      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Find a partner to form a lasting alliance</div>';
       h += '</div>';
     } else {
       h += '<div class="card" style="padding:20px;text-align:center;border:2px dashed var(--border);background:transparent">';
       h += '<div style="font-size:32px;margin-bottom:6px">&#128736;</div>';
-      h += '<div style="font-size:14px;font-weight:600;color:var(--muted)">Open Throne</div>';
-      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">An alliance seat awaits a new realm</div>';
+      h += '<div style="font-size:14px;font-weight:600;color:var(--muted)">Open Path</div>';
+      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">An alliance seat awaits a new space</div>';
       h += '</div>';
     }
     buddyShown++;
@@ -4892,8 +4892,8 @@ function alliancesHTML() {
   h += '</div>';
 
   h += '<div class="card" style="padding:12px;margin-top:4px;font-size:12px;color:var(--muted);text-align:center">';
-  h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">&#9876; Alliances are formed through the Comrade page. Progress is shared automatically when you visit this page.</div>';
-  h += '<button class="btn btn-sm btn-outline" onclick="goTo(\'buddy\')" style="margin-top:6px;display:inline-flex">Find or Manage Comrade</button>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">&#9876; Alliances are formed through the Partner page. Progress is shared automatically when you visit this page.</div>';
+  h += '<button class="btn btn-sm btn-outline" onclick="goTo(\'buddy\')" style="margin-top:6px;display:inline-flex">Find or Manage Partner</button>';
   h += '</div>';
 
   return h;
@@ -5024,7 +5024,7 @@ function profileHTML() {
   h += '</div></div>';
   h += '<div class="card"><h3>'+t('Armoury')+'</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Title')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveDataSilent()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83C\uDFF0 Kingdom</span><input type="text" value="'+(D.kingdomName||'')+'" onchange="D.kingdomName=this.value;saveDataSilent();render()" placeholder="My Kingdom" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83C\uDFF0 Space</span><input type="text" value="'+(D.kingdomName||'')+'" onchange="D.kingdomName=this.value;saveDataSilent();render()" placeholder="My Space" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83D\uDC51 Title Style</span><select onchange="D.titleStyle=this.value;saveDataSilent();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"><option value="king"'+(D.titleStyle!=='queen'?' selected':'')+'>King / Prince</option><option value="queen"'+(D.titleStyle==='queen'?' selected':'')+'>Queen / Princess</option></select></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Messenger (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveDataSilent()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveDataSilent();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
@@ -5066,7 +5066,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += notifRowHTML('journal', '&#x2712;', t('Journal Prompt'), t('Write about your day'));
   h += notifRowHTML('breathe', '&#x2726;', t('Breathing Exercise'), t('Take a mindful moment'));
   h += notifRowHTML('checkinReminder', '&#x2713;', 'Presence Reminder', t('Remind if you haven\'t checked in'));
-  h += notifToggleHTML('buddyCheckin', '&#x2618;', 'Comrade Reminder', t('Remind to send word to your comrade'));
+  h += notifToggleHTML('buddyCheckin', '&#x2618;', 'Partner Reminder', t('Remind to send word to your partner'));
   h += notifToggleHTML('streakMilestone', '&#x265B;', 'Saga Milestones', t('Celebrate hitting milestones'));
   h += reminderNotifRowHTML();
   h += '</div>';
@@ -5107,7 +5107,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '</div>';
   h += emergencyContactsSettingsHTML();
   h += '<div class="card" style="border-left:3px solid #8a7a6a"><h3>'+t('Help Improve Re.Claim')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">'+t('Optionally share anonymous usage data to help us understand recovery patterns and improve the app. No personal information, journal text, or identifying data is ever collected.')+'</p><div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--primary-light);border-radius:10px"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+t('Share anonymous data')+'</div><div style="font-size:11px;color:var(--muted)">'+t('Anonymized mood trends, streak lengths, tool usage counts')+'</div></div><input type="checkbox" onchange="D.researchOptIn=this.checked;saveData();if(this.checked)collectResearchData()" '+(D.researchOptIn?'checked':'')+' style="width:auto;transform:scale(1.2)"></div></div>';
-  h += '<div class="card" style="border-left:3px solid #f59e0b"><h3>'+t('Privacy & Security')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">'+t('All your journal entries, moods, habits, cravings, goals, and pledges are stored only on this device (localStorage). Nothing is sent to any server. Your password is hashed with SHA-256 and a random salt. Comrade features (pairing, messaging) sync through Firebase Firestore with encrypted transmission.')+'</p></div>';
+  h += '<div class="card" style="border-left:3px solid #f59e0b"><h3>'+t('Privacy & Security')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">'+t('All your journal entries, moods, habits, cravings, goals, and pledges are stored only on this device (localStorage). Nothing is sent to any server. Your password is hashed with SHA-256 and a random salt. Partner features (pairing, messaging) sync through Firebase Firestore with encrypted transmission.')+'</p></div>';
   return h;
 }
 
@@ -5469,8 +5469,8 @@ function showCravingBreaker() {
     var s = _cravingBreakerState;
     if (s.step === 0) {
       ov.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center;animation:siFade .3s ease;padding:28px 24px">' +
-        '<div style="font-size:42px;margin-bottom:6px;font-family:MedievalSharp,serif">\u2694</div>' +
-        '<div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:4px;font-family:MedievalSharp,serif">A Craving Arrives</div>' +
+        '<div style="font-size:42px;margin-bottom:6px;font-family:Georgia,serif">\u2694</div>' +
+        '<div style="font-size:18px;font-weight:700;color:var(--primary);margin-bottom:4px;font-family:Georgia,serif">A Craving Arrives</div>' +
         '<div style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5">Cravings last 15\u201330 minutes.<br>You have survived every one so far.</div>' +
         '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">What triggered this?</div>' +
         '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px">' +
@@ -5484,7 +5484,7 @@ function showCravingBreaker() {
       var m = Math.floor(s.seconds / 60), sec = s.seconds % 60;
       var pick = _CRAVING_DISTRACT[Math.floor(Math.random() * _CRAVING_DISTRACT.length)];
       ov.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center;animation:siFade .3s ease;padding:24px">' +
-        '<div style="font-size:11px;color:var(--primary);font-family:MedievalSharp,serif;letter-spacing:1px;margin-bottom:2px">\u269C The Craving Breaker \u269C</div>' +
+        '<div style="font-size:11px;color:var(--primary);font-family:Georgia,serif;letter-spacing:1px;margin-bottom:2px">\u269C The Craving Breaker \u269C</div>' +
         '<div style="font-size:46px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px;color:var(--primary);margin:6px 0 2px;font-family:monospace">' + String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0') + '</div>' +
         '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Cravings peak at 5 minutes. Can you wait it out?</div>' +
         '<div class="card" style="padding:10px;margin-bottom:8px;text-align:left;border-left:3px solid var(--accent)">' +
@@ -5514,8 +5514,8 @@ function showCravingBreaker() {
     earnSchillings(10 + Math.floor(Math.random() * 5), 'Craving defeated');
     saveData();
     ov.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center;animation:siFade .3s ease;padding:28px 24px">' +
-      '<div style="font-size:48px;margin-bottom:4px;font-family:MedievalSharp,serif">\u269C</div>' +
-      '<div style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:4px;font-family:MedievalSharp,serif">Craving Defeated</div>' +
+      '<div style="font-size:48px;margin-bottom:4px;font-family:Georgia,serif">\u269C</div>' +
+      '<div style="font-size:20px;font-weight:700;color:var(--primary);margin-bottom:4px;font-family:Georgia,serif">Craving Defeated</div>' +
       '<div style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.5">You faced the urge and held the line.<br>Each victory makes the next one easier.</div>' +
       '<div class="card" style="padding:8px;margin-bottom:10px;background:var(--primary-light);border:none">' +
       '<div style="font-size:10px;font-weight:600;color:var(--accent);margin-bottom:4px">\u2726 What helped?</div>' +
@@ -5780,7 +5780,7 @@ var ADDICTION_TASKS = {
     {id:'alc1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose sobriety',pts:5},
     {id:'alc2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced and how you handled it',pts:5},
     {id:'alc3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with its intensity and trigger',pts:5},
-    {id:'alc4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner or a sober friend',pts:8},
+    {id:'alc4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner or a sober friend',pts:8},
     {id:'alc5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for alcohol',pts:3},
     {id:'alc6',icon:'\u269C',title:'Hydrate',desc:'Drink 8 glasses of water today',pts:5},
     {id:'alc7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day and any close calls',pts:6},
@@ -5794,7 +5794,7 @@ var ADDICTION_TASKS = {
     {id:'drg1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose recovery',pts:5},
     {id:'drg2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
     {id:'drg3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
-    {id:'drg4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'drg4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'drg5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for substance use',pts:3},
     {id:'drg6',icon:'\u269C',title:'Movement Break',desc:'Go for a 10-minute walk or stretch',pts:5},
     {id:'drg7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and struggles',pts:6},
@@ -5808,7 +5808,7 @@ var ADDICTION_TASKS = {
     {id:'prn1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this path',pts:5},
     {id:'prn2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
     {id:'prn3',icon:'\u2766',title:'Urge Check',desc:'Log a craving with intensity and trigger',pts:5},
-    {id:'prn4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'prn4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'prn5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for this area',pts:3},
     {id:'prn6',icon:'\u269C',title:'Move Your Body',desc:'Do 15 jumping jacks or a quick workout',pts:5},
     {id:'prn7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day honestly',pts:6},
@@ -5822,7 +5822,7 @@ var ADDICTION_TASKS = {
     {id:'gam1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you quit gambling',pts:5},
     {id:'gam2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
     {id:'gam3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'gam4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'gam4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'gam5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for gambling',pts:3},
     {id:'gam6',icon:'\u269C',title:'Money Check',desc:'Log your spending today and note what you saved',pts:5},
     {id:'gam7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and close calls',pts:6},
@@ -5836,7 +5836,7 @@ var ADDICTION_TASKS = {
     {id:'smk1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you quit nicotine',pts:5},
     {id:'smk2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
     {id:'smk3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
-    {id:'smk4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'smk4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'smk5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for nicotine',pts:3},
     {id:'smk6',icon:'\u269C',title:'Hands Busy',desc:'Keep your hands occupied for 10 minutes with a fidget or hobby',pts:5},
     {id:'smk7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and cravings',pts:6},
@@ -5850,7 +5850,7 @@ var ADDICTION_TASKS = {
     {id:'caf1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to cut back',pts:5},
     {id:'caf2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered your caffeine use today',pts:5},
     {id:'caf3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
-    {id:'caf4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'caf4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'caf5',icon:'\u2619',title:'Read Your Plan',desc:'Review your caffeine reduction plan',pts:3},
     {id:'caf6',icon:'\u269C',title:'Water First',desc:'Drink a full glass of water before any caffeine',pts:5},
     {id:'caf7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your energy levels today',pts:6},
@@ -5864,7 +5864,7 @@ var ADDICTION_TASKS = {
     {id:'sex1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this change',pts:5},
     {id:'sex2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
     {id:'sex3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'sex4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'sex4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'sex5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
     {id:'sex6',icon:'\u269C',title:'Move Your Body',desc:'Exercise for 15 minutes to channel energy',pts:5},
     {id:'sex7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today with honesty',pts:6},
@@ -5878,7 +5878,7 @@ var ADDICTION_TASKS = {
     {id:'shp1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to spend mindfully',pts:5},
     {id:'shp2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a shopping urge today',pts:5},
     {id:'shp3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'shp4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'shp4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'shp5',icon:'\u2619',title:'Read Your Plan',desc:'Review your shopping safety plan',pts:3},
     {id:'shp6',icon:'\u269C',title:'24-Hour Rule',desc:'Wait 24 hours before any non-essential purchase',pts:5},
     {id:'shp7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your spending feelings today',pts:6},
@@ -5892,7 +5892,7 @@ var ADDICTION_TASKS = {
     {id:'soc1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to cut back',pts:5},
     {id:'soc2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a scroll today',pts:5},
     {id:'soc3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'soc4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'soc4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'soc5',icon:'\u2619',title:'Read Your Plan',desc:'Review your social media safety plan',pts:3},
     {id:'soc6',icon:'\u269C',title:'Phone Down',desc:'Keep your phone in another room for 1 hour',pts:5},
     {id:'soc7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about how social media affected your mood',pts:6},
@@ -5906,7 +5906,7 @@ var ADDICTION_TASKS = {
     {id:'gme1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to game mindfully',pts:5},
     {id:'gme2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a gaming urge today',pts:5},
     {id:'gme3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'gme4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'gme4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'gme5',icon:'\u2619',title:'Read Your Plan',desc:'Review your gaming safety plan',pts:3},
     {id:'gme6',icon:'\u269C',title:'Timer Set',desc:'Set a timer and stop gaming when it rings',pts:5},
     {id:'gme7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your gaming feelings today',pts:6},
@@ -5920,7 +5920,7 @@ var ADDICTION_TASKS = {
     {id:'eat1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons for a healthy relationship with food',pts:5},
     {id:'eat2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered an eating urge today',pts:5},
     {id:'eat3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'eat4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'eat4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'eat5',icon:'\u2619',title:'Read Your Plan',desc:'Review your eating safety plan',pts:3},
     {id:'eat6',icon:'\u269C',title:'Mindful Bite',desc:'Eat one meal slowly without any distractions',pts:5},
     {id:'eat7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your relationship with food today',pts:6},
@@ -5934,7 +5934,7 @@ var ADDICTION_TASKS = {
     {id:'shm1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to choose safety',pts:5},
     {id:'shm2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
     {id:'shm3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'shm4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner or helpline',pts:8},
+    {id:'shm4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner or helpline',pts:8},
     {id:'shm5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
     {id:'shm6',icon:'\u269C',title:'Ice Distraction',desc:'Hold an ice cube in your hand until it melts',pts:5},
     {id:'shm7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your emotions today — no judgment',pts:6},
@@ -5948,7 +5948,7 @@ var ADDICTION_TASKS = {
     {id:'oth1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this change',pts:5},
     {id:'oth2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
     {id:'oth3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'oth4',icon:'\u2726',title:'Call a Comrade',desc:'Reach out to your accountability partner',pts:8},
+    {id:'oth4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
     {id:'oth5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
     {id:'oth6',icon:'\u269C',title:'Move Your Body',desc:'Do 10 minutes of physical activity',pts:5},
     {id:'oth7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day honestly',pts:6},
@@ -5970,7 +5970,7 @@ function _getTaskCheck(task) {
   if (t.indexOf('Breathe') >= 0 || t === 'Pause Before Eating') return _Q.breathe;
   if (t.indexOf('Name Your Why') >= 0 || t.indexOf('Evening Reflection') >= 0 || t.indexOf('Gratitude Pause') >= 0) return _Q.journal;
   if (t.indexOf('Trigger Patrol') >= 0 || t.indexOf('Craving Check') >= 0 || t.indexOf('Urge Check') >= 0) return _Q.craving;
-  if (t.indexOf('Call a Comrade') >= 0) return _Q.buddy;
+    if (t.indexOf('Call a Partner') >= 0) return _Q.buddy;
   return null;
 }
 function getDailyQuests() {
@@ -6064,7 +6064,7 @@ var WEEKLY_CAMPAIGNS = [
       {id:'h1',title:'Coping Arsenal',desc:'Create a new coping card',pts:15,check:function(){return(D.copingCards||[]).length>=1}},
       {id:'h2',title:'History Scroll',desc:'Check your recovery reports',pts:15,check:function(){return false}},
       {id:'h3',title:'Music of the Spheres',desc:'Open the music page',pts:15,check:function(){return false}},
-      {id:'h4',title:"Oath of the Round Table",desc:'Visit the Round Table',pts:15,check:function(){return false}},
+      {id:'h4',title:"Oath of Support",desc:'Visit the Support Circle',pts:15,check:function(){return false}},
       {id:'h5',title:'Crown of Growth',desc:'Complete all campaign tasks',pts:25,reward:70}
     ]}
 ];
@@ -6306,7 +6306,7 @@ function showAchievementPopup(a) {
   overlay.style.background = 'rgba(0,0,0,.5)';
   overlay.innerHTML = '<div class="overlay-content" style="text-align:center;max-width:320px;padding:24px;background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid #d4a017;border-radius:20px;animation:achievePop .4s ease-out">' +
     '<div style="font-size:48px;margin-bottom:4px">' + a.icon + '</div>' +
-    '<div style="font-size:22px;font-weight:700;color:#d4a017;font-family:MedievalSharp,serif;margin-bottom:2px">Achievement Unlocked!</div>' +
+    '<div style="font-size:22px;font-weight:700;color:#d4a017;font-family:Georgia,serif;margin-bottom:2px">Achievement Unlocked!</div>' +
     '<div style="font-size:16px;font-weight:600;color:#fff;margin-bottom:4px">' + a.title + '</div>' +
     '<div style="font-size:12px;color:#aaa;margin-bottom:12px">' + a.desc + '</div>' +
     '<button class="btn btn-sm" onclick="this.closest(\'.overlay\').remove()" style="background:#d4a017;color:#1a1a2e;font-weight:700;border:none">Huzzah!</button></div>';
@@ -6483,7 +6483,7 @@ function applyTheme() {
 }
 
 function updateTabLabels() {
-  var labels = {home:'Atlas',reflect:'Scriptorium',care:'Infirmary',track:'Chronicle',more:'Armory'};
+  var labels = {home:'Atlas',reflect:'Journal',care:'Wellness',track:'History',more:'Tools'};
   [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
@@ -6509,7 +6509,7 @@ document.addEventListener('keydown', function(e) {
 
 // ====== OSWALD'S TOWER ======
 function oswaldTowerHTML() {
-  var h = '<h2 class="page-title">&#127987; Oswald\'s Tower</h2>';
+  var h = '<h2 class="page-title">&#127987; Oswald\'s View</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,rgba(67,56,202,.04),var(--card))">';
   h += '<div class="oswald-crystal-ball">&#10024;</div>';
   h += '<h3 style="font-size:16px;font-weight:700;margin-bottom:2px">The Wizard\'s Wisdom</h3>';
@@ -6543,7 +6543,7 @@ function oswaldTowerHTML() {
   if (soberDays >= 90) omens.push({type:'good', text: 'A season of strength! ' + soberDays + ' days unbroken. The kingdom remembers this resolve.'});
   else if (soberDays >= 30) omens.push({type:'good', text: 'A full moon cycle of clarity \u2014 ' + soberDays + ' days. The foundation is solid.'});
   else if (soberDays >= 7) omens.push({type:'good', text: 'A week of reign. Each day strengthens the walls of your keep.'});
-  else if (soberDays >= 1) omens.push({type:'neutral', text: 'You are in the early days of your reign. The first steps are the most important.'});
+  else if (soberDays >= 1) omens.push({type:'neutral', text: 'You are in the early days of your journey. The first steps are the most important.'});
   else omens.push({type:'neutral', text: 'The reign has not yet begun. Every journey starts with a single stride.'});
 
   // Relapse patterns
@@ -6561,8 +6561,8 @@ function oswaldTowerHTML() {
   else omens.push({type:'warning', text: 'You have no safety plan yet. I urge you \u2014 visit Oswald in the Infirmary and build one before the storm arrives.'});
 
   // Buddy
-  if (buddyExists) omens.push({type:'good', text: 'A comrade walks beside you. The road is lighter with another set of footsteps.'});
-  else omens.push({type:'neutral', text: 'You walk this road alone for now. A comrade could share the burden \u2014 consider finding one in the Armory.'});
+  if (buddyExists) omens.push({type:'good', text: 'A partner walks beside you. The road is lighter with another set of footsteps.'});
+  else omens.push({type:'neutral', text: 'You walk this road alone for now. A partner could share the burden \u2014 consider finding one in the Tools.'});
 
   // SOS used
   if (sosUsed) omens.push({type:'good', text: 'You have reached out for help before. That is not weakness \u2014 it is the highest form of courage. The tower salutes you.'});
@@ -6605,7 +6605,7 @@ function oswaldTowerHTML() {
 
   h += '<div class="card" style="text-align:center;padding:12px;margin-top:8px">';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">"The stars do not decide your fate \u2014 they merely illuminate the path you are already walking."</div>';
-  h += '<div style="font-size:11px;font-style:italic;color:var(--muted)">\u2014 Oswald, Keeper of the Tower</div></div>';
+  h += '<div style="font-size:11px;font-style:italic;color:var(--muted)">\u2014 Oswald, Keeper of the View</div></div>';
 
   return h;
 }
@@ -6674,7 +6674,7 @@ function buddySendMessage() {
 
 function buddyMessagesHTML() {
   var buddyEmail = D.buddy ? D.buddy.contact : '';
-  var buddyName = D.buddy ? D.buddy.name : 'Comrade';
+  var buddyName = D.buddy ? D.buddy.name : 'Partner';
   var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#x1F4DC;</div><h3 style="margin:0">Scroll of Letters</h3></div><div id="comrade-messages-list">';
   var localMsgs = (D.messages||[]).filter(function(m){return m.from === buddyEmail || m.to === buddyEmail}).slice(-20);
   if (!localMsgs.length) {
@@ -6721,14 +6721,14 @@ function buddyMessagesHTML() {
         all.sort(function(a,b){ return (a.timestamp||0) - (b.timestamp||0); });
         all = all.slice(-20);
         if (!all.length) {
-          el.innerHTML = '<div class="empty-state">Send a raven to ' + safe(D.buddy?D.buddy.name:'your comrade') + '!</div>';
+          el.innerHTML = '<div class="empty-state">Send a raven to ' + safe(D.buddy?D.buddy.name:'your partner') + '!</div>';
           return;
         }
         var html = '<div class="comrade-scroll">';
         for (var i=0;i<all.length;i++) {
           var me = all[i].from === AUTH_EMAIL;
           html += '<div class="comrade-msg' + (me ? ' me' : '') + '">';
-          if (!me) html += '<div class="msg-author">' + safe(D.buddy?D.buddy.name:'Comrade') + '</div>';
+          if (!me) html += '<div class="msg-author">' + safe(D.buddy?D.buddy.name:'Partner') + '</div>';
           html += '<div>' + safe(all[i].text) + '</div><div class="msg-date">' + safe(all[i].date) + ' ' + safe(all[i].time) + '</div></div>';
         }
         html += '</div>';
@@ -6823,7 +6823,7 @@ function showItemPreview(id) {
   else if (item.id === 'tapestry') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="20" y="8" width="60" height="44" rx="4" fill="#4a1a2a" opacity=".8"/><rect x="24" y="12" width="52" height="36" rx="2" fill="none" stroke="#d4a017" stroke-width="1" opacity=".6"/><circle cx="50" cy="30" r="10" fill="#d4a017" opacity=".5"/><circle cx="50" cy="30" r="5" fill="#8a2a2a" opacity=".6"/></svg>'; fullDesc = 'A grand royal tapestry hangs behind the throne, embroidered with your heraldic symbols in gold thread.'; }
   else if (item.id === 'torches') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="38" y="20" width="3" height="15" rx="1" fill="#4a3a2a"/><ellipse cx="39.5" cy="18" rx="4" ry="5" fill="#ff6622" opacity=".8"/><ellipse cx="39.5" cy="19" rx="2.5" ry="3.5" fill="#ffcc00"/><rect x="58" y="20" width="3" height="15" rx="1" fill="#4a3a2a"/><ellipse cx="59.5" cy="18" rx="4" ry="5" fill="#ff6622" opacity=".8"/><ellipse cx="59.5" cy="19" rx="2.5" ry="3.5" fill="#ffcc00"/><rect x="10" y="45" width="80" height="10" rx="2" fill="#6a5a4a" opacity=".5"/></svg>'; fullDesc = 'Animated torch sconces flank the castle door, casting warm light with flickering flame animations.'; }
   else if (item.id === 'paths') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><ellipse cx="50" cy="50" rx="40" ry="8" fill="rgba(100,90,80,.4)"/><ellipse cx="30" cy="48" rx="6" ry="3" fill="rgba(120,110,100,.3)"/><ellipse cx="50" cy="50" rx="6" ry="3" fill="rgba(120,110,100,.3)"/><ellipse cx="70" cy="48" rx="6" ry="3" fill="rgba(120,110,100,.3)"/></svg>'; fullDesc = 'A winding cobblestone path leads from the castle gate through the village, decorated with rounded stones.'; }
-  else if (item.id === 'flags') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><line x1="20" y1="10" x2="20" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="20,10 40,15 20,20" fill="#cc3a3a"/><line x1="50" y1="10" x2="50" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="50,10 70,15 50,20" fill="#cc3a3a"/><line x1="80" y1="15" x2="80" y2="55" stroke="#6a5a4a" stroke-width="1.5"/><polygon points="80,15 92,18 80,21" fill="#aa3a3a"/></svg>'; fullDesc = 'Your personal heraldic banners fly from every tower and wall, announcing your reign to all who approach.'; }
+  else if (item.id === 'flags') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><line x1="20" y1="10" x2="20" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="20,10 40,15 20,20" fill="#cc3a3a"/><line x1="50" y1="10" x2="50" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="50,10 70,15 50,20" fill="#cc3a3a"/><line x1="80" y1="15" x2="80" y2="55" stroke="#6a5a4a" stroke-width="1.5"/><polygon points="80,15 92,18 80,21" fill="#aa3a3a"/></svg>'; fullDesc = 'Your personal heraldic banners fly from every tower and wall, announcing your presence to all who approach.'; }
   else if (item.id === 'crimson') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="15" width="30" height="30" rx="3" fill="#6a0a0a"/><rect x="15" y="15" width="30" height="6" rx="1.5" fill="#f0e8d0"/><rect x="15" y="42" width="30" height="4" rx="1" fill="#f0e8d0"/><circle cx="30" cy="10" r="8" fill="#c89a6a"/><polygon points="24,2 30,0 36,2" fill="#d4a017"/></svg>'; fullDesc = 'Arthur\u2019s robes are dyed a deep crimson red, signaling authority and the blood of dragons past.'; }
   else if (item.id === 'silver') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="20" width="30" height="35" rx="3" fill="#c0c0c0"/><rect x="15" y="20" width="30" height="5" rx="1.5" fill="#e8e8e8"/><ellipse cx="30" cy="14" rx="8" ry="6" fill="#d4a574"/><circle cx="28" cy="13" r="1" fill="#333"/><circle cx="32" cy="13" r="1" fill="#333"/></svg>'; fullDesc = 'Gertrude\u2019s armor is polished to gleaming silver, reflecting the light like a beacon of resilience.'; }
   else if (item.id === 'starry') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="25" width="30" height="30" rx="3" fill="#2a1560"/><ellipse cx="30" cy="18" rx="9" ry="7" fill="#c09a7a"/><polygon points="24,10 30,8 36,10" fill="#2a1560"/><circle cx="20" cy="10" r="1" fill="#fff" opacity=".8"/><circle cx="35" cy="7" r="1.2" fill="#fff" opacity=".9"/><circle cx="28" cy="6" r=".8" fill="#fff" opacity=".7"/><circle cx="40" cy="12" r=".6" fill="#fff" opacity=".6"/></svg>'; fullDesc = 'Oswald\u2019s hat transforms into a starry night sky, with twinkling constellations guiding the way.'; }
@@ -7058,7 +7058,7 @@ function roundTableHTML() {
   var activeIdx = dayOfYear % chars.length;
   var dayMod = Math.floor(dayOfYear / chars.length);
   var h = '<div class="card" style="padding:12px 14px">';
-  h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-align:center;margin-bottom:8px;font-family:MedievalSharp,serif">\u2767 The Round Table \u2767</div>';
+  h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-align:center;margin-bottom:8px;font-family:Georgia,serif">\u2767 The Support Circle \u2767</div>';
 
   // Table scene SVG
   var xOffsets = [38, 91, 144]; // horizontal centers for each figure

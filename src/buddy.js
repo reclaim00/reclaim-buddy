@@ -122,7 +122,7 @@ function connectToBuddy(email) {
   // Try Firestore
   DB.collection('users').doc(email).get().then(function(doc){
     if (doc.exists) { finishPairing(doc.data(), email); return; }
-    alert(t('Comrade not found. Make sure they have registered by visiting the Comrade page.'));
+    alert(t('Partner not found. Make sure they have registered by visiting the Partner page.'));
   }).catch(function(){alert(t('Could not reach global directory. Try again later.'))});
 }
 

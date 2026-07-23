@@ -116,7 +116,7 @@ function checkNotifications() {
     var acc = D.accountability || {};
     var buddyNextDue = acc.lastCheckin ? acc.lastCheckin + (acc.frequency || 1) * 86400000 : now - 1;
     if (now >= buddyNextDue) {
-      swNotify('Comrade check-in', 'Time to Check in with ' + D.buddy.name + '! Reach out and stay connected.', 'icon-192.png', 'reclaim-buddy');
+      swNotify('Partner check-in', 'Time to check in with ' + D.buddy.name + '! Reach out and stay connected.', 'icon-192.png', 'reclaim-buddy');
       D._notifiedBuddyCheckin = todayStr; saveData();
     }
   }
@@ -743,12 +743,12 @@ function relapsePlanHTML() {
   return h;
 }
 
-// ====== CHIVALRY CODE (Gertrude) ======
+// ====== PERSONAL CODE (Gertrude) ======
 function chivalryCodeHTML() {
   var cc = D.chivalryCode || { code: [], checkins: [] };
   var h = '';
-  h += '<h2 class="page-title">&#9876; Chivalry Code</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Gertrude says: <em>"A knight without a code is a wanderer. Define your principles, and every choice becomes clear."</em></div></div></div>';
+  h += '<h2 class="page-title">&#9876; Personal Code</h2>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Gertrude says: <em>"A person without a code is a wanderer. Define your principles, and every choice becomes clear."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
 
   // Code list
@@ -861,7 +861,7 @@ function relapseGraveyardHTML() {
   var rg = D.relapseGraveyard || { graves: [] };
   var h = '';
   h += '<h2 class="page-title">&#9904; Relapse Graveyard</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(42,42,42,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Every fallen knight teaches the next how to stand. Honor the dead, keep walking."</em></div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(42,42,42,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Everyone who has struggled teaches the next how to stand. Honor the dead, keep walking."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Past relapses are not failures — they are fallen comrades who taught you something. Mark them here with respect, and carry their lesson forward.</p>';
 
   // Import existing relapse dates
@@ -974,9 +974,9 @@ function graveRandom() {
 function royalPardonHTML() {
   var pardons = D.royalPardons || [];
   var h = '';
-  h += '<h2 class="page-title">&#128081; Royal Pardon</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)">King Arthur says: <em>"By the crown I carry and the realm we are building — you are pardoned. Rise and begin again with my blessing."</em></div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Arthur grants you a Royal Pardon — not to erase what happened, but to sanctify your fresh start. This is your certificate of amnesty.</p>';
+  h += '<h2 class="page-title">&#128081; Fresh Start</h2>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"By the path we are building — you are forgiven. Rise and begin again with my blessing."</em></div></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Arthur grants you a Fresh Start — not to erase what happened, but to sanctify your fresh start. This is your certificate of amnesty.</p>';
 
   // Grant a new pardon
   var lastRelapseDate = D.sobriety && D.sobriety.relapseDates && D.sobriety.relapseDates.length ? new Date(D.sobriety.relapseDates[D.sobriety.relapseDates.length-1]).toISOString().split('T')[0] : '';
@@ -988,7 +988,7 @@ function royalPardonHTML() {
   h += '<textarea id="pardon-forgive" placeholder="e.g. I forgive myself for giving in to the craving. I forgive myself for the shame I carried after." style="min-height:50px;margin-bottom:6px"></textarea>';
   h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What do you commit to going forward?</label>';
   h += '<textarea id="pardon-commit" placeholder="e.g. I commit to reaching out before the urge wins. I commit to showing up for myself tomorrow." style="min-height:50px;margin-bottom:6px"></textarea>';
-  h += '<button class="btn btn-primary btn-sm" onclick="pardonGrant(this)" style="width:100%">&#128081; Accept Royal Pardon</button>';
+  h += '<button class="btn btn-primary btn-sm" onclick="pardonGrant(this)" style="width:100%">&#128081; Accept Fresh Start</button>';
   h += '</div>';
 
   // Existing pardons
@@ -1008,7 +1008,7 @@ function pardonCertificateHTML(p) {
     '<div style="position:absolute;top:8px;left:12px;font-size:18px;opacity:.3">&#9876;</div>' +
     '<div style="position:absolute;top:8px;right:12px;font-size:18px;opacity:.3">&#9876;</div>' +
     '<div style="font-size:32px;margin-bottom:2px">&#128081;</div>' +
-    '<div style="font-size:14px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Royal Pardon</div>' +
+    '<div style="font-size:14px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Fresh Start</div>' +
     '<div style="font-size:10px;color:var(--gold);margin-bottom:8px;font-style:italic">Know all who read these words...</div>' +
     '<div style="border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:8px 4px;margin-bottom:6px">' +
     (p.forgive ? '<div style="font-size:12px;line-height:1.5;margin-bottom:4px"><em>"' + p.forgive + '"</em></div>' : '') +
@@ -1016,10 +1016,10 @@ function pardonCertificateHTML(p) {
     '</div>' +
     '<div style="display:flex;justify-content:center;gap:12px;font-size:10px;color:var(--muted)">' +
     '<span>Relapse: ' + dateStr + '</span>' +
-    '<span>Pardoned: ' + grantedStr + '</span>' +
+    '<span>Forgiven: ' + grantedStr + '</span>' +
     '</div>' +
     '<div style="margin-top:6px">' + waxSealSVG(36) + '</div>' +
-    '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:2px">SEAL OF KING ARTHUR</div>' +
+    '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:2px">SEAL OF ARTHUR</div>' +
     '</div>';
 }
 function pardonGrant(btn) {
@@ -1126,10 +1126,10 @@ function pardonGrant(btn) {
   h += '<ellipse cx="180" cy="114" rx="6" ry="5" fill="#f0d8a0" stroke="#8a7a5a" stroke-width=".8"/>';
   // Text on scroll
   h += '<g id="pardon-scroll-text" style="opacity:0;transform-origin:140px 89px">';
-  h += '<text x="140" y="78" font-size="5" fill="#4a3728" font-weight="700" text-anchor="middle" font-family="serif">ROYAL PARDON</text>';
+  h += '<text x="140" y="78" font-size="5" fill="#4a3728" font-weight="700" text-anchor="middle" font-family="serif">FRESH START</text>';
   h += '<text x="140" y="86" font-size="3" fill="#6a5a3a" text-anchor="middle" font-family="serif" font-style="italic">Know all who read these words...</text>';
-  h += '<text x="140" y="94" font-size="3.5" fill="#4a3728" text-anchor="middle" font-family="serif">I, King Arthur, grant this pardon to</text>';
-  h += '<text x="140" y="100" font-size="4" fill="#6d28d9" font-weight="700" text-anchor="middle" font-family="serif">' + (D.name || 'Faithful Knight') + '</text>';
+  h += '<text x="140" y="94" font-size="3.5" fill="#4a3728" text-anchor="middle" font-family="serif">I, Arthur, grant this fresh start to</text>';
+  h += '<text x="140" y="100" font-size="4" fill="#6d28d9" font-weight="700" text-anchor="middle" font-family="serif">' + (D.name || 'Faithful One') + '</text>';
   h += '</g>';
   // Seal
   h += '<circle cx="140" cy="110" r="4" fill="#6d28d9" stroke="#ffd700" stroke-width=".5" id="pardon-seal-icon" style="opacity:0"/>';
@@ -1140,7 +1140,7 @@ function pardonGrant(btn) {
 
   // ---- Phase 3: Button (appears after animation) ----
   h += '<div id="pardon-accept-btn" style="opacity:0;margin-top:8px">';
-  h += '<button class="btn btn-primary" onclick="document.getElementById(\'pardon-ceremony\').remove();goTo(\'royalpardon\')">&#128081; I Accept This Pardon</button>';
+  h += '<button class="btn btn-primary" onclick="document.getElementById(\'pardon-ceremony\').remove();goTo(\'royalpardon\')">&#128081; I Accept This Fresh Start</button>';
   h += '</div>';
 
   overlay.innerHTML = h;
@@ -1593,13 +1593,13 @@ var ONBOARDING_STEPS = [
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What would you like to conquer? Choose the battle you\'re ready to fight.</div><div id="onboarding-addiction" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0">'+ADDICTION_TYPES.map(function(at){return'<button data-v="'+at+'" class="btn btn-sm btn-outline" onclick="document.querySelectorAll(\'#onboarding-addiction button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--primary-dark)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';D.addictionType=this.getAttribute(\'data-v\')" style="width:auto;font-size:11px;padding:6px 14px;border-radius:20px;margin:0">'+at+'</button>';}).join('')+'</div>'},
   {icon:'\u2727',title:'Your Goals',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What do you want to achieve? Write down your goals.</div><textarea id="onboarding-goals" placeholder="e.g. Be sober for 30 days, rebuild trust with my family, find healthy hobbies..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
-  {icon:'\u265C',title:'Your Kingdom',
+  {icon:'\u265C',title:'Your Journey',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Choose a kingdom theme that fits your world.</div><div id="onboarding-theme" style="display:flex;gap:12px;justify-content:center;margin:16px 0">'+
      '<button class="btn" onclick="selectOnboardingTheme(\'gothic\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Gothic</span><span style="font-size:11px;color:var(--muted)">Dark stone, candlelight, shadows</span></button>'+
      '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u265B</span><span style="font-weight:700;font-size:15px">Fantasy</span><span style="font-size:11px;color:var(--muted)">Bright banners, green hills, golden light</span></button>'+
    '</div><div style="margin-top:10px"><input id="onboarding-kingdom-name" placeholder="Name your kingdom (optional)" value="'+(D.kingdomName||'')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;text-align:center"></div>'},
   {icon:'\u269C',title:'Begin Operation Re.Claim',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your battle, set your goals, and claimed your kingdom. The realm is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The crown is heavy, but you were made for this. Every day you show up, the kingdom grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Three friends will guide you:<br>Arthur \u2022 Gertrude \u2022 Oswald</div>'},
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your path, set your goals, and begun your journey. The realm is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The crown is heavy, but you were made for this. Every day you show up, the kingdom grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Three friends will guide you:<br>Arthur \u2022 Gertrude \u2022 Oswald</div>'},
 ];
 var ONBOARDING_STEP = 0;
 function showOnboarding() {
@@ -1637,8 +1637,8 @@ function renderOnboardingStep() {
   overlay.innerHTML =
     '<div style="background:var(--card);max-width:380px;width:92%;margin:0 auto;border-radius:20px;padding:32px 24px 24px;text-align:center;animation:siFade .3s ease;position:relative;border:2px solid var(--primary-light);box-shadow:0 0 0 1px var(--border),0 16px 64px rgba(0,0,0,.3)">' +
     '<div style="position:absolute;top:-1px;left:20px;right:20px;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px"></div>' +
-    '<div style="font-size:42px;margin-bottom:8px;font-family:MedievalSharp,serif">' + s.icon + '</div>' +
-    '<div style="font-size:20px;font-weight:700;margin-bottom:12px;color:var(--primary);font-family:MedievalSharp,serif">' + s.title + '</div>' +
+    '<div style="font-size:42px;margin-bottom:8px;font-family:Georgia,serif">' + s.icon + '</div>' +
+    '<div style="font-size:20px;font-weight:700;margin-bottom:12px;color:var(--primary);font-family:Georgia,serif">' + s.title + '</div>' +
     '<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:16px;padding:0 4px">' + s.desc + '</div>' +
     '<div style="display:flex;justify-content:center;gap:5px;margin-bottom:16px">' +
       ONBOARDING_STEPS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:50%;background:'+(i===ONBOARDING_STEP?'var(--accent)':'var(--border)')+'"></div>'; }).join('') +
@@ -1706,9 +1706,9 @@ function render() {
     if (tb) tb.style.display = 'flex';
     applyTheme();
     updateTabLabels();
-    // Update regnal date in header
+    // Update date in header
     var rh = document.getElementById('regnal-header');
-    if (rh) rh.textContent = D.sobriety.startDate ? regnalDate() : 'Begin your reign';
+    if (rh) rh.textContent = D.sobriety.startDate ? regnalDate() : 'Begin your journey';
     var tbEl = document.getElementById('tools-badge');
     if (tbEl && D.timeCapsules) {
       var ready = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked}).length;

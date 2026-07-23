@@ -47,7 +47,7 @@ function showCharacterLore(name) {
   var lore = {
     Arthur: {
       title: 'Lord of the Long View',
-      desc: 'Once a court advisor in a fallen kingdom, Arthur learned that patterns tell the truth where words deceive. He now serves as your realm\'s strategist \u2014 tracking your data, spotting trends, and alerting you to hidden risks before they become crises.',
+      desc: 'Once a guide through difficult times, Arthur learned that patterns tell the truth where words deceive. He now serves as your personal strategist \u2014 tracking your data, spotting trends, and alerting you to hidden risks before they become crises.',
       role: 'Analyzes patterns, correlates data, warns of risk factors',
       quote: 'The numbers don\u2019t lie \u2014 but they do whisper. You just have to learn to listen.',
       color: 'var(--avatar-arthur)',
@@ -55,7 +55,7 @@ function showCharacterLore(name) {
     },
     Gertrude: {
       title: 'Knight of the Inner Ward',
-      desc: 'Gertrude was captain of the royal guard in three kingdoms before she found her true calling \u2014 protecting those who fight inner battles. She believes the hardest wars are fought in the quiet of one\u2019s own mind, far from any battlefield.',
+      desc: 'Gertrude has protected many on their journey before she found her true calling \u2014 protecting those who fight inner battles. She believes the hardest wars are fought in the quiet of one\u2019s own mind, far from any battlefield.',
       role: 'Builds safety plans, guards your boundaries, helps you hold the line',
       quote: 'A shield isn\u2019t for hiding behind. It\u2019s for holding your ground while you ready your next move.',
       color: 'var(--avatar-gertrude)',
@@ -63,7 +63,7 @@ function showCharacterLore(name) {
     },
     Oswald: {
       title: 'Keeper of the Hidden Path',
-      desc: 'Oswald walked every road \u2014 the righteous and the ruinous \u2014 before finding his way to the Round Table. He guides others through the mist using the lamp of experience rather than the map of theory.',
+      desc: 'Oswald walked every road \u2014 the righteous and the ruinous \u2014 before finding his way here. He guides others through the mist using the lamp of experience rather than the map of theory.',
       role: 'Guides reflection, offers wisdom, helps find meaning in struggle',
       quote: 'The path isn\u2019t straight. But every step you\u2019ve taken has brought you here \u2014 and here is exactly where you need to be.',
       color: 'var(--avatar-oswald)',
@@ -77,7 +77,7 @@ function showCharacterLore(name) {
   ov.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center;padding:24px">' +
     '<div style="width:56px;height:56px;border-radius:28px;background:' + c.color + ';display:flex;align-items:center;justify-content:center;margin:0 auto 8px">' + c.svg + '</div>' +
     '<div style="font-size:20px;font-weight:800;color:var(--primary)">' + name + '</div>' +
-    '<div style="font-size:11px;color:var(--gold);margin-bottom:10px;font-family:MedievalSharp,serif">' + c.title + '</div>' +
+    '<div style="font-size:11px;color:var(--gold);margin-bottom:10px;font-family:Georgia,serif">' + c.title + '</div>' +
     '<div style="font-size:13px;line-height:1.6;color:var(--text);margin-bottom:10px;padding:0 4px">' + c.desc + '</div>' +
     '<div style="background:var(--primary-light);padding:8px 12px;border-radius:8px;margin-bottom:8px;font-size:11px;color:var(--muted)">' + c.role + '</div>' +
     '<div style="font-style:italic;font-size:13px;color:var(--text-light);padding:0 8px;border-left:2px solid var(--primary)">\u201C' + c.quote + '\u201D</div>' +
@@ -713,18 +713,18 @@ function kingdomFlourish() {
 function getRank(days) {
   var queenMode = D.titleStyle === 'queen';
   var ranks = [
-    {title:'Peasant',    next:'Page',           sym:'\u2619', threshold:0,  nextThreshold:1},
-    {title:'Page',       next:'Squire',         sym:'\u2726', threshold:1,  nextThreshold:7},
-    {title:'Squire',     next:'Knight Errant',  sym:'\u2694', threshold:7,  nextThreshold:14},
-    {title:'Knight Errant',next:'Knight',       sym:'\u2720', threshold:14, nextThreshold:30},
-    {title:'Knight',     next:'Knight of the Realm',sym:'\u269C',threshold:30,nextThreshold:60},
-    {title:'Knight of the Realm',next:'Baron',  sym:'\u265B', threshold:60, nextThreshold:90},
-    {title:'Baron',      next:'Viscount',       sym:'\u265A', threshold:90, nextThreshold:180},
-    {title:'Viscount',   next:'Earl',           sym:'\u265C', threshold:180,nextThreshold:270},
-    {title:'Earl',       next:'Duke',           sym:'\u2766', threshold:270,nextThreshold:365},
-    {title:'Duke',       next:queenMode?'Princess':'Prince', sym:'\u2727', threshold:365,nextThreshold:730},
-    {title:queenMode?'Princess':'Prince', next:queenMode?'Queen':'King', sym:queenMode?'\u265C':'\u265D', threshold:730,nextThreshold:1000},
-    {title:queenMode?'Queen':'King',       next:null,             sym:'\u2629', threshold:1000,nextThreshold:1/0}
+    {title:'Peasant',    next:'Starter',           sym:'\u2619', threshold:0,  nextThreshold:1},
+    {title:'Starter',       next:'Apprentice',         sym:'\u2726', threshold:1,  nextThreshold:7},
+    {title:'Apprentice',     next:'Seeker',  sym:'\u2694', threshold:7,  nextThreshold:14},
+    {title:'Seeker',next:'Achiever',       sym:'\u2720', threshold:14, nextThreshold:30},
+    {title:'Achiever',     next:'Champion',sym:'\u269C',threshold:30,nextThreshold:60},
+    {title:'Champion',next:'Leader',  sym:'\u265B', threshold:60, nextThreshold:90},
+    {title:'Leader',      next:'Mentor',       sym:'\u265A', threshold:90, nextThreshold:180},
+    {title:'Mentor',   next:'Guide',           sym:'\u265C', threshold:180,nextThreshold:270},
+    {title:'Guide',       next:'Sage',           sym:'\u2766', threshold:270,nextThreshold:365},
+    {title:'Sage',       next:'Royal', sym:'\u2727', threshold:365,nextThreshold:730},
+    {title:'Royal', next:'Master', sym:'\u265D', threshold:730,nextThreshold:1000},
+    {title:'Master',       next:null,             sym:'\u2629', threshold:1000,nextThreshold:1/0}
   ];
   for (var i = ranks.length - 1; i >= 0; i--) {
     if (days >= ranks[i].threshold) return ranks[i];
@@ -738,12 +738,12 @@ function showKingdomMap() {
     {name:'The Forest of Resolve',  min:7,    max:29,   x:190, y:100, w:110, h:90,  color:'#5a9a5a', icon:'\u2726', label:'Prove your worth'},
     {name:'The Mountains of Strength',min:30, max:89,  x:280, y:80,  w:120, h:80,  color:'#8a8a7a', icon:'\u2694', label:'Build your foundation'},
     {name:'The Great River',        min:90,   max:179,  x:310, y:160, w:130, h:70,  color:'#5a8aba', icon:'\u269C', label:'Find your flow'},
-    {name:'The Eastern Shores',     min:180,  max:364,  x:155, y:190, w:120, h:70,  color:'#c8a050', icon:'\u265C', label:'Expand your realm'},
+    {name:'The Eastern Shores',     min:180,  max:364,  x:155, y:190, w:120, h:70,  color:'#c8a050', icon:'\u265C', label:'Expand your space'},
     {name:'The Highlands of Wisdom',min:365,  max:729,  x:50,  y:70,  w:120, h:90,  color:'#a07ab0', icon:'\u2727', label:'Master your craft'},
-    {name:'The Eternal Throne',     min:730,  max:999,  x:410, y:110, w:80,  h:80,  color:'#d4a017', icon:'\u265D', label:'Claim your legacy'},
+    {name:'The Eternal Peak',     min:730,  max:999,  x:410, y:110, w:80,  h:80,  color:'#d4a017', icon:'\u265D', label:'Claim your legacy'},
     {name:'The Ancient Peaks',      min:1000, max:1/0,  x:420, y:30,  w:75,  h:60,  color:'#c0392b', icon:'\u2629', label:'Become legend'}
   ];
-  var h = '<div class="overlay-content" style="max-width:540px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><div style="font-size:20px">\uD83D\uDDFA</div><div><h3 style="margin:0;font-size:16px">The Realm</h3><div style="font-size:11px;color:var(--muted)">' + soberDays() + ' days explored &middot; ' + regions.filter(function(r){return days>=r.min}).length + '/' + regions.length + ' regions</div></div></div>';
+  var h = '<div class="overlay-content" style="max-width:540px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><div style="font-size:20px">\uD83D\uDDFA</div><div><h3 style="margin:0;font-size:16px">Your Space</h3><div style="font-size:11px;color:var(--muted)">' + soberDays() + ' days explored &middot; ' + regions.filter(function(r){return days>=r.min}).length + '/' + regions.length + ' regions</div></div></div>';
   h += '<svg viewBox="0 0 510 270" style="width:100%;height:auto;border-radius:12px;background:linear-gradient(135deg,#2a1a10,#3a2a1a)">';
   h += '<defs><filter id="rg-glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
   for (var i = 0; i < regions.length; i++) {
@@ -754,10 +754,10 @@ function showKingdomMap() {
     var border = unlocked ? 'rgba(255,255,255,.3)' : 'rgba(255,255,255,.08)';
     h += '<rect x="' + r.x + '" y="' + r.y + '" width="' + r.w + '" height="' + r.h + '" rx="8" fill="' + fill + '" opacity="' + opacity + '" stroke="' + border + '" stroke-width="1.5"' + (unlocked ? ' filter="url(#rg-glow)"' : '') + '/>';
     if (unlocked) {
-      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 - 4) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="MedievalSharp,serif">' + r.name + '</text>';
+      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 - 4) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Georgia,serif">' + r.name + '</text>';
       h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 + 12) + '" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.7)">' + r.label + '</text>';
     } else {
-      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 + 4) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.3)" font-family="MedievalSharp,serif">???</text>';
+      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 + 4) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.3)" font-family="Georgia,serif">???</text>';
     }
   }
   // Compass rose
@@ -783,19 +783,17 @@ function _rankIconHTML(title, size) {
   size = size || 14;
   var c = {
     'Peasant':'<path d="M9,2 h6 v7 h7 v6 h-7 v7 h-6 v-7 h-7 v-6 h7 z" fill="currentColor"/>',
-    'Page':'<path d="M4,4 h7 v16 h-7 z M13,4 h7 v16 h-7 z M11,4 h2 v16 h-2 z" fill="currentColor"/>',
-    'Squire':'<path d="M6,4 L18,20 M18,4 L6,20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="4" r="2.2" fill="currentColor"/><circle cx="18" cy="4" r="2.2" fill="currentColor"/><rect x="7" y="19" width="10" height="3" rx="1" fill="currentColor"/>',
-    'Knight Errant':'<path d="M12,2 L22,6 L22,15 Q12,22 2,15 L2,6 Z" fill="currentColor"/>',
-    'Knight':'<path d="M6,16 L6,8 Q6,3 12,2 Q18,3 18,8 L18,16 Z" fill="currentColor"/><path d="M10,5 Q12,3 14,5" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".4"/>',
-    'Knight of the Realm':'<path d="M3,16 L7,4 L12,10 L17,4 L21,16 Z" fill="currentColor"/><rect x="3" y="16" width="18" height="4" rx="1" fill="currentColor"/><circle cx="7" cy="8" r="1.5" opacity=".6" fill="currentColor"/><circle cx="12" cy="11" r="1.5" opacity=".6" fill="currentColor"/><circle cx="17" cy="8" r="1.5" opacity=".6" fill="currentColor"/>',
-    'Baron':'<path d="M5,20 h14 v-12 h-14 z" fill="currentColor"/><rect x="5" y="8" width="4" height="4" fill="currentColor"/><rect x="15" y="8" width="4" height="4" fill="currentColor"/><rect x="9" y="13" width="6" height="7" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/>',
-    'Viscount':'<path d="M17,2 A14,14 0 1,1 8,18 A10,10 0 1,0 17,2" fill="currentColor"/><circle cx="17" cy="12" r="2" opacity=".6" fill="currentColor"/>',
-    'Earl':'<path d="M12,2 L14.5,8.6 L21.5,9 L16,13.5 L17.5,20 L12,16.5 L6.5,20 L8,13.5 L2.5,9 L9.5,8.6 Z" fill="currentColor"/>',
-    'Duke':'<rect x="7" y="10" width="10" height="7" rx="2" fill="currentColor"/><circle cx="16" cy="7" r="4" fill="currentColor"/><path d="M7,13 Q3,10 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="17" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="17" width="2.5" height="5" rx="1" fill="currentColor"/>',
-    'Prince':'<path d="M7,12 L17,12 L17,20 Q12,24 7,20 Z" fill="currentColor"/><path d="M10,14 L14,14" stroke="currentColor" opacity=".4" stroke-width="1" fill="none"/><path d="M6,4 L9,1 L12,5 L15,1 L18,4 L18,7 L6,7 Z" fill="currentColor"/>',
-    'King':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="currentColor"/><rect x="7" y="9" width="10" height="7" rx="2" fill="currentColor"/><circle cx="15" cy="6" r="3.5" fill="currentColor"/><path d="M7,12 Q3,9 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="16" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="16" width="2.5" height="5" rx="1" fill="currentColor"/>',
-    'Queen':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="currentColor"/><rect x="7" y="9" width="10" height="7" rx="2" fill="currentColor"/><circle cx="15" cy="6" r="3.5" fill="currentColor"/><path d="M7,12 Q3,9 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M10,19 Q12,21 14,19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="8" y="16" width="8" height="2" rx="1" fill="currentColor"/><circle cx="8" cy="17" r="1" fill="currentColor"/><circle cx="16" cy="17" r="1" fill="currentColor"/>',
-    'Princess':'<path d="M7,12 L17,12 L17,20 Q12,24 7,20 Z" fill="currentColor"/><circle cx="12" cy="15" r="1.5" fill="currentColor" opacity=".6"/><path d="M6,4 L9,1 L12,5 L15,1 L18,4 L18,7 L6,7 Z" fill="currentColor"/><circle cx="12" cy="5" r="1.5" fill="currentColor"/>'
+    'Starter':'<path d="M4,4 h7 v16 h-7 z M13,4 h7 v16 h-7 z M11,4 h2 v16 h-2 z" fill="currentColor"/>',
+    'Apprentice':'<path d="M6,4 L18,20 M18,4 L6,20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="4" r="2.2" fill="currentColor"/><circle cx="18" cy="4" r="2.2" fill="currentColor"/><rect x="7" y="19" width="10" height="3" rx="1" fill="currentColor"/>',
+    'Seeker':'<path d="M12,2 L22,6 L22,15 Q12,22 2,15 L2,6 Z" fill="currentColor"/>',
+    'Achiever':'<path d="M6,16 L6,8 Q6,3 12,2 Q18,3 18,8 L18,16 Z" fill="currentColor"/><path d="M10,5 Q12,3 14,5" stroke="currentColor" stroke-width="1.2" fill="none" opacity=".4"/>',
+    'Champion':'<path d="M3,16 L7,4 L12,10 L17,4 L21,16 Z" fill="currentColor"/><rect x="3" y="16" width="18" height="4" rx="1" fill="currentColor"/><circle cx="7" cy="8" r="1.5" opacity=".6" fill="currentColor"/><circle cx="12" cy="11" r="1.5" opacity=".6" fill="currentColor"/><circle cx="17" cy="8" r="1.5" opacity=".6" fill="currentColor"/>',
+    'Leader':'<path d="M5,20 h14 v-12 h-14 z" fill="currentColor"/><rect x="5" y="8" width="4" height="4" fill="currentColor"/><rect x="15" y="8" width="4" height="4" fill="currentColor"/><rect x="9" y="13" width="6" height="7" fill="none" stroke="currentColor" stroke-width="1" opacity=".5"/>',
+    'Mentor':'<path d="M17,2 A14,14 0 1,1 8,18 A10,10 0 1,0 17,2" fill="currentColor"/><circle cx="17" cy="12" r="2" opacity=".6" fill="currentColor"/>',
+    'Guide':'<path d="M12,2 L14.5,8.6 L21.5,9 L16,13.5 L17.5,20 L12,16.5 L6.5,20 L8,13.5 L2.5,9 L9.5,8.6 Z" fill="currentColor"/>',
+    'Sage':'<rect x="7" y="10" width="10" height="7" rx="2" fill="currentColor"/><circle cx="16" cy="7" r="4" fill="currentColor"/><path d="M7,13 Q3,10 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="17" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="17" width="2.5" height="5" rx="1" fill="currentColor"/>',
+    'Royal':'<path d="M7,12 L17,12 L17,20 Q12,24 7,20 Z" fill="currentColor"/><path d="M10,14 L14,14" stroke="currentColor" opacity=".4" stroke-width="1" fill="none"/><path d="M6,4 L9,1 L12,5 L15,1 L18,4 L18,7 L6,7 Z" fill="currentColor"/>',
+    'Master':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="currentColor"/><rect x="7" y="9" width="10" height="7" rx="2" fill="currentColor"/><circle cx="15" cy="6" r="3.5" fill="currentColor"/><path d="M7,12 Q3,9 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="16" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="16" width="2.5" height="5" rx="1" fill="currentColor"/>'
   };
   var charge = c[title];
   if (!charge) return '';
@@ -807,21 +805,21 @@ function ordinal(n) {
   var v = n % 100;
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
-function medievalDate() {
+function journeyDate() {
   var months = ['Ærra Ġēola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','Ærra-Liða','Æftera-Liða','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','Æftera Ġēola'];
   var now = new Date();
   var day = now.getDate();
   var month = months[now.getMonth()];
   var reignYear = Math.floor(soberDays() / 365) + 1;
-  return 'The ' + ordinal(day) + ' Day of ' + month + ', in the ' + ordinal(reignYear) + ' Year of Your Reign';
+  return 'Day ' + day + ' \u2022 ' + ordinal(reignYear) + ' Year of Your Journey';
 }
 
 function kingdomTrackerHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
   var isActive = D.sobriety.startDate ? true : false;
-  var levelNames = ['Ruins','Foundation','Camp','Village','Hamlet','Town','Borough','City','Realm','Kingdom','Empire'];
-  var levelDescs = ['A new beginning','First stones laid','Taking shape','Walls are rising','Growing settlement','A proper town','Walls secured','Thriving city','A proud realm','A mighty kingdom','A legendary empire'];
+  var levelNames = ['Seed','Root','Sprout','Grove','Garden','Town','Borough','City','Region','Nation','World'];
+  var levelDescs = ['A new beginning','First stones laid','Taking shape','Walls are rising','Growing settlement','A proper town','Walls secured','Thriving city','A proud region','A mighty nation','A legendary world'];
   var h = kingdomHTML();
   h += '<div class="card" style="text-align:center;margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:10px 14px 12px">';
   if (isActive) {
@@ -843,14 +841,14 @@ function kingdomTrackerHTML() {
       h += '</div><div style="width:80%;margin:2px auto 6px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">';
       h += '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;transition:width .4s"></div></div>';
     } else {
-      h += '</div><div style="font-size:10px;color:var(--accent);margin-bottom:4px">The realm is yours</div>';
+      h += '</div><div style="font-size:10px;color:var(--accent);margin-bottom:4px">The space is yours</div>';
     }
     h += soberTimerHTML();
     h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
     h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
   } else {
     h += '<div style="font-size:14px;color:var(--muted);margin-bottom:6px">Your kingdom awaits</div>';
-    h += '<button class="btn btn-primary btn-sm" onclick="showOnboarding()">Begin Your Reign</button>';
+    h += '<button class="btn btn-primary btn-sm" onclick="showOnboarding()">Begin Your Journey</button>';
   }
   h += '</div>';
   return h;
@@ -1025,18 +1023,18 @@ function warchestHTML() {
   }
   var h = '<h2 class="page-title">&#128176; War Chest</h2>';
   h += '<div class="card" style="text-align:center;padding:16px">';
-  h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px">Earn schillings by staying sober and writing journal entries</div>';
+  h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px">Earn coins by staying sober and writing journal entries</div>';
   // Schilling display
   h += '<div style="background:linear-gradient(135deg,#d4a017,#f0c030);border-radius:16px;padding:14px;margin-bottom:10px">';
   h += '<div style="font-size:32px;font-weight:800;color:#2a1a00">' + schillings + '</div>';
-  h += '<div style="font-size:12px;color:#4a3a00;opacity:.8">&#128176; Schillings</div></div>';
+  h += '<div style="font-size:12px;color:#4a3a00;opacity:.8">&#128176; Coins</div></div>';
   // Shield count
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--text);margin-bottom:10px">';
   h += '<span style="font-size:22px">&#128737;</span> <strong>' + shields + '</strong> shield' + (shields !== 1 ? 's' : '');
   h += '</div>';
   // Buy shield button
   h += '<div style="display:flex;gap:6px;margin-bottom:10px">';
-  h += '<button class="btn btn-primary btn-sm" onclick="buyShield()" style="flex:1;background:linear-gradient(135deg,#6a4a2a,#8a6a4a);font-size:12px"' + (schillings < 30 ? ' disabled' : '') + '>&#128737; Buy Shield (30 schillings)</button>';
+  h += '<button class="btn btn-primary btn-sm" onclick="buyShield()" style="flex:1;background:linear-gradient(135deg,#6a4a2a,#8a6a4a);font-size:12px"' + (schillings < 30 ? ' disabled' : '') + '>&#128737; Buy Shield (30 coins)</button>';
   h += '</div>';
   // Active boosts
   var boostLines = [];
@@ -1091,10 +1089,10 @@ function warchestHTML() {
   h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + unitDisplay + '</div></div>';
   h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
   h += '</div></div>';
-  if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your reign to start earning schillings</div>';
+  if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your journey to start earning coins</div>';
   // Shield info
   h += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">';
-  h += '&#128737; Shields protect your streak on relapse. Earn them at milestones (1 month, 3 months, etc.) or buy for 30 schillings each.';
+  h += '&#128737; Shields protect your streak on relapse. Earn them at milestones (1 month, 3 months, etc.) or buy for 30 coins each.';
   h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'more\')" style="margin-top:4px">Back to Arsenal</button>';
   // Shop link
@@ -1104,7 +1102,7 @@ function warchestHTML() {
 }
 function buyShield() {
   var w = getWarchest();
-  if ((w.schillings || 0) < 30) { alert('Not enough schillings! You need 30.'); render(); return; }
+  if ((w.schillings || 0) < 30) { alert('Not enough coins! You need 30.'); render(); return; }
   w.schillings -= 30;
   w.shields = (w.shields || 0) + 1;
   saveData(); render();
@@ -1119,7 +1117,7 @@ var SHOP_ITEMS = [
   {id:'silver', cat:'Skins', name:"Gertrude's Silver Armor", desc:'Polish Gertrude armor to silver', cost:100, icon:'\u2694'},
   {id:'starry', cat:'Skins', name:"Oswald's Starry Hat", desc:'Oswald hat glows with starry sky', cost:70, icon:'\u2727'},
   {id:'streak', cat:'Boosts', name:'Streak Shield', desc:'Protects your streak for 1 relapse', cost:50, icon:'\u2629'},
-  {id:'double', cat:'Boosts', name:'Double Coins', desc:'Double schillings earned for 24 hours', cost:75, icon:'\u269C'},
+  {id:'double', cat:'Boosts', name:'Double Coins', desc:'Double coins earned for 24 hours', cost:75, icon:'\u269C'},
   {id:'bonus', cat:'Boosts', name:'Bonus Quest', desc:'Unlock a 4th daily quest today', cost:40, icon:'\u2766'}
 ];
 
@@ -1180,9 +1178,9 @@ function coatOfArmsHTML() {
   var displayMotto = motto || rank.title.toUpperCase();
   var mottoColor = motto ? '#f4d03f' : '#ffd700';
   h += '<path d="M30,131 Q60,137 90,131 L95,146 Q60,152 25,146 Z" fill="' + bannerColor + '" stroke="' + trimColor + '" stroke-width="1"/>';
-  h += '<text x="60" y="143" text-anchor="middle" fill="' + mottoColor + '" font-size="' + (motto && motto.length > 12 ? 7 : 9) + '" font-weight="bold" font-family="MedievalSharp,serif">' + displayMotto + '</text>';
+  h += '<text x="60" y="143" text-anchor="middle" fill="' + mottoColor + '" font-size="' + (motto && motto.length > 12 ? 7 : 9) + '" font-weight="bold" font-family="Georgia,serif">' + displayMotto + '</text>';
   // Days text
-  h += '<text x="60" y="126" text-anchor="middle" fill="' + mottoColor + '" font-size="7" font-family="MedievalSharp,serif" opacity=".8">' + days + ' DAYS</text>';
+  h += '<text x="60" y="126" text-anchor="middle" fill="' + mottoColor + '" font-size="7" font-family="Georgia,serif" opacity=".8">' + days + ' DAYS</text>';
   h += '</svg></div>';
   h += '<div style="font-size:7px;color:var(--muted);text-align:center;margin-top:-2px;opacity:.5;letter-spacing:1px">\u269C tap to customize \u269C</div>';
   return h;
@@ -1314,8 +1312,8 @@ function heraldryUpdatePreview() {
     s += '<g transform="translate(18,22)" color="#fff">' + _rankIconHTML(rank.title, 84) + '</g>';
   }
   s += '<path d="M30,131 Q60,137 90,131 L95,146 Q60,152 25,146 Z" fill="' + bannerColor + '" stroke="' + trimColor + '" stroke-width="1"/>';
-  s += '<text x="60" y="143" text-anchor="middle" fill="#ffd700" font-size="' + (motto.length > 12 ? 7 : 9) + '" font-weight="bold" font-family="MedievalSharp,serif">' + motto + '</text>';
-  s += '<text x="60" y="126" text-anchor="middle" fill="#ffd700" font-size="7" font-family="MedievalSharp,serif" opacity=".8">' + days + ' DAYS</text>';
+  s += '<text x="60" y="143" text-anchor="middle" fill="#ffd700" font-size="' + (motto.length > 12 ? 7 : 9) + '" font-weight="bold" font-family="Georgia,serif">' + motto + '</text>';
+  s += '<text x="60" y="126" text-anchor="middle" fill="#ffd700" font-size="7" font-family="Georgia,serif" opacity=".8">' + days + ' DAYS</text>';
   s += '</svg>';
   preview.innerHTML = s;
 }
@@ -1355,9 +1353,9 @@ function throneRoomHTML() {
     h += '<div class="card" style="padding:0;overflow:hidden">';
     h += kingdomHTML();
     h += '<div style="padding:24px 20px;text-align:center">';
-    h += '<div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px">Your Kingdom Awaits</div>';
+    h += '<div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px">Your Journey Awaits</div>';
     h += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">The throne is empty \u2014 and it\u2019s waiting for you.<br>Start your journey and build something real.</div>';
-    h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">Start Your Reign</button>';
+    h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">Start Your Journey</button>';
     h += '</div></div>';
     return h;
   }
@@ -1365,17 +1363,17 @@ function throneRoomHTML() {
   // === ACTIVE THRONE ROOM ===
 
   // Kingdom name banner
-  var kName = D.kingdomName && D.kingdomName.trim() ? D.kingdomName.trim() : 'My Kingdom';
+  var kName = D.kingdomName && D.kingdomName.trim() ? D.kingdomName.trim() : 'My Space';
   h += '<div style="text-align:center;margin-bottom:4px;cursor:pointer" onclick="kNamePrompt()" title="Tap to rename">';
   h += '<div style="display:inline-block;background:linear-gradient(135deg,var(--stone-base),var(--stone-border));padding:4px 20px;border-radius:4px;border:1px solid var(--gold);box-shadow:0 1px 4px rgba(0,0,0,.08)">';
-  h += '<div style="font-size:16px;font-weight:700;font-family:MedievalSharp,serif;color:var(--primary-dark);letter-spacing:2px;text-transform:uppercase">' + safe(kName) + '</div>';
-  h += '<div style="font-size:7px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-top:-1px">' + (D.kingdomName ? 'Tap to rename' : 'Tap to name your kingdom') + '</div>';
+  h += '<div style="font-size:16px;font-weight:700;font-family:Georgia,serif;color:var(--primary-dark);letter-spacing:2px;text-transform:uppercase">' + safe(kName) + '</div>';
+  h += '<div style="font-size:7px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-top:-1px">' + (D.kingdomName ? 'Tap to rename' : 'Tap to name your space') + '</div>';
   h += '</div></div>';
-  h += '<div style="text-align:center;margin-bottom:2px"><span style="font-size:10px;color:var(--accent);cursor:pointer;opacity:.6" onclick="showKingdomMap()" title="Explore the realm">\uD83D\uDDFA View Map</span></div>';
+  h += '<div style="text-align:center;margin-bottom:2px"><span style="font-size:10px;color:var(--accent);cursor:pointer;opacity:.6" onclick="showKingdomMap()" title="Explore your space">\uD83D\uDDFA View Map</span></div>';
 
   // 0. Medieval date banner (top of throne room)
-  h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--accent);letter-spacing:.5px;font-style:italic;padding:6px 0 4px;font-family:MedievalSharp,serif;border-bottom:1px solid var(--border);margin-bottom:8px">';
-  h += medievalDate();
+  h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--accent);letter-spacing:.5px;font-style:italic;padding:6px 0 4px;font-family:Georgia,serif;border-bottom:1px solid var(--border);margin-bottom:8px">';
+  h += journeyDate();
   var w=D._lastWeather||(D._lastWeather=getKingdomWeather());D._lastWeather=w;
   var wIcons={clear:'\u2600',cloudy:'\u2601',rain:'\u2602',storm:'\u26A1',fog:'\u2744',mist:'\u2744',rainbow:'\u269C',aurora:'\u2726'};
   var wNames={clear:'Clear',cloudy:'Cloudy',rain:'Rain',storm:'Storm',fog:'Fog',mist:'Mist',rainbow:'Rainbow',aurora:'Aurora'};
@@ -1421,7 +1419,7 @@ function throneRoomHTML() {
     h += '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:2px;transition:width .4s"></div></div>';
     h += '<div style="font-size:9px;color:var(--muted);text-align:center">' + pct + '% to ' + rank.next + '</div>';
   } else {
-    h += '<div style="font-size:9px;color:var(--accent);text-align:center;margin-top:2px">The realm is yours, my liege</div>';
+    h += '<div style="font-size:9px;color:var(--accent);text-align:center;margin-top:2px">The space is yours</div>';
   }
   h += '</div>';
 
@@ -1449,7 +1447,7 @@ function throneRoomHTML() {
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="background:linear-gradient(135deg,#2a4a5a,#4a6a7a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2766</span> Breathe</button>';
   h += '</div>';
 
-  // 5. Round Table (all 3 NPCs)
+  // 5. Support Circle (all 3 NPCs)
   h += roundTableHTML();
 
   return h;
@@ -1459,7 +1457,7 @@ function kNamePrompt() {
   var current = D.kingdomName || '';
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center"><div style="font-size:32px;margin-bottom:4px">\uD83C\uDFF0</div><h3 style="font-size:18px;font-weight:700;margin:0 0 4px">Name Your Kingdom</h3><p style="font-size:12px;color:var(--muted);margin-bottom:12px">What shall your realm be called?</p><input type="text" id="kNameInput" value="' + safe(current) + '" placeholder="My Kingdom" style="text-align:center;font-size:16px;font-weight:600;font-family:MedievalSharp,serif;letter-spacing:1px;margin-bottom:12px"><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary btn-sm" onclick="var v=document.getElementById(\'kNameInput\').value;if(v&&v.trim()){D.kingdomName=v.trim();}else{D.kingdomName=\'\';}saveData();this.closest(\'.overlay\').remove();render()">Save</button></div></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center"><div style="font-size:32px;margin-bottom:4px">\uD83C\uDFF0</div><h3 style="font-size:18px;font-weight:700;margin:0 0 4px">Name Your Space</h3><p style="font-size:12px;color:var(--muted);margin-bottom:12px">What shall your space be called?</p><input type="text" id="kNameInput" value="' + safe(current) + '" placeholder="My Space" style="text-align:center;font-size:16px;font-weight:600;font-family:Georgia,serif;letter-spacing:1px;margin-bottom:12px"><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary btn-sm" onclick="var v=document.getElementById(\'kNameInput\').value;if(v&&v.trim()){D.kingdomName=v.trim();}else{D.kingdomName=\'\';}saveData();this.closest(\'.overlay\').remove();render()">Save</button></div></div>';
   document.body.appendChild(overlay);
   setTimeout(function() {
     var inp = document.getElementById('kNameInput');
