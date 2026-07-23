@@ -747,7 +747,7 @@ function relapsePlanHTML() {
 function chivalryCodeHTML() {
   var cc = D.chivalryCode || { code: [], checkins: [] };
   var h = '';
-  h += '<h2 class="page-title">&#9876; Personal Code</h2>';
+  h += '<h2 class="page-title">&#9876; My Values</h2>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Gertrude says: <em>"A person without a code is a wanderer. Define your principles, and every choice becomes clear."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
 

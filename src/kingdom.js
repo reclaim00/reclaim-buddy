@@ -997,7 +997,7 @@ function kingsLedgerHTML() {
   h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
   h += '</div></div>';
   if (!isActive) h += '<div class="card"><div class="empty-state">Start your sobriety journey to see your real savings.</div></div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')">Back to War Chest</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')">Back to Rewards</button>';
   return h;
 }
 
@@ -1021,7 +1021,7 @@ function warchestHTML() {
       w.shields = (w.shields||0) + 1;
     }
   }
-  var h = '<h2 class="page-title">&#128176; War Chest</h2>';
+  var h = '<h2 class="page-title">&#128176; Rewards</h2>';
   h += '<div class="card" style="text-align:center;padding:16px">';
   h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px">Earn coins by staying sober and writing journal entries</div>';
   // Schilling display
@@ -1406,7 +1406,7 @@ function throneRoomHTML() {
     if (_cpDay > 0) {
       h += '<div style="text-align:center;flex:1"><div style="font-size:18px;font-weight:700;color:var(--gold)">$' + _moneySaved.toLocaleString() + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;cursor:pointer" onclick="goTo(\'warchest\')">SAVED</div></div>';
     } else {
-      h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')"><div style="font-size:10px;color:var(--muted)">Set daily cost</div><div style="font-size:9px;letter-spacing:1px;color:var(--gold)">in War Chest</div></div>';
+      h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')"><div style="font-size:10px;color:var(--muted)">Set daily cost</div><div style="font-size:9px;letter-spacing:1px;color:var(--gold)">in Rewards</div></div>';
     }
   }
   h += '</div>';

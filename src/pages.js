@@ -4751,18 +4751,18 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">'+t('Calendar')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'reminders\')">'+t('Reminders')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 '+t('Master Ledger')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 '+t('Cost Tracker')+'</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Recovery')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; '+t('Personal Code')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; '+t('My Values')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; '+t('Fresh Start')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#be185d">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#ffd700">&#128176; '+t('War Chest')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#2d6a27">&#128176; '+t('Rewards')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#9876; '+t('Alliances')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
   h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C '+t('Shop')+'</div>';
@@ -6427,7 +6427,7 @@ function shareCardImage() {
 
 function applyTheme() {
   var pal = {
-    green:{primary:'#3a8a35',dark:'#1a6a18',light:'#e8f0e0',lightDark:'rgba(58,138,53,0.15)'},
+    green:{primary:'#3a7a2e',dark:'#1a4a12',light:'#e4ebe0',lightDark:'rgba(58,122,46,0.15)'},
     blue:{primary:'#60a5fa',dark:'#2563eb',light:'#dbeafe',lightDark:'rgba(96,165,250,0.15)'},
     purple:{primary:'#a78bfa',dark:'#7c3aed',light:'#ede9fe',lightDark:'rgba(167,139,250,0.15)'},
     pink:{primary:'#f472b6',dark:'#db2777',light:'#fce7f3',lightDark:'rgba(244,114,182,0.15)'},
@@ -6441,20 +6441,20 @@ function applyTheme() {
   el.style.setProperty('--primary-dark', c.dark);
   if (D.darkMode) {
     el.classList.add('dark');
-    root.style.background = '#0a120a';
-    el.style.setProperty('--bg','#0a120a');
-    el.style.setProperty('--card','#121812');
+    root.style.background = '#0f140e';
+    el.style.setProperty('--bg','#0f140e');
+    el.style.setProperty('--card','#181c16');
     el.style.setProperty('--text','#e4e4e7');
     el.style.setProperty('--muted','#8a8a9a');
-    el.style.setProperty('--border','#2a2a2a');
+    el.style.setProperty('--border','#2a2a22');
     el.style.setProperty('--primary-light', c.lightDark);
   } else {
     el.classList.remove('dark');
-    root.style.background = '#f0f5ea';
-    el.style.setProperty('--bg','#f0f5ea');
-    el.style.setProperty('--card','#ffffff');
-    el.style.setProperty('--text','#1a1a2e');
-    el.style.setProperty('--muted','#6b7280');
+    root.style.background = '#dce3d4';
+    el.style.setProperty('--bg','#dce3d4');
+    el.style.setProperty('--card','#f0ede4');
+    el.style.setProperty('--text','#1e1a14');
+    el.style.setProperty('--muted','#7a7666');
     el.style.setProperty('--border','#e5e7eb');
     el.style.setProperty('--primary-light', c.light);
   }
@@ -6868,7 +6868,7 @@ function shopHTML() {
       h+='</div>';
     }
   }
-  h+='<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')" style="margin-top:8px">Back to War Chest</button>';
+  h+='<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')" style="margin-top:8px">Back to Rewards</button>';
   h+='</div>';return h;
 }
 function buyShopItem(id) {
