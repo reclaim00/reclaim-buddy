@@ -1,4 +1,4 @@
-﻿
+
 // ====== HOME ======
 function characterGreetingHTML() {
   var h = '';
@@ -8,7 +8,7 @@ function characterGreetingHTML() {
        "I've been watching your patterns. You're showing up more. That's the data that matters.",
        "I notice you've been logging regularly. Every entry sharpens the map of your recovery.",
        "Your consistency is building a reliable trend. Keep feeding me data and I'll keep finding insights.",
-       "Journal entries are up. Mood tracking is steady. The numbers don't lie — you're putting in the work.",
+       "Journal entries are up. Mood tracking is steady. The numbers don't lie � you're putting in the work.",
        "I cross-referenced your check-ins and habits. There's a clear correlation: showing up daily builds momentum."
      ]},
     {name:'Gertrude',color:'var(--avatar-gertrude)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg>',
@@ -16,14 +16,14 @@ function characterGreetingHTML() {
        "Stand ready. Your shield is forged. Today, nothing gets past you.",
        "You've faced worse battles than this and held the line. Today is no different.",
        "Your safety plan is your armor. You've prepared for this. Trust your training.",
-       "Another day, another victory. You don't need to win every fight — just this one.",
+       "Another day, another victory. You don't need to win every fight � just this one.",
        "I've seen your strength. You are more resilient than whatever faces you today."
      ]},
      {name:'Oswald',color:'var(--avatar-oswald)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg>',
      msgs:[
        "The path ahead may twist, but you've already walked through shadow and emerged. Trust your steps.",
        "Every day of recovery adds to your power. You're weaving strength stronger than any darkness.",
-       "Look back and see how far you've come. That is not luck — it is your own will, recognized and claimed.",
+       "Look back and see how far you've come. That is not luck � it is your own will, recognized and claimed.",
        "The mist clears day by day. What felt impossible is now your daily rhythm.",
        "You carry wisdom you didn't have a month ago. Each struggle taught you something. That knowledge is your staff."
      ]}
@@ -166,7 +166,7 @@ function kingdomHTML() {
     h += '<rect x="195" y="105" width="110" height="93" fill="url(#stone)"/>';
     h += '<rect x="278" y="105" width="27" height="93" fill="rgba(0,0,0,.1)"/>';
     h += '<rect x="193" y="186" width="114" height="12" class="k-keep" opacity=".7"/><rect x="193" y="186" width="114" height="12" fill="url(#stone)" opacity=".7"/>';
-    // Damage features — cracked walls and rubble for levels 1-2, fading with time
+    // Damage features � cracked walls and rubble for levels 1-2, fading with time
     if (level <= 2) {
       if (level === 1) {
         h += '<path d="M208,120 L216,118 L218,130 L226,126 L228,138 L236,134" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
@@ -341,113 +341,6 @@ function kingdomHTML() {
     h += '<line x1="242" y1="187" x2="242" y2="196" stroke="#4a2410" stroke-width=".8"/><line x1="252" y1="187" x2="252" y2="196" stroke="#4a2410" stroke-width=".8"/><line x1="262" y1="187" x2="262" y2="196" stroke="#4a2410" stroke-width=".8"/>';
     h += '</g>';
   }
-  // Village buildings - unique structures across the midground (level 5+)
-  if (level >= 5) {
-    h += '<g class="k-village">';
-    // Building definitions: [type, x, y, width, roofColor, wallColor]
-    // type: 0=wattle, 1=stone, 2=tavern, 3=smithy, 4=church, 5=windmill
-    var bldgs = level >= 14 ? [
-      [0,30,186,16,'#6B4423','#d4c8a0'],[1,50,184,18,'#8B4513','#8a8a8a'],[2,74,185,20,'#5a3a1a','#c8b89a'],[3,100,187,16,'#4a2a10','#b8a888'],
-      [4,350,183,18,'#3a2a1a','#9a9a8a'],[5,374,185,16,'#6B4423','#d4b89a'],[0,394,186,18,'#5a3a1a','#c4b89a'],[1,418,184,18,'#8B4513','#8a8a9a'],
-      [2,442,186,20,'#6B4423','#c8b8a0'],[0,466,188,16,'#5a3a1a','#d4c8b0'],
-      [0,55,224,14,'#6B4423','#d4c8a0'],[1,80,226,16,'#8B4513','#8a8a8a'],[2,410,226,16,'#5a3a1a','#c8b89a'],[0,435,228,14,'#6B4423','#d4c8b0']
-    ] : level >= 10 ? [
-      [0,30,186,16,'#6B4423','#d4c8a0'],[1,50,184,18,'#8B4513','#8a8a8a'],[2,74,185,20,'#5a3a1a','#c8b89a'],[3,100,187,16,'#4a2a10','#b8a888'],
-      [4,350,183,18,'#3a2a1a','#9a9a8a'],[5,374,185,16,'#6B4423','#d4b89a'],[0,394,186,18,'#5a3a1a','#c4b89a'],[1,418,184,18,'#8B4513','#8a8a9a'],
-      [2,442,186,20,'#6B4423','#c8b8a0'],[0,466,188,16,'#5a3a1a','#d4c8b0'],
-      [0,60,226,14,'#6B4423','#d4c8a0'],[1,420,226,16,'#8B4513','#8a8a8a']
-    ] : level >= 7 ? [
-      [0,30,186,16,'#6B4423','#d4c8a0'],[1,50,184,18,'#8B4513','#8a8a8a'],[2,74,185,20,'#5a3a1a','#c8b89a'],[3,100,187,16,'#4a2a10','#b8a888'],
-      [0,394,186,18,'#5a3a1a','#c4b89a'],[1,418,184,18,'#8B4513','#8a8a9a'],[2,442,186,20,'#6B4423','#c8b8a0'],[0,466,188,16,'#5a3a1a','#d4c8b0']
-    ] : [
-      [0,40,186,16,'#6B4423','#d4c8a0'],[2,74,185,20,'#5a3a1a','#c8b89a'],[3,100,187,16,'#4a2a10','#b8a888'],
-      [0,410,186,18,'#5a3a1a','#c4b89a'],[1,440,186,18,'#8B4513','#8a8a9a'],[0,468,188,16,'#5a3a1a','#d4c8b0']
-    ];
-    for (var bi=0;bi<bldgs.length;bi++) {
-      var bt=bldgs[bi][0],bx=bldgs[bi][1],by=bldgs[bi][2],bw=bldgs[bi][3],rc=bldgs[bi][4],wc=bldgs[bi][5];
-      var bh=Math.round(bw*0.65);
-      if (bt===0) {
-        // Wattle cottage: cream walls with timber cross-lines, thatch roof
-        h+='<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1" fill="'+wc+'"/>';
-        h+='<line x1="'+(bx+3)+'" y1="'+by+'" x2="'+(bx+3)+'" y2="'+(by+bh)+'" stroke="rgba(60,40,20,.2)" stroke-width=".6"/>';
-        h+='<line x1="'+(bx+bw-3)+'" y1="'+by+'" x2="'+(bx+bw-3)+'" y2="'+(by+bh)+'" stroke="rgba(60,40,20,.2)" stroke-width=".6"/>';
-        h+='<line x1="'+(bx+1)+'" y1="'+(by+4)+'" x2="'+(bx+bw-1)+'" y2="'+(by+4)+'" stroke="rgba(60,40,20,.15)" stroke-width=".4"/>';
-        h+='<line x1="'+(bx+1)+'" y1="'+(by+8)+'" x2="'+(bx+bw-1)+'" y2="'+(by+8)+'" stroke="rgba(60,40,20,.15)" stroke-width=".4"/>';
-        h+='<polygon points="'+(bx-2)+','+by+' '+(bx+bw/2)+','+(by-8)+' '+(bx+bw+2)+','+by+'" fill="'+rc+'"/>';
-        // Door
-        h+='<rect x="'+(bx+bw/2-2)+'" y="'+(by+bh-6)+'" width="4" height="6" rx="1" fill="rgba(40,20,10,.5)"/>';
-      } else if (bt===1) {
-        // Stone cottage: gray stone with mortar lines, tile roof
-        h+='<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1" fill="'+wc+'"/>';
-        h+='<line x1="'+(bx+4)+'" y1="'+by+'" x2="'+(bx+4)+'" y2="'+(by+bh)+'" stroke="rgba(0,0,0,.08)" stroke-width=".5"/>';
-        h+='<line x1="'+(bx+8)+'" y1="'+(by+2)+'" x2="'+(bx+8)+'" y2="'+(by+bh)+'" stroke="rgba(0,0,0,.08)" stroke-width=".5"/>';
-        h+='<line x1="'+(bx+bw-4)+'" y1="'+(by+2)+'" x2="'+(bx+bw-4)+'" y2="'+(by+bh)+'" stroke="rgba(0,0,0,.08)" stroke-width=".5"/>';
-        for (var li=0;li<Math.floor(bh/4);li++) h+='<line x1="'+bx+'" y1="'+(by+2+li*4)+'" x2="'+(bx+bw)+'" y2="'+(by+2+li*4)+'" stroke="rgba(0,0,0,.06)" stroke-width=".4"/>';
-        h+='<polygon points="'+(bx-2)+','+by+' '+(bx+bw/2)+','+(by-7)+' '+(bx+bw+2)+','+by+'" fill="'+rc+'"/>';
-        h+='<rect x="'+(bx+2)+'" y="'+(by+bh-6)+'" width="3" height="6" rx="1" fill="rgba(40,20,10,.5)"/>';
-        h+='<rect x="'+(bx+bw-5)+'" y="'+(by+bh-8)+'" width="3" height="3" rx=".5" fill="rgba(200,200,150,.4)"/>';
-      } else if (bt===2) {
-        // Tavern: wider, prominent door, sign
-        h+='<rect x="'+bx+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1" fill="'+wc+'"/>';
-        h+='<rect x="'+(bx+3)+'" y="'+(by+3)+'" width="'+(bw-6)+'" height="'+(bh-9)+'" rx=".5" fill="rgba(0,0,0,.06)"/>';
-        h+='<polygon points="'+(bx-2)+','+by+' '+(bx+bw/2)+','+(by-9)+' '+(bx+bw+2)+','+by+'" fill="'+rc+'"/>';
-        h+='<rect x="'+(bx+bw/2-3)+'" y="'+(by+bh-7)+'" width="6" height="7" rx="1" fill="rgba(40,20,10,.6)"/>';
-        // Sign hanging
-        h+='<line x1="'+(bx+4)+'" y1="'+(by+3)+'" x2="'+(bx+4)+'" y2="'+(by+7)+'" stroke="rgba(0,0,0,.3)" stroke-width=".5"/>';
-        h+='<rect x="'+(bx+2)+'" y="'+(by+7)+'" width="4" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
-        h+='<text x="'+(bx+4)+'" y="'+(by+9)+'" font-size="2" fill="#4a2a0a" text-anchor="middle" font-weight="700">&#9883;</text>';
-      } else if (bt===3) {
-        // Smithy: open front, angled roof, chimney
-        h+='<rect x="'+bx+'" y="'+(by+3)+'" width="'+bw+'" height="'+(bh-3)+'" rx="1" fill="'+wc+'"/>';
-        h+='<polygon points="'+(bx-3)+','+(by+3)+' '+(bx+bw/2)+','+(by-6)+' '+(bx+bw+3)+','+(by+3)+'" fill="'+rc+'"/>';
-        // Open front (darker)
-        h+='<rect x="'+(bx+2)+'" y="'+(by+bh-6)+'" width="'+(bw-4)+'" height="6" rx=".5" fill="rgba(20,10,5,.5)"/>';
-        // Chimney
-        h+='<rect x="'+(bx+bw-4)+'" y="'+(by-5)+'" width="3" height="8" rx=".5" fill="#7a6a5a"/>';
-        // Sparks
-        h+='<circle cx="'+(bx+bw-2.5)+'" cy="'+(by-7)+'" r=".6" fill="#ff6622" opacity=".6" style="animation:smithySpark 1.2s ease-out infinite"/>';
-        h+='<circle cx="'+(bx+bw-1)+'" cy="'+(by-9)+'" r=".4" fill="#ffaa44" opacity=".4" style="animation:smithySpark 1s ease-out infinite .4s"/>';
-      } else if (bt===4) {
-        // Church: narrow, tall, spire with cross
-        var ch=bh+6;
-        h+='<rect x="'+bx+'" y="'+(by-6)+'" width="'+bw+'" height="'+(ch+6)+'" rx="1" fill="'+wc+'"/>';
-        h+='<polygon points="'+(bx-1)+','+(by-6)+' '+(bx+bw/2)+','+(by-18)+' '+(bx+bw+1)+','+(by-6)+'" fill="'+rc+'"/>';
-        h+='<line x1="'+(bx+bw/2)+'" y1="'+(by-18)+'" x2="'+(bx+bw/2)+'" y2="'+(by-22)+'" stroke="#666" stroke-width="1"/>';
-        h+='<line x1="'+(bx+bw/2-1.5)+'" y1="'+(by-22)+'" x2="'+(bx+bw/2+1.5)+'" y2="'+(by-22)+'" stroke="#666" stroke-width=".8"/>';
-        // Gothic window
-        h+='<path d="M'+(bx+bw/2-2)+','+(by+4)+' L'+(bx+bw/2-2)+','+(by+0)+' Q'+(bx+bw/2)+','+(by-3)+' '+(bx+bw/2+2)+','+(by+0)+' L'+(bx+bw/2+2)+','+(by+4)+' Z" fill="rgba(200,200,255,.2)"/>';
-        // Door
-        h+='<rect x="'+(bx+bw/2-2)+'" y="'+(by+ch-4)+'" width="4" height="4" rx="1" fill="rgba(40,20,10,.5)"/>';
-      } else if (bt===5) {
-        // Windmill: tapered body, rotating blades
-        h+='<polygon points="'+(bx+2)+','+(by+bh)+' '+(bx)+','+(by-4)+' '+(bx+bw)+','+(by-4)+' '+(bx+bw-2)+','+(by+bh)+'" fill="'+wc+'"/>';
-        h+='<rect x="'+(bx+3)+'" y="'+(by-2)+'" width="'+(bw-6)+'" height="'+(bh+1)+'" rx=".5" fill="rgba(0,0,0,.06)"/>';
-        // Cone roof
-        h+='<polygon points="'+(bx)+','+(by-4)+' '+(bx+bw/2)+','+(by-10)+' '+(bx+bw)+','+(by-4)+'" fill="'+rc+'"/>';
-        // Blades (cross with rotation)
-        if (level >= 10) {
-          h+='<g style="transform-origin:'+(bx+bw/2)+'px '+(by-6)+'px;animation:windmillBlade 6s linear infinite">';
-          h+='<line x1="'+(bx+bw/2)+'" y1="'+(by-12)+'" x2="'+(bx+bw/2)+'" y2="'+(by)+'" stroke="#6B3410" stroke-width="1.2"/>';
-          h+='<line x1="'+(bx+bw/2-5)+'" y1="'+(by-6)+'" x2="'+(bx+bw/2+5)+'" y2="'+(by-6)+'" stroke="#6B3410" stroke-width="1.2"/>';
-          h+='<circle cx="'+(bx+bw/2)+'" cy="'+(by-6)+'" r="1.5" fill="#d4a017"/>';
-          h+='</g>';
-        }
-        // Small door
-        h+='<rect x="'+(bx+bw/2-2)+'" y="'+(by+bh-5)+'" width="4" height="5" rx="1" fill="rgba(40,20,10,.5)"/>';
-      }
-    }
-    h += '</g>';
-    // Village chimney smoke (level 7+)
-    if (level >= 7) {
-      var sc = level >= 14 ? [[40,178],[52,176],[76,176],[100,179],[410,178],[440,176],[466,180],[55,216],[80,218],[410,218],[435,220]] :
-        level >= 10 ? [[40,178],[52,176],[76,176],[100,179],[410,178],[440,176],[466,180],[60,218],[420,218]] :
-        level >= 7 ? [[40,178],[52,176],[76,176],[100,179],[410,178],[466,180]] : [];
-      for (var si = 0; si < sc.length; si++) {
-        h += '<circle cx="' + sc[si][0] + '" cy="' + sc[si][1] + '" r="1.8" fill="rgba(180,180,180,.2)" style="animation:smokeRise 3.5s ease-out infinite;animation-delay:' + (si * 0.4) + 's"/>';
-        h += '<circle cx="' + (sc[si][0] - 1) + '" cy="' + (sc[si][1] + 1) + '" r="1.5" fill="rgba(180,180,180,.18)" style="animation:smokeRise 4s ease-out infinite;animation-delay:' + (si * 0.4 + 1) + 's"/>';
-      }
-    }
-  }
   // Animals
   if (level >= 6) {
     h += '<g class="k-animals">';
@@ -498,64 +391,6 @@ function kingdomHTML() {
     h += '<polygon points="322,167 323,165.5 321,166.5" fill="#2a2a2a"/>';
     // Tail
     h += '<path d="M 326,170 Q 329,166 328,162" fill="none" stroke="#2a2a2a" stroke-width="1.2" stroke-linecap="round" style="transform-origin:326px 170px;animation:catTail 3s ease-in-out infinite"/>';
-    h += '</g>';
-  }
-  // Tiny walking villagers on the path (level 4+)
-  if (level >= 4) {
-    h += '<g class="k-villagers">';
-    // Villager 1: walks right along the path
-    h += '<g class="k-villager" style="animation:villagerWalk 12s linear infinite">';
-    h += '<circle cx="0" cy="0" r="2.5" fill="var(--accent)"/>';
-    h += '<rect x="-2" y="2.5" width="4" height="6" rx="1" fill="#6B3410"/>';
-    h += '<line x1="-1" y1="8.5" x2="-2" y2="12" stroke="#333" stroke-width="1" stroke-linecap="round" style="transform-origin:-1px 8.5px;animation:walkLeg .3s ease-in-out infinite"/>';
-    h += '<line x1="1" y1="8.5" x2="2" y2="12" stroke="#333" stroke-width="1" stroke-linecap="round" style="transform-origin:1px 8.5px;animation:walkLeg .3s ease-in-out infinite .15s"/>';
-    // Arms
-    h += '<line x1="-2" y1="3.5" x2="-4" y2="6" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-2px 3.5px;animation:walkLeg .3s ease-in-out infinite .15s"/>';
-    h += '<line x1="2" y1="3.5" x2="4" y2="6" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:2px 3.5px;animation:walkLeg .3s ease-in-out infinite"/>';
-    h += '</g>';
-    // Villager 2: walks left (inverted), different color, offset delay
-    h += '<g class="k-villager" style="animation:villagerWalk 15s linear infinite 4s">';
-    h += '<circle cx="0" cy="0" r="2" fill="#2d5a5a"/>';
-    h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#5a3a2a"/>';
-    h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .35s ease-in-out infinite"/>';
-    h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .35s ease-in-out infinite .175s"/>';
-    h += '</g>';
-    // Villager 3 at level 8+
-    if (level >= 8) {
-      h += '<g class="k-villager" style="animation:villagerWalk 18s linear infinite 8s">';
-      h += '<circle cx="0" cy="0" r="2" fill="#c09a7a"/>';
-      h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#8B4513"/>';
-      h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .4s ease-in-out infinite"/>';
-      h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .4s ease-in-out infinite .2s"/>';
-      h += '</g>';
-    }
-    // Villager 4 at level 10+
-    if (level >= 10) {
-      h += '<g class="k-villager" style="animation:villagerWalk 14s linear infinite 2s">';
-      h += '<circle cx="0" cy="0" r="2.2" fill="#7a5a3a"/>';
-      h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#4a6a3a"/>';
-      h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .35s ease-in-out infinite"/>';
-      h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .35s ease-in-out infinite .175s"/>';
-      h += '</g>';
-    }
-    // Villager 5 at level 12+
-    if (level >= 12) {
-      h += '<g class="k-villager" style="animation:villagerWalk 20s linear infinite 6s">';
-      h += '<circle cx="0" cy="0" r="1.8" fill="#8a6a4a"/>';
-      h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#6a3a2a"/>';
-      h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .4s ease-in-out infinite .1s"/>';
-      h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .4s ease-in-out infinite .3s"/>';
-      h += '</g>';
-    }
-    // Villager 6 at level 14+
-    if (level >= 14) {
-      h += '<g class="k-villager" style="animation:villagerWalk 16s linear infinite 10s">';
-      h += '<circle cx="0" cy="0" r="2" fill="#5a7a5a"/>';
-      h += '<rect x="-1.5" y="2" width="3" height="5" rx="1" fill="#3a5a2a"/>';
-      h += '<line x1="-1" y1="7" x2="-2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:-1px 7px;animation:walkLeg .3s ease-in-out infinite .05s"/>';
-      h += '<line x1="1" y1="7" x2="2" y2="10" stroke="#333" stroke-width=".8" stroke-linecap="round" style="transform-origin:1px 7px;animation:walkLeg .3s ease-in-out infinite .2s"/>';
-      h += '</g>';
-    }
     h += '</g>';
   }
   // Trees
@@ -806,7 +641,7 @@ function ordinal(n) {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 function journeyDate() {
-  var months = ['Ærra Ġēola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','Ærra-Liða','Æftera-Liða','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','Æftera Ġēola'];
+  var months = ['�rra Geola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','�rra-Li�a','�ftera-Li�a','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','�ftera Geola'];
   var now = new Date();
   var day = now.getDate();
   var month = months[now.getMonth()];
@@ -853,122 +688,6 @@ function kingdomTrackerHTML() {
   h += '</div>';
   return h;
 }
-function villageLevel(days) {
-  if (days <= 0) return 0;
-  if (days <= 6) return 1;
-  if (days <= 13) return 2;
-  if (days <= 29) return 3;
-  if (days <= 89) return 4;
-  if (days <= 180) return 5;
-  if (days <= 364) return 6;
-  return 7;
-}
-function villageHTML() {
-  var d=soberDays(),l=villageLevel(d),n=document.body.classList.contains('dark');
-  var c={g1:n?'#1a2a1a':'#5a9a4a',g2:n?'#152015':'#4a8a3a',st:n?'#3a3a42':'#9a9aa2',sd:n?'#2a2a32':'#7a7a82',sl:n?'#4a4a52':'#b0b0b8',rf:n?'#3a2010':'#8a4a2a',th:n?'#3a2a18':'#9a7a4a',tm:n?'#1a0a00':'#6a3a1a',wl:n?'#d4c8b0':'#f0e0c8',wd:n?'#c8b898':'#d4c4a8',tr:n?'#0a2a0a':'#4a8a3a',tk:n?'#1a0a00':'#5a3a1a',bn:n?'#8a1a1a':'#cc2a2a',bg:n?'#8a7a20':'#d4a017',sp:n?'#3a3a42':'#7a7a82',wi:n?'#ffd700':'#88bbdd',dr:n?'#1a0a00':'#5a3a2a',wg:n?'#ffd700':'#88bbdd',pt:n?'#2a2a2a':'#9a8a7a'};
-  function rx(x,y,w,h){return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="1" fill="';}
-  function pg(p,f){return '<polygon points="'+p+'" fill="'+f+'"/>';}
-  function ln(x1,y1,x2,y2,cl,w){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="'+cl+'" stroke-width="'+w+'"/>';}
-  function ct(x,y,t,s,nw,nh){
-    var h='<rect x="'+x+'" y="'+(y-nh)+'" width="'+nw+'" height="'+nh+'" rx="1" fill="'+c.st+'"/>';
-    h+=pg((x-3)+','+(y-nh)+' '+(x+nw/2)+','+(y-nh-8)+' '+(x+nw+3)+','+(y-nh),c.rf);
-    if(t){h+=pg((x+nw/2-3)+','+(y-nh-8)+' '+(x+nw/2)+','+(y-s)+' '+(x+nw/2+3)+','+(y-nh-8),c.sp);
-    h+=ln(x+nw/2,y-s,x+nw/2,y-s-5,n?c.wg:'#8a6a3a',1.2)+ln(x+nw/2-3,y-s-2,x+nw/2+3,y-s-2,n?c.wg:'#8a6a3a',1.2);}
-    h+='<path d="M'+(x+nw/2-3)+','+y+' Q'+(x+nw/2)+','+(y-8)+' '+(x+nw/2+3)+','+y+'" fill="'+c.dr+'"/>';
-    h+='<circle cx="'+(x+nw/2)+'" cy="'+(y-nh+6)+'" r="'+(t?4:3)+'" fill="'+c.wi+'" opacity=".5"/>';
-    return h;
-  }
-  var h='<svg viewBox="0 0 360 200" xmlns="http://www.w3.org/2000/svg">';
-  h+='<rect x="0" y="134" width="360" height="66" fill="'+c.g1+'" opacity=".4"/>';
-  h+='<rect x="0" y="152" width="360" height="48" fill="'+c.g2+'" opacity=".35"/>';
-  h+='<path d="M0,146 Q60,126 120,140 Q180,120 240,134 Q300,116 360,140 L360,200 L0,200Z" fill="'+c.g1+'" opacity=".15"/>';
-  // Cobblestone path
-  h+='<path d="M170,200 Q173,176 177,158 Q181,148 185,142" stroke="'+c.pt+'" stroke-width="5" fill="none" opacity=".2" stroke-linecap="round"/>';
-  // Fixed positions for 20 medieval buildings (12-16px wide, packed tight)
-  var bw=13,bgap=1,bh=18,bhs=[18,22,20,16,24,18,22,20,16,24,18,22,20,16,24,18,22,20,16,24];
-  var bx=[];
-  for(var bi=0,bxPos=2;bi<20;bi++){bx[bi]=bxPos;bxPos+=bw+bgap;}
-  function drawBldgs(start,end,maxH,bOn){
-    var s='';
-    for(var i=start;i<=end;i++){
-      if(i>=bx.length)break;
-      var x=bx[i],hh=Math.min(bhs[i],maxH),yBase=158;
-      if(!bOn)continue;
-      var clr=(i%3===0?c.wd:(i%2===0?c.wl:c.wd));
-      s+=rx(x,yBase-hh,bw,hh)+clr+'"/>';
-      // timber frame lines
-      s+=ln(x,yBase-hh,x,yBase,c.tm,1)+ln(x+bw-1,yBase-hh,x+bw-1,yBase,c.tm,1);
-      s+=ln(x,yBase-hh+Math.round(hh*0.45),x+bw,yBase-hh+Math.round(hh*0.45),c.tm,0.8);
-      // thatched roof
-      s+=pg((x-3)+','+(yBase-hh)+' '+(x+bw/2)+','+(yBase-hh-5)+' '+(x+bw+2)+','+(yBase-hh),c.th);
-      // door
-      s+=rx(x+4,yBase-Math.round(hh*0.5),Math.round(bw*0.4),Math.round(hh*0.45),0)+c.dr+'"/>';
-      // window on some
-      if(i%2===0)s+=rx(x+2,yBase-hh+3,Math.round(bw*0.25),Math.round(bw*0.25),1)+c.wi+'" opacity=".35"/>';
-    }
-    return s;
-  }
-  // L1: ruins
-  if(l>=1){
-    h+=rx(155,136,50,24,c.sd)+'" opacity=".4"/>'+rx(162,128,8,30,c.st)+'" opacity=".35"/>'+rx(190,130,8,28,c.st)+'" opacity=".35"/>';
-    if(l<2)h+='<g opacity=".5"><rect x="176" y="156" width="4" height="2" fill="#8a4a1a"/><polygon points="175,156 181,156 178,150" fill="#cc6633"/><circle cx="178" cy="146" r="3" fill="#ff8833" opacity=".3"/></g>';
-  }
-  // L2: 20 buildings!
-  if(l>=2){
-    h+=drawBldgs(0,19,24,l>=2);
-    h+=rx(2,148,8,12,c.sd)+'" opacity=".5"/>'+rx(3,147,6,2,c.sd)+'" opacity=".6"/>';
-  }
-  // L3: church added
-  if(l>=3)h+=ct(100,155,true,48,28,38);
-  // L4: wall section + banner + tree
-  if(l>=4){
-    h+=rx(296,122,18,36,c.sd)+'" opacity=".5"/>'+rx(296,118,5,6,c.sd)+'" opacity=".6"/>'+rx(307,118,5,6,c.sd)+'" opacity=".6"/>';
-    h+=ln(290,100,290,153,c.tm,2)+pg('290,100 308,106 290,112',c.bn);
-    h+=rx(43,132,3,26,c.tk)+'<circle cx="44" cy="124" r="7" fill="'+c.tr+'" opacity=".6"/>';
-  }
-  // L5: gate towers + connecting wall + more trees
-  if(l>=5){
-    h+=rx(10,108,16,50,c.st)+'" opacity=".9"/>'+pg('7,108 18,86 29,108',c.rf)+rx(15,146,6,12,1)+'" fill="'+c.dr+'"/>'+ln(18,86,18,78,c.tm,1.5)+pg('18,78 30,82 18,86',c.bg);
-    h+=rx(316,108,16,50,c.st)+'" opacity=".9"/>'+pg('313,108 324,86 335,108',c.rf)+rx(321,146,6,12,1)+'" fill="'+c.dr+'"/>'+ln(324,86,324,78,c.tm,1.5)+pg('324,78 336,82 324,86',c.bn);
-    h+=rx(56,130,3,28,c.tk)+'<circle cx="57" cy="122" r="8" fill="'+c.tr+'" opacity=".6"/><circle cx="64" cy="126" r="6" fill="'+c.tr+'" opacity=".5"/>';
-    h+=rx(330,130,3,28,c.tk)+'<circle cx="331" cy="122" r="7" fill="'+c.tr+'" opacity=".6"/>';
-  }
-  // L6: church tower + fortified walls
-  if(l>=6){
-    h+=rx(70,114,14,44,c.sd)+'" opacity=".8"/>'+pg('67,114 77,94 87,114',c.rf)+rx(73,124,8,8,1)+'" fill="'+c.wi+'" opacity=".3"/>';
-    h+=rx(260,110,48,48,c.sd)+'" opacity=".35"/>';
-    for(var bw=0;bw<7;bw++)h+=rx(264+bw*7,106,4,6,c.sd)+'" opacity=".5"/>';
-    h+=rx(340,130,3,28,c.tk)+'<circle cx="341" cy="122" r="8" fill="'+c.tr+'" opacity=".6"/><circle cx="348" cy="126" r="6" fill="'+c.tr+'" opacity=".5"/>';
-  }
-  // L7: fountain + extra trees
-  if(l>=7){
-    h+='<circle cx="175" cy="150" r="5" fill="'+c.st+'" opacity=".7"/><circle cx="175" cy="150" r="3" fill="'+c.wi+'" opacity=".12"/>';
-    h+=ln(172,151,178,151,c.sd,1.5)+ln(175,148,175,154,c.sd,1.5);
-    h+=rx(348,128,3,30,c.tk)+'<circle cx="349" cy="118" r="9" fill="'+c.tr+'" opacity=".7"/><circle cx="356" cy="122" r="7" fill="'+c.tr+'" opacity=".6"/>';
-    h+=rx(2,130,3,28,c.tk)+'<circle cx="3" cy="120" r="8" fill="'+c.tr+'" opacity=".7"/><circle cx="10" cy="124" r="6" fill="'+c.tr+'" opacity=".6"/>';
-  }
-  // Stars
-  if(n&&l>=2){for(var si=0;si<l*6;si++)h+='<circle cx="'+(2+(si*27)%356)+'" cy="'+(2+(si*15)%58)+'" r="'+(0.2+(si%3)*0.4)+'" fill="#fff" opacity="'+(0.06+l*0.04)+'"/>';}
-  // Night glow
-  if(n&&l>=3){
-    h+='<g filter="url(#glow)">';
-    if(l>=4)h+='<rect x="5" y="140" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/>';
-    if(l>=5)h+='<rect x="16" y="140" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/><rect x="22" y="140" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/>';
-    if(l>=6)h+='<rect x="32" y="140" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/><rect x="73" y="124" width="8" height="8" rx="1" fill="'+c.wg+'" opacity=".5"/>';
-    if(l>=7)h+='<rect x="60" y="140" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/><rect x="140" y="140" width="4" height="4" rx="1" fill="'+c.wg+'" opacity=".5"/>';
-    h+='</g>';
-  }
-  // Flowers
-  if(!n&&l>=4)h+='<circle cx="50" cy="164" r="1.5" fill="#ff7788"/><circle cx="135" cy="166" r="1.5" fill="#ff99aa"/><circle cx="220" cy="163" r="1.5" fill="#ffbb44"/><circle cx="305" cy="165" r="1.5" fill="#ee77cc"/>';
-  h+='</svg>';
-  return h;
-}
-function updateVillage() {
-  var el = document.getElementById('village-overlay');
-  if (!el) return;
-  el.innerHTML = villageHTML();
-}
-
 function kingsLedgerHTML() {
   var days = soberDays();
   var isActive = D.sobriety.startDate ? true : false;
@@ -1063,7 +782,7 @@ function warchestHTML() {
       h += '<span style="font-size:9px;background:var(--primary-light);padding:1px 5px;border-radius:4px;margin:1px;display:inline-block">' + (mIdx>=0?mNames[mIdx]:'') + '</span>';
     }
   }
-  // King's Ledger — real-world savings calculator
+  // King's Ledger � real-world savings calculator
   var cpDay = D.sobriety.costPerDay || 0;
   var dQty = D.sobriety.dailyQuantity || 0;
   var uLabel = D.sobriety.unitLabel || '';
@@ -1082,7 +801,7 @@ function warchestHTML() {
   h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Unit label</label>';
   h += '<input type="text" value="' + safe(uLabel) + '" onchange="D.sobriety.unitLabel=this.value;saveData();render()" placeholder="drinks" style="font-size:12px;padding:4px 6px;margin:0"></div>';
   h += '</div>';
-  // Results — always visible
+  // Results � always visible
   h += '<div class="stat-grid">';
   h += '<div class="stat-card"><div class="num" style="color:#d4a017">$' + moneySaved.toLocaleString() + '</div><div class="label">Money Saved</div></div>';
   var unitDisplay = uLabel ? safe(uLabel) + ' Avoided' : 'Units Avoided';
@@ -1423,7 +1142,7 @@ function throneRoomHTML() {
   }
   h += '</div>';
 
-  // 3. Level card (medieval rank, clickable → profile)
+  // 3. Level card (medieval rank, clickable ? profile)
   var _lvl = soberLevel();
   var _prog = soberLevelProgress();
   h += '<div class="card" style="margin-top:8px;padding:10px;text-align:center;cursor:pointer" onclick="goTo(\'profile\')">';
@@ -1468,11 +1187,11 @@ function kNamePrompt() {
 function homeHTML() {
   var h = '';
 
-  // Atlas — the central hub
+  // Atlas � the central hub
   h += throneRoomHTML();
 
-  // Crisis widget — always visible on home
-  h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS — crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
+  // Crisis widget � always visible on home
+  h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS � crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
 
   h += pledgeHTML();
 

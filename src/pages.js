@@ -2975,7 +2975,7 @@ function rescueRecommit() {
   scheduleFollowUp();
   saveData();
   setTimeout(kingdomDamage, 150);
-  setTimeout(villageDamage, 200);
+
   document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'royalpardon\')">&#128081; Fresh Start</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
 }
 
@@ -4811,7 +4811,7 @@ function alliancesHTML() {
     c += '<div><div style="font-size:18px;font-weight:800;color:#d4a017">' + opts.shields + '</div><div style="font-size:8px;color:var(--muted);letter-spacing:1px">SHIELDS</div></div>';
     c += '</div>';
     if (opts.population) {
-      c += '<div style="font-size:11px;color:var(--muted)">&#128101; ' + opts.population + ' villagers</div>';
+      c += '<div style="font-size:11px;color:var(--muted)">&#128101; ' + opts.population + ' allies</div>';
     }
     c += '</div>';
     return c;
@@ -6883,24 +6883,6 @@ function buyShopItem(id) {
   else if (id==='bonus') { D.warchest.boostData.bonusDate = new Date().toDateString(); }
   else { D.shopPurchases=D.shopPurchases||[];D.shopPurchases.push(id); }
   saveData();playSound('coin');render();
-}
-function villageDamage() {
-  var el = document.getElementById('village-overlay');
-  if (!el) return;
-  el.className = el.className.replace(/ damage/g, '') + ' damage';
-  setTimeout(function() { if (el) el.className = el.className.replace(' damage', ''); }, 600);
-}
-function showVillageModal() {
-  var days = soberDays();
-  var level = villageLevel(days);
-  var lnames = ['Abandoned','Fledgling','Growing','Thriving','Flourishing','Prosperous','Legendary','Mythical'];
-  var ldescs = ['A desolate ruin...','A single cottage, just beginning','A small settlement taking shape','A thriving community','A beautiful village in full bloom','A prosperous town of renown','A legendary city of song and story','A mythical capital of endless glory'];
-  var maxL = lnames.length - 1;
-  var ov = document.createElement('div');
-  ov.className = 'overlay';
-  ov.id = 'village-modal';
-  ov.innerHTML = '<div class="overlay-content" style="max-width:480px;text-align:center;padding:20px"><div style="font-size:13px;color:var(--muted);margin-bottom:2px;letter-spacing:1px">Your Village</div><div style="font-size:22px;font-weight:700;color:var(--primary);margin-bottom:2px">' + lnames[Math.min(level,maxL)] + '</div><div style="font-size:12px;color:var(--text-light);margin-bottom:8px">' + (ldescs[Math.min(level,maxL)]||'') + '</div>' + (days > 0 ? '<div style="font-size:13px;color:var(--muted);margin-bottom:10px">' + days + ' day' + (days!==1?'s':'') + ' of growth</div>' : '') + '<div style="max-width:360px;margin:0 auto 10px">' + villageHTML() + '</div><button class="btn btn-primary btn-sm" onclick="document.getElementById(\'village-modal\').remove()">'+t('Close')+'</button></div>';
-  document.body.appendChild(ov);
 }
 function waxSealSVG(s) {
   var r = s/2;

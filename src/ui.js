@@ -1818,7 +1818,6 @@ setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
 if (AUTH_USER && !isLockSet()) {
   document.body.classList.add('logged-in');
   try { render(); } catch(e) { document.getElementById('app').innerHTML = '<div class="card"><h3>Something went wrong</h3><p style="font-size:12px;color:var(--muted)">' + e.message + '</p></div>'; }
-  setTimeout(updateVillage, 100);
   loadFromFirestore(function(cloudData) {
     if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
   });

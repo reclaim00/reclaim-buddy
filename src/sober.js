@@ -279,7 +279,6 @@ function recordRelapse() {
     w.lastEntryCount = (D.journal || []).length;
     saveData();
     setTimeout(kingdomDamage, 150);
-    setTimeout(villageDamage, 200);
     showRelapseRecovery(true);
     return;
   }
@@ -292,7 +291,6 @@ function recordRelapse() {
   // Auto-grant Royal Pardon
   autoGrantPardon();
   setTimeout(kingdomDamage, 150);
-  setTimeout(villageDamage, 200);
   showRelapseRecovery();
 }
 

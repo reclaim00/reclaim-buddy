@@ -581,7 +581,6 @@ function saveData() {
   applyTheme();
   delete _pageCache[pg];
   render();
-  setTimeout(updateVillage, 50);
 }
 function saveDataSilent() {
   updateSchillings();
