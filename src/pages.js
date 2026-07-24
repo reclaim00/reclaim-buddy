@@ -5993,6 +5993,16 @@ function getDailyQuests() {
   }
   return { tasks: picks, done: D.dailyQuests.done || [], date: dateStr, bonus: bonusActive };
 }
+function confirmQuest(taskId) {
+  var q = getDailyQuests();
+  if (!q || !q.tasks) return;
+  var task = null;
+  q.tasks.forEach(function(t){ if (t.id === taskId) task = t; });
+  if (!task) return;
+  if (confirm('\u2714 Did you complete this challenge?\n\n' + task.title + '\n\nTap OK to claim your reward.')) {
+    completeQuest(taskId);
+  }
+}
 function completeQuest(taskId) {
   try {
     var q = getDailyQuests();
@@ -6031,7 +6041,7 @@ function dailyQuestsHTML() {
       if (autoDone) {
         h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Claim</button>';
       } else if (isManual) {
-        h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Do</button>';
+        h += '<button class="btn btn-sm btn-primary" onclick="confirmQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Done</button>';
       }
     }
     h += '</div></div>';
