@@ -1289,7 +1289,7 @@ var ROUTINE_POOLS = {
     'Some days surviving is winning. And winning is enough.',
     'Growth isn\'t always visible. Like roots, most of it happens underground.',
     'Your mind lies sometimes. Especially when it tells you that you can\'t do this.',
-    'Be proud of yourself. You\'re fighting battles that nobody knows about.',
+    'Be proud of yourself. You\'re carrying weight that nobody sees.',
     'There is no such thing as too slow. Only forward.',
     'You are not your worst moment. You are not your relapse. You are the person who got back up.',
     'Self-care is not selfish. It\'s how you refuel so you can show up for what matters.',
@@ -3651,7 +3651,7 @@ function showJourneyMap() {
     var kg = kingdoms[kdD.ki];
     var active = (streak > kdD.ki * 5);
     kh += '<div style="position:absolute;left:'+kdD.x1+'%;top:'+kdD.y1+'%;width:'+(kdD.x2-kdD.x1)+'%;height:'+(kdD.y2-kdD.y1)+'%;border:1px dashed '+(active?'rgba(180,140,60,.3)':'rgba(180,140,60,.12)')+';border-radius:8px;z-index:1;pointer-events:none"></div>';
-    kh += '<div style="position:absolute;left:'+(kdD.x1+1)+'%;top:'+(kdD.y1+1)+'%;z-index:2;pointer-events:none;font-size:8px;color:'+(active?'#b88a3a':'rgba(140,120,80,.3)')+';font-family:\'Cinzel\',serif;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.6)" data-kingdom="'+kg.name+'">'+kg.icon+' '+kg.name+'</div>';
+    kh += '<div style="position:absolute;left:'+(kdD.x1+1)+'%;top:'+(kdD.y1+1)+'%;z-index:2;pointer-events:none;font-size:8px;color:'+(active?'#b88a3a':'rgba(140,120,80,.3)')+';font-family:\'Inter\',sans-serif;font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.6)" data-kingdom="'+kg.name+'">'+kg.icon+' '+kg.name+'</div>';
   }
   // Path SVG
   var pathD = '';

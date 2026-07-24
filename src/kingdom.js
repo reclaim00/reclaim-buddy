@@ -682,7 +682,7 @@ function kingdomTrackerHTML() {
     h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
     h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
   } else {
-    h += '<div style="font-size:14px;color:var(--muted);margin-bottom:6px">Your kingdom awaits</div>';
+    h += '<div style="font-size:14px;color:var(--muted);margin-bottom:6px">Your space awaits</div>';
     h += '<button class="btn btn-primary btn-sm" onclick="showOnboarding()">Begin Your Journey</button>';
   }
   h += '</div>';
