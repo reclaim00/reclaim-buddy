@@ -54,8 +54,8 @@ function showCharacterLore(name) {
       svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg>'
     },
     Gertrude: {
-      title: 'Knight of the Inner Ward',
-      desc: 'Gertrude has protected many on their journey before she found her true calling \u2014 protecting those who fight inner battles. She believes the hardest wars are fought in the quiet of one\u2019s own mind, far from any battlefield.',
+      title: 'Guardian of the Inner Path',
+      desc: 'Gertrude has protected many on their journey before she found her true calling \u2014 protecting those on difficult journeys. She believes the hardest struggles happen in the quiet of one\u2019s own mind.',
       role: 'Builds safety plans, guards your boundaries, helps you hold the line',
       quote: 'A shield isn\u2019t for hiding behind. It\u2019s for holding your ground while you ready your next move.',
       color: 'var(--avatar-gertrude)',

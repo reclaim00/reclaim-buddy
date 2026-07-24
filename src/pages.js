@@ -2640,7 +2640,7 @@ var DEFAULT_COPING = [
 
 function copingHTML() {
   var h = '<h2 class="page-title">'+t('Coping Cards')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">Gertrude has your back. These cards are tools for your kit — use them when the battle is hard.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">Gertrude has your back. These cards are tools for your kit — use them when the path is steep.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Tap a card to expand. Use these when you need support.</p>';
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="margin-bottom:8px">Breathing Exercise</button>';
   var cards = DEFAULT_COPING.concat(D.customCopingCards || []);
@@ -4758,9 +4758,9 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#be185d">&#9876; '+t('My Values')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#6b4a2e">&#9876; '+t('My Values')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; '+t('Fresh Start')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#be185d">&#10084; '+t('My Why')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#6b4a2e">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#2d6a27">&#128176; '+t('Rewards')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#9876; '+t('Alliances')+'</div>';
@@ -4955,7 +4955,7 @@ function myWhyHTML() {
   var w = D.myWhy || {};
   if (!w.reasons) w.reasons = [];
   var h = '<h2 class="page-title">&#10084; '+t('My Why')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#10084;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Every knight needs to know what they\'re fighting for. When the road gets dark, this board will remind you why you picked up the sword."</em></div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#10084;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Every traveler needs to know where they\'re headed. When the road gets dark, this board will remind you why you started."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t("What's your why?")+' Pin the reasons you chose recovery here. These will appear when cravings hit to remind you what\'s at stake.</p>';
 
   // Stats
@@ -4994,7 +4994,7 @@ function myWhyHTML() {
 
   // Preview during cravings note
   h += '<div class="card" style="border-left:3px solid var(--accent);background:var(--primary-light);padding:12px;margin-top:8px">';
-  h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px">&#128161;</span><div><div style="font-weight:700;font-size:13px">'+t('How this helps')+'</div><p style="font-size:12px;color:var(--muted);line-height:1.4;margin:2px 0 0">'+t('When you log a craving, Arthur will show your Why board to remind you what you\'re fighting for.')+'</p></div></div>';
+  h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px">&#128161;</span><div><div style="font-weight:700;font-size:13px">'+t('How this helps')+'</div><p style="font-size:12px;color:var(--muted);line-height:1.4;margin:2px 0 0">'+t('When you log a craving, Arthur will show your Why board to remind you why you started.')+'</p></div></div>';
   h += '</div>';
 
   return h;
@@ -6549,7 +6549,7 @@ function oswaldTowerHTML() {
   // Relapse patterns
   if (relapses >= 3) omens.push({type:'warning', text: 'The shadows have visited ' + relapses + ' times. Each fall is a teacher \u2014 what patterns do you see across them? Visit the Relapse Graveyard to honor the lessons.'});
   else if (relapses >= 1) omens.push({type:'warning', text: 'A single fall does not undo your growth. What did that moment teach you? The lesson is worth more than the stumble.'});
-  else omens.push({type:'good', text: 'No falls recorded. Your shield holds strong. But remain vigilant \u2014 the wise knight never lowers their guard.'});
+  else omens.push({type:'good', text: 'No falls recorded. Your shield holds strong. But remain vigilant \u2014 the wise traveler never lowers their guard.'});
 
   // Breathing exercise
   if (breatheCount >= 20) omens.push({type:'good', text: 'You have breathed with intention ' + breatheCount + ' times. Each breath is a meditation \u2014 a reset of the spirit.'});
