@@ -13,11 +13,11 @@ function characterGreetingHTML() {
      ]},
     {name:'Gertrude',color:'var(--avatar-gertrude)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg>',
      msgs:[
-       "Stand ready. Your shield is forged. Today, nothing gets past you.",
-       "You've faced worse battles than this and held the line. Today is no different.",
-       "Your safety plan is your armor. You've prepared for this. Trust your training.",
-       "Another day, another victory. You don't need to win every fight � just this one.",
-       "I've seen your strength. You are more resilient than whatever faces you today."
+        "Stand ready. Your boundaries are set. Today, nothing gets past you.",
+        "You've faced harder days than this and found your way through. Today is no different.",
+        "Your safety plan is your compass. You've prepared for this. Trust your practice.",
+        "Another day, another step forward. You don't need to be perfect \uFFFD just keep going.",
+        "I've seen your strength. You are more resilient than whatever faces you today."
      ]},
      {name:'Oswald',color:'var(--avatar-oswald)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg>',
      msgs:[
@@ -57,7 +57,7 @@ function showCharacterLore(name) {
       title: 'Guardian of the Inner Path',
       desc: 'Gertrude has protected many on their journey before she found her true calling \u2014 protecting those on difficult journeys. She believes the hardest struggles happen in the quiet of one\u2019s own mind.',
       role: 'Builds safety plans, guards your boundaries, helps you hold the line',
-      quote: 'A shield isn\u2019t for hiding behind. It\u2019s for holding your ground while you ready your next move.',
+      quote: 'A boundary isn\u2019t for shutting people out. It\u2019s for holding your center while you find your next step.',
       color: 'var(--avatar-gertrude)',
       svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg>'
     },
@@ -548,7 +548,7 @@ function kingdomFlourish() {
 function getRank(days) {
   var queenMode = D.titleStyle === 'queen';
   var ranks = [
-    {title:'Peasant',    next:'Starter',           sym:'\u2619', threshold:0,  nextThreshold:1},
+    {title:'Newcomer',    next:'Starter',           sym:'\u2619', threshold:0,  nextThreshold:1},
     {title:'Starter',       next:'Apprentice',         sym:'\u2726', threshold:1,  nextThreshold:7},
     {title:'Apprentice',     next:'Seeker',  sym:'\u2694', threshold:7,  nextThreshold:14},
     {title:'Seeker',next:'Achiever',       sym:'\u2720', threshold:14, nextThreshold:30},
@@ -617,7 +617,7 @@ function showKingdomMap() {
 function _rankIconHTML(title, size) {
   size = size || 14;
   var c = {
-    'Peasant':'<path d="M9,2 h6 v7 h7 v6 h-7 v7 h-6 v-7 h-7 v-6 h7 z" fill="currentColor"/>',
+    'Newcomer':'<path d="M9,2 h6 v7 h7 v6 h-7 v7 h-6 v-7 h-7 v-6 h7 z" fill="currentColor"/>',
     'Starter':'<path d="M4,4 h7 v16 h-7 z M13,4 h7 v16 h-7 z M11,4 h2 v16 h-2 z" fill="currentColor"/>',
     'Apprentice':'<path d="M6,4 L18,20 M18,4 L6,20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/><circle cx="6" cy="4" r="2.2" fill="currentColor"/><circle cx="18" cy="4" r="2.2" fill="currentColor"/><rect x="7" y="19" width="10" height="3" rx="1" fill="currentColor"/>',
     'Seeker':'<path d="M12,2 L22,6 L22,15 Q12,22 2,15 L2,6 Z" fill="currentColor"/>',
@@ -827,17 +827,17 @@ function buyShield() {
   saveData(); render();
 }
 var SHOP_ITEMS = [
-  {id:'banners', cat:'Decor', name:'Stone Banners', desc:'Hang banners on your castle walls', cost:30, icon:'\u269C'},
-  {id:'tapestry', cat:'Decor', name:'Royal Tapestry', desc:'A grand tapestry behind the throne', cost:50, icon:'\u265C'},
-  {id:'torches', cat:'Decor', name:'Torch Sconces', desc:'Animated torch flames on the keep', cost:40, icon:'\u2727'},
-  {id:'paths', cat:'Decor', name:'Cobblestone Path', desc:'A winding path to the castle gate', cost:25, icon:'\u265B'},
-  {id:'flags', cat:'Decor', name:'Heraldic Flags', desc:'Your personal banner on every tower', cost:60, icon:'\u2726'},
-  {id:'crimson', cat:'Skins', name:"Arthur's Crimson Robes", desc:'Dye Arthur robes deep crimson', cost:80, icon:'\u2619'},
-  {id:'silver', cat:'Skins', name:"Gertrude's Silver Armor", desc:'Polish Gertrude armor to silver', cost:100, icon:'\u2694'},
+  {id:'banners', cat:'Decor', name:'Stone Carvings', desc:'Carved stone markers on your walls', cost:30, icon:'\u269C'},
+  {id:'tapestry', cat:'Decor', name:'Forest Tapestry', desc:'A warm tapestry in your space', cost:50, icon:'\u265C'},
+  {id:'torches', cat:'Decor', name:'Lantern Sconces', desc:'Animated lantern flames on the keep', cost:40, icon:'\u2727'},
+  {id:'paths', cat:'Decor', name:'Winding Path', desc:'A winding path through the grounds', cost:25, icon:'\u265B'},
+  {id:'flags', cat:'Decor', name:'Personal Banners', desc:'Your banner on every tower', cost:60, icon:'\u2726'},
+  {id:'crimson', cat:'Skins', name:"Arthur's Crimson Coat", desc:'Dye Arthur coat deep crimson', cost:80, icon:'\u2619'},
+  {id:'silver', cat:'Skins', name:"Gertrude's Silver Trim", desc:'Trim Gertrude cloak with silver', cost:100, icon:'\u2694'},
   {id:'starry', cat:'Skins', name:"Oswald's Starry Hat", desc:'Oswald hat glows with starry sky', cost:70, icon:'\u2727'},
-  {id:'streak', cat:'Boosts', name:'Streak Shield', desc:'Protects your streak for 1 relapse', cost:50, icon:'\u2629'},
-  {id:'double', cat:'Boosts', name:'Double Coins', desc:'Double coins earned for 24 hours', cost:75, icon:'\u269C'},
-  {id:'bonus', cat:'Boosts', name:'Bonus Quest', desc:'Unlock a 4th daily quest today', cost:40, icon:'\u2766'}
+  {id:'streak', cat:'Boosts', name:'Streak Protection', desc:'Protects your streak for 1 relapse', cost:50, icon:'\u2629'},
+  {id:'double', cat:'Boosts', name:'Double Rewards', desc:'Double rewards earned for 24 hours', cost:75, icon:'\u269C'},
+  {id:'bonus', cat:'Boosts', name:'Bonus Task', desc:'Unlock a 4th daily task today', cost:40, icon:'\u2766'}
 ];
 
 function shieldChargeHTML(id) {
@@ -912,8 +912,8 @@ function showHeraldryEditor() {
   var days = soberDays();
   var rank = getRank(days);
   var h = '<div class="overlay-content" style="max-width:440px;padding:20px;">';
-  h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:2px;text-align:center">\u269C Customize Coat of Arms</h3>';
-  h += '<p style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px">Design your personal heraldry. Your shield appears on the home page.</p>';
+  h += '<h3 style="font-size:18px;font-weight:700;margin-bottom:2px;text-align:center">\u269C Customize Your Crest</h3>';
+  h += '<p style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px">Design your personal crest. Your shield appears on the home page.</p>';
   // Live preview
   h += '<div style="text-align:center;margin-bottom:12px;background:var(--primary-light);padding:8px;border-radius:10px"><div id="heraldry-preview"></div></div>';
   // Field color
@@ -1061,7 +1061,7 @@ function heraldryReset() {
   render();
 }
 
-function throneRoomHTML() {
+function homePageHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
   var isActive = !!D.sobriety.startDate;
@@ -1073,13 +1073,13 @@ function throneRoomHTML() {
     h += kingdomHTML();
     h += '<div style="padding:24px 20px;text-align:center">';
     h += '<div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px">Your Journey Awaits</div>';
-    h += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">The throne is empty \u2014 and it\u2019s waiting for you.<br>Start your journey and build something real.</div>';
+    h += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">The path is open \u2014 and it\u2019s waiting for you.<br>Start your journey and build something real.</div>';
     h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">Start Your Journey</button>';
     h += '</div></div>';
     return h;
   }
 
-  // === ACTIVE THRONE ROOM ===
+  // === ACTIVE HOME PAGE ===
 
   // Kingdom name banner
   var kName = D.kingdomName && D.kingdomName.trim() ? D.kingdomName.trim() : 'My Space';
@@ -1090,7 +1090,7 @@ function throneRoomHTML() {
   h += '</div></div>';
   h += '<div style="text-align:center;margin-bottom:2px"><span style="font-size:10px;color:var(--accent);cursor:pointer;opacity:.6" onclick="showKingdomMap()" title="Explore your space">\uD83D\uDDFA View Map</span></div>';
 
-  // 0. Medieval date banner (top of throne room)
+  // 0. Journey date banner (top of home page)
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--accent);letter-spacing:.5px;font-style:italic;padding:6px 0 4px;font-family:Georgia,serif;border-bottom:1px solid var(--border);margin-bottom:8px">';
   h += journeyDate();
   var w=D._lastWeather||(D._lastWeather=getKingdomWeather());D._lastWeather=w;
@@ -1116,7 +1116,7 @@ function throneRoomHTML() {
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--primary)">' + days + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">DAYS</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:700;color:var(--text)">' + _rankIconHTML(rank.title, 16) + ' ' + rank.title + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">RANK</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--accent)">' + streak + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">STREAK</div></div>';
-  h += '<div style="text-align:center;flex:1"><div style="font-size:22px;font-weight:700;color:#8a6a4a">' + kingdomPopulation(days) + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">VILLAGERS</div></div>';
+  h += '<div style="text-align:center;flex:1"><div style="font-size:22px;font-weight:700;color:#8a6a4a">' + kingdomPopulation(days) + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COMMUNITY</div></div>';
   h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')" title="' + (shields > 0 ? shields + ' shields' : '') + '"><div style="font-size:22px;font-weight:700;color:#d4a017">' + schillings + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COINS</div></div>';
   // King's Ledger mini widget
   if (D.sobriety.startDate) {
@@ -1188,7 +1188,7 @@ function homeHTML() {
   var h = '';
 
   // Atlas � the central hub
-  h += throneRoomHTML();
+  h += homePageHTML();
 
   // Crisis widget � always visible on home
   h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS � crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
