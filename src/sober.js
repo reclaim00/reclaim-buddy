@@ -18,19 +18,9 @@ function soberDays() {
 
 function regnalDate(rawDate) {
   var d = rawDate ? new Date(rawDate) : new Date();
-  if (!D.sobriety.startDate) return d.toLocaleDateString();
-  var start = new Date(D.sobriety.startDate);
-  var reignMs = d - start;
-  if (reignMs < 0) return d.toLocaleDateString();
-  var reignYear = Math.floor(reignMs / 31557600000) + 1;
-  var suffixes = ['th','st','nd','rd','th','th','th','th','th','th'];
-  var suffix = reignYear % 100 >= 11 && reignYear % 100 <= 13 ? 'th' : suffixes[reignYear % 10] || 'th';
-  var months = ['Ã†rra Ä Ä“ola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','Ã†rra-LiÃ°a','Ã†ftera-LiÃ°a','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','Ã†ftera Ä Ä“ola'];
-  var mName = months[d.getMonth()];
-  var day = d.getDate();
-  var daySuffix = suffixes[day % 10] || 'th';
-  if (day >= 11 && day <= 13) daySuffix = 'th';
-  return day + daySuffix + ' ' + mName + ' \u2022 Year ' + reignYear + suffix + ' of Your Journey';
+  var dateOpts = { month: 'short', day: 'numeric', year: 'numeric' };
+  if (!rawDate) return d.toLocaleString(undefined, Object.assign({}, dateOpts, { hour: 'numeric', minute: '2-digit' }));
+  return d.toLocaleDateString(undefined, dateOpts);
 }
 
 function plantStage() {

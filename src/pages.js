@@ -2640,7 +2640,7 @@ var DEFAULT_COPING = [
 
 function copingHTML() {
   var h = '<h2 class="page-title">'+t('Coping Cards')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">Gertrude has your back. These cards are tools for your kit — use them when the path is steep.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">These cards are tools for your kit — use them when the path is steep.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Tap a card to expand. Use these when you need support.</p>';
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="margin-bottom:8px">Breathing Exercise</button>';
   var cards = DEFAULT_COPING.concat(D.customCopingCards || []);
@@ -2733,7 +2733,7 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; '+t('Relapse Rescue')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; '+t('Relapse Graveyard')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'oswald\')" style="border-color:#4338ca">&#127987; Oswald\'s View</div>';
+  h += '<div class="sub-item" onclick="goTo(\'oswald\')" style="border-color:#4338ca">&#127987; Your View</div>';
   h += '</div>';
 
   // Journal-based insights
@@ -6518,11 +6518,11 @@ document.addEventListener('keydown', function(e) {
 
 // ====== OSWALD'S TOWER ======
 function oswaldTowerHTML() {
-  var h = '<h2 class="page-title">&#127987; Oswald\'s View</h2>';
+  var h = '<h2 class="page-title">&#127987; Your View</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,rgba(67,56,202,.04),var(--card))">';
   h += '<div class="oswald-crystal-ball">&#10024;</div>';
-  h += '<h3 style="font-size:16px;font-weight:700;margin-bottom:2px">The Wizard\'s Wisdom</h3>';
-  h += '<p style="font-size:12px;color:var(--muted);margin:0 0 4px">Oswald peers into the patterns of your realm...</p></div>';
+  h += '<h3 style="font-size:16px;font-weight:700;margin-bottom:2px">The Big Picture</h3>';
+  h += '<p style="font-size:12px;color:var(--muted);margin:0 0 4px">Here is a view of your patterns and progress...</p></div>';
 
   // Omens based on user data
   var journalCount = (D.journal||[]).length;
@@ -6543,62 +6543,62 @@ function oswaldTowerHTML() {
   var omens = [];
 
   // Journaling frequency
-  if (journalCount >= 30) omens.push({type:'good', text:'The scribes report a full chronicle. Your consistency in journaling builds clarity like a well-tended library.'});
-  else if (journalCount >= 10) omens.push({type:'good', text:'Your quill moves often. Each entry adds a thread to the tapestry of your recovery.'});
-  else if (journalCount > 0) omens.push({type:'neutral', text:'The pages are few but they exist. Consider writing more \u2014 even three sentences can shift the winds.'});
-  else omens.push({type:'neutral', text:'The chronicle is bare. A single entry today would begin your annals. Arthur awaits your words.'});
+  if (journalCount >= 30) omens.push({type:'good', text:'Your journal is well kept \u2014 30+ entries. Consistency builds clarity like a well-organized library.'});
+  else if (journalCount >= 10) omens.push({type:'good', text:'You write often. Each entry adds to the picture of your recovery.'});
+  else if (journalCount > 0) omens.push({type:'neutral', text:'A few entries so far. Consider writing more \u2014 even three sentences can shift your perspective.'});
+  else omens.push({type:'neutral', text:'No entries yet. A single journal entry today would be a great start.'});
 
   // Sobriety streak
-  if (soberDays >= 90) omens.push({type:'good', text: 'A season of strength! ' + soberDays + ' days unbroken. The kingdom remembers this resolve.'});
-  else if (soberDays >= 30) omens.push({type:'good', text: 'A full moon cycle of clarity \u2014 ' + soberDays + ' days. The foundation is solid.'});
-  else if (soberDays >= 7) omens.push({type:'good', text: 'A week of reign. Each day strengthens the walls of your keep.'});
+  if (soberDays >= 90) omens.push({type:'good', text: 'A season of strength! ' + soberDays + ' days unbroken. That is real resolve.'});
+  else if (soberDays >= 30) omens.push({type:'good', text: 'A full month of clarity \u2014 ' + soberDays + ' days. The foundation is solid.'});
+  else if (soberDays >= 7) omens.push({type:'good', text: 'A full week. Each day strengthens your foundation.'});
   else if (soberDays >= 1) omens.push({type:'neutral', text: 'You are in the early days of your journey. The first steps are the most important.'});
-  else omens.push({type:'neutral', text: 'The reign has not yet begun. Every journey starts with a single stride.'});
+  else omens.push({type:'neutral', text: 'Your journey has not begun yet. Every journey starts with a single stride.'});
 
   // Relapse patterns
-  if (relapses >= 3) omens.push({type:'warning', text: 'The shadows have visited ' + relapses + ' times. Each fall is a teacher \u2014 what patterns do you see across them? Visit the Relapse Graveyard to honor the lessons.'});
+  if (relapses >= 3) omens.push({type:'warning', text: 'You have experienced ' + relapses + ' relapses. Each fall is a teacher \u2014 what patterns do you see across them? Visit the Relapse Graveyard to honor the lessons.'});
   else if (relapses >= 1) omens.push({type:'warning', text: 'A single fall does not undo your growth. What did that moment teach you? The lesson is worth more than the stumble.'});
-  else omens.push({type:'good', text: 'No falls recorded. Your shield holds strong. But remain vigilant \u2014 the wise traveler never lowers their guard.'});
+  else omens.push({type:'good', text: 'No falls recorded. Your resolve holds strong. Stay vigilant \u2014 awareness is your best guard.'});
 
   // Breathing exercise
-  if (breatheCount >= 20) omens.push({type:'good', text: 'You have breathed with intention ' + breatheCount + ' times. Each breath is a meditation \u2014 a reset of the spirit.'});
+  if (breatheCount >= 20) omens.push({type:'good', text: 'You have breathed with intention ' + breatheCount + ' times. Each breath is a reset for your nervous system.'});
   else if (breatheCount >= 5) omens.push({type:'good', text: 'You have turned to the breath ' + breatheCount + ' times. This is a powerful tool \u2014 keep it honed.'});
-  else omens.push({type:'neutral', text: 'The breathing exercises are a quiet refuge. Try one today and feel the difference.'});
+  else omens.push({type:'neutral', text: 'Breathing exercises are a quiet refuge. Try one today and feel the difference.'});
 
   // Safety plan
-  if (planExists) omens.push({type:'good', text: 'Your safety plan is forged and ready. In the chaos of craving, it will be your compass.'});
-  else omens.push({type:'warning', text: 'You have no safety plan yet. I urge you \u2014 visit Oswald in the Infirmary and build one before the storm arrives.'});
+  if (planExists) omens.push({type:'good', text: 'Your safety plan is ready. In the chaos of a craving, it will be your guide.'});
+  else omens.push({type:'warning', text: 'You have no safety plan yet. Build one before you need it.'});
 
   // Buddy
   if (buddyExists) omens.push({type:'good', text: 'A partner walks beside you. The road is lighter with another set of footsteps.'});
   else omens.push({type:'neutral', text: 'You walk this road alone for now. A partner could share the burden \u2014 consider finding one in the Tools.'});
 
   // SOS used
-  if (sosUsed) omens.push({type:'good', text: 'You have reached out for help before. That is not weakness \u2014 it is the highest form of courage. The tower salutes you.'});
+  if (sosUsed) omens.push({type:'good', text: 'You have reached out for help before. That is not weakness \u2014 it is the highest form of courage.'});
 
   // PHQ-9
   if (phqScore !== null) {
-    if (phqScore <= 4) omens.push({type:'good', text: 'Your PHQ-9 signals minimal depression. The skies above your kingdom are clear.'});
-    else if (phqScore <= 9) omens.push({type:'neutral', text: 'Your PHQ-9 shows mild shadows. Nothing a steady routine cannot address.'});
-    else if (phqScore <= 14) omens.push({type:'warning', text: 'Your PHQ-9 suggests a moderate fog. Consider speaking with a healer beyond these walls.'});
-    else omens.push({type:'danger', text: 'Your PHQ-9 signals a heavy mist. Please seek counsel \u2014 you need not face this alone.'});
+    if (phqScore <= 4) omens.push({type:'good', text: 'Your PHQ-9 signals minimal depression. Things look clear.'});
+    else if (phqScore <= 9) omens.push({type:'neutral', text: 'Your PHQ-9 shows mild signs. Nothing a steady routine cannot address.'});
+    else if (phqScore <= 14) omens.push({type:'warning', text: 'Your PHQ-9 suggests moderate distress. Consider speaking with a professional.'});
+    else omens.push({type:'danger', text: 'Your PHQ-9 signals significant distress. Please seek help \u2014 you need not face this alone.'});
   }
 
   // Achievements
-  if (achCount >= 10) omens.push({type:'good', text: achCount + ' achievements earned! Your reign is gathering legend.'});
-  else if (achCount >= 3) omens.push({type:'good', text: achCount + ' achievements shine on your banner. Each one represents a battle won.'});
+  if (achCount >= 10) omens.push({type:'good', text: achCount + ' achievements earned! Your dedication is building momentum.'});
+  else if (achCount >= 3) omens.push({type:'good', text: achCount + ' achievements unlocked. Each one represents a battle won.'});
 
   // Mood logging
-  if (moodCount >= 20) omens.push({type:'good', text: 'You have logged ' + moodCount + ' moods. This data is the lifeblood of insight \u2014 Arthur reads it well.'});
+  if (moodCount >= 20) omens.push({type:'good', text: 'You have logged ' + moodCount + ' moods. This data is the lifeblood of insight.'});
 
   // Cravings
-  if (cravingCount > 0) omens.push({type:'neutral', text: cravingCount + ' cravings recorded. Naming them is the first victory. Each logged craving is a dragon spotted before it burns the village.'});
+  if (cravingCount > 0) omens.push({type:'neutral', text: cravingCount + ' cravings recorded. Naming them is the first victory. Each logged craving is a trigger spotted before it takes hold.'});
 
   // Check-ins
-  if (checkinCount >= 30) omens.push({type:'good', text: checkinCount + ' daily check-ins. Your presence is a ritual now \u2014 the kingdom thrives on it.'});
+  if (checkinCount >= 30) omens.push({type:'good', text: checkinCount + ' daily check-ins. Your presence is a ritual now \u2014 consistency builds on it.'});
 
   // Current streak
-  if (streak >= 14) omens.push({type:'good', text: 'A ' + streak + '-day streak! The war horn sounds \u2014 your consistency inspires the realm.'});
+  if (streak >= 14) omens.push({type:'good', text: 'A ' + streak + '-day streak! Your consistency is inspiring.'});
 
   // Show omens (limit to 6 most relevant)
   var priority = {danger:0, warning:1, good:2, neutral:3};
@@ -6614,7 +6614,7 @@ function oswaldTowerHTML() {
 
   h += '<div class="card" style="text-align:center;padding:12px;margin-top:8px">';
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">"The stars do not decide your fate \u2014 they merely illuminate the path you are already walking."</div>';
-  h += '<div style="font-size:11px;font-style:italic;color:var(--muted)">\u2014 Oswald, Keeper of the View</div></div>';
+  h += '<div style="font-size:11px;font-style:italic;color:var(--muted)">Your progress, at a glance.</div></div>';
 
   return h;
 }
@@ -6833,9 +6833,9 @@ function showItemPreview(id) {
   else if (item.id === 'torches') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="38" y="20" width="3" height="15" rx="1" fill="#4a3a2a"/><ellipse cx="39.5" cy="18" rx="4" ry="5" fill="#ff6622" opacity=".8"/><ellipse cx="39.5" cy="19" rx="2.5" ry="3.5" fill="#ffcc00"/><rect x="58" y="20" width="3" height="15" rx="1" fill="#4a3a2a"/><ellipse cx="59.5" cy="18" rx="4" ry="5" fill="#ff6622" opacity=".8"/><ellipse cx="59.5" cy="19" rx="2.5" ry="3.5" fill="#ffcc00"/><rect x="10" y="45" width="80" height="10" rx="2" fill="#6a5a4a" opacity=".5"/></svg>'; fullDesc = 'Animated torch sconces flank the castle door, casting warm light with flickering flame animations.'; }
   else if (item.id === 'paths') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><ellipse cx="50" cy="50" rx="40" ry="8" fill="rgba(100,90,80,.4)"/><ellipse cx="30" cy="48" rx="6" ry="3" fill="rgba(120,110,100,.3)"/><ellipse cx="50" cy="50" rx="6" ry="3" fill="rgba(120,110,100,.3)"/><ellipse cx="70" cy="48" rx="6" ry="3" fill="rgba(120,110,100,.3)"/></svg>'; fullDesc = 'A winding cobblestone path leads from the castle gate through the village, decorated with rounded stones.'; }
   else if (item.id === 'flags') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><line x1="20" y1="10" x2="20" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="20,10 40,15 20,20" fill="#cc3a3a"/><line x1="50" y1="10" x2="50" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="50,10 70,15 50,20" fill="#cc3a3a"/><line x1="80" y1="15" x2="80" y2="55" stroke="#6a5a4a" stroke-width="1.5"/><polygon points="80,15 92,18 80,21" fill="#aa3a3a"/></svg>'; fullDesc = 'Your personal heraldic banners fly from every tower and wall, announcing your presence to all who approach.'; }
-  else if (item.id === 'crimson') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="15" width="30" height="30" rx="3" fill="#6a0a0a"/><rect x="15" y="15" width="30" height="6" rx="1.5" fill="#f0e8d0"/><rect x="15" y="42" width="30" height="4" rx="1" fill="#f0e8d0"/><circle cx="30" cy="10" r="8" fill="#c89a6a"/><polygon points="24,2 30,0 36,2" fill="#d4a017"/></svg>'; fullDesc = 'Arthur\u2019s robes are dyed a deep crimson red, signaling authority and the blood of dragons past.'; }
-  else if (item.id === 'silver') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="20" width="30" height="35" rx="3" fill="#c0c0c0"/><rect x="15" y="20" width="30" height="5" rx="1.5" fill="#e8e8e8"/><ellipse cx="30" cy="14" rx="8" ry="6" fill="#d4a574"/><circle cx="28" cy="13" r="1" fill="#333"/><circle cx="32" cy="13" r="1" fill="#333"/></svg>'; fullDesc = 'Gertrude\u2019s armor is polished to gleaming silver, reflecting the light like a beacon of resilience.'; }
-  else if (item.id === 'starry') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="25" width="30" height="30" rx="3" fill="#2a1560"/><ellipse cx="30" cy="18" rx="9" ry="7" fill="#c09a7a"/><polygon points="24,10 30,8 36,10" fill="#2a1560"/><circle cx="20" cy="10" r="1" fill="#fff" opacity=".8"/><circle cx="35" cy="7" r="1.2" fill="#fff" opacity=".9"/><circle cx="28" cy="6" r=".8" fill="#fff" opacity=".7"/><circle cx="40" cy="12" r=".6" fill="#fff" opacity=".6"/></svg>'; fullDesc = 'Oswald\u2019s hat transforms into a starry night sky, with twinkling constellations guiding the way.'; }
+  else if (item.id === 'crimson') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="15" width="30" height="30" rx="3" fill="#6a0a0a"/><rect x="15" y="15" width="30" height="6" rx="1.5" fill="#f0e8d0"/><rect x="15" y="42" width="30" height="4" rx="1" fill="#f0e8d0"/><circle cx="30" cy="10" r="8" fill="#c89a6a"/><polygon points="24,2 30,0 36,2" fill="#d4a017"/></svg>'; fullDesc = 'Your coat is dyed a deep crimson red, signaling authority and resilience.'; }
+  else if (item.id === 'silver') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="20" width="30" height="35" rx="3" fill="#c0c0c0"/><rect x="15" y="20" width="30" height="5" rx="1.5" fill="#e8e8e8"/><ellipse cx="30" cy="14" rx="8" ry="6" fill="#d4a574"/><circle cx="28" cy="13" r="1" fill="#333"/><circle cx="32" cy="13" r="1" fill="#333"/></svg>'; fullDesc = 'Your armor is polished to gleaming silver, reflecting the light like a beacon of resilience.'; }
+  else if (item.id === 'starry') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="25" width="30" height="30" rx="3" fill="#2a1560"/><ellipse cx="30" cy="18" rx="9" ry="7" fill="#c09a7a"/><polygon points="24,10 30,8 36,10" fill="#2a1560"/><circle cx="20" cy="10" r="1" fill="#fff" opacity=".8"/><circle cx="35" cy="7" r="1.2" fill="#fff" opacity=".9"/><circle cx="28" cy="6" r=".8" fill="#fff" opacity=".7"/><circle cx="40" cy="12" r=".6" fill="#fff" opacity=".6"/></svg>'; fullDesc = 'Your hat transforms into a starry night sky, with twinkling constellations guiding the way.'; }
   else if (item.id === 'streak') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="30" cy="30" r="24" fill="none" stroke="#d4a017" stroke-width="2" opacity=".5"/><path d="M30,6 L34,24 L52,28 L38,38 L42,56 L30,44 L18,56 L22,38 L8,28 L26,24 Z" fill="#d4a017" opacity=".8"/></svg>'; fullDesc = 'A Streak Shield protects your streak from one relapse. Your days continue as if unaffected \u2014 a safety net for hard days.'; }
   else if (item.id === 'double') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="20" cy="30" r="16" fill="#d4a017" opacity=".8"/><circle cx="40" cy="30" r="16" fill="#d4a017" opacity=".6"/><text x="30" y="35" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">x2</text></svg>'; fullDesc = 'Double all schillings earned for 24 hours. Every check-in, quest, and milestone pays twice the treasure.'; }
   else if (item.id === 'bonus') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><rect x="10" y="10" width="40" height="40" rx="4" fill="#6B4423"/><text x="30" y="38" text-anchor="middle" font-size="22" font-weight="800" fill="#ffd700">+1</text></svg>'; fullDesc = 'Unlock a 4th daily quest slot today only. More quests mean more schillings and faster progress.'; }
@@ -6928,87 +6928,10 @@ function _rtArthur(cx,isActive){
   h+='<g class="arthur-rarm" style="--a-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',38 L'+(cx+13)+',46" fill="none" stroke="'+bodyColor+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+13)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
   h+='</g>';return h;
 }
-function _rtGertrude(cx,isActive){
-  var skinTone = '#d4a574';
-  var armorColor = hasShop('silver') ? '#c0c0c0' : '#4a6a6a';
-  var chainColor = hasShop('silver') ? '#d0d0d0' : '#2a5a5a';
-  var helmColor = hasShop('silver') ? '#d0d0d0' : '#8a9a9a';
-  var visorColor = hasShop('silver') ? '#e0e0e0' : '#6a7a7a';
-  var h='<g class="npc-idle'+(isActive?'':' npc-idle-d1')+'">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
-  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="'+armorColor+'"/>';
-  for(var li=0;li<8;li++){h+='<line x1="'+(cx-9)+'" y1="'+(23+li*3)+'" x2="'+(cx+9)+'" y2="'+(23+li*3)+'" stroke="rgba(200,220,220,.15)" stroke-width=".5"/>';h+='<line x1="'+(cx-9+4)+'" y1="'+(24.5+li*3)+'" x2="'+(cx+9-4)+'" y2="'+(24.5+li*3)+'" stroke="rgba(200,220,220,.1)" stroke-width=".5"/>';}
-  h+='<rect x="'+(cx-8)+'" y="22" width="16" height="22" rx="2" fill="'+chainColor+'" opacity=".85"/>';
-  h+='<path d="M'+(cx-3)+',26 L'+(cx+3)+',26 L'+(cx+3)+',28 L'+(cx+5)+',28 L'+(cx+5)+',34 L'+(cx+3)+',34 L'+(cx+3)+',40 L'+(cx+3+0.5)+',40 L'+(cx+3)+',42 L'+(cx-3)+',42 L'+(cx-3)+',40 L'+(cx-3-0.5)+',40 L'+(cx-3)+',34 L'+(cx-5)+',34 L'+(cx-5)+',28 L'+(cx-3)+',28 Z" fill="#d4a017" opacity=".8"/>';
-  h+='<rect x="'+(cx-8)+'" y="33" width="16" height="2" rx="1" fill="#8B4513"/>';
-  h+='<rect x="'+(cx-2)+'" y="32.5" width="4" height="3" rx=".5" fill="#d4a017" opacity=".8"/>';
-  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="'+skinTone+'"/>';
-  h+='<circle cx="'+cx+'" cy="10" r="7" fill="'+skinTone+'"/>';
-  h+='<circle cx="'+(cx-2.5)+'" cy="9" r="1" fill="#333"/>';
-  h+='<circle cx="'+(cx+2.5)+'" cy="9" r="1" fill="#333"/>';
-  h+='<path d="M'+(cx-4.5)+',7 Q'+(cx-2.5)+',6 '+(cx-1)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
-  h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',6 '+(cx+4.5)+',7" fill="none" stroke="#333" stroke-width=".6"/>';
-  h+='<path d="M'+(cx-8)+',7 Q'+cx+',-4 '+(cx+8)+',7 Q'+cx+',12 '+(cx-8)+',7 Z" fill="'+helmColor+'"/>';
-  h+='<path d="M'+(cx-5)+',6 Q'+cx+',8 '+(cx+5)+',6" fill="none" stroke="#2a2a2a" stroke-width="1.2"/>';
-  h+='<path d="M'+cx+',-1 L'+cx+',10" stroke="'+visorColor+'" stroke-width="1.5"/>';
-  h+='<line x1="'+cx+'" y1="3" x2="'+cx+'" y2="8" stroke="'+visorColor+'" stroke-width="1.2"/>';
-  h+='<path d="M'+(cx-9)+',14 L'+(cx+9)+',14 L'+(cx+7)+',17 L'+(cx-7)+',17 Z" fill="'+armorColor+'"/>';
-  h+='<g class="gertrude-larm" style="--g-larm-origin:'+(cx-10)+'px 23px"><path d="M'+(cx-10)+',23 L'+(cx-13)+',36 L'+(cx-12)+',45" fill="none" stroke="'+armorColor+'" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-12)+'" cy="46" rx="3.5" ry="2.5" fill="'+helmColor+'"/></g>';
-  h+='<g class="gertrude-rarm" style="--g-rarm-origin:'+(cx+10)+'px 23px"><path d="M'+(cx+10)+',23 L'+(cx+13)+',36 L'+(cx+12)+',45" fill="none" stroke="'+armorColor+'" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+12)+'" cy="46" rx="3.5" ry="2.5" fill="'+helmColor+'"/></g>';
-  h+='</g>';return h;
-}
-function _rtOswald(cx,isActive){
-  var skinTone = '#c09a7a';
-  var robeColor = hasShop('starry') ? '#0a0a5a' : '#2a1560';
-  var hatColor = hasShop('starry') ? '#0a0a3a' : '#1a0a3a';
-  var starColor = hasShop('starry') ? '#aaaaff' : '#ffd700';
-  var orbGlow = hasShop('starry') ? '#6666ff' : '#8a6af0';
-  var h='<g class="npc-idle'+(isActive?'':' npc-idle-d2')+'">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
-  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="'+robeColor+'"/>';
-  h+='<rect x="'+(cx-10)+'" y="20" width="20" height="3" rx="1.5" fill="#4a2590"/>';
-  if (hasShop('starry')) {
-    for (var sti=0;sti<3;sti++) h+='<circle cx="'+(cx-6+sti*6)+'" cy="'+(25+sti*8)+'" r=".8" fill="'+starColor+'" opacity=".6" style="animation:windowGlow 1.5s ease-in-out infinite;animation-delay:'+(sti*0.5)+'s"/>';
-  } else {
-    h+='<text x="'+(cx-5)+'" y="30" font-size="3" fill="'+starColor+'" opacity=".6">\u2726</text>';
-    h+='<text x="'+(cx+3)+'" y="28" font-size="2.5" fill="'+starColor+'" opacity=".5">\u2727</text>';
-    h+='<text x="'+(cx-4)+'" y="39" font-size="2.5" fill="'+starColor+'" opacity=".4">\u2727</text>';
-    h+='<text x="'+(cx+4)+'" y="40" font-size="3" fill="'+starColor+'" opacity=".6">\u2726</text>';
-  }
-  h+='<line x1="'+cx+'" y1="23" x2="'+cx+'" y2="46" stroke="rgba(255,255,255,.08)" stroke-width=".8"/>';
-  h+='<rect x="'+(cx-10)+'" y="33" width="20" height="2" rx="1" fill="#1a0a3a"/>';
-  h+='<rect x="'+(cx-2.5)+'" y="32.5" width="5" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
-  h+='<rect x="'+(cx-3)+'" y="14" width="6" height="5" rx="2" fill="'+skinTone+'"/>';
-  h+='<circle cx="'+cx+'" cy="10" r="7" fill="'+skinTone+'"/>';
-  h+='<path d="M'+(cx-4)+',12 L'+(cx-5)+',18 L'+(cx-2)+',16 L'+cx+',19 L'+(cx+2)+',16 L'+(cx+5)+',18 L'+(cx+4)+',12 Z" fill="#f0e8e0"/>';
-  h+='<circle cx="'+(cx-2.5)+'" cy="9" r="1" fill="#333"/>';
-  h+='<circle cx="'+(cx+2.5)+'" cy="9" r="1" fill="#333"/>';
-  h+='<path d="M'+(cx-5)+',7 Q'+(cx-2.5)+',5.5 '+(cx-1)+',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
-  h+='<path d="M'+(cx+1)+',7 Q'+(cx+2.5)+',5.5 '+(cx+4.5)+',7" fill="none" stroke="#e0d8d0" stroke-width=".8"/>';
-  h+='<polygon points="'+(cx-9)+',7 '+cx+',-6 '+(cx+9)+',7" fill="'+hatColor+'"/>';
-  h+='<path d="M'+(cx-10)+',7 Q'+cx+',10 '+(cx+10)+',7" fill="none" stroke="'+hatColor+'" stroke-width="2.5"/>';
-  h+='<rect x="'+(cx-8)+'" y="5.5" width="16" height="1.5" rx=".5" fill="#d4a017"/>';
-  if (hasShop('starry')) {
-    h+='<circle cx="'+(cx-6)+'" cy="1" r="1" fill="#fff" opacity=".7" style="animation:windowGlow 2s ease-in-out infinite"/>';
-    h+='<circle cx="'+(cx+5)+'" cy="-2" r=".8" fill="#88bbff" opacity=".6" style="animation:windowGlow 1.5s ease-in-out infinite .3s"/>';
-    h+='<circle cx="'+(cx+2)+'" cy="3" r=".6" fill="#ffaaff" opacity=".5" style="animation:windowGlow 1.8s ease-in-out infinite .7s"/>';
-    h+='<circle cx="'+(cx-3)+'" cy="-3" r=".7" fill="#aaffff" opacity=".5" style="animation:windowGlow 2.2s ease-in-out infinite .5s"/>';
-  } else {
-    h+='<text x="'+(cx-4)+'" y="2" font-size="3" fill="'+starColor+'" opacity=".7">\u2726</text>';
-    h+='<text x="'+(cx+2)+'" y="0" font-size="2.5" fill="'+starColor+'" opacity=".6">\u2727</text>';
-  }
-  h+='<line x1="'+(cx+15)+'" y1="18" x2="'+(cx+15)+'" y2="55" stroke="#6B3410" stroke-width="2"/>';
-  h+='<circle cx="'+(cx+15)+'" cy="17" r="2.5" fill="'+orbGlow+'" opacity=".8"><animate attributeName="r" values="2.2;2.8;2.2" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values=".6;.9;.6" dur="3s" repeatCount="indefinite"/></circle>';
-  h+='<circle cx="'+(cx+15)+'" cy="17" r="1.2" fill="#c0b0ff" opacity=".9"/>';
-  if(isActive)h+='<circle cx="'+(cx+15)+'" cy="17" r="5" fill="'+orbGlow+'" opacity=".15"><animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/></circle>';
-  h+='<g class="oswald-larm" style="--o-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-13)+',38 L'+(cx-12)+',46" fill="none" stroke="'+robeColor+'" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-12)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
-  h+='<g class="oswald-rarm" style="--o-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',36 L'+(cx+15)+',44" fill="none" stroke="'+robeColor+'" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+15)+'" cy="45" rx="3" ry="2" fill="'+skinTone+'"/></g>';
-  h+='</g>';return h;
-}
 function _npcStandalone(name){
   var svg = '<svg viewBox="0 0 40 60" style="width:80px;height:120px;display:block;margin:0 auto">';
   svg += '<defs><style>.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}</style></defs>';
-  if(name==='Arthur')svg+=_rtArthur(20,true);
-  else if(name==='Gertrude')svg+=_rtGertrude(20,true);
-  else svg+=_rtOswald(20,true);
+  svg += _rtArthur(20,true);
   svg += '</svg>';
   return svg;
 }

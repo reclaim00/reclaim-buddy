@@ -965,7 +965,7 @@ document.addEventListener('visibilitychange', function(){
 // ====== ADDICTION TYPES ======
 var ADDICTION_TYPES = ['Alcohol','Drugs (prescription/illicit)','Pornography','Gambling','Smoking/Nicotine','Caffeine','Sex/Love','Shopping','Social Media','Gaming','Eating/Food','Self-Harm','Other'];
 
-// ====== SAFETY PLANS (Arthur-generated) ======
+// ====== SAFETY PLANS ======
 var SAFETY_PLANS = {
   'Alcohol': {
     plan: 'Start by removing all alcohol from your home. Identify your triggers — people, places, or times of day that make you want to drink. Replace drinking with a new ritual: tea, sparkling water, or a short walk. Set a daily limit reminder on your phone. Call a trusted friend when cravings hit. Attend at least one support meeting this week.',
@@ -1032,9 +1032,9 @@ function toggleTargetAddiction(type) {
 
 function safetyPlanHTML() {
   var addictions = D.targetAddictions || [];
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div><h3 style="margin:0;font-size:15px">Gertrude\'s Safety Plan</h3><p style="font-size:11px;color:var(--muted);margin:0">Personalized for your recovery</p></div></div>';
+  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div><h3 style="margin:0;font-size:15px">Your Safety Plan</h3><p style="font-size:11px;color:var(--muted);margin:0">Personalized for your recovery</p></div></div>';
   if (!addictions.length) {
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Select what you are working on below, and Gertrude will create a safety plan for you.</p>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Select what you are working on below, and you\'ll get a safety plan for it.</p>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">';
     for (var i=0;i<ADDICTION_TYPES.length;i++) {
       h += '<button class="btn btn-sm ' + (addictions.indexOf(ADDICTION_TYPES[i]) >= 0 ? 'btn-primary' : 'btn-outline') + '" onclick="toggleTargetAddiction(\''+ADDICTION_TYPES[i]+'\')" style="font-size:11px;padding:8px">' + ADDICTION_TYPES[i] + '</button>';

@@ -10,23 +10,7 @@ function characterGreetingHTML() {
        "Your consistency is building a reliable trend. Keep feeding me data and I'll keep finding insights.",
        "Journal entries are up. Mood tracking is steady. The numbers don't lie � you're putting in the work.",
        "I cross-referenced your check-ins and habits. There's a clear correlation: showing up daily builds momentum."
-     ]},
-    {name:'Gertrude',color:'var(--avatar-gertrude)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg>',
-     msgs:[
-        "Stand ready. Your boundaries are set. Today, nothing gets past you.",
-        "You've faced harder days than this and found your way through. Today is no different.",
-        "Your safety plan is your compass. You've prepared for this. Trust your practice.",
-        "Another day, another step forward. You don't need to be perfect \uFFFD just keep going.",
-        "I've seen your strength. You are more resilient than whatever faces you today."
-     ]},
-     {name:'Oswald',color:'var(--avatar-oswald)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg>',
-     msgs:[
-       "The path ahead may twist, but you've already walked through shadow and emerged. Trust your steps.",
-       "Every day of recovery adds to your power. You're weaving strength stronger than any darkness.",
-       "Look back and see how far you've come. That is not luck � it is your own will, recognized and claimed.",
-       "The mist clears day by day. What felt impossible is now your daily rhythm.",
-       "You carry wisdom you didn't have a month ago. Each struggle taught you something. That knowledge is your staff."
-     ]}
+      ]}
   ];
   var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
   var pick = chars[dayOfYear % chars.length];
@@ -52,22 +36,6 @@ function showCharacterLore(name) {
       quote: 'The numbers don\u2019t lie \u2014 but they do whisper. You just have to learn to listen.',
       color: 'var(--avatar-arthur)',
       svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg>'
-    },
-    Gertrude: {
-      title: 'Guardian of the Inner Path',
-      desc: 'Gertrude has protected many on their journey before she found her true calling \u2014 protecting those on difficult journeys. She believes the hardest struggles happen in the quiet of one\u2019s own mind.',
-      role: 'Builds safety plans, guards your boundaries, helps you hold the line',
-      quote: 'A boundary isn\u2019t for shutting people out. It\u2019s for holding your center while you find your next step.',
-      color: 'var(--avatar-gertrude)',
-      svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg>'
-    },
-    Oswald: {
-      title: 'Keeper of the Hidden Path',
-      desc: 'Oswald walked every road \u2014 the righteous and the ruinous \u2014 before finding his way here. He guides others through the mist using the lamp of experience rather than the map of theory.',
-      role: 'Guides reflection, offers wisdom, helps find meaning in struggle',
-      quote: 'The path isn\u2019t straight. But every step you\u2019ve taken has brought you here \u2014 and here is exactly where you need to be.',
-      color: 'var(--avatar-oswald)',
-      svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg>'
     }
   };
   var c = lore[name];
@@ -832,9 +800,9 @@ var SHOP_ITEMS = [
   {id:'torches', cat:'Decor', name:'Lantern Sconces', desc:'Animated lantern flames on the keep', cost:40, icon:'\u2727'},
   {id:'paths', cat:'Decor', name:'Winding Path', desc:'A winding path through the grounds', cost:25, icon:'\u265B'},
   {id:'flags', cat:'Decor', name:'Personal Banners', desc:'Your banner on every tower', cost:60, icon:'\u2726'},
-  {id:'crimson', cat:'Skins', name:"Arthur's Crimson Coat", desc:'Dye Arthur coat deep crimson', cost:80, icon:'\u2619'},
-  {id:'silver', cat:'Skins', name:"Gertrude's Silver Trim", desc:'Trim Gertrude cloak with silver', cost:100, icon:'\u2694'},
-  {id:'starry', cat:'Skins', name:"Oswald's Starry Hat", desc:'Oswald hat glows with starry sky', cost:70, icon:'\u2727'},
+  {id:'crimson', cat:'Skins', name:'Crimson Coat', desc:'Dye your coat deep crimson', cost:80, icon:'\u2619'},
+  {id:'silver', cat:'Skins', name:'Silver Trim', desc:'Trim your cloak with silver', cost:100, icon:'\u2694'},
+  {id:'starry', cat:'Skins', name:'Starry Hat', desc:'Your hat glows with starry sky', cost:70, icon:'\u2727'},
   {id:'streak', cat:'Boosts', name:'Streak Protection', desc:'Protects your streak for 1 relapse', cost:50, icon:'\u2629'},
   {id:'double', cat:'Boosts', name:'Double Rewards', desc:'Double rewards earned for 24 hours', cost:75, icon:'\u269C'},
   {id:'bonus', cat:'Boosts', name:'Bonus Task', desc:'Unlock a 4th daily task today', cost:40, icon:'\u2766'}

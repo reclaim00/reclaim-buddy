@@ -166,13 +166,13 @@ function showTeamBattle(data) {
   var win = data && data.win ? data.win : '';
 
   var teamMembers = [
-    {id:'ta-arthur',color:'#ffd700',label:'Arthur',svg:
+    {id:'ta-arthur',color:'#ffd700',label:'You',svg:
       '<svg class="arthur-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9" class="tb-body"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><g transform="translate(19,14)"><use href="#star4" transform="scale(1.5)" fill="#e8b88a"/></g><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><g transform="translate(22,10)"><use href="#star4" transform="scale(1.8)" fill="#ffd700"/></g></g></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><g transform="translate(13,2)"><use href="#star4" transform="scale(0.6)" fill="#e11d48"/></g><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><g transform="translate(17,2)"><use href="#star4" transform="scale(0.6)" fill="#22c55e"/></g><circle cx="12.5" cy="6.5" r=".8" fill="#222"/><circle cx="17.5" cy="6.5" r=".8" fill="#222"/></svg>'
     },
-    {id:'ta-oswald',color:'#4338ca',label:'Oswald',svg:
+    {id:'ta-oswald',color:'#4338ca',label:'Ally 2',svg:
       '<svg class="oswald-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round" class="tb-weapon"/><g transform="translate(27,9)"><use href="#star4" transform="scale(2.5)" fill="#a5b4fc"/></g><g transform="translate(27,9)"><use href="#star4" transform="scale(1)" fill="#e0e7ff"/></g><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">?</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'
     },
-    {id:'ta-gertrude',color:'#be185d',label:'Gertrude',svg:
+    {id:'ta-gertrude',color:'#be185d',label:'Ally 1',svg:
       '<svg class="erin-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="tb-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g transform="translate(6,12)"><use href="#star4" transform="scale(1.5)" fill="#f0d5b0"/></g><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/></g></g><g class="tb-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:21px 19px"><path d="M21 19 L23 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g transform="translate(24,12)"><use href="#star4" transform="scale(1.5)" fill="#f0d5b0"/></g><line x1="24" y1="12" x2="28" y2="-2" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" class="tb-weapon"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>'
     }
   ];
@@ -236,29 +236,29 @@ function showTeamBattle(data) {
     if (status) { status.textContent = '&#9760;&#65039; The darkness approaches...'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1800); }
   }, 500));
 
-  // Phase 2 (2500ms): Arthur steps forward and punches
+  // Phase 2 (2500ms): You step forward and punch
   timers.push(setTimeout(function(){
     if (A) { A.style.animation = 'battleArthur .7s ease'; A.classList.add('fight'); setTimeout(function(){if(A)A.classList.remove('fight');},600); }
     if (m0) { m0.style.animation = 'monsterHit .6s ease forwards'; }
     if (flash) { flash.style.animation = 'battleFlash .4s ease'; }
-    if (status) { status.textContent = '&#128170; ARTHUR PUNCHES!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
+    if (status) { status.textContent = '&#128170; PUNCH!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
   }, 2500));
 
-  // Phase 3 (3800ms): Gertrude attacks
+  // Phase 3 (3800ms): Ally 1 attacks
   timers.push(setTimeout(function(){
     if (E) { E.style.animation = 'battleErin .5s ease'; E.classList.add('fight'); setTimeout(function(){if(E)E.classList.remove('fight');},400); }
     if (blast) { blast.style.animation = 'gunBlast .4s ease forwards'; blast.style.opacity = '1'; setTimeout(function(){ if(blast) { blast.style.animation = 'none'; blast.style.opacity = '0'; } }, 400); }
     if (m1) { m1.style.animation = 'monsterHit .5s ease forwards'; }
     if (flash) { flash.style.animation = 'battleFlash .3s ease'; }
-    if (status) { status.textContent = '&#9876; GERTRUDE STRIKES!'; status.style.opacity = '1';  setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
+    if (status) { status.textContent = '&#9876; STRIKE!'; status.style.opacity = '1';  setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
   }, 3800));
 
-  // Phase 4 (5000ms): Oswald smashes with guitar
+  // Phase 4 (5000ms): Ally 2 smashes
   timers.push(setTimeout(function(){
     if (P) { P.style.animation = 'battleOswald .6s ease'; P.classList.add('fight'); setTimeout(function(){if(P)P.classList.remove('fight');},500); }
     if (m2) { m2.style.animation = 'monsterHit .5s ease forwards'; }
     if (flash) { flash.style.animation = 'battleFlash .4s ease'; }
-    if (status) { status.textContent = '&#127928; OSWALD CRUSHES!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
+    if (status) { status.textContent = '&#127928; CRUSH!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
   }, 5000));
 
   // Phase 5 (6500ms): Victory
@@ -715,8 +715,8 @@ function relapsePlanHTML() {
   var h = '';
   var rp = D.relapsePlan;
   h += '<h2 class="page-title">Relapse Plan</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-oswald);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg></div><div style="font-size:12px;color:var(--muted)">Oswald is with you. This plan is your staff and your compass — forged through preparation, ready when called upon.</div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Guided by Oswald  your relapse prevention coach.</p>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-oswald);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg></div><div style="font-size:12px;color:var(--muted)">You\u2019re building your plan. This is your compass \u2014 forged through preparation, ready when called upon.</div></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your relapse prevention plan, built step by step.</p>';
   if (rp && rp.triggers && rp.triggers.length) {
     h += '<div class="card" style="border-left:3px solid var(--accent)">';
     h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="font-size:20px">&#128170;</span><span style="font-weight:700;font-size:14px">Your Plan</span></div>';
@@ -731,24 +731,24 @@ function relapsePlanHTML() {
     }
     if (rp.commitment) { h += '<div style="font-size:12px;margin-bottom:4px;margin-top:6px;color:var(--muted)">My Commitment:</div><div class="quote" style="font-size:13px;margin:0">' + rp.commitment + '</div>'; }
     h += '</div>';
-    h += '<button class="btn btn-outline btn-sm" onclick="startOswaldWizard()" style="margin-top:8px">Revise Plan with Oswald</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="startOswaldWizard()" style="margin-top:8px">Revise Plan</button>';
   } else {
     h += '<div class="card" style="text-align:center;padding:24px">';
     h += '<div style="font-size:48px;margin-bottom:8px">&#129497;</div>';
-    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Oswald</div>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your personal relapse prevention coach. Oswald will guide you through building a plan step by step.</p>';
-    h += '<button class="btn btn-primary" onclick="startOswaldWizard()">Start with Oswald</button>';
+    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Build Your Plan</div>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">A step-by-step guide to build a personalized relapse prevention plan.</p>';
+    h += '<button class="btn btn-primary" onclick="startOswaldWizard()">Start Building</button>';
     h += '</div>';
   }
   return h;
 }
 
-// ====== PERSONAL CODE (Gertrude) ======
+// ====== PERSONAL CODE ======
 function chivalryCodeHTML() {
   var cc = D.chivalryCode || { code: [], checkins: [] };
   var h = '';
   h += '<h2 class="page-title">&#9876; My Values</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Gertrude says: <em>"A person without a code is a wanderer. Define your principles, and every choice becomes clear."</em></div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">"A person without a code is a wanderer. Define your principles, and every choice becomes clear."</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
 
   // Code list
@@ -853,7 +853,7 @@ function chivalryCheckin() {
   if (!D.chivalryCode.checkins) D.chivalryCode.checkins = [];
   D.chivalryCode.checkins.push({ date: new Date().toDateString(), note: note.value.trim(), codes: codes, timestamp: Date.now() });
   saveData(); render();
-  showToast('Reflection logged. Gertrude nods in approval.', 'success');
+  showToast('Reflection logged.', 'success');
 }
 
 // ====== RELAPSE GRAVEYARD ======
@@ -1244,7 +1244,7 @@ function renderOswaldStep() {
   var icon = ['&#128064;','&#128533;','&#128299;','&#128222;','&#128221;','&#9989;'][step] || '&#129497;';
   var oswaldSays = ['Let\'s identify what might trigger a relapse. Check all that apply to you.','Good. Now what early warning signs do you usually feel before a craving hits?','Smart. What actions can you take to interrupt a craving when it starts?','Who can you call in an emergency? Add at least one person.','Write a short commitment statement. Read this when you need strength.','Here\'s your plan. Does everything look right?'][step] || '';
   body += '<div style="font-size:40px;margin-bottom:4px">' + icon + '</div>';
-  body += '<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">Oswald says:</div>';
+  body += '<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">Let\'s build your plan:</div>';
   body += '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + oswaldSays + '</div>';
   if (step === 0) {
     body += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">';
@@ -1348,9 +1348,9 @@ function showRelapseCutscene() {
   overlay.style.background = 'rgba(0,0,0,.65)';
   overlay.style.alignItems = 'center';
   var h = '<div class="journal-letter" id="rc-scroll" style="animation:scrollUnroll 1s cubic-bezier(.22,1,.36,1) both">';
-  h += '<div style="text-align:center;opacity:0" id="rc-char">'+_npcStandalone('Oswald')+'</div>';
+  h += '<div style="text-align:center;opacity:0" id="rc-char">'+_npcStandalone('Arthur')+'</div>';
   h += '<div class="scroll-header" id="rc-title" style="opacity:0">';
-  h += '<div class="scroll-date">OSWALD\'S WISDOM</div>';
+  h += '<div class="scroll-date">YOUR RELAPSE PLAN</div>';
   h += '<div class="scroll-title">Your Relapse Plan</div>';
   h += '</div>';
   h += '<div id="rc-details" style="opacity:0">';
@@ -1361,8 +1361,8 @@ function showRelapseCutscene() {
   if (plan.commitment) h += '<div class="letter-section"><div class="letter-section-label">My Commitment</div><div class="letter-section-text" style="font-style:italic">"'+safe(plan.commitment)+'"</div></div>';
   h += '</div>';
   h += '<div class="scroll-closing" id="rc-closing" style="display:none">';
-  h += '<div class="scroll-signoff">Sealed by the Wizard,</div>';
-  h += '<div class="scroll-signature">Oswald</div>';
+  h += '<div class="scroll-signoff">Signed,</div>';
+  h += '<div class="scroll-signature">You</div>';
   h += '<div class="scroll-time">' + new Date().toLocaleDateString() + '</div>';
   h += '</div>';
   h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();render()" id="rc-close" style="display:none;margin-top:10px">&#10003; Close Scroll</button>';
@@ -1528,7 +1528,7 @@ function renderGertrudeQuestion() {
   overlay.innerHTML =
     '<div style="background:var(--card);max-width:380px;width:90%;margin:0 auto;border-radius:20px;padding:28px 20px 20px;text-align:center;animation:siFade .3s ease;position:relative;max-height:85vh;overflow-y:auto">' +
     '<div style="font-size:40px;margin-bottom:4px">&#128105;</div>' +
-    '<div style="font-size:13px;font-weight:700;color:var(--rose);margin-bottom:2px">Gertrude asks:</div>' +
+    '<div style="font-size:13px;font-weight:700;color:var(--rose);margin-bottom:2px">Consider:</div>' +
     '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + q.q + '</div>' +
     '<textarea id="gertrude-q-input" placeholder="' + q.pl + '" style="min-height:80px">' + (GERTRUDE_Q_ANSWERS[step] || '') + '</textarea>' +
     '<div style="display:flex;gap:6px;justify-content:center;margin:14px 0 10px">' +
@@ -1550,14 +1550,14 @@ function safetyHTML() {
     h += '<h2 class="page-title">Safety Plan</h2>';
     h += '<div class="card" style="text-align:center;padding:24px">';
     h += '<div style="font-size:48px;margin-bottom:8px">&#128105;</div>';
-    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Meet Gertrude</div>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">Gertrude will guide you through building a personalized safety plan. First, let\'s start with a few questions.</p>';
-    h += '<button class="btn btn-primary" onclick="startGertrudeQuestions()" style="margin-top:8px">Start with Gertrude</button>';
+    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Build Your Safety Plan</div>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">Answer a few questions to build a personalized safety plan.</p>';
+    h += '<button class="btn btn-primary" onclick="startGertrudeQuestions()" style="margin-top:8px">Get Started</button>';
     h += '</div>';
     return h;
   }
   h += '<h2 class="page-title">My Addiction Targets</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. Gertrude will create a personalized safety plan for each one.</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. You\'ll get a personalized safety plan for each one.</p>';
   h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div><h3 style="margin:0;font-size:15px">Safety Plans</h3></div></div>';
   var addictions = D.targetAddictions || [];
   if (!addictions.length) {
@@ -1599,7 +1599,7 @@ var ONBOARDING_STEPS = [
      '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u265B</span><span style="font-weight:700;font-size:15px">Fantasy</span><span style="font-size:11px;color:var(--muted)">Bright banners, green hills, golden light</span></button>'+
    '</div><div style="margin-top:10px"><input id="onboarding-kingdom-name" placeholder="Name your space (optional)" value="'+(D.kingdomName||'')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;text-align:center"></div>'},
   {icon:'\u269C',title:'Begin Operation Re.Claim',
-    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your path, set your goals, and begun your journey. Your space is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The road is long, but you were made for this. Every day you show up, your foundation grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Three friends will guide you:<br>Arthur \u2022 Gertrude \u2022 Oswald</div>'},
+    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your path, set your goals, and begun your journey. Your space is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The road is long, but you were made for this. Every day you show up, your foundation grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Your journey starts now.</div>'},
 ];
 var ONBOARDING_STEP = 0;
 function showOnboarding() {
