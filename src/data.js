@@ -227,7 +227,6 @@ function defaultData() {
     screenerGAD7: { taken: false, result: null, progress: null },
     sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '' },
     kingdomName: '',
-    heraldry: { field: '', division: '', charge: '', trim: '', motto: '' },
     // Pre-populated coping cards displayed from defaults; user can add custom
     customCopingCards: [],
     savedArticles: [], savedBooks: [], savedPodcasts: [], savedVideos: [],

@@ -1306,9 +1306,9 @@ var ROUTINE_POOLS = {
 function artDailyRoutineHTML() {
   var today = new Date().toDateString();
   if (D._artRoutineDate === today && D._artRoutine) return D._artRoutine;
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div><h3 style="margin:0;font-size:15px">Arthur\'s Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
+  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div><h3 style="margin:0;font-size:15px">Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
   if (!D.journal.length) {
-    h += '<div class="empty-state">Write in your journal so Arthur can create a personalized daily routine for you.</div></div>';
+    h += '<div class="empty-state">Write in your journal to get a personalized daily routine.</div></div>';
     return h;
   }
   var moodCounts = [0,0,0,0,0];
@@ -1329,15 +1329,15 @@ function artDailyRoutineHTML() {
   var midday = middayPool[(dayIndex + Math.floor(morningPool.length / 2)) % middayPool.length];
   var evening = eveningPool[(dayIndex + Math.floor(middayPool.length / 2)) % eveningPool.length];
   var extra = extraPool[(dayIndex + Math.floor(eveningPool.length / 2)) % extraPool.length];
-  if (hasCraving) extra = 'You mentioned cravings. Arthur says: cravings last 15-30 minutes. Surf the wave  it will pass. Keep your hands busy, call someone, or breathe through it.';
-  else if (hasStress) extra = 'You seem stressed. Arthur suggests the 5-4-3-2-1 grounding exercise: 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.';
+  if (hasCraving) extra = 'You mentioned cravings. Cravings last 15-30 minutes. Surf the wave  it will pass. Keep your hands busy, call someone, or breathe through it.';
+  else if (hasStress) extra = 'You seem stressed. Try the 5-4-3-2-1 grounding exercise: 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.';
   else if (hasGratitude) extra = 'You\'ve been practicing gratitude  that rewires your brain for positivity. Share one grateful thought with someone today.';
 
   h += '<div style="margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px">&#127749;</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Morning</div><div style="font-size:12px;color:var(--muted);line-height:1.4">' + morning + '</div></div></div>';
   h += '<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px">&#9728;&#65039;</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Midday</div><div style="font-size:12px;color:var(--muted);line-height:1.4">' + midday + '</div></div></div>';
   h += '<div style="display:flex;align-items:center;gap:6px;padding:8px 0"><span style="font-size:16px">&#127769;</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Evening</div><div style="font-size:12px;color:var(--muted);line-height:1.4">' + evening + '</div></div></div>';
   h += '</div>';
-  h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.5;border-left:3px solid var(--primary)"><strong>Arthur\'s note:</strong> ' + extra + '</div>';
+  h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.5;border-left:3px solid var(--primary)"><strong>Note:</strong> ' + extra + '</div>';
   h += '</div>';
   D._artRoutineDate = today;
   D._artRoutine = h;
@@ -2139,7 +2139,7 @@ function reflectHTML() {
   var goal = D.journalWordGoal || 50;
   var jStreak = calcJournalStreak();
   var h = '<h2 class="page-title">'+t('Journal')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Arthur is here to help you reflect. Every entry sharpens the map of your recovery.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Reflecting on your entries helps you see patterns in your recovery.</div></div></div>';
   if (jStreak > 0) {
     h += '<div style="text-align:center;padding:8px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px">';
     h += '<span style="font-size:28px">&#128293;</span><div><div style="font-weight:700;font-size:18px">' + jStreak + ' '+t('Day Journal Streak')+'</div><div style="font-size:11px;opacity:.9">'+t('Keep it going! Write today to maintain your streak.')+'</div></div></div>';
@@ -2194,7 +2194,7 @@ function reflectHTML() {
       h += '<div class="card journal-entry" data-search="' + (entryTextRefl.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
       h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
       h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div></div>';
-      h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect with Arthur</button>';
+      h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect</button>';
       h += '</div>';
     }
     h += '</div>';
@@ -3319,7 +3319,7 @@ function buildArthurInsights() {
     var totalCheckDays = D.checkins.length;
     if (uniqueCount < totalCheckDays * 0.5 && totalCheckDays > 5) insights.push({ icon: '&#128204;', text: 'You\'ve missed more check-ins than you\'ve completed recently. Regular check-ins help catch warning signs early.', severity: 'medium' });
   } else if (D.checkins && D.checkins.length > 0) {
-    insights.push({ icon: '&#128204;', text: 'You\'ve done <strong>' + D.checkins.length + ' check-in' + (D.checkins.length !== 1 ? 's' : '') + '</strong> so far. The more consistently you check in, the more patterns Arthur can detect.', severity: 'info' });
+    insights.push({ icon: '&#128204;', text: 'You\'ve done <strong>' + D.checkins.length + ' check-in' + (D.checkins.length !== 1 ? 's' : '') + '</strong> so far. The more consistently you check in, the more patterns you can spot.', severity: 'info' });
   } else {
     insights.push({ icon: '&#128204;', text: 'No check-ins yet. The daily check-in helps track your mood and wins over time.', severity: 'info' });
   }
@@ -3345,7 +3345,7 @@ function buildArthurInsights() {
     var avgIntensity = recentCrav.reduce(function(s,c){return s + (c.intensity || 5)}, 0) / recentCrav.length;
     if (avgIntensity >= 8) insights.push({ icon: '&#128293;', text: 'Your recent cravings have been <strong>high intensity</strong> (avg ' + Math.round(avgIntensity) + '/10). Consider reaching out to your support network today.', severity: 'high' });
   } else if (D.cravings && D.cravings.length === 1) {
-    insights.push({ icon: '&#128352;', text: 'You\'ve logged 1 craving. Patterns become visible after a few entries  keep tracking and Arthur will spot trends.', severity: 'info' });
+    insights.push({ icon: '&#128352;', text: 'You\'ve logged 1 craving. Patterns become visible after a few entries  keep tracking and the trends will emerge.', severity: 'info' });
   }
 
   // Relapse pattern analysis
@@ -3425,7 +3425,7 @@ function insightsHTML() {
   h += '<span style="font-size:28px">' + riskIcon + '</span>';
   h += '<div><div style="font-weight:700;font-size:15px;color:' + riskColor + '">' + riskLabel + '</div>';
   h += '<div style="font-size:12px;color:var(--text);line-height:1.4">';
-  if (risk.factors.length) h += 'Arthur detected: ' + risk.factors.join(', ') + '.';
+  if (risk.factors.length) h += 'Signals detected: ' + risk.factors.join(', ') + '.';
   else h += 'You\'re on a stable path. Keep doing what you\'re doing  your data shows consistent engagement.';
   h += '</div></div></div></div>';
 
@@ -3491,7 +3491,7 @@ function showFollowUp(fuIdx) {
   overlay.className = 'overlay';
   overlay.id = 'followup-ov';
   var h = '<div class="overlay-content" style="max-width:420px">';
-  h += '<h3 style="font-weight:700;font-size:18px;margin-bottom:4px">&#129309; Arthur\'s Follow-Up</h3>';
+  h += '<h3 style="font-weight:700;font-size:18px;margin-bottom:4px">&#129309; Re-Commitment Follow-Up</h3>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">You re-committed ' + Math.round((Date.now() - fu.relapseDate) / 86400000) + ' day' + (Math.round((Date.now() - fu.relapseDate) / 86400000) !== 1 ? 's' : '') + ' ago. Let\'s check in.</p>';
   for (var fi2=0;fi2<fu.questions.length;fi2++) {
     h += '<div style="margin-bottom:10px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">' + fu.questions[fi2].q + '</label>';
@@ -3536,7 +3536,7 @@ function pendingFollowUpHTML() {
   if (!pending) return '';
   var hrsAgo = Math.round((now - pending.scheduledAt) / 3600000);
   var h = '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#f5efe6,var(--card))" onclick="showFollowUp(' + pendingIdx + ')">';
-  h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#129309;</div><div><div style="font-weight:700;font-size:14px">Arthur wants to check in</div><div style="font-size:12px;color:var(--muted)">' + pending.label + ' follow-up (' + hrsAgo + ' hour' + (hrsAgo !== 1 ? 's' : '') + ' ago). Tap to respond.</div></div></div></div>';
+  h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#129309;</div><div><div style="font-weight:700;font-size:14px">A follow-up is waiting</div><div style="font-size:12px;color:var(--muted)">' + pending.label + ' follow-up (' + hrsAgo + ' hour' + (hrsAgo !== 1 ? 's' : '') + ' ago). Tap to respond.</div></div></div></div>';
   return h;
 }
 
@@ -3573,21 +3573,20 @@ function submitCheckin() {
   setTimeout(showSchillingNotification, 800);
 }
 function showCheckinReaction(mood) {
-  var chars = ['Arthur','Gertrude','Oswald'];
-  var pick = chars[Math.floor(Math.random() * chars.length)];
-  var reactions = {
-    Arthur: ['"Nice. Another check-in logged. Your mood trend is getting clearer. This is how we make sense of things. \u2014 Arthur"','"Good \u2014 you checked in. That single action tells me more than any theory. Consistency is the real pattern. \u2014 Arthur"','"Noted. I\u2019ll cross-reference this with your journal entries. Keep the data coming. \u2014 Arthur"'],
-    Gertrude: ['"Check-in received. You showed up. That\u2019s the hardest part. Well done. \u2014 Gertrude"','"Daily check \u2014 you answered the roll call. Discipline = armor. \u2014 Gertrude"','"Another day stood guard over your recovery. I see you. \u2014 Gertrude"'],
-    Oswald: ['"The daily ritual strengthens the soul. You cast your intention into the world. Let it echo. \u2014 Oswald"','"You checked in. That\u2019s another thread in the tapestry of your new self. Keep weaving. \u2014 Oswald"','"Good. You honored your commitment. The quiet work is the most powerful kind. \u2014 Oswald"']
-  };
-  var pickMsgs = reactions[pick];
-  var msg = pickMsgs[Math.floor(Math.random() * pickMsgs.length)];
-  var colors = {Arthur:'#5b21b6',Gertrude:'#2d5a5a',Oswald:'#4338ca'};
+  var reactions = [
+    'Nice. Another check-in logged. Your mood trend is getting clearer. Keep it up.',
+    'Good \u2014 you checked in. That single action tells more than any theory. Consistency is the real pattern.',
+    'Check-in received. You showed up. That\u2019s the hardest part. Well done.',
+    'Daily check \u2014 you answered the roll call. Discipline is armor.',
+    'The daily ritual strengthens the soul. You cast your intention into the world. Let it echo.',
+    'You checked in. That\u2019s another thread in the tapestry of your new self. Keep weaving.'
+  ];
+  var msg = reactions[Math.floor(Math.random() * reactions.length)];
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.style.background = 'rgba(0,0,0,.4)';
-  overlay.innerHTML = '<div style="background:var(--card);border-radius:20px;max-width:340px;width:90%;padding:28px 24px;text-align:center;border:2px solid ' + colors[pick] + ';animation:scaleIn .3s ease;box-shadow:0 12px 40px rgba(0,0,0,.2)">' +
-    '<div style="width:48px;height:48px;border-radius:24px;background:' + colors[pick] + ';margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:20px">' + pick[0] + '</div>' +
+  overlay.innerHTML = '<div style="background:var(--card);border-radius:20px;max-width:340px;width:90%;padding:28px 24px;text-align:center;border:2px solid var(--primary);animation:scaleIn .3s ease;box-shadow:0 12px 40px rgba(0,0,0,.2)">' +
+    '<div style="width:48px;height:48px;border-radius:24px;background:var(--primary);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:20px">&#10003;</div>' +
     '<p style="font-size:13px;line-height:1.6;color:var(--text);margin-bottom:16px">' + msg + '</p>' +
     '<button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();showJourneyMap()" style="width:100%">Continue</button></div>';
   document.body.appendChild(overlay);
@@ -6074,7 +6073,7 @@ var WEEKLY_CAMPAIGNS = [
       {id:'h1',title:'Coping Arsenal',desc:'Create a new coping card',pts:15,check:function(){return(D.copingCards||[]).length>=1}},
       {id:'h2',title:'History Scroll',desc:'Check your recovery reports',pts:15,check:function(){return false}},
       {id:'h3',title:'Music of the Spheres',desc:'Open the music page',pts:15,check:function(){return false}},
-      {id:'h4',title:"Oath of Support",desc:'Visit the Support Circle',pts:15,check:function(){return false}},
+      {id:'h4',title:"Oath of Support",desc:'Visit your Support Alliances',pts:15,check:function(){return false}},
       {id:'h5',title:'Crown of Growth',desc:'Complete all campaign tasks',pts:25,reward:70}
     ]}
 ];
@@ -7013,183 +7012,3 @@ function _npcStandalone(name){
   svg += '</svg>';
   return svg;
 }
-function roundTableHTML() {
-  var chars = [
-    {name:'Arthur',body:'#4a1570',skin:'#c89a6a',msgs:[
-       "I've been watching your patterns. You're showing up more. That's the data that matters.",
-       "I notice you've been logging regularly. Every entry makes the picture clearer.",
-       "Your consistency is building a reliable trend. Keep feeding me data and I'll keep finding insights.",
-       "Journal entries are up. Mood tracking is steady. The numbers don't lie \u2014 you're doing the work.",
-       "I cross-referenced your check-ins and habits. Clear pattern: showing up daily builds momentum.",
-       "Gertrude tells me your boundaries are holding strong. That aligns with what I'm seeing in the data.",
-       "Oswald mentioned you've been reflecting more. That depth shows in your journaling frequency.",
-       "You and Gertrude both logged strong check-ins yesterday. Her shield discipline is rubbing off on you."
-      ]},
-    {name:'Gertrude',body:'#2a5a5a',skin:'#d4a574',msgs:[
-       "You're ready. You've got your tools. Today, nothing gets through.",
-       "You've faced harder days than this and held firm. Today's no different.",
-       "Your safety plan is solid. You've prepared for this. Trust yourself.",
-       "Another day, another win. You don't need to win every fight \u2014 just this one.",
-       "I've seen your strength. You're tougher than whatever\u2019s in your way today.",
-       "Arthur showed me your streak data. Consistent. That's the mark of a warrior.",
-       "Oswald told me you had a tough moment and worked through it. That's what real courage looks like.",
-       "The numbers Arthur tracks and the wisdom Oswald shares \u2014 both point to the same truth: you're growing."
-      ]},
-    {name:'Oswald',body:'#2a1560',skin:'#c09a7a',msgs:[
-       "The road might twist, but you've walked through shadow before and come out the other side. Trust your steps.",
-       "Every day of recovery adds to your strength. You're building something real.",
-       "Look back and see how far you've come. That's not luck \u2014 that's you.",
-       "The mist clears day by day. What felt impossible is now just your normal rhythm.",
-       "You carry wisdom you didn't have a month ago. Every struggle taught you something. That knowledge is your staff.",
-       "Gertrude is right to be proud of your defenses. But I see something deeper \u2014 you're learning when to lower them too.",
-       "Arthur and I were discussing your progress. The data tells one story, but your journal tells the real one.",
-       "I overheard Arthur telling Gertrude about your consistency. Even the strategist is impressed."
-      ]}
-  ];
-  var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
-  var activeIdx = dayOfYear % chars.length;
-  var dayMod = Math.floor(dayOfYear / chars.length);
-  var h = '<div class="card" style="padding:12px 14px">';
-  h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;text-align:center;margin-bottom:8px;font-family:Georgia,serif">\u2767 The Support Circle \u2767</div>';
-
-  // Table scene SVG
-  var xOffsets = [38, 91, 144]; // horizontal centers for each figure
-  h += '<div style="text-align:center;margin-bottom:4px">';
-  h += '<svg viewBox="0 0 210 100" style="width:100%;max-width:280px;height:auto">';
-  h += '<defs><style>.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}</style></defs>';
-
-  // Chair backs (behind figures)
-  for (var i = 0; i < chars.length; i++) {
-    var cx = xOffsets[i];
-    h += '<rect x="' + (cx - 11) + '" y="16" width="22" height="34" rx="4" fill="#3a2010"/>';
-    h += '<rect x="' + (cx - 11) + '" y="16" width="22" height="4" rx="2" fill="#4a3020"/>';
-    h += '<line x1="' + (cx - 6) + '" y1="20" x2="' + (cx - 6) + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
-    h += '<line x1="' + cx + '" y1="20" x2="' + cx + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
-    h += '<line x1="' + (cx + 6) + '" y1="20" x2="' + (cx + 6) + '" y2="46" stroke="#2a1000" stroke-width=".6" opacity=".4"/>';
-  }
-
-  // Figures
-  for (var i = 0; i < chars.length; i++) {
-    var cx = xOffsets[i];
-    if (i === 0) h += _rtArthur(cx, i === activeIdx);
-    else if (i === 1) h += _rtGertrude(cx, i === activeIdx);
-    else h += _rtOswald(cx, i === activeIdx);
-  }
-
-  // Tabletop
-  h += '<rect x="8" y="48" width="194" height="7" rx="2" fill="#8B4513"/>';
-  h += '<rect x="8" y="48" width="194" height="3" rx="1" fill="#A0522D"/>';
-  h += '<rect x="16" y="55" width="5" height="22" fill="#6B3410"/>';
-  h += '<rect x="189" y="55" width="5" height="22" fill="#6B3410"/>';
-
-  // Chair seats and legs (below table)
-  for (var i = 0; i < chars.length; i++) {
-    var cx = xOffsets[i];
-    h += '<rect x="' + (cx - 12) + '" y="54" width="24" height="3" rx="1" fill="#4a3020"/>';
-    h += '<rect x="' + (cx - 11) + '" y="57" width="3" height="16" rx=".5" fill="#3a2010"/>';
-    h += '<rect x="' + (cx + 8) + '" y="57" width="3" height="16" rx=".5" fill="#3a2010"/>';
-  }
-
-  // Legs below table
-  for (var i = 0; i < chars.length; i++) {
-    var c = chars[i];
-    var cx = xOffsets[i];
-    if (i === 1) {
-      h += '<rect x="' + (cx - 5) + '" y="55" width="4" height="10" rx="1" fill="#6a7a7a" opacity=".7"/>';
-      h += '<rect x="' + (cx + 1) + '" y="55" width="4" height="10" rx="1" fill="#6a7a7a" opacity=".7"/>';
-    } else {
-      h += '<rect x="' + (cx - 5) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
-      h += '<rect x="' + (cx + 1) + '" y="55" width="4" height="10" rx="1" fill="' + c.body + '" opacity=".6"/>';
-    }
-    h += '<ellipse cx="' + (cx - 3) + '" cy="66" rx="3" ry="1.5" fill="#2a1a0a"/>';
-    h += '<ellipse cx="' + (cx + 3) + '" cy="66" rx="3" ry="1.5" fill="#2a1a0a"/>';
-  }
-
-  // Candle on table (center)
-  h += '<rect x="103" y="42" width="3" height="7" rx=".5" fill="#f5f5dc"/>';
-  h += '<rect x="102" y="48" width="5" height="2" rx=".5" fill="#d4a574"/>';
-  h += '<circle cx="104.5" cy="41" r="2.5" fill="#ff8c00" opacity=".8"><animate attributeName="r" values="2.5;2.8;2.5" dur="1.8s" repeatCount="indefinite"/></circle>';
-  h += '<circle cx="104.5" cy="41" r="5" fill="#ff8c00" opacity=".15"><animate attributeName="r" values="5;6;5" dur="1.8s" repeatCount="indefinite"/></circle>';
-
-  h += '</svg></div>';
-
-  // Names row
-  h += '<div style="display:flex;justify-content:center;gap:24px;margin-bottom:6px">';
-  for (var i = 0; i < chars.length; i++) {
-    var c = chars[i];
-    var isActive = i === activeIdx;
-    h += '<div style="font-size:10px;color:var(--' + (isActive ? 'primary' : 'muted') + ');font-weight:' + (isActive ? '700' : '400') + ';cursor:pointer" onclick="showCharacterLore(\'' + c.name + '\')" title="Learn about ' + c.name + '">' + c.name + '</div>';
-  }
-  h += '</div>';
-
-  // Conversation mode: every 3rd day, show a cross-character exchange
-  var isConvoDay = Math.floor(dayOfYear / chars.length) % 3 === 2;
-  var pick = chars[activeIdx];
-  var msg = pick.msgs[dayMod % pick.msgs.length];
-  var hr = new Date().getHours();
-  var timeWord = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
-  var rank = getRank(soberDays());
-
-  if (isConvoDay) {
-    var responderIdx = (activeIdx + 1) % chars.length;
-    var responder = chars[responderIdx];
-    var respMsgs = [
-      "I couldn't have said it better myself.",
-      "That's exactly right. I was just thinking the same.",
-      "Listen to them \u2014 they speak truth.",
-      "Hear, hear! The realm is stronger when we speak as one.",
-      "I'll stand by that counsel. It's served many before you."
-    ];
-    var respMsg = respMsgs[dayMod % respMsgs.length];
-    h += '<div style="text-align:center;margin-bottom:6px">';
-    h += '<div style="display:inline-block;background:var(--primary-light);border-radius:12px 12px 12px 2px;padding:8px 12px;margin-bottom:4px;max-width:90%">';
-    h += '<div style="font-size:10px;font-weight:700;color:var(--primary);margin-bottom:2px">' + pick.name + '</div>';
-    h += '<div style="font-size:12px;line-height:1.4;font-style:italic;color:var(--text-light)">' + msg + '</div>';
-    h += '</div>';
-    h += '<div style="display:inline-block;background:var(--card);border:1px solid var(--border);border-radius:12px 12px 2px 12px;padding:8px 12px;max-width:90%">';
-    h += '<div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:2px">' + responder.name + '</div>';
-    h += '<div style="font-size:12px;line-height:1.4;font-style:italic;color:var(--text-light)">' + respMsg + '</div>';
-    h += '</div>';
-    h += '</div>';
-  } else {
-    h += '<div style="font-size:11px;color:var(--muted);margin-bottom:2px;text-align:center">Good ' + timeWord + ' from <strong style="color:var(--primary);cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')" title="Learn about ' + pick.name + '">' + pick.name + '</strong> \u2014 to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div>';
-    h += '<div style="font-size:13px;line-height:1.5;text-align:center;font-style:italic;color:var(--text-light)">' + msg + '</div>';
-  }
-  h += '<div style="font-size:7px;color:var(--muted);text-align:center;margin-top:6px;opacity:.4;letter-spacing:1px">tap a name above to learn their story</div>';
-  h += '</div>';
-  return h;
-}
-
-var HERALDIC_CHARGES = [
-  {id:'none',label:'None',svg:''},
-  {id:'lion',label:'Lion',svg:'<path d="M30 16c-2-2-2-6 0-9l2-1c1-2 3-4 6-5 2 1 5 3 6 5l2 1c2 3 1 7 0 9l-2 1-1 4h-2l-1-3h-2l-1 3h-2l-1-4-2-1z" fill="currentColor" transform="translate(28, 10) scale(.8)"/>'},
-  {id:'eagle',label:'Eagle',svg:'<path d="M36 26c2-4 7-7 10-9l2 2c-2 3-4 5-6 7l1 2h-3l-1-2c-2-2-4-4-6-7l2-2c3 2 8 5 10 9z" fill="currentColor" transform="translate(28, 12)"/><path d="M42 18c0-2 2-4 3-4s3 2 3 4-2 4-3 4-3-2-3-4z" fill="currentColor" transform="translate(28, 12)"/>'},
-  {id:'sword',label:'Sword',svg:'<path d="M48 5L38 26h3l2-5 3 5h3L48 5z" fill="currentColor" transform="translate(10, 8)"/><rect x="46" y="27" width="3" height="3" rx="1" fill="currentColor" transform="translate(10, 8)"/>'},
-  {id:'crown',label:'Crown',svg:'<path d="M36 22v-7l3 2 3-5 3 5 3-2v7z" fill="currentColor" transform="translate(10, 10)"/><rect x="35" y="23" width="12" height="2" rx=".5" fill="currentColor" transform="translate(10, 10)"/>'},
-  {id:'star',label:'Star',svg:'<polygon points="40,6 43,14 52,14 45,19 48,28 40,22 32,28 35,19 28,14 37,14" fill="currentColor" transform="translate(10, 6)"/>'},
-  {id:'tower',label:'Tower',svg:'<rect x="38" y="12" width="10" height="18" fill="currentColor" transform="translate(10, 6)"/><rect x="36" y="10" width="14" height="3" fill="currentColor" transform="translate(10, 6)"/><rect x="40" y="15" width="2" height="3" fill="rgba(0,0,0,.2)" transform="translate(10, 6)"/><rect x="44" y="15" width="2" height="3" fill="rgba(0,0,0,.2)" transform="translate(10, 6)"/><rect x="38" y="20" width="10" height="10" fill="rgba(0,0,0,.15)" transform="translate(10, 6)"/>'},
-  {id:'tree',label:'Tree',svg:'<path d="M45 10c-5 0-8 6-6 11h12c2-5-1-11-6-11z" fill="currentColor" transform="translate(10, 8)"/><rect x="44" y="21" width="3" height="8" fill="currentColor" transform="translate(10, 8)"/>'},
-  {id:'cross',label:'Cross',svg:'<path d="M40 8v6h-6v3h6v10h3V17h6v-3h-6V8z" fill="currentColor" transform="translate(10, 6)"/>'},
-  {id:'rose',label:'Rose',svg:'<circle cx="45" cy="38" r="6" fill="currentColor" transform="translate(10, 6)"/><circle cx="45" cy="38" r="4" fill="rgba(0,0,0,.15)" transform="translate(10, 6)"/><circle cx="45" cy="38" r="1.5" fill="currentColor" transform="translate(10, 6)"/><path d="M42 46c2 2 4 2 6 0" fill="none" stroke="currentColor" stroke-width="1" transform="translate(10, 6)"/>'},
-  {id:'keys',label:'Keys',svg:'<circle cx="42" cy="32" r="4" fill="none" stroke="currentColor" stroke-width="1.5" transform="translate(10, 6)"/><line x1="46" y1="32" x2="56" y2="22" stroke="currentColor" stroke-width="1.5" transform="translate(10, 6)"/><line x1="51" y1="27" x2="57" y2="22" stroke="currentColor" stroke-width="1.5" transform="translate(10, 6)"/><circle cx="42" cy="32" r=".5" fill="currentColor" transform="translate(10, 6)"/>'},
-  {id:'dragon',label:'Dragon',svg:'<path d="M34 20c2-3 5-6 8-7l3 2c-2 3-3 6-5 7l1 2h-3l-1-2c-2 1-3 1-4 0l1-2zm8-3c0-2 1-2 3-1" fill="currentColor" transform="translate(10, 8)"/>'}
-];
-var HERALDIC_DIVISIONS = [
-  {id:'plain',label:'Plain',svg:''},
-  {id:'band',label:'Bend',svg:'<path d="M15,90 L40,8 L80,8 L55,90 Z" opacity=".55"/>'},
-  {id:'cross',label:'Cross',svg:'<rect x="54" y="8" width="12" height="122" opacity=".55"/><rect x="15" y="57" width="90" height="12" opacity=".55"/>'},
-  {id:'chevron',label:'Chevron',svg:'<path d="M15,95 L60,40 L105,95 L90,105 L60,58 L30,105 Z" opacity=".55"/>'},
-  {id:'pale',label:'Pale',svg:'<rect x="44" y="8" width="32" height="122" opacity=".55"/>'},
-  {id:'fess',label:'Fess',svg:'<rect x="15" y="52" width="90" height="22" opacity=".55"/>'}
-];
-var HERALDIC_COLORS = [
-  {id:'leather',field:'#8B6B4A',trim:'#A08060',label:'Leather'},
-  {id:'azure',field:'#2D5A7A',trim:'#4A8ABA',label:'Azure'},
-  {id:'crimson',field:'#8A2A2A',trim:'#AA5A5A',label:'Crimson'},
-  {id:'royal',field:'#5B21B6',trim:'#8B51D6',label:'Royal'},
-  {id:'forest',field:'#2D6A3A',trim:'#5A8A5A',label:'Forest'},
-  {id:'charcoal',field:'#3A3A4A',trim:'#6A6A7A',label:'Charcoal'},
-  {id:'golden',field:'#8A7A3A',trim:'#AA9A5A',label:'Golden'},
-  {id:'iron',field:'#6A6A6A',trim:'#9A9A9A',label:'Iron'}
-];
-
