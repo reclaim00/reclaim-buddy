@@ -166,13 +166,13 @@ function showTeamBattle(data) {
   var win = data && data.win ? data.win : '';
 
   var teamMembers = [
-    {id:'ta-arthur',color:'#ffd700',label:'You',svg:
-      '<svg class="arthur-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9" class="tb-body"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><g transform="translate(19,14)"><use href="#star4" transform="scale(1.5)" fill="#e8b88a"/></g><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><g transform="translate(22,10)"><use href="#star4" transform="scale(1.8)" fill="#ffd700"/></g></g></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><g transform="translate(13,2)"><use href="#star4" transform="scale(0.6)" fill="#e11d48"/></g><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><g transform="translate(17,2)"><use href="#star4" transform="scale(0.6)" fill="#22c55e"/></g><circle cx="12.5" cy="6.5" r=".8" fill="#222"/><circle cx="17.5" cy="6.5" r=".8" fill="#222"/></svg>'
+    {id:'ta-heroguide',color:'#ffd700',label:'You',svg:
+      '<svg class="heroguide-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9" class="tb-body"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><g transform="translate(19,14)"><use href="#star4" transform="scale(1.5)" fill="#e8b88a"/></g><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><g transform="translate(22,10)"><use href="#star4" transform="scale(1.8)" fill="#ffd700"/></g></g></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><g transform="translate(13,2)"><use href="#star4" transform="scale(0.6)" fill="#e11d48"/></g><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><g transform="translate(17,2)"><use href="#star4" transform="scale(0.6)" fill="#22c55e"/></g><circle cx="12.5" cy="6.5" r=".8" fill="#222"/><circle cx="17.5" cy="6.5" r=".8" fill="#222"/></svg>'
     },
-    {id:'ta-oswald',color:'#4338ca',label:'Ally 2',svg:
-      '<svg class="oswald-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round" class="tb-weapon"/><g transform="translate(27,9)"><use href="#star4" transform="scale(2.5)" fill="#a5b4fc"/></g><g transform="translate(27,9)"><use href="#star4" transform="scale(1)" fill="#e0e7ff"/></g><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">?</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'
+    {id:'ta-seer',color:'#4338ca',label:'Ally 2',svg:
+      '<svg class="seer-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round" class="tb-weapon"/><g transform="translate(27,9)"><use href="#star4" transform="scale(2.5)" fill="#a5b4fc"/></g><g transform="translate(27,9)"><use href="#star4" transform="scale(1)" fill="#e0e7ff"/></g><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">?</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'
     },
-    {id:'ta-gertrude',color:'#be185d',label:'Ally 1',svg:
+    {id:'ta-guardian',color:'#be185d',label:'Ally 1',svg:
       '<svg class="erin-svg" viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="tb-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g transform="translate(6,12)"><use href="#star4" transform="scale(1.5)" fill="#f0d5b0"/></g><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/></g></g><g class="tb-rarm-g" style="transform-origin:15px 17px"><path d="M15 17 L21 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:21px 19px"><path d="M21 19 L23 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g transform="translate(24,12)"><use href="#star4" transform="scale(1.5)" fill="#f0d5b0"/></g><line x1="24" y1="12" x2="28" y2="-2" stroke="#cbd5e1" stroke-width="1.8" stroke-linecap="round" class="tb-weapon"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>'
     }
   ];
@@ -218,9 +218,9 @@ function showTeamBattle(data) {
   function ct() { timers.forEach(function(t){clearTimeout(t)}); timers = []; }
 
   // Get elements
-  var A = document.getElementById('ta-arthur');
-  var P = document.getElementById('ta-oswald');
-  var E = document.getElementById('ta-gertrude');
+  var A = document.getElementById('ta-heroguide');
+  var P = document.getElementById('ta-seer');
+  var E = document.getElementById('ta-guardian');
   var m0 = document.getElementById('tb-monster-0');
   var m1 = document.getElementById('tb-monster-1');
   var m2 = document.getElementById('tb-monster-2');
@@ -238,7 +238,7 @@ function showTeamBattle(data) {
 
   // Phase 2 (2500ms): You step forward and punch
   timers.push(setTimeout(function(){
-    if (A) { A.style.animation = 'battleArthur .7s ease'; A.classList.add('fight'); setTimeout(function(){if(A)A.classList.remove('fight');},600); }
+    if (A) { A.style.animation = 'battleHeroGuide .7s ease'; A.classList.add('fight'); setTimeout(function(){if(A)A.classList.remove('fight');},600); }
     if (m0) { m0.style.animation = 'monsterHit .6s ease forwards'; }
     if (flash) { flash.style.animation = 'battleFlash .4s ease'; }
     if (status) { status.textContent = '&#128170; PUNCH!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
@@ -255,7 +255,7 @@ function showTeamBattle(data) {
 
   // Phase 4 (5000ms): Ally 2 smashes
   timers.push(setTimeout(function(){
-    if (P) { P.style.animation = 'battleOswald .6s ease'; P.classList.add('fight'); setTimeout(function(){if(P)P.classList.remove('fight');},500); }
+    if (P) { P.style.animation = 'battleSeer .6s ease'; P.classList.add('fight'); setTimeout(function(){if(P)P.classList.remove('fight');},500); }
     if (m2) { m2.style.animation = 'monsterHit .5s ease forwards'; }
     if (flash) { flash.style.animation = 'battleFlash .4s ease'; }
     if (status) { status.textContent = '&#127928; CRUSH!'; status.style.opacity = '1'; setTimeout(function(){ if(status) status.style.opacity = '0'; }, 1200); }
@@ -325,9 +325,9 @@ function showMilestoneParty(days) {
   overlay.className = 'overlay';
   overlay.style.background = 'rgba(0,0,0,.65)';
   var teamMembers = [
-    {id:'mp-arthur',color:'#ffd700',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9" class="tb-body"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><g transform="translate(19,14)"><use href="#star4" transform="scale(1.5)" fill="#e8b88a"/></g><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><g transform="translate(22,10)"><use href="#star4" transform="scale(1.8)" fill="#ffd700"/></g></g></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><g transform="translate(13,2)"><use href="#star4" transform="scale(0.6)" fill="#e11d48"/></g><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><g transform="translate(17,2)"><use href="#star4" transform="scale(0.6)" fill="#22c55e"/></g><circle cx="12.5" cy="6.5" r=".8" fill="#222"/><circle cx="17.5" cy="6.5" r=".8" fill="#222"/></svg>'},
-    {id:'mp-oswald',color:'#4338ca',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21.5" y1="21.5" x2="28" y2="12" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><ellipse cx="28" cy="11" rx="2.5" ry="2" fill="#6366f1"/><ellipse cx="27.5" cy="10.5" rx="1" ry=".8" fill="#a5b4fc"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">?</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'},
-    {id:'mp-gertrude',color:'#be185d',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="tb-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g transform="translate(6,12)"><use href="#star4" transform="scale(1.5)" fill="#f0d5b0"/></g><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>'}
+    {id:'mp-heroguide',color:'#ffd700',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9" class="tb-body"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><g transform="translate(19,14)"><use href="#star4" transform="scale(1.5)" fill="#e8b88a"/></g><g style="transform-origin:19px 14px"><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><g transform="translate(22,10)"><use href="#star4" transform="scale(1.8)" fill="#ffd700"/></g></g></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><g transform="translate(13,2)"><use href="#star4" transform="scale(0.6)" fill="#e11d48"/></g><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><g transform="translate(17,2)"><use href="#star4" transform="scale(0.6)" fill="#22c55e"/></g><circle cx="12.5" cy="6.5" r=".8" fill="#222"/><circle cx="17.5" cy="6.5" r=".8" fill="#222"/></svg>'},
+    {id:'mp-seer',color:'#4338ca',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca" class="tb-body"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:20px 21px"><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21.5" y1="21.5" x2="28" y2="12" stroke="#8B4513" stroke-width="2.5" stroke-linecap="round" class="tb-weapon"/><ellipse cx="28" cy="11" rx="2.5" ry="2" fill="#6366f1"/><ellipse cx="27.5" cy="10.5" rx="1" ry=".8" fill="#a5b4fc"/></g></g><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">?</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>'},
+    {id:'mp-guardian',color:'#be185d',svg:'<svg viewBox="0 0 30 54"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8" class="tb-body"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><g class="tb-arm-g" style="transform-origin:15px 17px"><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><g style="transform-origin:9px 19px"><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g transform="translate(6,12)"><use href="#star4" transform="scale(1.5)" fill="#f0d5b0"/></g><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/></g></g><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>'}
   ];
   var label = days + ' Day' + (days !== 1 ? 's' : '') + ' Sober';
   var subtitle = days >= 365 ? 'ONE YEAR! Incredible!' : days >= 90 ? 'Quarter of a year - massive!' : days >= 30 ? 'One month strong!' : days >= 7 ? 'One week down!' : 'Amazing start!';
@@ -370,16 +370,16 @@ function showMilestoneParty(days) {
   document.body.appendChild(overlay);
   // Play celebrations
   setTimeout(function(){
-    var A = document.getElementById('mp-arthur');
-    var P = document.getElementById('mp-oswald');
-    var E = document.getElementById('mp-gertrude');
-    if (A) { A.style.animation = 'partyArthur .6s ease 3'; A.classList.add('celebrate'); setTimeout(function(){if(A)A.classList.remove('celebrate');},1800); }
-    if (P) { P.style.animation = 'partyOswald .6s ease 3'; P.classList.add('celebrate'); setTimeout(function(){if(P)P.classList.remove('celebrate');},1800); }
+    var A = document.getElementById('mp-heroguide');
+    var P = document.getElementById('mp-seer');
+    var E = document.getElementById('mp-guardian');
+    if (A) { A.style.animation = 'partyHeroGuide .6s ease 3'; A.classList.add('celebrate'); setTimeout(function(){if(A)A.classList.remove('celebrate');},1800); }
+    if (P) { P.style.animation = 'partySeer .6s ease 3'; P.classList.add('celebrate'); setTimeout(function(){if(P)P.classList.remove('celebrate');},1800); }
     if (E) { E.style.animation = 'partyErin .6s ease 3'; E.classList.add('celebrate'); setTimeout(function(){if(E)E.classList.remove('celebrate');},1800); }
   }, 300);
   setTimeout(function(){
-    if (A) { A.style.animation = 'partyArthur .5s ease infinite'; }
-    if (P) { P.style.animation = 'partyOswald .55s ease infinite'; }
+    if (A) { A.style.animation = 'partyHeroGuide .5s ease infinite'; }
+    if (P) { P.style.animation = 'partySeer .55s ease infinite'; }
     if (E) { E.style.animation = 'partyErin .5s ease infinite'; }
   }, 2400);
 }
@@ -715,7 +715,7 @@ function relapsePlanHTML() {
   var h = '';
   var rp = D.relapsePlan;
   h += '<h2 class="page-title">Relapse Plan</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-oswald);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg></div><div style="font-size:12px;color:var(--muted)">You\u2019re building your plan. This is your compass \u2014 forged through preparation, ready when called upon.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(67,56,202,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-seer);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L4 5v3c0 3 1.5 5 4 6 2.5-1 4-3 4-6V5z"/><g transform="translate(8,8)"><use href="#star4" transform="scale(2)" fill="rgba(255,255,255,.6)"/></g></svg></div><div style="font-size:12px;color:var(--muted)">You\u2019re building your plan. This is your compass \u2014 forged through preparation, ready when called upon.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Your relapse prevention plan, built step by step.</p>';
   if (rp && rp.triggers && rp.triggers.length) {
     h += '<div class="card" style="border-left:3px solid var(--accent)">';
@@ -731,13 +731,13 @@ function relapsePlanHTML() {
     }
     if (rp.commitment) { h += '<div style="font-size:12px;margin-bottom:4px;margin-top:6px;color:var(--muted)">My Commitment:</div><div class="quote" style="font-size:13px;margin:0">' + rp.commitment + '</div>'; }
     h += '</div>';
-    h += '<button class="btn btn-outline btn-sm" onclick="startOswaldWizard()" style="margin-top:8px">Revise Plan</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="startSeerWizard()" style="margin-top:8px">Revise Plan</button>';
   } else {
     h += '<div class="card" style="text-align:center;padding:24px">';
     h += '<div style="font-size:48px;margin-bottom:8px">&#129497;</div>';
     h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Build Your Plan</div>';
     h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">A step-by-step guide to build a personalized relapse prevention plan.</p>';
-    h += '<button class="btn btn-primary" onclick="startOswaldWizard()">Start Building</button>';
+    h += '<button class="btn btn-primary" onclick="startSeerWizard()">Start Building</button>';
     h += '</div>';
   }
   return h;
@@ -748,7 +748,7 @@ function chivalryCodeHTML() {
   var cc = D.chivalryCode || { code: [], checkins: [] };
   var h = '';
   h += '<h2 class="page-title">&#9876; My Values</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">"A person without a code is a wanderer. Define your principles, and every choice becomes clear."</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-guardian);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">"A person without a code is a wanderer. Define your principles, and every choice becomes clear."</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
 
   // Code list
@@ -861,7 +861,7 @@ function relapseGraveyardHTML() {
   var rg = D.relapseGraveyard || { graves: [] };
   var h = '';
   h += '<h2 class="page-title">&#9904; Relapse Graveyard</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(42,42,42,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Everyone who has struggled teaches the next how to stand. Honor the dead, keep walking."</em></div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(42,42,42,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-heroguide);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)"><em>"Everyone who has struggled teaches the next how to stand. Honor the dead, keep walking."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Past relapses are not failures — they are fallen comrades who taught you something. Mark them here with respect, and carry their lesson forward.</p>';
 
   // Import existing relapse dates
@@ -970,18 +970,18 @@ function graveRandom() {
   if (lessonEl) lessonEl.value = epitaphs[Math.floor(Math.random() * epitaphs.length)];
 }
 
-// ====== ROYAL PARDON (Arthur) ======
+// ====== ROYAL PARDON (Fresh Start) ======
 function royalPardonHTML() {
   var pardons = D.royalPardons || [];
   var h = '';
   h += '<h2 class="page-title">&#128081; Fresh Start</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"By the path we are building — you are forgiven. Rise and begin again with my blessing."</em></div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Arthur grants you a Fresh Start — not to erase what happened, but to sanctify your fresh start. This is your certificate of amnesty.</p>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-heroguide);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)"><em>"By the path we are building — you are forgiven. Rise and begin again."</em></div></div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Grant yourself a Fresh Start — not to erase what happened, but to honor your new beginning. This is your certificate of amnesty.</p>';
 
   // Grant a new pardon
   var lastRelapseDate = D.sobriety && D.sobriety.relapseDates && D.sobriety.relapseDates.length ? new Date(D.sobriety.relapseDates[D.sobriety.relapseDates.length-1]).toISOString().split('T')[0] : '';
   h += '<div class="card" style="border:2px solid var(--primary);background:var(--primary-light)"><h3 style="font-size:14px;margin-bottom:6px;text-align:center">&#128081; Grant a New Pardon</h3>';
-  h += '<p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px">After a relapse, Arthur invites you to accept his pardon and begin again with honor.</p>';
+  h += '<p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px">After a relapse, accept this pardon and begin again with honor.</p>';
   h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Date of relapse</label>';
   h += '<input type="date" id="pardon-date" value="' + lastRelapseDate + '" style="margin-bottom:6px">';
   h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What do you forgive yourself for?</label>';
@@ -1019,7 +1019,7 @@ function pardonCertificateHTML(p) {
     '<span>Forgiven: ' + grantedStr + '</span>' +
     '</div>' +
     '<div style="margin-top:6px">' + waxSealSVG(36) + '</div>' +
-    '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:2px">SEAL OF ARTHUR</div>' +
+    '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:2px">SEAL OF THE FRESH START</div>' +
     '</div>';
 }
 function pardonGrant(btn) {
@@ -1045,7 +1045,7 @@ function pardonGrant(btn) {
   var h = '<div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 40%,rgba(139,119,60,.12),transparent 70%);animation:pardonAmbient 3s ease-in-out infinite"></div>';
   h += '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px">';
 
-  // ---- Phase 1: Throne + Arthur scene ----
+  // ---- Phase 1: Throne + HeroGuide scene ----
   h += '<div id="pardon-scene" style="position:relative;width:' + sceneW + 'px;height:' + sceneH + 'px;animation:pardonThroneIn 1s cubic-bezier(.34,1.56,.64,1) both">';
 
   // Throne SVG
@@ -1067,8 +1067,8 @@ function pardonGrant(btn) {
   h += '<rect x="108" y="170" width="64" height="6" rx="2" fill="#3d2b1f" stroke="#8a7a5a" stroke-width=".5"/>';
   h += '<rect x="100" y="176" width="80" height="8" rx="2" fill="#2a1f15" stroke="#6a5a3a" stroke-width=".5"/>';
 
-  // Arthur seated - scaled down standing figure positioned on throne
-  h += '<g transform="translate(140,148) scale(1.8) translate(-15,-26)"><g id="pardon-arthur" style="animation:pardonArthurIn .8s ease .3s both">';
+  // HeroGuide seated - scaled down standing figure positioned on throne
+  h += '<g transform="translate(140,148) scale(1.8) translate(-15,-26)"><g id="pardon-heroguide" style="animation:pardonHeroGuideIn .8s ease .3s both">';
   // Body (robe)
   h += '<path d="M10.5 12 Q9 20 8 28 L8 38 Q8 40 9 41 L9 42 L21 42 L21 41 Q22 40 22 38 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9"/>';
   // Belt
@@ -1115,7 +1115,7 @@ function pardonGrant(btn) {
   h += '<path d="M15 17 L19 20 L22 22" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round" fill="none"/>';
   h += '</g></g>';
 
-  // ---- Phase 2: Floating scroll that Arthur hands over ----
+  // ---- Phase 2: Floating scroll that HeroGuide hands over ----
   h += '<g id="pardon-floating-scroll" style="transform-origin:140px 120px;opacity:0">';
   h += '<rect x="100" y="64" width="80" height="50" rx="4" fill="#fef9e7" stroke="#8a7a5a" stroke-width="1" id="pardon-scroll-body"/>';
   // Scroll roll top
@@ -1128,7 +1128,7 @@ function pardonGrant(btn) {
   h += '<g id="pardon-scroll-text" style="opacity:0;transform-origin:140px 89px">';
   h += '<text x="140" y="78" font-size="5" fill="#4a3728" font-weight="700" text-anchor="middle" font-family="serif">FRESH START</text>';
   h += '<text x="140" y="86" font-size="3" fill="#6a5a3a" text-anchor="middle" font-family="serif" font-style="italic">Know all who read these words...</text>';
-  h += '<text x="140" y="94" font-size="3.5" fill="#4a3728" text-anchor="middle" font-family="serif">I, Arthur, grant this fresh start to</text>';
+  h += '<text x="140" y="94" font-size="3.5" fill="#4a3728" text-anchor="middle" font-family="serif">Grant this fresh start to</text>';
   h += '<text x="140" y="100" font-size="4" fill="#6d28d9" font-weight="700" text-anchor="middle" font-family="serif">' + (D.name || 'Faithful One') + '</text>';
   h += '</g>';
   // Seal
@@ -1208,75 +1208,75 @@ function pardonGrant(btn) {
   });
 }
 
-var OSWALD_STEP = 0;
-var OSWALD_DATA = {};
+var SEER_STEP = 0;
+var SEER_DATA = {};
 var TRIGGER_OPTIONS = ['Stress','Loneliness','Boredom','Anger','Social pressure','Celebration','Financial trouble','Relationship conflict','Insomnia','Physical pain','Certain places','Certain people','Alcohol/drug cues','Anniversary dates','Holidays'];
 var INTERRUPT_OPTIONS = ['Call my sponsor','Go for a walk','Journal','Go to a meeting','Text a friend','Exercise','Meditate/Breathe','Read my commitment','Leave the situation','Listen to music','Take a nap','Drink water'];
-function startOswaldWizard() {
-  OSWALD_DATA = {};
+function startSeerWizard() {
+  SEER_DATA = {};
   var rp = D.relapsePlan;
   if (rp) {
-    OSWALD_DATA.triggers = rp.triggers ? rp.triggers.slice() : [];
-    OSWALD_DATA.warningSigns = rp.warningSigns || '';
-    OSWALD_DATA.interruptActions = rp.interruptActions ? rp.interruptActions.slice() : [];
-    OSWALD_DATA.contacts = rp.contacts ? JSON.parse(JSON.stringify(rp.contacts)) : [{name:'',phone:''},{name:'',phone:''}];
-    OSWALD_DATA.commitment = rp.commitment || '';
+    SEER_DATA.triggers = rp.triggers ? rp.triggers.slice() : [];
+    SEER_DATA.warningSigns = rp.warningSigns || '';
+    SEER_DATA.interruptActions = rp.interruptActions ? rp.interruptActions.slice() : [];
+    SEER_DATA.contacts = rp.contacts ? JSON.parse(JSON.stringify(rp.contacts)) : [{name:'',phone:''},{name:'',phone:''}];
+    SEER_DATA.commitment = rp.commitment || '';
   } else {
-    OSWALD_DATA.triggers = [];
-    OSWALD_DATA.warningSigns = '';
-    OSWALD_DATA.interruptActions = [];
-    OSWALD_DATA.contacts = [{name:'',phone:''},{name:'',phone:''}];
-    OSWALD_DATA.commitment = '';
+    SEER_DATA.triggers = [];
+    SEER_DATA.warningSigns = '';
+    SEER_DATA.interruptActions = [];
+    SEER_DATA.contacts = [{name:'',phone:''},{name:'',phone:''}];
+    SEER_DATA.commitment = '';
   }
-  OSWALD_STEP = 0;
-  renderOswaldStep();
+  SEER_STEP = 0;
+  renderSeerStep();
 }
-function renderOswaldStep() {
+function renderSeerStep() {
   var steps = ['Triggers','Warning Signs','Interrupt Actions','Emergency Contacts','Commitment','Review'];
-  var step = OSWALD_STEP;
-  if (step >= steps.length) { OSWALD_STEP = 0; return; }
+  var step = SEER_STEP;
+  if (step >= steps.length) { SEER_STEP = 0; return; }
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.id = 'oswald-ov';
+  overlay.id = 'seer-ov';
   overlay.style.background = 'rgba(0,0,0,0.6)';
   if (step === 0) playSound('magic');
   var body = '';
   var icon = ['&#128064;','&#128533;','&#128299;','&#128222;','&#128221;','&#9989;'][step] || '&#129497;';
-  var oswaldSays = ['Let\'s identify what might trigger a relapse. Check all that apply to you.','Good. Now what early warning signs do you usually feel before a craving hits?','Smart. What actions can you take to interrupt a craving when it starts?','Who can you call in an emergency? Add at least one person.','Write a short commitment statement. Read this when you need strength.','Here\'s your plan. Does everything look right?'][step] || '';
+  var seerSays = ['Let\'s identify what might trigger a relapse. Check all that apply to you.','Good. Now what early warning signs do you usually feel before a craving hits?','Smart. What actions can you take to interrupt a craving when it starts?','Who can you call in an emergency? Add at least one person.','Write a short commitment statement. Read this when you need strength.','Here\'s your plan. Does everything look right?'][step] || '';
   body += '<div style="font-size:40px;margin-bottom:4px">' + icon + '</div>';
   body += '<div style="font-size:13px;font-weight:700;color:var(--primary);margin-bottom:2px">Let\'s build your plan:</div>';
-  body += '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + oswaldSays + '</div>';
+  body += '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + seerSays + '</div>';
   if (step === 0) {
     body += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">';
     for (var i=0;i<TRIGGER_OPTIONS.length;i++) {
-      var sel = OSWALD_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]) !== -1;
-      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleOswaldTrigger('+i+')" style="font-size:11px">' + TRIGGER_OPTIONS[i] + '</button>';
+      var sel = SEER_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]) !== -1;
+      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleSeerTrigger('+i+')" style="font-size:11px">' + TRIGGER_OPTIONS[i] + '</button>';
     }
     body += '</div>';
   } else if (step === 1) {
-    body += '<textarea id="oswald-warning" placeholder="e.g. racing thoughts, irritability, isolating myself..." style="min-height:80px">' + OSWALD_DATA.warningSigns + '</textarea>';
+    body += '<textarea id="seer-warning" placeholder="e.g. racing thoughts, irritability, isolating myself..." style="min-height:80px">' + SEER_DATA.warningSigns + '</textarea>';
   } else if (step === 2) {
     body += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px">';
     for (var i=0;i<INTERRUPT_OPTIONS.length;i++) {
-      var sel = OSWALD_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]) !== -1;
-      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleOswaldInterrupt('+i+')" style="font-size:11px">' + INTERRUPT_OPTIONS[i] + '</button>';
+      var sel = SEER_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]) !== -1;
+      body += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleSeerInterrupt('+i+')" style="font-size:11px">' + INTERRUPT_OPTIONS[i] + '</button>';
     }
     body += '</div>';
   } else if (step === 3) {
     body += '<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted)">Contact 1</div>';
-    body += '<input id="oswald-contact1-name" placeholder="Name" value="' + (OSWALD_DATA.contacts[0]?OSWALD_DATA.contacts[0].name:'') + '" style="margin-bottom:4px">';
-    body += '<input id="oswald-contact1-phone" placeholder="Phone number" value="' + (OSWALD_DATA.contacts[0]?OSWALD_DATA.contacts[0].phone:'') + '" style="margin-bottom:10px">';
+    body += '<input id="seer-contact1-name" placeholder="Name" value="' + (SEER_DATA.contacts[0]?SEER_DATA.contacts[0].name:'') + '" style="margin-bottom:4px">';
+    body += '<input id="seer-contact1-phone" placeholder="Phone number" value="' + (SEER_DATA.contacts[0]?SEER_DATA.contacts[0].phone:'') + '" style="margin-bottom:10px">';
     body += '<div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--muted)">Contact 2</div>';
-    body += '<input id="oswald-contact2-name" placeholder="Name" value="' + (OSWALD_DATA.contacts[1]?OSWALD_DATA.contacts[1].name:'') + '" style="margin-bottom:4px">';
-    body += '<input id="oswald-contact2-phone" placeholder="Phone number" value="' + (OSWALD_DATA.contacts[1]?OSWALD_DATA.contacts[1].phone:'') + '">';
+    body += '<input id="seer-contact2-name" placeholder="Name" value="' + (SEER_DATA.contacts[1]?SEER_DATA.contacts[1].name:'') + '" style="margin-bottom:4px">';
+    body += '<input id="seer-contact2-phone" placeholder="Phone number" value="' + (SEER_DATA.contacts[1]?SEER_DATA.contacts[1].phone:'') + '">';
   } else if (step === 4) {
-    body += '<textarea id="oswald-commitment" placeholder="e.g. I deserve a better life. I will pause, breathe, and reach out before using." style="min-height:80px">' + OSWALD_DATA.commitment + '</textarea>';
+    body += '<textarea id="seer-commitment" placeholder="e.g. I deserve a better life. I will pause, breathe, and reach out before using." style="min-height:80px">' + SEER_DATA.commitment + '</textarea>';
   } else if (step === 5) {
-    var t = OSWALD_DATA.triggers || [];
-    var w = OSWALD_DATA.warningSigns || '';
-    var ia = OSWALD_DATA.interruptActions || [];
-    var co = OSWALD_DATA.contacts || [];
-    var cm = OSWALD_DATA.commitment || '';
+    var t = SEER_DATA.triggers || [];
+    var w = SEER_DATA.warningSigns || '';
+    var ia = SEER_DATA.interruptActions || [];
+    var co = SEER_DATA.contacts || [];
+    var cm = SEER_DATA.commitment || '';
     body += '<div style="text-align:left;background:var(--primary-light);padding:12px;border-radius:10px;font-size:12px;line-height:1.6">';
     body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">Triggers:</div><div style="margin-bottom:8px">' + (t.length ? t.join(', ') : 'None selected') + '</div>';
     body += '<div style="font-weight:700;margin-bottom:4px;color:var(--primary)">Warning Signs:</div><div style="margin-bottom:8px">' + (w || 'None') + '</div>';
@@ -1294,50 +1294,50 @@ function renderOswaldStep() {
     steps.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'var(--primary)':'var(--border)')+';transition:.2s"></div>'; }).join('') +
     '</div>' +
     '<div style="display:flex;gap:8px">' +
-    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="saveOswaldStep();OSWALD_STEP--;renderOswaldStep()" style="flex:1">Back</button>' : '') +
-    '<button class="btn btn-sm btn-primary" onclick="saveOswaldStep();OSWALD_STEP++;renderOswaldStep()" style="flex:1">' + (step < steps.length-1 ? 'Next' : 'Save Plan') + '</button>' +
+    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="saveSeerStep();SEER_STEP--;renderSeerStep()" style="flex:1">Back</button>' : '') +
+    '<button class="btn btn-sm btn-primary" onclick="saveSeerStep();SEER_STEP++;renderSeerStep()" style="flex:1">' + (step < steps.length-1 ? 'Next' : 'Save Plan') + '</button>' +
     '</div>' +
-    '<button onclick="document.getElementById(\'oswald-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">?</button>' +
+    '<button onclick="document.getElementById(\'seer-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">?</button>' +
     '</div>';
-  var existing = document.getElementById('oswald-ov');
+  var existing = document.getElementById('seer-ov');
   if (existing) existing.remove();
   document.body.appendChild(overlay);
 }
-function toggleOswaldTrigger(i) {
-  var idx = OSWALD_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]);
-  if (idx === -1) OSWALD_DATA.triggers.push(TRIGGER_OPTIONS[i]);
-  else OSWALD_DATA.triggers.splice(idx,1);
-  renderOswaldStep();
+function toggleSeerTrigger(i) {
+  var idx = SEER_DATA.triggers.indexOf(TRIGGER_OPTIONS[i]);
+  if (idx === -1) SEER_DATA.triggers.push(TRIGGER_OPTIONS[i]);
+  else SEER_DATA.triggers.splice(idx,1);
+  renderSeerStep();
 }
-function toggleOswaldInterrupt(i) {
-  var idx = OSWALD_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]);
-  if (idx === -1) OSWALD_DATA.interruptActions.push(INTERRUPT_OPTIONS[i]);
-  else OSWALD_DATA.interruptActions.splice(idx,1);
-  renderOswaldStep();
+function toggleSeerInterrupt(i) {
+  var idx = SEER_DATA.interruptActions.indexOf(INTERRUPT_OPTIONS[i]);
+  if (idx === -1) SEER_DATA.interruptActions.push(INTERRUPT_OPTIONS[i]);
+  else SEER_DATA.interruptActions.splice(idx,1);
+  renderSeerStep();
 }
-function saveOswaldStep() {
+function saveSeerStep() {
   var el;
-  el = document.getElementById('oswald-warning');
-  if (el) OSWALD_DATA.warningSigns = el.value;
-  el = document.getElementById('oswald-commitment');
-  if (el) OSWALD_DATA.commitment = el.value;
-  el = document.getElementById('oswald-contact1-name');
-  if (el && OSWALD_DATA.contacts[0]) OSWALD_DATA.contacts[0].name = el.value;
-  el = document.getElementById('oswald-contact1-phone');
-  if (el && OSWALD_DATA.contacts[0]) OSWALD_DATA.contacts[0].phone = el.value;
-  el = document.getElementById('oswald-contact2-name');
-  if (el && OSWALD_DATA.contacts[1]) OSWALD_DATA.contacts[1].name = el.value;
-  el = document.getElementById('oswald-contact2-phone');
-  if (el && OSWALD_DATA.contacts[1]) OSWALD_DATA.contacts[1].phone = el.value;
-  if (OSWALD_STEP === 5) {
-    OSWALD_DATA.contacts = OSWALD_DATA.contacts.filter(function(c){ return c.name || c.phone; });
-    D.relapsePlan = OSWALD_DATA;
+  el = document.getElementById('seer-warning');
+  if (el) SEER_DATA.warningSigns = el.value;
+  el = document.getElementById('seer-commitment');
+  if (el) SEER_DATA.commitment = el.value;
+  el = document.getElementById('seer-contact1-name');
+  if (el && SEER_DATA.contacts[0]) SEER_DATA.contacts[0].name = el.value;
+  el = document.getElementById('seer-contact1-phone');
+  if (el && SEER_DATA.contacts[0]) SEER_DATA.contacts[0].phone = el.value;
+  el = document.getElementById('seer-contact2-name');
+  if (el && SEER_DATA.contacts[1]) SEER_DATA.contacts[1].name = el.value;
+  el = document.getElementById('seer-contact2-phone');
+  if (el && SEER_DATA.contacts[1]) SEER_DATA.contacts[1].phone = el.value;
+  if (SEER_STEP === 5) {
+    SEER_DATA.contacts = SEER_DATA.contacts.filter(function(c){ return c.name || c.phone; });
+    D.relapsePlan = SEER_DATA;
     saveData();
-    document.getElementById('oswald-ov').remove();
+    document.getElementById('seer-ov').remove();
     setTimeout(showRelapseCutscene, 300);
     return;
   }
-  renderOswaldStep();
+  renderSeerStep();
 }
 
 function showRelapseCutscene() {
@@ -1348,7 +1348,7 @@ function showRelapseCutscene() {
   overlay.style.background = 'rgba(0,0,0,.65)';
   overlay.style.alignItems = 'center';
   var h = '<div class="journal-letter" id="rc-scroll" style="animation:scrollUnroll 1s cubic-bezier(.22,1,.36,1) both">';
-  h += '<div style="text-align:center;opacity:0" id="rc-char">'+_npcStandalone('Arthur')+'</div>';
+  h += '<div style="text-align:center;opacity:0" id="rc-char">'+_npcStandalone()+'</div>';
   h += '<div class="scroll-header" id="rc-title" style="opacity:0">';
   h += '<div class="scroll-date">YOUR RELAPSE PLAN</div>';
   h += '<div class="scroll-title">Your Relapse Plan</div>';
@@ -1376,7 +1376,7 @@ function showRelapseCutscene() {
   setTimeout(function(){var e=overlay.querySelector('#rc-close');if(e)e.style.display='inline-block';if(e)e.style.animation='letterAppear .4s ease both'},2600);
 }
 function showRelapsePlan() {
-  startOswaldWizard();
+  startSeerWizard();
 }
 
 // ====== TIME CAPSULE ======
@@ -1387,7 +1387,7 @@ function timeCapsuleHTML() {
   h += '<h2 class="page-title">&#128230; Time Capsule</h2>';
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="font-size:36px;margin-bottom:6px">&#128230;</div>';
-  h += '<p style="font-size:14px;line-height:1.6;color:var(--text)">Write a letter to your <strong>future self</strong>. Arthur will seal it away and remind you when it\'s time to open it. A message from your past  exactly when you need it most.</p>';
+  h += '<p style="font-size:14px;line-height:1.6;color:var(--text)">Write a letter to your <strong>future self</strong>. It will be sealed away and returned to you when the time is right. A message from your past  exactly when you need it most.</p>';
   if (readyCount > 0) {
     h += '<div style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:10px 14px;border-radius:10px;margin:10px 0;font-weight:700;font-size:16px">?? ' + readyCount + ' capsule' + (readyCount>1?'s are':' is') + ' ready to open!</div>';
   }
@@ -1445,7 +1445,7 @@ function showNewCapsule() {
   for (var i=0;i<durations.length;i++) {
     durOpts += '<button class="btn btn-sm btn-outline" data-months="'+durations[i].val+'" onclick="[].forEach.call(this.parentNode.children,function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';document.getElementById(\'capsule-dur\').value='+durations[i].val+'" style="flex:1;font-size:11px">'+durations[i].label+'</button>';
   }
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:10px"><div style="font-size:40px">&#128230;</div><h3 style="font-size:18px;font-weight:700;margin:4px 0">Seal a Letter to Your Future Self</h3><p style="font-size:12px;color:var(--muted)">Arthur will lock this away until the time is right.</p></div><input type="text" id="capsule-title" placeholder="Give your letter a title..." style="margin-bottom:6px"><textarea id="capsule-message" placeholder="Write your message..." style="min-height:100px;margin-bottom:6px"></textarea><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px">When should Arthur return this?</div><div style="display:flex;gap:4px;margin-bottom:10px" id="dur-options">'+durOpts+'</div><input type="hidden" id="capsule-dur" value="1"><button class="btn btn-primary" onclick="saveNewCapsule()" style="width:100%">&#128230; Seal It</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;width:100%">Cancel</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:10px"><div style="font-size:40px">&#128230;</div><h3 style="font-size:18px;font-weight:700;margin:4px 0">Seal a Letter to Your Future Self</h3><p style="font-size:12px;color:var(--muted)">This will be kept locked away until the time is right.</p></div><input type="text" id="capsule-title" placeholder="Give your letter a title..." style="margin-bottom:6px"><textarea id="capsule-message" placeholder="Write your message..." style="min-height:100px;margin-bottom:6px"></textarea><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:4px">When should this be returned?</div><div style="display:flex;gap:4px;margin-bottom:10px" id="dur-options">'+durOpts+'</div><input type="hidden" id="capsule-dur" value="1"><button class="btn btn-primary" onclick="saveNewCapsule()" style="width:100%">&#128230; Seal It</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;width:100%">Cancel</button></div>';
   document.body.appendChild(overlay);
   setTimeout(function(){
     var first = overlay.querySelector('#dur-options .btn');
@@ -1490,57 +1490,57 @@ function openCapsuleAnimation(idx) {
   saveData();
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:440px;text-align:center;padding:24px"><div style="font-size:60px;animation:chestShake 1.5s ease forwards">&#128230;</div><div style="font-size:16px;font-weight:700;color:var(--accent);margin:6px 0">Your Time Capsule Has Arrived!</div><div style="font-size:13px;color:var(--muted);margin-bottom:10px">Arthur kept this safe for you. Here\'s a message from your past.</div><div style="font-size:40px;animation:letterReveal .8s ease .6s both">&#128140;</div><div style="font-weight:700;font-size:18px;margin:6px 0;animation:letterReveal .8s ease .8s both">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div><div class="card" style="text-align:left;font-size:14px;line-height:1.7;white-space:pre-wrap;animation:letterReveal .8s ease 1s both">' + c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</div><div style="display:flex;gap:6px;margin-top:12px;animation:letterReveal .6s ease 1.4s both"><div style="flex:1;font-size:12px;color:var(--muted)">Sealed ' + new Date(c.createdAt).toLocaleDateString() + '</div><button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();render()" style="width:auto">&#10003; Received</button></div></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:440px;text-align:center;padding:24px"><div style="font-size:60px;animation:chestShake 1.5s ease forwards">&#128230;</div><div style="font-size:16px;font-weight:700;color:var(--accent);margin:6px 0">Your Time Capsule Has Arrived!</div><div style="font-size:13px;color:var(--muted);margin-bottom:10px">This message was kept safe for you. Here\'s a letter from your past.</div><div style="font-size:40px;animation:letterReveal .8s ease .6s both">&#128140;</div><div style="font-weight:700;font-size:18px;margin:6px 0;animation:letterReveal .8s ease .8s both">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div><div class="card" style="text-align:left;font-size:14px;line-height:1.7;white-space:pre-wrap;animation:letterReveal .8s ease 1s both">' + c.message.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') + '</div><div style="display:flex;gap:6px;margin-top:12px;animation:letterReveal .6s ease 1.4s both"><div style="flex:1;font-size:12px;color:var(--muted)">Sealed ' + new Date(c.createdAt).toLocaleDateString() + '</div><button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove();render()" style="width:auto">&#10003; Received</button></div></div>';
   document.body.appendChild(overlay);
 }
 
 
-var GERTRUDE_QUESTIONS = [
+var GUARDIAN_QUESTIONS = [
   {q:'What situations or environments make you feel most at risk?',pl:'e.g. parties, certain people, times of day, stress at work'},
   {q:'Who is in your support network that you can reach out to?',pl:'e.g. sponsor, therapist, family member, close friend'},
   {q:'What healthy activities or coping strategies work best for you?',pl:'e.g. exercise, meditation, journaling, calling a friend'},
   {q:'What early warning signs tell you a relapse might be near?',pl:'e.g. irritability, isolation, cravings, sleep changes'},
   {q:'What is your deepest motivation for staying in recovery?',pl:'e.g. family, health, self-respect, future goals'}
 ];
-var GERTRUDE_Q_STEP = 0;
-var GERTRUDE_Q_ANSWERS = [];
-function startGertrudeQuestions() {
-  GERTRUDE_Q_STEP = 0;
-  GERTRUDE_Q_ANSWERS = D.safetyAnswers || ['','','','',''];
-  renderGertrudeQuestion();
+var GUARDIAN_Q_STEP = 0;
+var GUARDIAN_Q_ANSWERS = [];
+function startGuardianQuestions() {
+  GUARDIAN_Q_STEP = 0;
+  GUARDIAN_Q_ANSWERS = D.safetyAnswers || ['','','','',''];
+  renderGuardianQuestion();
 }
-function renderGertrudeQuestion() {
-  var step = GERTRUDE_Q_STEP;
-  if (step >= GERTRUDE_QUESTIONS.length) {
-    D.safetyAnswers = GERTRUDE_Q_ANSWERS;
+function renderGuardianQuestion() {
+  var step = GUARDIAN_Q_STEP;
+  if (step >= GUARDIAN_QUESTIONS.length) {
+    D.safetyAnswers = GUARDIAN_Q_ANSWERS;
     D._safetyQuestionsDone = true;
     saveData();
-    var ov = document.getElementById('gertrude-q-ov');
+    var ov = document.getElementById('guardian-q-ov');
     if (ov) ov.remove();
     render();
     return;
   }
-  var q = GERTRUDE_QUESTIONS[step];
+  var q = GUARDIAN_QUESTIONS[step];
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.id = 'gertrude-q-ov';
+  overlay.id = 'guardian-q-ov';
   overlay.style.background = 'rgba(0,0,0,0.6)';
   overlay.innerHTML =
     '<div style="background:var(--card);max-width:380px;width:90%;margin:0 auto;border-radius:20px;padding:28px 20px 20px;text-align:center;animation:siFade .3s ease;position:relative;max-height:85vh;overflow-y:auto">' +
     '<div style="font-size:40px;margin-bottom:4px">&#128105;</div>' +
     '<div style="font-size:13px;font-weight:700;color:var(--rose);margin-bottom:2px">Consider:</div>' +
     '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + q.q + '</div>' +
-    '<textarea id="gertrude-q-input" placeholder="' + q.pl + '" style="min-height:80px">' + (GERTRUDE_Q_ANSWERS[step] || '') + '</textarea>' +
+    '<textarea id="guardian-q-input" placeholder="' + q.pl + '" style="min-height:80px">' + (GUARDIAN_Q_ANSWERS[step] || '') + '</textarea>' +
     '<div style="display:flex;gap:6px;justify-content:center;margin:14px 0 10px">' +
-    GERTRUDE_QUESTIONS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'#ec4899':'var(--border)')+';transition:.2s"></div>'; }).join('') +
+    GUARDIAN_QUESTIONS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'#ec4899':'var(--border)')+';transition:.2s"></div>'; }).join('') +
     '</div>' +
     '<div style="display:flex;gap:8px">' +
-    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="GERTRUDE_Q_ANSWERS[GERTRUDE_Q_STEP]=document.getElementById(\'gertrude-q-input\').value;GERTRUDE_Q_STEP--;renderGertrudeQuestion()" style="flex:1">Back</button>' : '') +
-    '<button class="btn btn-sm btn-primary" onclick="GERTRUDE_Q_ANSWERS[GERTRUDE_Q_STEP]=document.getElementById(\'gertrude-q-input\').value;GERTRUDE_Q_STEP++;renderGertrudeQuestion()" style="flex:1">' + (step < GERTRUDE_QUESTIONS.length-1 ? 'Next' : 'Done') + '</button>' +
+    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="GUARDIAN_Q_ANSWERS[GUARDIAN_Q_STEP]=document.getElementById(\'guardian-q-input\').value;GUARDIAN_Q_STEP--;renderGuardianQuestion()" style="flex:1">Back</button>' : '') +
+    '<button class="btn btn-sm btn-primary" onclick="GUARDIAN_Q_ANSWERS[GUARDIAN_Q_STEP]=document.getElementById(\'guardian-q-input\').value;GUARDIAN_Q_STEP++;renderGuardianQuestion()" style="flex:1">' + (step < GUARDIAN_QUESTIONS.length-1 ? 'Next' : 'Done') + '</button>' +
     '</div>' +
-    '<button onclick="document.getElementById(\'gertrude-q-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">?</button>' +
+    '<button onclick="document.getElementById(\'guardian-q-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">?</button>' +
     '</div>';
-  var existing = document.getElementById('gertrude-q-ov');
+  var existing = document.getElementById('guardian-q-ov');
   if (existing) existing.remove();
   document.body.appendChild(overlay);
 }
@@ -1552,13 +1552,13 @@ function safetyHTML() {
     h += '<div style="font-size:48px;margin-bottom:8px">&#128105;</div>';
     h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Build Your Safety Plan</div>';
     h += '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">Answer a few questions to build a personalized safety plan.</p>';
-    h += '<button class="btn btn-primary" onclick="startGertrudeQuestions()" style="margin-top:8px">Get Started</button>';
+    h += '<button class="btn btn-primary" onclick="startGuardianQuestions()" style="margin-top:8px">Get Started</button>';
     h += '</div>';
     return h;
   }
   h += '<h2 class="page-title">My Addiction Targets</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. You\'ll get a personalized safety plan for each one.</p>';
-  h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div><h3 style="margin:0;font-size:15px">Safety Plans</h3></div></div>';
+  h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-guardian);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div><h3 style="margin:0;font-size:15px">Safety Plans</h3></div></div>';
   var addictions = D.targetAddictions || [];
   if (!addictions.length) {
     h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose one or more addictions you want to work on:</p>';
@@ -1684,7 +1684,7 @@ function render() {
     more: moreHTML, journal: journalHTML, library: libraryHTML, music: musicHTML,
     reports: reportsHTML, buddy: buddyHTML, coping: copingHTML,
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
-    calendar: calendarHTML, safety: safetyHTML, oswald: oswaldTowerHTML,
+    calendar: calendarHTML, safety: safetyHTML, seer: seerTowerHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
     insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML, achievements: achievementsHTML, alliances: alliancesHTML, mywhy: myWhyHTML,
   };

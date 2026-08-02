@@ -535,7 +535,7 @@ var RECOVERY_PROGRAMS = {
       'Week 3: Connection — Review your relapse prevention plan. Update it if needed.',
       'Week 3: Connection — Reflect on how connection has helped your recovery this week.',
       'Week 4: Growth — Take the PHQ-9 or GAD-7 screening. Compare to your last result.',
-      'Week 4: Growth — Write a letter to your future self. Arthur will deliver it as a time capsule.',
+      'Week 4: Growth — Write a letter to your future self. It will be kept as a time capsule.',
       'Week 4: Growth — Review your insights page. What patterns do you see?',
       'Week 4: Growth — Set one recovery goal for the next month. Make it specific.',
       'Week 4: Growth — Share your progress with someone you trust.',
@@ -1306,7 +1306,7 @@ var ROUTINE_POOLS = {
 function artDailyRoutineHTML() {
   var today = new Date().toDateString();
   if (D._artRoutineDate === today && D._artRoutine) return D._artRoutine;
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div><h3 style="margin:0;font-size:15px">Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
+  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-heroguide);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div><h3 style="margin:0;font-size:15px">Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
   if (!D.journal.length) {
     h += '<div class="empty-state">Write in your journal to get a personalized daily routine.</div></div>';
     return h;
@@ -2033,7 +2033,7 @@ var RECOVERY_VIGNETTES = {
     "A woman I sponsor used to check her locks seven times before bed. I asked her to say out loud: 'The door is locked. I am safe.' Three times, not seven. Her brain fought it at first. After a month, she believed it."
   ],
   happy:[
-    "A man came to me after 6 months sober, grinning ear to ear. He said 'Arthur, I laughed today. Really laughed. I forgot what that felt like.' I told him: 'Joy doesn't betray your past. It honors your recovery.'",
+    "A man came to me after 6 months sober, grinning ear to ear. He said 'I laughed today. Really laughed. I forgot what that felt like.' I told him: 'Joy doesn't betray your past. It honors your recovery.'",
     "I watched a woman buy her first non-addicted birthday gift with her own money  a necklace for her sister. She put it on her sister herself. They both cried. She told me later: 'I didn't know I could feel this way and not want to ruin it.'",
     "A young man called me just to say he'd cooked a full meal for the first time in years. 'It's just pasta,' he said. 'No, it's not,' I told him. 'That's a feast of reclamation.'"
   ],
@@ -2640,7 +2640,7 @@ var DEFAULT_COPING = [
 
 function copingHTML() {
   var h = '<h2 class="page-title">'+t('Coping Cards')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-gertrude);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">These cards are tools for your kit — use them when the path is steep.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--accent);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(45,90,90,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-guardian);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div style="font-size:12px;color:var(--muted)">These cards are tools for your kit — use them when the path is steep.</div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Tap a card to expand. Use these when you need support.</p>';
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="margin-bottom:8px">Breathing Exercise</button>';
   var cards = DEFAULT_COPING.concat(D.customCopingCards || []);
@@ -2733,7 +2733,7 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; '+t('Relapse Rescue')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; '+t('Relapse Graveyard')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'oswald\')" style="border-color:#4338ca">&#127987; Your View</div>';
+  h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; Your View</div>';
   h += '</div>';
 
   // Journal-based insights
@@ -2793,7 +2793,7 @@ function careHTML() {
 
   h += '<div class="card"><h3>'+t('Addiction Assessment')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Check in with yourself about your substance use.')+'</p><button class="btn btn-outline btn-sm" onclick="goTo(\'assessment\')">'+t('Take Assessment')+'</button></div>';
 
-  // Arthur's Safety Plan
+  // HeroGuide's Safety Plan
   h += safetyPlanHTML();
 
   return h;
@@ -3200,7 +3200,7 @@ function relapseRescueHTML() {
   return h;
 }
 
-// ====== ARTHUR'S INSIGHTS (PATTERN DETECTION) ======
+// ====== HEROGUIDE'S INSIGHTS (PATTERN DETECTION) ======
 function buildMoodTopicInsights() {
   var insights = [];
   if (!D.journal || D.journal.length < 3) return insights;
@@ -3286,7 +3286,7 @@ function buildRiskAssessment() {
   return risk;
 }
 
-function buildArthurInsights() {
+function buildHeroGuideInsights() {
   var insights = [];
   if (!D.relapseRescue) D.relapseRescue = { logs: [], followUps: [] };
 
@@ -3411,7 +3411,7 @@ function buildArthurInsights() {
 }
 
 function insightsHTML() {
-  var insights = buildArthurInsights();
+  var insights = buildHeroGuideInsights();
   var risk = buildRiskAssessment();
   var h = '<h2 class="page-title">&#128302; '+t('Insights')+'</h2>';
 
@@ -3959,7 +3959,7 @@ function musicHTML() {
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Curated suggestions to match how you\'re feeling. Open in your favorite platform.</p>';
   // Recovery playlist
   if (D.playlist && D.playlist.length) {
-    h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#9835;</div><h3 style="margin:0">My Recovery Playlist</h3></div><p style="font-size:12px;color:var(--muted);margin-bottom:6px">Songs Arthur recommended from your journal reflections.</p>';
+    h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#9835;</div><h3 style="margin:0">My Recovery Playlist</h3></div><p style="font-size:12px;color:var(--muted);margin-bottom:6px">Songs suggested from your journal reflections.</p>';
     for (var pi=0;pi<D.playlist.length;pi++) {
       var s = D.playlist[pi];
       h += '<div class="music-item" style="padding:8px"><div class="info"><div class="mood">' + safe(s.title) + '</div><div class="desc">' + safe(s.artist) + ' &middot; ' + safe(s.dateAdded) + '</div><div class="platforms"><a href="' + safe(s.url_spotify) + '" target="_blank">Spotify</a>' + (s.url_youtube ? '<a href="' + safe(s.url_youtube) + '" target="_blank">YouTube</a>' : '') + (s.url_apple ? '<a href="' + safe(s.url_apple) + '" target="_blank">Apple Music</a>' : '') + '</div></div></div>';
@@ -4591,7 +4591,7 @@ function showAddictionPrompt() {
   var addictions = D.targetAddictions || [];
   var h = '<div class="overlay-content" style="max-width:420px;text-align:center">';
   h += '<div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><h3 style="font-size:18px;font-weight:700;margin:0">What Are You Working On?</h3></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you want to overcome. Arthur will create safety plans for each one.</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you want to overcome. Safety plans are built for each one.</p>';
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">';
   for (var i=0;i<ADDICTION_TYPES.length;i++) {
     var sel = addictions.indexOf(ADDICTION_TYPES[i]) >= 0;
@@ -4954,7 +4954,7 @@ function myWhyHTML() {
   var w = D.myWhy || {};
   if (!w.reasons) w.reasons = [];
   var h = '<h2 class="page-title">&#10084; '+t('My Why')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-arthur);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#10084;</div><div style="font-size:12px;color:var(--muted)">Arthur says: <em>"Every traveler needs to know where they\'re headed. When the road gets dark, this board will remind you why you started."</em></div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-heroguide);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px">&#10084;</div><div style="font-size:12px;color:var(--muted)"><em>"Every traveler needs to know where they\'re headed. When the road gets dark, this board will remind you why you started."</em></div></div></div>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t("What's your why?")+' Pin the reasons you chose recovery here. These will appear when cravings hit to remind you what\'s at stake.</p>';
 
   // Stats
@@ -4993,7 +4993,7 @@ function myWhyHTML() {
 
   // Preview during cravings note
   h += '<div class="card" style="border-left:3px solid var(--accent);background:var(--primary-light);padding:12px;margin-top:8px">';
-  h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px">&#128161;</span><div><div style="font-weight:700;font-size:13px">'+t('How this helps')+'</div><p style="font-size:12px;color:var(--muted);line-height:1.4;margin:2px 0 0">'+t('When you log a craving, Arthur will show your Why board to remind you why you started.')+'</p></div></div>';
+  h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:24px">&#128161;</span><div><div style="font-weight:700;font-size:13px">'+t('How this helps')+'</div><p style="font-size:12px;color:var(--muted);line-height:1.4;margin:2px 0 0">'+t('When you log a craving, your Why board will remind you why you started.')+'</p></div></div>';
   h += '</div>';
 
   return h;
@@ -5037,7 +5037,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '</div></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Night Watch')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveDataSilent();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">&#128220; '+t('Parchment Mode')+'</span><input type="checkbox" onchange="D.parchmentMode=this.checked;saveDataSilent();applyTheme()" '+(D.parchmentMode?'checked':'')+' style="width:auto"></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Your Quests')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Arthur creates safety plans based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Your Quests')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Safety plans will be built based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
   var addictions = D.targetAddictions || [];
   for (var ati=0;ati<ADDICTION_TYPES.length;ati++) {
     var sel = addictions.indexOf(ADDICTION_TYPES[ati]) >= 0;
@@ -5405,7 +5405,7 @@ function showShareQR() {
 function logCraving() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#128293;</div><h3 style="font-size:18px;font-weight:700;margin:0">'+t('Log a Craving')+'</h3><p style="font-size:12px;color:var(--muted);margin-top:2px">'+t('Track when cravings hit so Arthur can spot patterns.')+'</p></div>';
+  var h = '<div class="overlay-content" style="max-width:420px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#128293;</div><h3 style="font-size:18px;font-weight:700;margin:0">'+t('Log a Craving')+'</h3><p style="font-size:12px;color:var(--muted);margin-top:2px">'+t('Track when cravings hit so patterns can be spotted.')+'</p></div>';
   h += '<div style="font-size:13px;font-weight:600;margin-bottom:4px">'+t('Intensity (1-10):')+' <span id="craving-val" style="color:var(--primary)">5</span></div>';
   h += '<input type="range" min="1" max="10" value="5" oninput="document.getElementById(\'craving-val\').textContent=this.value" style="width:100%;margin-bottom:10px">';
   h += '<input type="text" id="craving-trigger" placeholder="'+t('What triggered it? (e.g. stress, boredom, social pressure)')+'" style="margin-bottom:8px">';
@@ -5559,7 +5559,7 @@ function showCravingPatterns() {
 function cravingCardHTML() {
   var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#128293;</div><h3 style="margin:0">'+t('Craving Log')+'</h3></div>';
   if (!D.cravings || !D.cravings.length) {
-    h += '<div class="empty-state">'+t('Log your first craving to start seeing patterns. Arthur will analyze your triggers over time.')+'</div>';
+    h += '<div class="empty-state">'+t('Log your first craving to start seeing patterns. Your triggers will be analyzed over time.')+'</div>';
   } else {
     h += '<p style="font-size:12px;color:var(--muted);margin-bottom:6px">' + D.cravings.length + ' '+t('cravings logged')+'</p>';
     h += '<input type="text" id="cs" placeholder="'+t('Search cravings...')+'" oninput="filterCravings(this.value)" style="margin-bottom:8px;width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box">';
@@ -6385,15 +6385,15 @@ function showShareCard() {
   var pledgeStreak = calcPledgeStreak();
 
   // Character SVGs (reuse team battle poses)
-  var arthurSVG = '<svg viewBox="0 0 30 54" style="width:50px;height:90px"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><g transform="translate(19,14)"><use href="#star4" transform="scale(1.5)" fill="#e8b88a"/></g><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><g transform="translate(22,10)"><use href="#star4" transform="scale(1.8)" fill="#ffd700"/></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><g transform="translate(13,2)"><use href="#star4" transform="scale(0.6)" fill="#e11d48"/></g><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><g transform="translate(17,2)"><use href="#star4" transform="scale(0.6)" fill="#34d399"/></g></svg>';
-  var oswaldSVG = '<svg viewBox="0 0 30 54" style="width:50px;height:90px"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round"/><g transform="translate(27,9)"><use href="#star4" transform="scale(2.5)" fill="#a5b4fc"/></g><g transform="translate(27,9)"><use href="#star4" transform="scale(1)" fill="#e0e7ff"/></g><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">?</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>';
-  var gertrudeSVG = '<svg viewBox="0 0 30 54" style="width:50px;height:90px"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g transform="translate(6,12)"><use href="#star4" transform="scale(1.5)" fill="#f0d5b0"/></g><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>';
+  var heroguideSVG = '<svg viewBox="0 0 30 54" style="width:50px;height:90px"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="11" y2="39" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="11" y1="39" x2="8" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M6 49 L11 49 L12 52 L5 52 Z" fill="#6d28d9"/><line x1="15" y1="30" x2="20" y2="38" stroke="#e8b88a" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="38" x2="23" y2="51" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><path d="M19 49 L24 49 L25 52 L18 52 Z" fill="#6d28d9"/><path d="M10.5 12 Q9 20 8 28 L8 44 Q8 48 9 49 L9 51 L21 51 L21 49 Q22 48 22 44 L22 28 Q21 20 19.5 12 Z" fill="#6d28d9"/><line x1="15" y1="12" x2="15" y2="48" stroke="#ffd700" stroke-width="0.8"/><rect x="9" y="26" width="12" height="2.5" rx="1" fill="#ffd700"/><circle cx="15" cy="27.25" r="1.5" fill="#e11d48"/><path d="M15 17 L19 14" stroke="#e8b88a" stroke-width="3" stroke-linecap="round" fill="none"/><g transform="translate(19,14)"><use href="#star4" transform="scale(1.5)" fill="#e8b88a"/></g><line x1="19" y1="14" x2="21" y2="10" stroke="#e8b88a" stroke-width="2.5" stroke-linecap="round"/><g transform="translate(22,10)"><use href="#star4" transform="scale(1.8)" fill="#ffd700"/></g><ellipse cx="15" cy="8" rx="5.5" ry="5.5" fill="#e8b88a"/><path d="M9.5 5 Q9.5 2 12 1.5 Q15 1 18 1.5 Q20.5 2 20.5 5 Q20.5 3.5 17 3 Q15 2.8 13 3 Q9.5 3.5 9.5 5" fill="#8B4513"/><path d="M11.5 10 Q11 12.5 12 15 Q13.5 17 15 17 Q16.5 17 18 15 Q19 12.5 18.5 10 Z" fill="#8B4513"/><path d="M12 11 Q12.5 13 15 13.5 Q17.5 13 18 11" fill="#6B3410" opacity=".5"/><path d="M10.5 3 L11 0.5 L12.5 2 L15 0 L17.5 2 L19 0.5 L19.5 3 Z" fill="#ffd700" stroke="#b8860b" stroke-width="0.4"/><rect x="10.5" y="3" width="9" height="2" rx="0.5" fill="#ffd700" stroke="#b8860b" stroke-width="0.3"/><g transform="translate(13,2)"><use href="#star4" transform="scale(0.6)" fill="#e11d48"/></g><circle cx="15" cy="1.2" r="0.7" fill="#3b82f6"/><g transform="translate(17,2)"><use href="#star4" transform="scale(0.6)" fill="#34d399"/></g></svg>';
+  var seerSVG = '<svg viewBox="0 0 30 54" style="width:50px;height:90px"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><line x1="15" y1="30" x2="10" y2="39" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#1e1b4b"/><line x1="15" y1="30" x2="21" y2="38" stroke="#4338ca" stroke-width="3" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#4338ca" stroke-width="2.5" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#1e1b4b"/><path d="M10.5 12 Q10 15 10 28 L10 45 Q10 48 9 49 L9 51 L21 51 L21 49 Q20 48 20 45 L20 28 Q20 15 19.5 12 Z" fill="#4338ca"/><rect x="10.5" y="26" width="9" height="2.5" rx="1" fill="#1e1b4b"/><rect x="14" y="26.3" width="2" height="1.9" rx=".3" fill="#fbbf24"/><path d="M15 17 L20 21" stroke="#4338ca" stroke-width="4.5" stroke-linecap="round" fill="none"/><ellipse cx="20.5" cy="21" rx="1.8" ry="1.5" fill="#f0d5b0"/><line x1="21" y1="22" x2="27" y2="10" stroke="#4a3728" stroke-width="2" stroke-linecap="round"/><g transform="translate(27,9)"><use href="#star4" transform="scale(2.5)" fill="#a5b4fc"/></g><g transform="translate(27,9)"><use href="#star4" transform="scale(1)" fill="#e0e7ff"/></g><path d="M26 6.5 L27 4 L28 6.5 Z" fill="#fbbf24"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><ellipse cx="15" cy="3.5" rx="7.5" ry="2" fill="#4338ca"/><path d="M9 3.5 L15 -2.5 L21 3.5 Z" fill="#4338ca"/><rect x="11" y="2.8" width="8" height="1.5" rx=".5" fill="#fbbf24"/><text x="15" y="1" font-size="2.5" fill="#fbbf24" text-anchor="middle">?</text><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9 Q15 10.5 17 9" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/><path d="M12.5 9 L15 14 L17.5 9 Z" fill="#e0e0e0"/></svg>';
+  var guardianSVG = '<svg viewBox="0 0 30 54" style="width:50px;height:90px"><ellipse cx="15" cy="52" rx="9" ry="1.5" fill="rgba(0,0,0,.1)"/><path d="M11 12 Q10 15 10.5 27 L19.5 27 Q20 15 19 12 Z" fill="#94a3b8"/><path d="M11.5 13 Q11 15 11.5 25 L18.5 25 Q19 15 18.5 13 Z" fill="#be185d"/><path d="M10.5 25 L19.5 25 L19 33 L11 33 Z" fill="#9d174d"/><rect x="10.5" y="26.5" width="9" height="2" rx=".5" fill="#78350f"/><rect x="14" y="26.8" width="2" height="1.4" rx=".3" fill="#fbbf24"/><path d="M15 17 L9 19" stroke="#94a3b8" stroke-width="4.5" stroke-linecap="round" fill="none"/><path d="M9 19 L7 13" stroke="#94a3b8" stroke-width="3.5" stroke-linecap="round" fill="none"/><g transform="translate(6,12)"><use href="#star4" transform="scale(1.5)" fill="#f0d5b0"/></g><path d="M1 7 Q-1 12 1 17 L6 17 Q7 12 6 7 Z" fill="#be185d" stroke="#fbbf24" stroke-width=".5"/><line x1="15" y1="30" x2="10" y2="39" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="10" y1="39" x2="7" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M5 49 L10 49 L11 52 L4 52 Z" fill="#8B4513"/><line x1="15" y1="30" x2="21" y2="38" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="38" x2="24" y2="51" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/><path d="M20 49 L25 49 L26 52 L19 52 Z" fill="#8B4513"/><ellipse cx="15" cy="7" rx="5.5" ry="5" fill="#f0d5b0"/><path d="M9.5 5 Q9.5 1 15 1 Q20.5 1 20.5 5 Q20.5 3 17.5 2.2 Q15 1.8 12.5 2.2 Q9.5 3 9.5 5" fill="#be185d"/><path d="M10 3.5 Q12.5 1.5 15 3.5 Q17.5 1.5 20 3.5" fill="none" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/><circle cx="15" cy="2.5" r=".8" fill="#fbbf24"/><circle cx="12.5" cy="6" r=".8" fill="#333"/><circle cx="17.5" cy="6" r=".8" fill="#333"/><path d="M13 9.5 Q15 11 17 9.5" fill="none" stroke="#333" stroke-width=".6" stroke-linecap="round"/></svg>';
 
   // Random order
   var chars = [
-    {svg:arthurSVG, color:'#ffd700'},
-    {svg:oswaldSVG, color:'#4338ca'},
-    {svg:gertrudeSVG, color:'#be185d'}
+    {svg:heroguideSVG, color:'#ffd700'},
+    {svg:seerSVG, color:'#4338ca'},
+    {svg:guardianSVG, color:'#be185d'}
   ];
   for (var ri = chars.length - 1; ri > 0; ri--) {
     var rj = Math.floor(Math.random() * (ri + 1));
@@ -6516,11 +6516,11 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-// ====== OSWALD'S TOWER ======
-function oswaldTowerHTML() {
+// ====== SEER'S TOWER ======
+function seerTowerHTML() {
   var h = '<h2 class="page-title">&#127987; Your View</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,rgba(67,56,202,.04),var(--card))">';
-  h += '<div class="oswald-crystal-ball">&#10024;</div>';
+  h += '<div class="seer-crystal-ball">&#10024;</div>';
   h += '<h3 style="font-size:16px;font-weight:700;margin-bottom:2px">The Big Picture</h3>';
   h += '<p style="font-size:12px;color:var(--muted);margin:0 0 4px">Here is a view of your patterns and progress...</p></div>';
 
@@ -6606,7 +6606,7 @@ function oswaldTowerHTML() {
   var shown = omens.slice(0, 6);
 
   for (var oi=0;oi<shown.length;oi++) {
-    h += '<div class="oswald-omen ' + shown[oi].type + '">';
+    h += '<div class="seer-omen ' + shown[oi].type + '">';
     var icons = {good:'&#10003;', warning:'&#9888;', danger:'&#10006;', neutral:'&#10022;'};
     h += '<span style="margin-right:6px">' + (icons[shown[oi].type] || '&#10022;') + '</span>';
     h += shown[oi].text + '</div>';
@@ -6897,7 +6897,7 @@ function waxSealSVG(s) {
   var r = s/2;
   return '<svg viewBox="0 0 '+s+' '+s+'" width="'+s+'" height="'+s+'" style="vertical-align:middle"><defs><radialGradient id="wg" cx="38%" cy="32%"><stop offset="0%" stop-color="#c0392b"/><stop offset="55%" stop-color="#922b21"/><stop offset="100%" stop-color="#641e16"/></radialGradient></defs><circle cx="'+r+'" cy="'+r+'" r="'+(r-1)+'" fill="url(#wg)" stroke="#4a120a" stroke-width="1.5"/><circle cx="'+r+'" cy="'+r+'" r="'+(r-4)+'" fill="none" stroke="#e6b800" stroke-width=".6" stroke-dasharray="2.5,2" opacity=".5"/><path d="M'+(r-8)+' '+(r+4)+'V'+(r-6)+'l4 3 4-5 4 5 4-3v'+(r+2)+'z" fill="#f4d03f" opacity=".85"/><rect x="'+(r-8)+'" y="'+(r+4)+'" width="16" height="2" rx="1" fill="#1a5276" opacity=".6"/></svg>';
 }
-function _rtArthur(cx,isActive){
+function _rtHeroGuide(cx,isActive){
   var skinTone = '#c89a6a';
   var bodyColor = hasShop('crimson') ? '#6a0a0a' : '#4a1570';
   var crownColor = hasShop('crimson') ? '#cc2222' : '#d4a017';
@@ -6924,14 +6924,14 @@ function _rtArthur(cx,isActive){
   h+='<circle cx="'+(cx-3.5)+'" cy="2" r=".8" fill="#4060e0"/>';
   h+='<circle cx="'+(cx+3.5)+'" cy="2" r=".8" fill="#40e060"/>';
   h+='<rect x="'+(cx-7)+'" y="6" width="14" height="1.5" rx=".5" fill="#b8860b"/>';
-  h+='<g class="arthur-larm" style="--a-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-14)+',38 L'+(cx-13)+',46" fill="none" stroke="'+bodyColor+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-13)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
-  h+='<g class="arthur-rarm" style="--a-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',38 L'+(cx+13)+',46" fill="none" stroke="'+bodyColor+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+13)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
+  h+='<g class="heroguide-larm" style="--a-larm-origin:'+(cx-10)+'px 25px"><path d="M'+(cx-10)+',25 L'+(cx-14)+',38 L'+(cx-13)+',46" fill="none" stroke="'+bodyColor+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx-13)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
+  h+='<g class="heroguide-rarm" style="--a-rarm-origin:'+(cx+10)+'px 25px"><path d="M'+(cx+10)+',25 L'+(cx+14)+',38 L'+(cx+13)+',46" fill="none" stroke="'+bodyColor+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="'+(cx+13)+'" cy="47" rx="3" ry="2" fill="'+skinTone+'"/></g>';
   h+='</g>';return h;
 }
 function _npcStandalone(name){
   var svg = '<svg viewBox="0 0 40 60" style="width:80px;height:120px;display:block;margin:0 auto">';
   svg += '<defs><style>.npc-idle-d1{animation-delay:.4s}.npc-idle-d2{animation-delay:1.2s}</style></defs>';
-  svg += _rtArthur(20,true);
+  svg += _rtHeroGuide(20,true);
   svg += '</svg>';
   return svg;
 }

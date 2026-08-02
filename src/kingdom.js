@@ -3,7 +3,7 @@
 function characterGreetingHTML() {
   var h = '';
   var chars = [
-    {name:'Arthur',color:'var(--avatar-arthur)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg>',
+    {name:'Your Guide',color:'var(--avatar-heroguide)',svg:'<svg viewBox="0 0 16 16" width="18" height="18" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg>',
      msgs:[
        "I've been watching your patterns. You're showing up more. That's the data that matters.",
        "I notice you've been logging regularly. Every entry sharpens the map of your recovery.",
@@ -29,12 +29,12 @@ function characterGreetingHTML() {
 
 function showCharacterLore(name) {
   var lore = {
-    Arthur: {
+    'Your Guide': {
       title: 'Lord of the Long View',
-      desc: 'Once a guide through difficult times, Arthur learned that patterns tell the truth where words deceive. He now serves as your personal strategist \u2014 tracking your data, spotting trends, and alerting you to hidden risks before they become crises.',
+      desc: 'A guide through difficult times, always learning that patterns tell the truth where words deceive. Now serving as your personal strategist \u2014 tracking your data, spotting trends, and alerting you to hidden risks before they become crises.',
       role: 'Analyzes patterns, correlates data, warns of risk factors',
       quote: 'The numbers don\u2019t lie \u2014 but they do whisper. You just have to learn to listen.',
-      color: 'var(--avatar-arthur)',
+      color: 'var(--avatar-heroguide)',
       svg: '<svg viewBox="0 0 16 16" width="40" height="40" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg>'
     }
   };
@@ -952,7 +952,7 @@ function homeHTML() {
     var tcReady = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked});
     if (tcReady.length) {
       h += '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#f5efe6,var(--card))" onclick="goTo(\'timecapsule\')">';
-      h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#9203;</div><div><div style="font-weight:700;font-size:15px">Time Capsule'+(tcReady.length>1?'s':'')+' Ready!</div><div style="font-size:12px;color:var(--muted)">Arthur has '+tcReady.length+' message'+(tcReady.length>1?'s':'')+' for you. Tap to open.</div></div></div></div>';
+      h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#9203;</div><div><div style="font-weight:700;font-size:15px">Time Capsule'+(tcReady.length>1?'s':'')+' Ready!</div><div style="font-size:12px;color:var(--muted)">You have '+tcReady.length+' message'+(tcReady.length>1?'s':'')+' waiting for you. Tap to open.</div></div></div></div>';
     }
   }
 

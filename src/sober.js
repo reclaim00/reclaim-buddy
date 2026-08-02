@@ -315,7 +315,7 @@ function showRelapseRecovery(protectedByBoost) {
   // Next 1 hour
   h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#9200; Next 1 Hour</div><div style="font-size:13px;color:var(--text);line-height:1.5">Breathe. You are not back to square one â€” you have all the tools you\'ve built. Drink water, wash your face, step outside. Call or text your comrade or a crisis line if you need to talk. Delete the means of access. Write one sentence about what happened without judgment.</div></div>';
   // Next 24 hours
-  h += '<div class="card" style="border-left:4px solid var(--accent);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128204; Next 24 Hours</div><div style="font-size:13px;color:var(--text);line-height:1.5">Identify the trigger â€” what happened right before? Log it in your journal. Restore your environment (remove triggers). Re-commit to your sobriety timer. Reach out to your comrade or a support group. Read your safety plan from Arthur. Be kind to yourself  shame fuels the cycle, honesty breaks it.</div></div>';
+  h += '<div class="card" style="border-left:4px solid var(--accent);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128204; Next 24 Hours</div><div style="font-size:13px;color:var(--text);line-height:1.5">Identify the trigger â€” what happened right before? Log it in your journal. Restore your environment (remove triggers). Re-commit to your sobriety timer. Reach out to your comrade or a support group. Follow your safety plan. Be kind to yourself  shame fuels the cycle, honesty breaks it.</div></div>';
   // Next week
   h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128198; Next 1 Week</div><div style="font-size:13px;color:var(--text);line-height:1.5">Review what led to the relapse and update your trigger list. Strengthen your daily routine  add one extra check-in or coping practice. Forgive yourself fully. Relapse is part of recovery for many people. What matters is what you do next. You are still on the path.</div></div>';
   // Auto-pardon certificate
@@ -330,7 +330,7 @@ function showRelapseRecovery(protectedByBoost) {
     if (lastPardon.commit) h += '<div style="font-size:10px;color:var(--text-light)">&#9876; <strong>Vow:</strong> ' + safe(lastPardon.commit) + '</div>';
     h += '</div>';
     h += '<div style="margin-top:4px">' + waxSealSVG(28) + '</div>';
-    h += '<div style="font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:1px">SEAL OF KING ARTHUR</div>';
+    h += '<div style="font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:1px">SEAL OF YOUR FRESH START</div>';
     h += '</div>';
   }
   h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">I\'ve Got This</button></div></div>';
