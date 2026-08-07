@@ -247,7 +247,6 @@ function defaultData() {
     royalPardons: [],
     researchOptIn: false,
     researchLastSubmitted: null,
-    parchmentMode: false,
     meetingLog: [],
     myWhy: { reasons: [], createdAt: null },
     warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
@@ -761,7 +760,6 @@ function validateData(d) {
   if (d.version < 2) {
     if (!d.journalWordGoal) d.journalWordGoal = 50;
     if (!d.accentColor) d.accentColor = 'green';
-    if (!d.parchmentMode) d.parchmentMode = false;
     if (!d.warchest) d.warchest = { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
     if (!d.achievements) d.achievements = [];
     if (!d.shopPurchases) d.shopPurchases = [];

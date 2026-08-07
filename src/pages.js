@@ -4959,7 +4959,7 @@ function profileHTML() {
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83C\uDFF0 Space</span><input type="text" value="'+(D.kingdomName||'')+'" onchange="D.kingdomName=this.value;saveDataSilent();render()" placeholder="My Space" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83D\uDC51 Title Style</span><select onchange="D.titleStyle=this.value;saveDataSilent();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"><option value="king"'+(D.titleStyle!=='queen'?' selected':'')+'>King / Prince</option><option value="queen"'+(D.titleStyle==='queen'?' selected':'')+'>Queen / Princess</option></select></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Messenger (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveDataSilent()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveDataSilent();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveDataSilent();delete _pageCache[pg];render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Heraldic Colours')+'</span><div style="display:flex;gap:4px">';
@@ -4968,8 +4968,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
     h += '<div style="width:28px;height:28px;border-radius:14px;background:'+colorOpts[co]+';cursor:pointer;border:'+(D.accentColor===co?'3px solid var(--text)':'2px solid transparent')+'" onclick="D.accentColor=\''+co+'\';saveDataSilent();applyTheme();render()"></div>';
   }
   h += '</div></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Night Watch')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveDataSilent();applyTheme()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">&#128220; '+t('Parchment Mode')+'</span><input type="checkbox" onchange="D.parchmentMode=this.checked;saveDataSilent();applyTheme()" '+(D.parchmentMode?'checked':'')+' style="width:auto"></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Night Watch')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveDataSilent();applyTheme();delete _pageCache[pg];render()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Your Quests')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Safety plans will be built based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
   var addictions = D.targetAddictions || [];
   for (var ati=0;ati<ADDICTION_TYPES.length;ati++) {
@@ -6400,7 +6399,6 @@ function applyTheme() {
     el.style.setProperty('--border','#e5e7eb');
     el.style.setProperty('--primary-light', c.light);
   }
-  if (D.parchmentMode) { el.classList.add('parchment'); } else { el.classList.remove('parchment'); }
   // Theme-based kingdom scene colors
   var ks = document.querySelector('.kingdom-scene');
   if (ks) {
