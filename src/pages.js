@@ -529,7 +529,7 @@ var RECOVERY_PROGRAMS = {
       'Week 2: Tools — Review your week. What coping tools worked best for you?',
       'Week 3: Connection — Reach out to your partner or accountability partner.',
       'Week 3: Connection — Read a recovery story from the Library. Let their journey inspire yours.',
-      'Week 3: Connection — Write a journal entry as a letter to someone who helped you.',
+      'Week 3: Connection — Write a journal entry about someone who helped you.',
       'Week 3: Connection — Explore the meetings page. Find a meeting you could attend.',
       'Week 3: Connection — Send an encouraging message to someone in recovery.',
       'Week 3: Connection — Review your relapse prevention plan. Update it if needed.',
@@ -2323,117 +2323,50 @@ function showJournalLetter(idx) {
 
   var safe = function(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')};
 
-  var h = '<div class="journal-letter" id="journal-letter">';
-  // Rolled hint (visible only when rolled)
-  h += '<div class="scroll-roll-hint"><span class="hint-line"></span> Touch to unroll <span class="hint-line"></span></div>';
-  // Scroll header (no wax seal)
-  h += '<div class="scroll-header">';
-  h += '<div class="scroll-date">' + dateStr + '</div>';
-  h += '<div class="scroll-title">History Entry</div>';
+  var h = '<div class="overlay-content" style="max-width:480px;max-height:86vh;overflow-y:auto">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px">';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--text)">Journal Entry</div>';
+  h += '<div style="font-size:12px;color:var(--muted)">' + dateStr + '</div>';
   h += '</div>';
-  // Scroll body (where text appears)
-  h += '<div class="letter-body" id="letter-body"></div>';
-  // After-entry content (summary, insights, song - shown after typing finishes)
-  h += '<div id="letter-after" style="display:none">';
+  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">' + timeStr + '</div>';
+  // Entry text (shown immediately)
+  h += '<div class="card" style="white-space:pre-wrap;font-size:14px;line-height:1.7;margin-bottom:8px">' + safe(entryText) + '</div>';
   // Summary
   if (summaryText) {
-    h += '<div class="letter-section" id="letter-summary"><div class="letter-section-label">A Thought on Your Entry</div><div class="letter-section-text" id="letter-summary-text"></div></div>';
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">A Thought on Your Entry</div><div style="font-size:13px;line-height:1.6;color:var(--text-light);margin-top:4px">' + summaryText + '</div></div>';
   }
   // Suggestions / Insights
   if (suggestions && suggestions.length > 0) {
-    h += '<div class="letter-section" id="letter-insights"><div class="letter-section-label">Gentle Suggestions</div><div class="letter-section-text">';
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">Gentle Suggestions</div>';
     for (var si = 0; si < Math.min(suggestions.length, 3); si++) {
-      h += '<div style="margin:3px 0;padding-left:12px;position:relative">&#9755; ' + safe(suggestions[si]) + '</div>';
+      h += '<div style="margin:3px 0;padding-left:12px;position:relative;font-size:13px">&#9755; ' + safe(suggestions[si]) + '</div>';
     }
-    h += '</div></div>';
+    h += '</div>';
   }
   // Quote / Insight
   if (mot) {
-    h += '<div class="letter-section" id="letter-quote"><div class="letter-section-label">' + safe(mot.c) + '</div><div class="letter-section-text" style="font-style:italic">"' + safe(mot.q) + '"</div><details style="margin-top:4px"><summary style="font-size:11px;cursor:pointer;color:var(--muted)">Why this matters</summary><p style="font-size:12px;line-height:1.5;color:var(--text-light);margin-top:2px">' + safe(mot.t) + '</p></details></div>';
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">' + safe(mot.c) + '</div><div style="font-style:italic;font-size:13px;line-height:1.5;margin-top:4px">"' + safe(mot.q) + '"</div><details style="margin-top:4px"><summary style="font-size:11px;cursor:pointer;color:var(--muted)">Why this matters</summary><p style="font-size:12px;line-height:1.5;color:var(--text-light);margin-top:2px">' + safe(mot.t) + '</p></details></div>';
   }
   // Song
-  h += '<div class="letter-section" id="letter-song"><div class="letter-section-label">' + (songDesc[mood] || 'A song for you') + '</div>';
+  h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">' + (songDesc[mood] || 'A song for you') + '</div>';
   if (song) {
-    h += '<div class="letter-song-info">' + safe(song.title) + ' <span style="font-weight:400;color:var(--muted)">' + safe(song.artist) + '</span></div>';
-    h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px">';
+    h += '<div style="font-size:13px;margin-top:4px">' + safe(song.title) + ' <span style="font-weight:400;color:var(--muted)">' + safe(song.artist) + '</span></div>';
+    h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">';
     h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Spotify</a>';
     h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; YouTube</a>';
     h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a>';
     h += '<button class="btn btn-sm btn-primary" onclick="saveToPlaylist({title:\'' + song.title.replace(/'/g,"\\'") + '\',artist:\'' + song.artist.replace(/'/g,"\\'") + '\',url_spotify:\'' + song.url_spotify.replace(/'/g,"\\'") + '\',url_youtube:\'' + song.url_youtube.replace(/'/g,"\\'") + '\',url_apple:\'' + song.url_apple.replace(/'/g,"\\'") + '\'})" style="width:auto;font-size:9px;padding:4px 8px">+ Save</button></div>';
   } else {
-    h += '<div style="font-size:12px;color:var(--muted)">Finding the perfect song...</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">Finding the perfect song...</div>';
   }
   h += '</div>';
   // Closing
-  h += '<div class="scroll-closing" id="letter-closing" style="display:none">';
-  h += '<div class="scroll-signoff">Thus recorded,</div>';
-  h += '<div class="scroll-signature">' + safe(D.name || 'Me') + '</div>';
-  h += '<div class="scroll-time">' + timeStr + '</div>';
-  h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" id="letter-close" style="display:none;margin-top:10px">&#10003; Close Scroll</button>';
+  h += '<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:12px"><span>' + safe(D.name || 'Me') + '</span></div>';
+  h += '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()" style="width:100%">&#10003; Close</button>';
   h += '</div>';
 
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
-
-  // Start rolled up - click to unroll
-  var letter = document.getElementById('journal-letter');
-  letter.classList.add('rolled');
-  letter.onclick = function(){
-    if (!letter.classList.contains('rolled')) return;
-    letter.classList.remove('rolled');
-    letter.style.animation = 'scrollUnroll .8s ease both';
-    setTimeout(function(){
-      letter.style.maxHeight = '';
-      startTypewriter();
-    }, 850);
-  };
-
-  // Word-by-word typewriter for entry text (starts after unroll)
-  function startTypewriter() {
-    var body = document.getElementById('letter-body');
-    if (!body || !entryText) return;
-    var words = entryText.split(/(\s+)/);
-    var wi = 0;
-    var batchSize = 8;
-    var penDelay = 80;
-
-    function typeBatch() {
-      if (wi >= words.length) {
-        // Show after-entry sections
-        var after = document.getElementById('letter-after');
-        if (after) { after.style.display = 'block'; after.style.animation = 'letterAppear .5s ease both'; }
-        // Show summary text immediately (no typewriter)
-        if (summaryText) {
-          var stEl = document.getElementById('letter-summary-text');
-          if (stEl) stEl.innerHTML = summaryText;
-        }
-        var closing = document.getElementById('letter-closing');
-        if (closing) closing.style.display = 'block';
-        var closeBtn = document.getElementById('letter-close');
-        if (closeBtn) closeBtn.style.display = 'inline-block';
-        setTimeout(showSchillingNotification, 1000);
-        return;
-      }
-      var chunk = '';
-      var extraDelay = 0;
-      for (var b=0;b<batchSize && wi < words.length;b++) {
-        chunk += words[wi];
-        if (words[wi].trim().endsWith('.')||words[wi].trim().endsWith('!')||words[wi].trim().endsWith('?')) extraDelay += 300;
-        else if (words[wi].trim().endsWith(',')||words[wi].trim().endsWith(';')) extraDelay += 120;
-        wi++;
-      }
-      body.innerHTML += '<span>' + chunk + '</span>';
-      var lc = document.getElementById('journal-letter'); if (lc) lc.scrollTop = lc.scrollHeight;
-      setTimeout(typeBatch, penDelay + extraDelay);
-    }
-    typeBatch();
-  }
-
-  // Close handler
-  document.getElementById('letter-close').onclick = function(){
-    overlay.remove();
-  };
 
   D.reflectionCount = (D.reflectionCount || 0) + 1;
   if (dayCount === 30 || dayCount === 60 || dayCount === 90 || dayCount === 180 || dayCount === 365 || (dayCount > 365 && dayCount % 365 === 0)) setTimeout(confetti, 300);
