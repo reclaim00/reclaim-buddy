@@ -234,7 +234,7 @@ function defaultData() {
     lastReportDate: null,
     routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
-    chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], monthlyChallenge: null, journalWordGoal: 50, playlist: [], reminders: [],
+    chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], journalWordGoal: 50, playlist: [], reminders: [],
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
     encryption: { enabled: false, salt: null, keyCheck: null },
     timeCapsules: [],
@@ -250,7 +250,6 @@ function defaultData() {
     meetingLog: [],
     myWhy: { reasons: [], createdAt: null },
     warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
-    weeklyCampaign: { id: null, weekStart: '', done: [], rewardClaimed: false },
     shopPurchases: [],
     achievements: []
   };
@@ -763,7 +762,6 @@ function validateData(d) {
     if (!d.warchest) d.warchest = { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
     if (!d.achievements) d.achievements = [];
     if (!d.shopPurchases) d.shopPurchases = [];
-    if (!d.weeklyCampaign) d.weeklyCampaign = { id: null, weekStart: '', done: [], rewardClaimed: false };
     d.version = 2;
   }
   if (d.version < 3) {
@@ -1264,7 +1262,7 @@ function collectResearchData() {
     v: 1,
     t: Date.now(),
     // Anonymized — no emails, no names, no journal text
-    soberDays: soberStart ? Math.floor((Date.now() - soberStart) / 86400000) : 0,
+    soberDays: soberStart ? soberDays() : 0,
     streak: D.streak || 0,
     journalCount: (D.journal||[]).length,
     moodCount: (D.moods||[]).length,

@@ -1,14 +1,22 @@
 ﻿// ====== SOBRIETY / PLANT ======
+// Timezone/DST-safe day count: number of local calendar-day boundaries
+// between two dates, immune to 23/25-hour DST days and timezone shifts.
+function dayNumber(d) {
+  return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function daysBetween(a, b) {
+  return Math.round((dayNumber(b) - dayNumber(a)) / 86400000);
+}
 function soberDays() {
   if (!D.sobriety.startDate) return 0;
   var start = new Date(D.sobriety.startDate);
   var now = new Date();
-  var days = Math.floor((now - start) / 86400000);
+  var days = daysBetween(start, now);
   if (D.sobriety.relapseDates) {
     for (var i=0;i<D.sobriety.relapseDates.length;i++) {
       var rd = new Date(D.sobriety.relapseDates[i]);
       if (rd > start) {
-        var lost = Math.floor((now - rd) / 86400000);
+        var lost = daysBetween(rd, now);
         days = Math.min(days, lost);
       }
     }

@@ -1889,17 +1889,6 @@ function dailySpark() {
   return D._spark;
 }
 
-function dailyChallenge() {
-  var today = new Date().toDateString();
-  if (D._challengeDate === today && D._challenge) return D._challenge;
-  var pool = DAILY_SPARKS.filter(function(s){ return s.type === 'challenge'; });
-  if (!pool.length) return '';
-  var pick = pool[Math.floor(Math.random() * pool.length)];
-  D._challengeDate = today;
-  D._challenge = '<div class="card" style="padding:16px;margin:10px 0;border-left:3px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:18px">&#127919;</span><span style="font-weight:700;font-size:14px">Daily Challenge</span></div><div style="font-size:14px;line-height:1.5">' + pick.text.replace(/^Challenge:\s*/,'') + '</div></div>';
-  return D._challenge;
-}
-
 function dailyQuote() {
   var today = new Date().toDateString();
   if (D._quoteDate === today && D._quote) return D._quote;
@@ -5077,7 +5066,7 @@ function exportData() {
       journalEntries: (D.journal||[]).length,
       moodsLogged: (D.moods||[]).length,
       cravingsLogged: (D.cravings||[]).length,
-      soberDays: D.sobriety && D.sobriety.startDate ? Math.floor((Date.now() - D.sobriety.startDate) / 86400000) : 0,
+      soberDays: D.sobriety && D.sobriety.startDate ? soberDays() : 0,
       checkinsCount: (D.checkins||[]).length,
       copingCardsCount: (D.copingCards||[]).length + (D.customCopingCards||[]).length,
       habitsTracked: (D.habits||[]).length
@@ -5140,7 +5129,7 @@ function showProgressReport() {
   overlay.className = 'overlay';
   var today = new Date();
   var soberStart = D.sobriety && D.sobriety.startDate ? new Date(D.sobriety.startDate) : null;
-  var soberDays = soberStart ? Math.floor((Date.now() - soberStart.getTime()) / 86400000) : 0;
+  var soberDaysCount = soberStart ? soberDays() : 0;
   var moodAvg = (D.moods||[]).length ? Math.round((D.moods||[]).reduce(function(s,m){return s+m.mood},0) / (D.moods||[]).length * 10) / 10 : 'N/A';
   var journalCount = (D.journal||[]).length;
   var cravingCount = (D.cravings||[]).length;
@@ -5169,7 +5158,7 @@ function showProgressReport() {
 
   // Sobriety streak
   h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px;margin-bottom:8px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128200; '+t('Recovery Overview')+'</div><div style="font-size:12px;line-height:1.8">';
-  h += '<div><span style="color:var(--muted)">'+t('Sober streak')+':</span> <strong>' + soberDays + ' '+t('days')+'</strong></div>';
+  h += '<div><span style="color:var(--muted)">'+t('Sober streak')+':</span> <strong>' + soberDaysCount + ' '+t('days')+'</strong></div>';
   h += '<div><span style="color:var(--muted)">'+t('Journal entries')+':</span> <strong>' + journalCount + '</strong></div>';
   h += '<div><span style="color:var(--muted)">'+t('Moods logged')+':</span> <strong>' + (D.moods||[]).length + '</strong> ('+(moodAvg!=='N/A'?t('avg ')+moodAvg+'/5':'N/A')+')</div>';
   h += '<div><span style="color:var(--muted)">'+t('Cravings logged')+':</span> <strong>' + cravingCount + '</strong></div>';
@@ -5252,7 +5241,7 @@ function exportProgressReport() {
   lines.push('');
   lines.push('--- Recovery Overview ---');
   var soberStart = D.sobriety && D.sobriety.startDate ? new Date(D.sobriety.startDate) : null;
-  lines.push('Sober streak: ' + (soberStart ? Math.floor((Date.now() - soberStart.getTime()) / 86400000) + ' days' : 'Not started'));
+  lines.push('Sober streak: ' + (soberStart ? soberDays() + ' days' : 'Not started'));
   lines.push('Journal entries: ' + (D.journal||[]).length);
   lines.push('Moods logged: ' + (D.moods||[]).length);
   lines.push('Cravings logged: ' + (D.cravings||[]).length);
@@ -5518,193 +5507,6 @@ function filterCravings(val) {
   }
 }
 
-// ====== MONTHLY CHALLENGE ======
-var ADDICTION_CHALLENGES = {
-  'Alcohol': [
-    {month:0, title:'Log 15 sober days', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal every craving', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Replace drinking  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal your triggers', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days alcohol-free', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days this month', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 coping habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End sober  20 sober days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Drugs (prescription/illicit)': [
-    {month:0, title:'15 clean days', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal when urges hit', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Build routine  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal your progress', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days substance-free', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 healthy habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End clean  20 clean days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Pornography': [
-    {month:0, title:'15 days clean', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal when triggered', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Replace urge  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Reflect on triggers', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days porn-free', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Build 25 healthy habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End clean  20 clean days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Gambling': [
-    {month:0, title:'15 days gamble-free', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal every urge', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Replace gambling  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal money saved', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days gamble-free', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End gamble-free  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Smoking/Nicotine': [
-    {month:0, title:'15 days smoke-free', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal each craving', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Replace smoking  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal your triggers', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days nicotine-free', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End smoke-free  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Caffeine': [
-    {month:0, title:'Cut caffeine  15 days', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal energy levels', icon:'📝', target:'journal', count:20},
-    {month:2, title:'Replace coffee  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Track sleep quality', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days caffeine-free', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End caffeine-free  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Sex/Love': [
-    {month:0, title:'15 days of boundaries', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal when triggered', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Build 20 healthy habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Reflect on patterns', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days of recovery', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End strong  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Shopping': [
-    {month:0, title:'15 no-spend days', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal every urge', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Replace shopping  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal money saved', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 no-spend days', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End no-spend  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Social Media': [
-    {month:0, title:'15 days of limits', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal screen time', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Replace scrolling  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal offline activities', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days of limits', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End with limits  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Gaming': [
-    {month:0, title:'15 days of limits', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal gaming urges', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Replace gaming  20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal offline hobbies', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days of limits', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End with limits  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Eating/Food': [
-    {month:0, title:'15 days of balance', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal food feelings', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Build 20 healthy habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal your wins', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days of balance', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End balanced  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Self-Harm': [
-    {month:0, title:'15 days of safety', icon:'📝', target:'sober', count:15},
-    {month:1, title:'Journal every feeling', icon:'💭', target:'journal', count:20},
-    {month:2, title:'Build 20 coping habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Reflect on growth', icon:'✨', target:'journal', count:18},
-    {month:5, title:'30 days of safety', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End safe  20 days', icon:'🎯', target:'sober', count:20}
-  ],
-  'Other': [
-    {month:0, title:'Journal 15 days', icon:'📝', target:'journal', count:15},
-    {month:1, title:'Log mood every day', icon:'💭', target:'mood', count:28},
-    {month:2, title:'Complete 20 habits', icon:'✅', target:'habit', count:20},
-    {month:3, title:'Check in 20 days', icon:'📅', target:'checkin', count:20},
-    {month:4, title:'Journal 15 days', icon:'✨', target:'journal', count:15},
-    {month:5, title:'Stay sober all month', icon:'🌿', target:'sober', count:30},
-    {month:6, title:'Journal 20 days', icon:'📝', target:'journal', count:20},
-    {month:7, title:'Log 25 moods', icon:'💭', target:'mood', count:25},
-    {month:8, title:'Complete 25 habits', icon:'✅', target:'habit', count:25},
-    {month:9, title:'Check in 25 days', icon:'📅', target:'checkin', count:25},
-    {month:10, title:'Journal 20 days', icon:'✨', target:'journal', count:20},
-    {month:11, title:'End strong  20 days', icon:'🎯', target:'sober', count:20}
-  ]
-};
-var DEFAULT_CHALLENGES = ADDICTION_CHALLENGES['Other'];
-var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 var ADDICTION_TASKS = {
   'Alcohol':[
@@ -5983,99 +5785,6 @@ function dailyQuestsHTML() {
   h += '</div>';
   return h;
 }
-var WEEKLY_CAMPAIGNS = [
-  {id:'siege',title:"The Siege of Fortitude",desc:"Stand firm against urges all week",
-    tasks:[
-      {id:'s1',title:'Fortress Wall',desc:'Log cravings on 3 different days',pts:15,check:function(){var o={},c=D.cravings||[];for(var i=0;i<c.length;i++){var d=c[i].date||(c[i].timestamp?new Date(c[i].timestamp).toDateString():'');if(d)o[d]=1}var n=0;for(var k in o)n++;return n>=3}},
-      {id:'s2',title:'Iron Resolve',desc:'Journal on 3 different days',pts:15,check:function(){var o={},j=D.journal||[];for(var i=0;i<j.length;i++){var d=j[i].date;if(d)o[d]=1}var n=0;for(var k in o)n++;return n>=3}},
-      {id:'s3',title:'Unbreakable',desc:'Complete breathing exercise 5 times',pts:15,check:function(){return D.breatheCount>=5}},
-      {id:'s4',title:'Vigilant Watch',desc:'Check in with a buddy 3 times',pts:15,check:function(){return(D.buddyCheckins||[]).length>=3}},
-      {id:'s5',title:'Triumph',desc:'Complete all campaign tasks',pts:20,reward:50}
-    ]},
-  {id:'vigil',title:"The Knight's Vigil",desc:"Deepen your daily recovery ritual",
-    tasks:[
-      {id:'v1',title:'Dawn Practice',desc:'Complete all daily quests for 3 days',pts:20,check:function(){return D.dailyQuests&&D.dailyQuests.done&&D.dailyQuests.done.length>=3}},
-      {id:'v2',title:'Scroll of Truth',desc:'Write journal on 5 separate days',pts:20,check:function(){var o={},j=D.journal||[];for(var i=0;i<j.length;i++){var d=j[i].date;if(d)o[d]=1}var n=0;for(var k in o)n++;return n>=5}},
-      {id:'v3',title:"Ally's Oath",desc:'Use the Craving Breaker 3 times',pts:15,check:function(){return(D.cravingBreakerCount||0)>=3}},
-      {id:'v4',title:'Arms Inspection',desc:'Review your safety plan',pts:10,check:function(){return false}},
-      {id:'v5',title:'Coronation',desc:'Complete all campaign tasks',pts:25,reward:60}
-    ]},
-  {id:'herald',title:"The Herald's Challenge",desc:"Explore every corner of your keep",
-    tasks:[
-      {id:'h1',title:'Coping Arsenal',desc:'Create a new coping card',pts:15,check:function(){return(D.copingCards||[]).length>=1}},
-      {id:'h2',title:'History Scroll',desc:'Check your recovery reports',pts:15,check:function(){return false}},
-      {id:'h3',title:'Music of the Spheres',desc:'Open the music page',pts:15,check:function(){return false}},
-      {id:'h4',title:"Oath of Support",desc:'Visit your Support Alliances',pts:15,check:function(){return false}},
-      {id:'h5',title:'Crown of Growth',desc:'Complete all campaign tasks',pts:25,reward:70}
-    ]}
-];
-function weeklyStart() { var d=new Date();var day=d.getDay();var diff=d.getDate()-day+(day===0?-6:1);return new Date(d.setDate(diff)).toDateString(); }
-function getWeeklyCampaign() {
-  D.weeklyCampaign=D.weeklyCampaign||{id:null,weekStart:'',done:[],rewardClaimed:false};
-  var ws=weeklyStart();
-  if(D.weeklyCampaign.weekStart!==ws){var wn=Math.floor(Date.now()/604800000);var idx=wn%WEEKLY_CAMPAIGNS.length;D.weeklyCampaign={id:WEEKLY_CAMPAIGNS[idx].id,weekStart:ws,done:[],rewardClaimed:false};saveData()}
-  var camp=null;for(var i=0;i<WEEKLY_CAMPAIGNS.length;i++){if(WEEKLY_CAMPAIGNS[i].id===D.weeklyCampaign.id){camp=WEEKLY_CAMPAIGNS[i];break}}
-  if(!camp){D.weeklyCampaign={id:WEEKLY_CAMPAIGNS[0].id,weekStart:ws,done:[],rewardClaimed:false};camp=WEEKLY_CAMPAIGNS[0]}
-  return{campaign:camp,done:D.weeklyCampaign.done||[],weekStart:ws,rewardClaimed:D.weeklyCampaign.rewardClaimed||false};
-}
-function completeCampaignTask(taskId) {
-  var w=getWeeklyCampaign();if(!w||w.done.indexOf(taskId)>=0)return;w.done.push(taskId);D.weeklyCampaign.done=w.done;
-  var task=null;for(var i=0;i<w.campaign.tasks.length;i++){if(w.campaign.tasks[i].id===taskId){task=w.campaign.tasks[i];break}}
-  if(task&&task.pts)earnSchillings(task.pts,'Campaign: '+task.title);saveData();render();
-}
-function claimCampaignReward() {
-  var w=getWeeklyCampaign();if(w.rewardClaimed)return;var allDone=true;
-  for(var i=0;i<w.campaign.tasks.length;i++){if(w.done.indexOf(w.campaign.tasks[i].id)<0){allDone=false;break}}
-  if(!allDone)return;earnSchillings(w.campaign.tasks[w.campaign.tasks.length-1].reward,'Campaign complete: '+w.campaign.title);D.weeklyCampaign.rewardClaimed=true;saveData();playSound('trumpet');render();
-}
-function weeklyCampaignHTML() {
-  var w=getWeeklyCampaign();var c=w.campaign;var allDone=true;var claimed=w.rewardClaimed;
-  for(var i=0;i<c.tasks.length;i++){if(w.done.indexOf(c.tasks[i].id)<0){allDone=false;break}}
-  var h='<div class="card" style="margin:6px 0">';
-  h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:16px">\u2726</span><div><div style="font-size:13px;font-weight:700;color:var(--primary)">'+c.title+'</div><div style="font-size:10px;color:var(--muted)">'+c.desc+'</div></div></div>';
-  for(var i=0;i<c.tasks.length;i++){
-    var t=c.tasks[i];var done=w.done.indexOf(t.id)>=0;if(!done)allDone=false;var auto=false;
-    if(!done&&t.check){try{auto=t.check()}catch(e){}}
-    var isFin=t.reward?true:false;
-    h+='<div style="display:flex;align-items:center;gap:6px;padding:5px 8px;margin:2px 0;border-radius:6px;background:'+(done||auto?'var(--primary-light)':'var(--card)')+';border:1px solid '+(done||auto?'var(--primary)':'var(--border)')+';opacity:'+(done?'.7':'1')+'">';
-    h+='<div style="font-size:16px;min-width:20px;text-align:center">'+(done?'\u2713':'\u2727')+'</div>';
-    h+='<div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;'+(done?'text-decoration:line-through':'')+'">'+t.title+'</div><div style="font-size:9px;color:var(--muted)">'+t.desc+'</div></div>';
-    h+='<div style="font-size:10px;color:#d4a017;font-weight:700;white-space:nowrap">+'+(t.reward||t.pts)+'</div>';
-    if(!done&&auto){h+='<button class="btn btn-sm btn-primary" onclick="completeCampaignTask(\''+t.id+'\')" style="font-size:9px;padding:2px 6px">\u269C</button>'}
-    h+='</div>';
-  }
-  if(allDone&&!claimed){var r=c.tasks[c.tasks.length-1].reward;h+='<button class="btn btn-primary" onclick="claimCampaignReward()" style="width:100%;margin-top:6px;padding:8px;font-size:12px">\u265B Claim Campaign Reward: '+r+' schillings</button>'}
-  if(claimed)h+='<div style="text-align:center;padding:6px;font-size:11px;color:var(--accent);font-weight:700">\u265B Campaign complete! Well fought.</div>';
-  h+='<div style="font-size:8px;color:var(--muted);text-align:center;margin-top:4px">Resets Monday</div></div>';
-  return h;
-}
-
-function currentMonthlyChallenge() {
-  var now = new Date();
-  var month = now.getMonth();
-  var year = now.getFullYear();
-  if (D.monthlyChallenge && D.monthlyChallenge.year === year && D.monthlyChallenge.month === month) return D.monthlyChallenge;
-  var type = (D.targetAddictions && D.targetAddictions.length) ? D.targetAddictions[0] : 'Other';
-  var list = ADDICTION_CHALLENGES[type] || DEFAULT_CHALLENGES;
-  var challenge = list[month] || DEFAULT_CHALLENGES[month];
-  return { month: month, year: year, title: challenge.title, icon: challenge.icon, target: challenge.target, targetCount: challenge.count, progress: 0, completed: false };
-}
-
-function getChallengeProgress(challenge) {
-  if (!challenge) return 0;
-  var now = new Date(), month = now.getMonth(), year = now.getFullYear();
-  var count = 0;
-  switch (challenge.target) {
-    case 'journal': count = D.journal.filter(function(j){var d=new Date(j.date);return d.getMonth()===month&&d.getFullYear()===year}).length; break;
-    case 'mood': count = D.moods.filter(function(m){var d=new Date(m.date);return d.getMonth()===month&&d.getFullYear()===year}).length; break;
-    case 'habit': count = D.habits.reduce(function(s,h){return s+(h.logs?h.logs.filter(function(l){var d=new Date(l);return d.getMonth()===month&&d.getFullYear()===year}).length:0)},0); break;
-    case 'checkin': count = D.checkins.filter(function(c){var d=new Date(c.date);return d.getMonth()===month&&d.getFullYear()===year}).length; break;
-    case 'sober': count = soberDays(); break;
-  }
-  // Auto-save challenge progress
-  D.monthlyChallenge = { month: challenge.month, year: challenge.year, title: challenge.title, icon: challenge.icon, target: challenge.target, targetCount: challenge.targetCount, progress: count, completed: count >= challenge.targetCount, pledge: D.monthlyChallenge ? D.monthlyChallenge.pledge : challenge.pledge };
-  return count;
-}
 
 function calcJournalStreak() {
   if (!D.journal.length) return 0;
@@ -6213,7 +5922,6 @@ function checkAchievements() {
   var shields = wc.shields || 0;
   var questsDone = 0;
   if (D.dailyQuests && D.dailyQuests.done) questsDone += D.dailyQuests.done.length;
-  if (D.weeklyCampaign && D.weeklyCampaign.done) questsDone += D.weeklyCampaign.done.length;
   var newOnes = [];
   for (var i = 0; i < ACHIEVEMENTS.length; i++) {
     var a = ACHIEVEMENTS[i];
@@ -6460,7 +6168,7 @@ function seerTowerHTML() {
   var moodCount = (D.moods||[]).length;
   var streak = D.streak || 0;
   var soberStart = D.sobriety && D.sobriety.startDate;
-  var soberDays = soberStart ? Math.floor((Date.now() - soberStart) / 86400000) : 0;
+  var soberDaysCount = soberStart ? soberDays() : 0;
   var cravingCount = (D.cravings||[]).length;
   var breatheCount = D.breatheCount || 0;
   var checkinCount = (D.checkins||[]).length;
@@ -6480,10 +6188,10 @@ function seerTowerHTML() {
   else omens.push({type:'neutral', text:'No entries yet. A single journal entry today would be a great start.'});
 
   // Sobriety streak
-  if (soberDays >= 90) omens.push({type:'good', text: 'A season of strength! ' + soberDays + ' days unbroken. That is real resolve.'});
-  else if (soberDays >= 30) omens.push({type:'good', text: 'A full month of clarity \u2014 ' + soberDays + ' days. The foundation is solid.'});
-  else if (soberDays >= 7) omens.push({type:'good', text: 'A full week. Each day strengthens your foundation.'});
-  else if (soberDays >= 1) omens.push({type:'neutral', text: 'You are in the early days of your journey. The first steps are the most important.'});
+  if (soberDaysCount >= 90) omens.push({type:'good', text: 'A season of strength! ' + soberDaysCount + ' days unbroken. That is real resolve.'});
+  else if (soberDaysCount >= 30) omens.push({type:'good', text: 'A full month of clarity \u2014 ' + soberDaysCount + ' days. The foundation is solid.'});
+  else if (soberDaysCount >= 7) omens.push({type:'good', text: 'A full week. Each day strengthens your foundation.'});
+  else if (soberDaysCount >= 1) omens.push({type:'neutral', text: 'You are in the early days of your journey. The first steps are the most important.'});
   else omens.push({type:'neutral', text: 'Your journey has not begun yet. Every journey starts with a single stride.'});
 
   // Relapse patterns
@@ -6548,49 +6256,6 @@ function seerTowerHTML() {
   h += '<div style="font-size:11px;font-style:italic;color:var(--muted)">Your progress, at a glance.</div></div>';
 
   return h;
-}
-
-function monthlyChallengeHTML() {
-  var challenge = currentMonthlyChallenge();
-  var progress = getChallengeProgress(challenge);
-  var pct = Math.min(100, Math.round((progress / challenge.targetCount) * 100));
-  var done = progress >= challenge.targetCount;
-  var monthLabel = MONTH_NAMES[challenge.month] || '';
-  var pledged = challenge.pledge || (D.monthlyChallenge && D.monthlyChallenge.pledge);
-  var h = '<div class="card" style="border:2px solid ' + (done ? 'var(--primary)' : (pledged ? 'var(--accent)' : 'var(--border)')) + '"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">' + challenge.icon + '</div><div><h3 style="margin:0;font-size:14px">' + (done ? '&#x269C; ' : '') + monthLabel + ' Challenge</h3><p style="margin:0;font-size:11px;color:var(--muted)">' + challenge.title + '</p></div></div>';
-  if (!pledged && !done) {
-    h += '<button class="btn btn-sm btn-primary" onclick="pledgeToChallenge()" style="width:100%;margin:6px 0">&#9997; Pledge to Complete</button>';
-    h += '<div style="font-size:11px;color:var(--muted);text-align:center">Make a commitment to yourself  write down your promise</div>';
-  } else {
-    if (pledged) {
-      h += '<div style="font-size:11px;background:var(--primary-light);padding:6px 8px;border-radius:6px;margin:4px 0;line-height:1.4;color:var(--text)">&#128221; "' + safe(pledged) + '"</div>';
-    }
-    h += '<div class="progress-bar" style="margin:6px 0"><div class="fill" style="width:' + pct + '%"></div></div>';
-    h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>' + progress + '/' + challenge.targetCount + '</span><span>' + pct + '%</span></div>';
-    if (done) {
-      h += '<div style="text-align:center;margin-top:6px;font-size:13px;font-weight:700;color:var(--primary)">&#x269C; Challenge Complete! You kept your word.</div>';
-    }
-  }
-  h += '</div>';
-  return h;
-}
-function pledgeToChallenge() {
-  var challenge = currentMonthlyChallenge();
-  var monthLabel = MONTH_NAMES[challenge.month] || '';
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center;max-width:400px"><div style="font-size:40px;margin-bottom:6px">' + challenge.icon + '</div><h3 style="font-size:18px;margin-bottom:2px">' + monthLabel + ' Pledge</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Write your commitment to complete this month\'s challenge</p><div style="font-size:12px;background:var(--primary-light);padding:8px 10px;border-radius:8px;margin-bottom:8px;line-height:1.5"><strong>Challenge:</strong> ' + challenge.title + '<br><strong>Target:</strong> ' + challenge.targetCount + ' ' + challenge.target + ' entries this month</div><textarea id="pledge-text" placeholder="I, ' + (AUTH_EMAIL||'your name') + ', pledge to complete this challenge because..." style="width:100%;min-height:70px;margin-bottom:8px;resize:vertical">' + (D.monthlyChallenge && D.monthlyChallenge.pledge ? D.monthlyChallenge.pledge : '') + '</textarea><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary" onclick="saveChallengePledge()">&#9997; Lock In My Pledge</button></div></div>';
-  document.body.appendChild(overlay);
-  setTimeout(function(){var e=document.getElementById('pledge-text');if(e)e.focus()},200);
-}
-function saveChallengePledge() {
-  var text = document.getElementById('pledge-text');
-  if (!text || !text.value.trim()) { alert('Write your pledge before locking it in.'); return; }
-  D.monthlyChallenge = D.monthlyChallenge || currentMonthlyChallenge();
-  D.monthlyChallenge.pledge = text.value.trim();
-  saveData();
-  [].forEach.call(document.querySelectorAll('.overlay'),function(el){el.remove()});
-  render();
 }
 
 // ====== BUDDY MESSAGING ======

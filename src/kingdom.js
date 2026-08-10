@@ -938,13 +938,7 @@ function homeHTML() {
 
   h += dailyQuote();
 
-  h += dailyChallenge();
-
-  h += monthlyChallengeHTML();
-
   h += dailyQuestsHTML();
-  h += weeklyCampaignHTML();
-
   h += recoveryGoalsHTML();
 
   // Time capsule ready notification
