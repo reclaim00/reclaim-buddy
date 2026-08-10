@@ -609,12 +609,25 @@ function ordinal(n) {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 function journeyDate() {
-  var months = ['�rra Geola','Solmonath','Hrethmonath','Eosturmonath','Thrimilchi','�rra-Li�a','�ftera-Li�a','Weodmonath','Halegmonath','Winterfilleth','Blodmonath','�ftera Geola'];
+  if (!D.sobriety.startDate) return 'Your journey awaits';
+  var start = new Date(D.sobriety.startDate);
+  var startLabel = start.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  var elapsed = journeyElapsed(start);
+  return 'Started ' + startLabel + ' \u2022 ' + elapsed;
+}
+function journeyElapsed(start) {
   var now = new Date();
-  var day = now.getDate();
-  var month = months[now.getMonth()];
-  var reignYear = Math.floor(soberDays() / 365) + 1;
-  return 'Day ' + day + ' \u2022 ' + ordinal(reignYear) + ' Year of Your Journey';
+  var years = now.getFullYear() - start.getFullYear();
+  var months = now.getMonth() - start.getMonth();
+  var days = now.getDate() - start.getDate();
+  if (days < 0) { months--; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
+  if (months < 0) { years--; months += 12; }
+  var totalDays = daysBetween(start, now);
+  if (years > 0) return years + ' year' + (years !== 1 ? 's' : '') + (months > 0 ? ', ' + months + ' month' + (months !== 1 ? 's' : '') : '');
+  if (months > 0) return months + ' month' + (months !== 1 ? 's' : '') + (days > 0 ? ', ' + days + ' day' + (days !== 1 ? 's' : '') : '');
+  if (totalDays >= 7) return Math.floor(totalDays / 7) + ' week' + (Math.floor(totalDays / 7) !== 1 ? 's' : '') + (totalDays % 7 ? ', ' + (totalDays % 7) + ' day' + (totalDays % 7 !== 1 ? 's' : '') : '');
+  if (totalDays > 0) return totalDays + ' day' + (totalDays !== 1 ? 's' : '');
+  return 'today';
 }
 
 function kingdomTrackerHTML() {
@@ -840,10 +853,6 @@ function homePageHTML() {
   // 0. Journey date banner (top of home page)
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--accent);letter-spacing:.5px;font-style:italic;padding:6px 0 4px;font-family:Georgia,serif;border-bottom:1px solid var(--border);margin-bottom:8px">';
   h += journeyDate();
-  var w=D._lastWeather||(D._lastWeather=getKingdomWeather());D._lastWeather=w;
-  var wIcons={clear:'\u2600',cloudy:'\u2601',rain:'\u2602',storm:'\u26A1',fog:'\u2744',mist:'\u2744',rainbow:'\u269C',aurora:'\u2726'};
-  var wNames={clear:'Clear',cloudy:'Cloudy',rain:'Rain',storm:'Storm',fog:'Fog',mist:'Mist',rainbow:'Rainbow',aurora:'Aurora'};
-  h += '<span style="font-size:12px;opacity:.7">' + (wIcons[w]||'\u2600') + ' ' + (wNames[w]||'') + '</span>';
   h += '</div>';
 
   // 1. Kingdom scene (full-width, no top border radius)
