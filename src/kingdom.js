@@ -534,53 +534,6 @@ function getRank(days) {
   }
   return ranks[0];
 }
-function showKingdomMap() {
-  var days = soberDays();
-  var regions = [
-    {name:'The Starting Plains',   min:0,    max:6,    x:75,  y:130, w:140, h:80,  color:'#8aca7a', icon:'\u2619', label:'Begin your journey'},
-    {name:'The Forest of Resolve',  min:7,    max:29,   x:190, y:100, w:110, h:90,  color:'#5a9a5a', icon:'\u2726', label:'Prove your worth'},
-    {name:'The Mountains of Strength',min:30, max:89,  x:280, y:80,  w:120, h:80,  color:'#8a8a7a', icon:'\u2694', label:'Build your foundation'},
-    {name:'The Great River',        min:90,   max:179,  x:310, y:160, w:130, h:70,  color:'#5a8aba', icon:'\u269C', label:'Find your flow'},
-    {name:'The Eastern Shores',     min:180,  max:364,  x:155, y:190, w:120, h:70,  color:'#c8a050', icon:'\u265C', label:'Expand your space'},
-    {name:'The Highlands of Wisdom',min:365,  max:729,  x:50,  y:70,  w:120, h:90,  color:'#a07ab0', icon:'\u2727', label:'Master your craft'},
-    {name:'The Eternal Peak',     min:730,  max:999,  x:410, y:110, w:80,  h:80,  color:'#d4a017', icon:'\u265D', label:'Claim your legacy'},
-    {name:'The Ancient Peaks',      min:1000, max:1/0,  x:420, y:30,  w:75,  h:60,  color:'#c0392b', icon:'\u2629', label:'Become legend'}
-  ];
-  var h = '<div class="overlay-content" style="max-width:540px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:8px"><div style="font-size:20px">\uD83D\uDDFA</div><div><h3 style="margin:0;font-size:16px">Your Space</h3><div style="font-size:11px;color:var(--muted)">' + soberDays() + ' days explored &middot; ' + regions.filter(function(r){return days>=r.min}).length + '/' + regions.length + ' regions</div></div></div>';
-  h += '<svg viewBox="0 0 510 270" style="width:100%;height:auto;border-radius:12px;background:linear-gradient(135deg,#2a1a10,#3a2a1a)">';
-  h += '<defs><filter id="rg-glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
-  for (var i = 0; i < regions.length; i++) {
-    var r = regions[i];
-    var unlocked = days >= r.min;
-    var opacity = unlocked ? 1 : 0.25;
-    var fill = unlocked ? r.color : '#3a3a3a';
-    var border = unlocked ? 'rgba(255,255,255,.3)' : 'rgba(255,255,255,.08)';
-    h += '<rect x="' + r.x + '" y="' + r.y + '" width="' + r.w + '" height="' + r.h + '" rx="8" fill="' + fill + '" opacity="' + opacity + '" stroke="' + border + '" stroke-width="1.5"' + (unlocked ? ' filter="url(#rg-glow)"' : '') + '/>';
-    if (unlocked) {
-      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 - 4) + '" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" font-family="Georgia,serif">' + r.name + '</text>';
-      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 + 12) + '" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.7)">' + r.label + '</text>';
-    } else {
-      h += '<text x="' + (r.x + r.w/2) + '" y="' + (r.y + r.h/2 + 4) + '" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.3)" font-family="Georgia,serif">???</text>';
-    }
-  }
-  // Compass rose
-  h += '<circle cx="25" cy="25" r="16" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1"/><text x="25" y="7" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">N</text>';
-  h += '<text x="25" y="46" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">S</text><text x="6" y="27" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">W</text><text x="44" y="27" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">E</text>';
-  h += '</svg>';
-  h += '<div style="display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-top:6px">';
-  for (var i = 0; i < regions.length; i++) {
-    var r = regions[i];
-    var unlocked = days >= r.min;
-    h += '<span style="font-size:10px;color:' + (unlocked ? 'var(--accent)' : 'var(--muted)') + ';opacity:' + (unlocked ? '1' : '.4') + '">' + (unlocked ? r.icon : '\u25A1') + ' ' + (unlocked ? r.name : '???') + '</span>';
-    if (i < regions.length - 1) h += '<span style="font-size:9px;color:var(--border)">&middot;</span>';
-  }
-  h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px;width:100%">Close Map</button></div>';
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-}
 
 function _rankIconHTML(title, size) {
   size = size || 14;
@@ -841,8 +794,6 @@ function homePageHTML() {
   }
 
   // === ACTIVE HOME PAGE ===
-
-  h += '<div style="text-align:center;margin-bottom:2px"><span style="font-size:10px;color:var(--accent);cursor:pointer;opacity:.6" onclick="showKingdomMap()" title="Explore your space">\uD83D\uDDFA View Map</span></div>';
 
   // 0. Journey date banner (top of home page)
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--accent);letter-spacing:.5px;font-style:italic;padding:6px 0 4px;font-family:Georgia,serif;border-bottom:1px solid var(--border);margin-bottom:8px">';

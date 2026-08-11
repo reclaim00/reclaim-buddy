@@ -456,8 +456,6 @@ body.dark .profile-btn-float{background:rgba(20,16,30,.6);border-color:#2d223a;b
 .seer-svg{width:75px;height:105px;transform-origin:bottom center}
 .heroguide-svg{width:75px;height:105px;transform-origin:bottom center}
 .erin-svg{width:75px;height:105px;transform-origin:bottom center}
-.map-avatar{animation:mapBob 1.8s ease-in-out infinite;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
-@keyframes mapBob{0%,100%{transform:translate(-50%,-60%)}50%{transform:translate(-50%,-65%)}}
 
 /* Seer state-based limb animations */
 
