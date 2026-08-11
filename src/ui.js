@@ -1597,7 +1597,7 @@ var ONBOARDING_STEPS = [
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Choose a theme that fits your world.</div><div id="onboarding-theme" style="display:flex;gap:12px;justify-content:center;margin:16px 0">'+
      '<button class="btn" onclick="selectOnboardingTheme(\'gothic\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Gothic</span><span style="font-size:11px;color:var(--muted)">Dark stone, candlelight, shadows</span></button>'+
      '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u265B</span><span style="font-weight:700;font-size:15px">Fantasy</span><span style="font-size:11px;color:var(--muted)">Bright banners, green hills, golden light</span></button>'+
-   '</div><div style="margin-top:10px"><input id="onboarding-kingdom-name" placeholder="Name your space (optional)" value="'+(D.kingdomName||'')+'" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:13px;text-align:center"></div>'},
+   '</div>'},
   {icon:'\u269C',title:'Begin Operation Re.Claim',
     desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your path, set your goals, and begun your journey. Your space is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The road is long, but you were made for this. Every day you show up, your foundation grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Your journey starts now.</div>'},
 ];
@@ -1667,8 +1667,6 @@ function advanceOnboarding() {
   }
   if (ONBOARDING_STEP === 2) {
     if (!D.theme) { alert('Choose a theme.'); return; }
-    var nameEl = document.getElementById('onboarding-kingdom-name');
-    if (nameEl && nameEl.value.trim()) D.kingdomName = nameEl.value.trim();
   }
   ONBOARDING_STEP++;
   renderOnboardingStep();

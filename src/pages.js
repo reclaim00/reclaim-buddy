@@ -4712,7 +4712,6 @@ function alliancesHTML() {
   var days = soberDays();
   var rank = getRank(days);
   var level = kingdomLevel(days);
-  var kName = D.kingdomName && D.kingdomName.trim() ? D.kingdomName.trim() : 'My Space';
   var wc = D.warchest || {};
   var shields = wc.shields || 0;
   var h = '<h2 class="page-title">&#9876; Support Alliances</h2>';
@@ -4741,7 +4740,7 @@ function alliancesHTML() {
   // User's kingdom
   h += kingdomCard({
     isUser: true,
-    name: kName,
+    name: '',
     rank: rank,
     days: days,
     level: level,
@@ -4945,7 +4944,6 @@ function profileHTML() {
   h += '</div></div>';
   h += '<div class="card"><h3>'+t('Armoury')+'</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Title')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveDataSilent()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83C\uDFF0 Space</span><input type="text" value="'+(D.kingdomName||'')+'" onchange="D.kingdomName=this.value;saveDataSilent();render()" placeholder="My Space" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83D\uDC51 Title Style</span><select onchange="D.titleStyle=this.value;saveDataSilent();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"><option value="king"'+(D.titleStyle!=='queen'?' selected':'')+'>King / Prince</option><option value="queen"'+(D.titleStyle==='queen'?' selected':'')+'>Queen / Princess</option></select></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Messenger (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveDataSilent()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveDataSilent();delete _pageCache[pg];render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';

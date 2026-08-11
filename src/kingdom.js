@@ -842,13 +842,6 @@ function homePageHTML() {
 
   // === ACTIVE HOME PAGE ===
 
-  // Kingdom name banner
-  var kName = D.kingdomName && D.kingdomName.trim() ? D.kingdomName.trim() : 'My Space';
-  h += '<div style="text-align:center;margin-bottom:4px;cursor:pointer" onclick="kNamePrompt()" title="Tap to rename">';
-  h += '<div style="display:inline-block;background:linear-gradient(135deg,var(--stone-base),var(--stone-border));padding:4px 20px;border-radius:4px;border:1px solid var(--gold);box-shadow:0 1px 4px rgba(0,0,0,.08)">';
-  h += '<div style="font-size:16px;font-weight:700;font-family:Georgia,serif;color:var(--primary-dark);letter-spacing:2px;text-transform:uppercase">' + safe(kName) + '</div>';
-  h += '<div style="font-size:7px;color:var(--muted);letter-spacing:4px;text-transform:uppercase;margin-top:-1px">' + (D.kingdomName ? 'Tap to rename' : 'Tap to name your space') + '</div>';
-  h += '</div></div>';
   h += '<div style="text-align:center;margin-bottom:2px"><span style="font-size:10px;color:var(--accent);cursor:pointer;opacity:.6" onclick="showKingdomMap()" title="Explore your space">\uD83D\uDDFA View Map</span></div>';
 
   // 0. Journey date banner (top of home page)
@@ -921,18 +914,6 @@ function homePageHTML() {
   h += '</div>';
 
   return h;
-}
-
-function kNamePrompt() {
-  var current = D.kingdomName || '';
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center"><div style="font-size:32px;margin-bottom:4px">\uD83C\uDFF0</div><h3 style="font-size:18px;font-weight:700;margin:0 0 4px">Name Your Space</h3><p style="font-size:12px;color:var(--muted);margin-bottom:12px">What shall your space be called?</p><input type="text" id="kNameInput" value="' + safe(current) + '" placeholder="My Space" style="text-align:center;font-size:16px;font-weight:600;font-family:Georgia,serif;letter-spacing:1px;margin-bottom:12px"><div style="display:flex;gap:8px;justify-content:center"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary btn-sm" onclick="var v=document.getElementById(\'kNameInput\').value;if(v&&v.trim()){D.kingdomName=v.trim();}else{D.kingdomName=\'\';}saveData();this.closest(\'.overlay\').remove();render()">Save</button></div></div>';
-  document.body.appendChild(overlay);
-  setTimeout(function() {
-    var inp = document.getElementById('kNameInput');
-    if (inp) { inp.focus(); inp.select(); }
-  }, 100);
 }
 
 function homeHTML() {
