@@ -609,8 +609,9 @@ function ordinal(n) {
   return n + (s[(v-20)%10] || s[v] || s[0]);
 }
 function journeyDate() {
-  if (!D.sobriety.startDate) return 'Your journey awaits';
-  var start = new Date(D.sobriety.startDate);
+  var raw = D.joinDate || (D.sobriety && D.sobriety.startDate);
+  if (!raw) return 'Your journey awaits';
+  var start = new Date(raw);
   var startLabel = start.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   var elapsed = journeyElapsed(start);
   return 'Started ' + startLabel + ' \u2022 ' + elapsed;
