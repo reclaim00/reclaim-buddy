@@ -1095,7 +1095,7 @@ function handleAuth() {
 function sendEmailVerification() {
   var user = firebase && firebase.auth().currentUser;
   if (!user) { alert(t('You are not signed in.')); return; }
-  user.sendEmailVerification().then(function() {
+  user.sendEmailVerification({ url: 'https://reclaim00.github.io/reclaim-buddy/', handleCodeInApp: false }).then(function() {
     alert(t('Verification email sent. Check your inbox.'));
   }).catch(function(err) {
     alert(err.message);
