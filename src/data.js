@@ -740,7 +740,7 @@ function showSchillingCutscene(amount, reason, total) {
   var ov = document.createElement('div');
   ov.id = 'schilling-cutscene';
   ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);animation:overlayFade .3s ease';
-  ov.innerHTML = '<div style="background:linear-gradient(135deg,#d4a017,#f0c030);border-radius:20px;padding:24px 32px;text-align:center;max-width:280px;width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.2);animation:schillingPop .5s cubic-bezier(.22,1,.36,1)"><div style="font-size:48px;margin-bottom:4px">&#128176;</div><div style="font-size:28px;font-weight:800;color:#2a1a00">+' + amount + '</div><div style="font-size:13px;color:#4a3a00;margin:2px 0">' + reason + '</div><div style="width:40px;height:2px;background:rgba(0,0,0,.15);margin:8px auto"></div><div style="font-size:12px;color:#4a3a00;opacity:.7">Total: ' + total + ' schillings</div></div>';
+  ov.innerHTML = '<div style="background:linear-gradient(135deg,#0891b2,#22d3ee);border-radius:20px;padding:24px 32px;text-align:center;max-width:280px;width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.2);animation:schillingPop .5s cubic-bezier(.22,1,.36,1)"><div style="font-size:48px;margin-bottom:4px">&#9889;</div><div style="font-size:28px;font-weight:800;color:#04222b">+' + amount + '</div><div style="font-size:13px;color:#0a4356;margin:2px 0">' + reason + '</div><div style="width:40px;height:2px;background:rgba(4,34,43,.15);margin:8px auto"></div><div style="font-size:12px;color:#0a4356;opacity:.8">Total: ' + total + ' Energy</div></div>';
   document.body.appendChild(ov);
   setTimeout(function() { var e = document.getElementById('schilling-cutscene'); if (e) e.remove(); }, 2500);
 }

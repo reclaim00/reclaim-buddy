@@ -4548,21 +4548,21 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">'+t('Calendar')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'reminders\')">'+t('Reminders')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 '+t('Cost Tracker')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 '+t('Savings Ledger')+'</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Recovery')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#6b4a2e">&#9876; '+t('My Values')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#128081; '+t('Fresh Start')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#6b4a2e">&#9733; '+t('My Values')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#127793; '+t('Fresh Start')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#6b4a2e">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#2d6a27">&#128176; '+t('Rewards')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#9876; '+t('Alliances')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#2d6a27">&#9889; '+t('Rewards')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#129309; '+t('Alliances')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
-  h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u269C '+t('Shop')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u2727 '+t('Shop')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; '+t('Programs')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; '+t('Screeners')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
@@ -4818,14 +4818,13 @@ function profileHTML() {
   h += '<div style="font-size:12px;color:var(--muted)">Sober ' + soberDays() + ' days</div>';
   h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
   h += '</div></div>';
-  h += '<div class="card"><h3>'+t('Armoury')+'</h3>';
+  h += '<div class="card"><h3>'+t('Profile')+'</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Title')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveDataSilent()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">\uD83D\uDC51 Title Style</span><select onchange="D.titleStyle=this.value;saveDataSilent();render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"><option value="king"'+(D.titleStyle!=='queen'?' selected':'')+'>King / Prince</option><option value="queen"'+(D.titleStyle==='queen'?' selected':'')+'>Queen / Princess</option></select></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Messenger (optional)')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveDataSilent()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Tongue')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveDataSilent();delete _pageCache[pg];render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Heraldic Colours')+'</span><div style="display:flex;gap:4px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Accent Colour')+'</span><div style="display:flex;gap:4px">';
   var colorOpts = {green:'#34d399',blue:'#60a5fa',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
   for (var co in colorOpts) {
     h += '<div style="width:28px;height:28px;border-radius:14px;background:'+colorOpts[co]+';cursor:pointer;border:'+(D.accentColor===co?'3px solid var(--text)':'2px solid transparent')+'" onclick="D.accentColor=\''+co+'\';saveDataSilent();applyTheme();render()"></div>';
@@ -4839,19 +4838,19 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
     h += '<button class="btn btn-sm ' + (sel ? 'btn-primary' : 'btn-outline') + '" onclick="toggleTargetAddiction(\''+ADDICTION_TYPES[ati]+'\')" style="font-size:10px;padding:6px">' + ADDICTION_TYPES[ati] + '</button>';
   }
   h += '</div></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t("The Scribe's Tome")+'</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">'+t('Scroll length')+'</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveDataSilent()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Journaling Goal')+'</h3><div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0"><span style="font-size:13px">'+t('Goal length')+'</span><input type="number" value="' + (D.journalWordGoal || 50) + '" min="10" max="500" step="10" onchange="D.journalWordGoal=parseInt(this.value)||50;saveDataSilent()" style="width:80px;padding:6px 8px;font-size:13px;margin:0;text-align:center"></div></div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('The Vault')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Set a passcode to lock the app when you switch tabs or step away. Your data stays on this device.')+'</p>';
   if (isLockSet()) {
     var bioReady = !!localStorage.getItem('rc_bio_cred');
-    h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="var p=prompt(\''+t('Enter current passcode to change:')+'\');if(p&&p.trim()){checkPin(p.trim()).then(function(v){if(v){var np=prompt(\''+t('Enter new 4-6 digit passcode:')+'\');if(np&&np.trim().length>=4&&np.trim().length<=6){enableLock(np.trim());alert(\''+t('Passcode updated!')+'\');render()}else{alert(\''+t('Passcode must be 4-6 digits.')+'\')}}else{alert(\''+t('Incorrect current passcode.')+'\')}})})" style="font-size:11px">'+t('Forge New Key')+'</button>';
+    h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-sm btn-outline" onclick="var p=prompt(\''+t('Enter current passcode to change:')+'\');if(p&&p.trim()){checkPin(p.trim()).then(function(v){if(v){var np=prompt(\''+t('Enter new 4-6 digit passcode:')+'\');if(np&&np.trim().length>=4&&np.trim().length<=6){enableLock(np.trim());alert(\''+t('Passcode updated!')+'\');render()}else{alert(\''+t('Passcode must be 4-6 digits.')+'\')}}else{alert(\''+t('Incorrect current passcode.')+'\')}})})" style="font-size:11px">'+t('Change Passcode')+'</button>';
     h += '<button class="btn btn-sm btn-outline" onclick="if(localStorage.getItem(\'rc_bio_cred\')){unlockWithBiometric();}else{setupBiometric();}" style="font-size:11px">' + (bioReady ? '&#9989; '+t('Face ID') : '&#128065; '+t('Set Up Face ID')) + '</button>';
-    h += '<button class="btn btn-sm btn-danger" onclick="if(confirm(\''+t('Disable passcode lock?')+'\')){disableLock();render()}" style="font-size:11px">'+t('Unbolt the Chest')+'</button></div>';
+    h += '<button class="btn btn-sm btn-danger" onclick="if(confirm(\''+t('Disable passcode lock?')+'\')){disableLock();render()}" style="font-size:11px">'+t('Remove Lock')+'</button></div>';
   } else {
-    h += '<div style="display:flex;gap:6px"><input type="password" id="lock-pin-new" placeholder="'+t('4-6 digit passcode')+'" inputmode="numeric" maxlength="6" style="flex:1;padding:6px 10px;font-size:16px;text-align:center;letter-spacing:4px;font-weight:700"><button class="btn btn-sm btn-primary" onclick="var p=document.getElementById(\'lock-pin-new\');if(!p||!p.value.trim()||p.value.length<4||p.value.length>6){alert(\''+t('Passcode must be 4-6 digits.')+'\');return}enableLock(p.value.trim());alert(\''+t('Passcode enabled! The app will lock when you switch tabs or after 5 min of inactivity.')+'\');render()">'+t('Bolt the Chest')+'</button></div>';
+    h += '<div style="display:flex;gap:6px"><input type="password" id="lock-pin-new" placeholder="'+t('4-6 digit passcode')+'" inputmode="numeric" maxlength="6" style="flex:1;padding:6px 10px;font-size:16px;text-align:center;letter-spacing:4px;font-weight:700"><button class="btn btn-sm btn-primary" onclick="var p=document.getElementById(\'lock-pin-new\');if(!p||!p.value.trim()||p.value.length<4||p.value.length>6){alert(\''+t('Passcode must be 4-6 digits.')+'\');return}enableLock(p.value.trim());alert(\''+t('Passcode enabled! The app will lock when you switch tabs or after 5 min of inactivity.')+'\');render()">'+t('Apply Lock')+'</button></div>';
   }
   h += '</div>';
   var notif = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',checkinReminder:false,checkinReminderTime:'18:00',buddyCheckin:false,streakMilestone:false};
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'+t("The Herald's Call")+'</h3></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>'+t('Reminders')+'</h3></div>';
   h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0">';
   h += pushToggleRowHTML();
   h += notifRowHTML('morning', '🌅', 'Dawn', t('Set your intention'));
@@ -4861,12 +4860,12 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += notifRowHTML('breathe', '&#x2726;', t('Breathing Exercise'), t('Take a mindful moment'));
   h += notifRowHTML('checkinReminder', '&#x2713;', 'Presence Reminder', t('Remind if you haven\'t checked in'));
   h += notifToggleHTML('buddyCheckin', '&#x2618;', 'Partner Reminder', t('Remind to send word to your partner'));
-  h += notifToggleHTML('streakMilestone', '&#x265B;', 'Saga Milestones', t('Celebrate hitting milestones'));
+  h += notifToggleHTML('streakMilestone', '&#x265B;', 'Milestone Alerts', t('Celebrate hitting milestones'));
   h += reminderNotifRowHTML();
   h += '</div>';
   // Encryption settings
   var enc = D.encryption || {};
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+t('The Sealed Tome')+'</h3></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+t('Encrypted Journal')+'</h3></div>';
   h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0;font-size:13px;line-height:1.5">';
   if (!enc.enabled) {
     h += '<p style="color:var(--muted);margin-bottom:8px">'+t('Encrypt your journal entries with a passphrase. Your data is encrypted before being saved.')+'</p>';
@@ -5631,7 +5630,7 @@ function dailyQuestsHTML() {
   if (!q.tasks.length) return '';
   var type = (D.targetAddictions && D.targetAddictions.length) ? D.targetAddictions[0] : 'Other';
   var h = '<div class="card" style="margin:6px 0">';
-  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="font-size:16px">\u269C</div><div><div style="font-size:13px;font-weight:700;color:var(--primary)">' + type + ' Daily Quests</div><div style="font-size:10px;color:var(--muted)">Complete all ' + (q.bonus ? '4' : '3') + ' for bonus schillings' + (q.bonus ? '<span style="color:var(--gold)"> &#10086; Bonus Quest active!</span>' : '') + '</div></div></div>';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="font-size:16px">\u2727</div><div><div style="font-size:13px;font-weight:700;color:var(--primary)">' + type + ' Daily Quests</div><div style="font-size:10px;color:var(--muted)">Complete all ' + (q.bonus ? '4' : '3') + ' for bonus Energy' + (q.bonus ? '<span style="color:var(--gold)"> &#10086; Bonus Quest active!</span>' : '') + '</div></div></div>';
   var allDone = true;
   q.tasks.forEach(function(t){
     var done = q.done.indexOf(t.id) >= 0;
@@ -5646,9 +5645,9 @@ function dailyQuestsHTML() {
     h += '<div style="text-align:right"><div style="font-size:10px;color:#d4a017;font-weight:700">+' + t.pts + '</div>';
     if (!done) {
       if (autoDone) {
-        h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Claim</button>';
+        h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u2727 Claim</button>';
       } else if (isManual) {
-        h += '<button class="btn btn-sm btn-primary" onclick="confirmQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u269C Done</button>';
+        h += '<button class="btn btn-sm btn-primary" onclick="confirmQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u2727 Done</button>';
       }
     }
     h += '</div></div>';
@@ -6281,11 +6280,11 @@ function showItemPreview(id) {
   else if (item.id === 'silver') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="20" width="30" height="35" rx="3" fill="#c0c0c0"/><rect x="15" y="20" width="30" height="5" rx="1.5" fill="#e8e8e8"/><ellipse cx="30" cy="14" rx="8" ry="6" fill="#d4a574"/><circle cx="28" cy="13" r="1" fill="#333"/><circle cx="32" cy="13" r="1" fill="#333"/></svg>'; fullDesc = 'Your armor is polished to gleaming silver, reflecting the light like a beacon of resilience.'; }
   else if (item.id === 'starry') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="25" width="30" height="30" rx="3" fill="#2a1560"/><ellipse cx="30" cy="18" rx="9" ry="7" fill="#c09a7a"/><polygon points="24,10 30,8 36,10" fill="#2a1560"/><circle cx="20" cy="10" r="1" fill="#fff" opacity=".8"/><circle cx="35" cy="7" r="1.2" fill="#fff" opacity=".9"/><circle cx="28" cy="6" r=".8" fill="#fff" opacity=".7"/><circle cx="40" cy="12" r=".6" fill="#fff" opacity=".6"/></svg>'; fullDesc = 'Your hat transforms into a starry night sky, with twinkling constellations guiding the way.'; }
   else if (item.id === 'streak') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="30" cy="30" r="24" fill="none" stroke="#d4a017" stroke-width="2" opacity=".5"/><path d="M30,6 L34,24 L52,28 L38,38 L42,56 L30,44 L18,56 L22,38 L8,28 L26,24 Z" fill="#d4a017" opacity=".8"/></svg>'; fullDesc = 'A Streak Shield protects your streak from one relapse. Your days continue as if unaffected \u2014 a safety net for hard days.'; }
-  else if (item.id === 'double') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="20" cy="30" r="16" fill="#d4a017" opacity=".8"/><circle cx="40" cy="30" r="16" fill="#d4a017" opacity=".6"/><text x="30" y="35" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">x2</text></svg>'; fullDesc = 'Double all schillings earned for 24 hours. Every check-in, quest, and milestone pays twice the treasure.'; }
-  else if (item.id === 'bonus') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><rect x="10" y="10" width="40" height="40" rx="4" fill="#6B4423"/><text x="30" y="38" text-anchor="middle" font-size="22" font-weight="800" fill="#ffd700">+1</text></svg>'; fullDesc = 'Unlock a 4th daily quest slot today only. More quests mean more schillings and faster progress.'; }
+  else if (item.id === 'double') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="20" cy="30" r="16" fill="#d4a017" opacity=".8"/><circle cx="40" cy="30" r="16" fill="#d4a017" opacity=".6"/><text x="30" y="35" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">x2</text></svg>'; fullDesc = 'Double all Energy earned for 24 hours. Every check-in, quest, and milestone pays double.'; }
+  else if (item.id === 'bonus') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><rect x="10" y="10" width="40" height="40" rx="4" fill="#6B4423"/><text x="30" y="38" text-anchor="middle" font-size="22" font-weight="800" fill="#ffd700">+1</text></svg>'; fullDesc = 'Unlock a 4th daily quest slot today only. More quests mean more Energy and faster progress.'; }
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;padding:24px"><div style="font-size:36px;margin-bottom:4px">' + item.icon + '</div><h3 style="font-size:18px;font-weight:700;margin:0 0 2px">' + item.name + '</h3><div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + item.cat + ' &middot; ' + item.cost + ' \u269C</div><div style="background:var(--primary-light);border-radius:12px;padding:12px;margin-bottom:12px">' + previewSvg + '</div><p style="font-size:13px;color:var(--text-light);line-height:1.5;margin-bottom:12px">' + fullDesc + '</p><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t('Close')+'</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;padding:24px"><div style="font-size:36px;margin-bottom:4px">' + item.icon + '</div><h3 style="font-size:18px;font-weight:700;margin:0 0 2px">' + item.name + '</h3><div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + item.cat + ' &middot; ' + item.cost + ' &#9889;</div><div style="background:var(--primary-light);border-radius:12px;padding:12px;margin-bottom:12px">' + previewSvg + '</div><p style="font-size:13px;color:var(--text-light);line-height:1.5;margin-bottom:12px">' + fullDesc + '</p><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t('Close')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -6296,8 +6295,8 @@ function shopHTML() {
   var activeBon = bd.bonusDate === new Date().toDateString() ? '<span style="font-size:9px;color:var(--gold)">(active today)</span>' : '';
   var h='<h2 class="page-title">&#128717; '+t('Shop')+'</h2>';
   h+='<div class="card" style="padding:16px;text-align:center">';
-  h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Spend schillings on skins and boosts</div>';
-  h+='<div style="font-size:24px;font-weight:800;color:#d4a017;margin-bottom:10px">'+sch+' \u269C</div>';
+  h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Spend Energy on skins and boosts</div>';
+  h+='<div style="font-size:24px;font-weight:800;color:#38bdf8;margin-bottom:10px">'+sch+' &#9889;</div>';
   var cats=['Skins','Boosts'];
   for(var ci=0;ci<cats.length;ci++){
     var cat=cats[ci];
@@ -6317,7 +6316,7 @@ function shopHTML() {
       h+='<div style="flex:1;text-align:left;min-width:0"><div style="font-size:11px;font-weight:600">'+item.name+' '+boostStatus+'</div><div style="font-size:9px;color:var(--muted)">'+item.desc+'</div></div>';
       h+='<button class="btn btn-sm" onclick="showItemPreview(\''+item.id+'\')" style="font-size:9px;padding:2px 6px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer" title="Preview">\uD83D\uDD0D</button>';
       if(owned&&!isBoost){h+='<span style="font-size:10px;color:var(--accent);font-weight:700">\u2713 Owned</span>';}
-      else{h+='<button class="btn btn-sm btn-primary" onclick="buyShopItem(\''+item.id+'\')" style="font-size:9px;padding:3px 8px"'+(sch<item.cost?' disabled':'')+'>'+item.cost+' \u269C</button>';}
+      else{h+='<button class="btn btn-sm btn-primary" onclick="buyShopItem(\''+item.id+'\')" style="font-size:9px;padding:3px 8px"'+(sch<item.cost?' disabled':'')+'>'+item.cost+' &#9889;</button>';}
       h+='</div>';
     }
   }
@@ -6328,7 +6327,7 @@ function buyShopItem(id) {
   var s=D.shopPurchases||[];
   var item=null;for(var i=0;i<SHOP_ITEMS.length;i++){if(SHOP_ITEMS[i].id===id){item=SHOP_ITEMS[i];break}}
   if(!item)return;var w=getWarchest();var sch=w.schillings||0;
-  if(sch<item.cost){alert('Not enough schillings! Need '+item.cost+'.');return;}
+  if(sch<item.cost){alert('Not enough Energy! Need '+item.cost+'.');return;}
   D.warchest.schillings=sch-item.cost;
   // Boost items are consumable — track in boostData, not shopPurchases
   if (id==='streak') { D.warchest.boostData.streak = (D.warchest.boostData.streak||0) + 1; }

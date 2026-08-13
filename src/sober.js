@@ -66,8 +66,8 @@ var SOBER_LEVELS = [
   {level:8, minDays:180, title:'Mentor', icon:'\u265C', desc:'A trusted advisor'},
   {level:9, minDays:270, title:'Guide', icon:'\u2766', desc:'A pillar of the community'},
   {level:10, minDays:365, title:'Sage', icon:'\u2727', desc:'A pillar of the community'},
-  {level:11, minDays:730, title:'Royal', icon:'\u265D', desc:'A royal among travelers'},
-  {level:12, minDays:1000, title:'Master', icon:'\u2629', desc:'Long may you thrive'},
+  {level:11, minDays:730, title:'Pioneer', icon:'\u2726', desc:'A world in steady orbit'},
+  {level:12, minDays:1000, title:'Cosmos', icon:'\u2727', desc:'Long may you thrive'},
   {level:13, minDays:1825, title:'Legend', icon:'\u265E', desc:'Five years â€” an living legend'}
 ];
 
@@ -83,7 +83,7 @@ var ACHIEVEMENTS = [
   {id:'year_ring',      icon:'\u2727',  title:'Year Ring',        desc:'Stay sober for 1 year',          check:function(d){return d>=365}},
   {id:'iron_throne',    icon:'\u265D',  title:'Iron Will',      desc:'Stay sober for 2 years',         check:function(d){return d>=730}},
   {id:'decade_early',   icon:'\u2629',  title:'Millennium',       desc:'Stay sober for 1000 days',       check:function(d){return d>=1000}},
-  {id:'scribe',         icon:'\u270D',  title:'Scribe',     desc:'Write 10 journal entries',       check:function(d,j){return j>=10}},
+  {id:'scribe',         icon:'\u270D',  title:'Storyteller',     desc:'Write 10 journal entries',       check:function(d,j){return j>=10}},
   {id:'chronicler',     icon:'\u270D',  title:'Journaler',       desc:'Write 50 journal entries',       check:function(d,j){return j>=50}},
   {id:'shield_bearer',  icon:'\u265A',  title:'Shield Holder',    desc:'Earn 3 shields',                 check:function(d,j,s){return s>=3}},
   {id:'quest_knight',   icon:'\u269C',  title:'Quest Seeker',     desc:'Complete 10 quests',             check:function(d,j,s,q){return q>=10}},
@@ -185,7 +185,7 @@ function soberTimerHTML() {
   parts.push(String(el.hours).padStart(2,'0') + 'h');
   parts.push(String(el.minutes).padStart(2,'0') + 'm');
   parts.push(String(el.seconds).padStart(2,'0') + 's');
-  return '<div id="sober-timer" style="background:var(--primary);border-radius:14px;padding:14px 16px;margin:8px 0;text-align:center;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15)"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div style="font-size:11px;opacity:.8;font-weight:500;letter-spacing:1px;text-transform:uppercase">&#128081; Time Since Last Reset</div><div style="display:flex;gap:4px"><button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:14px;padding:0 2px;line-height:1">&#8635;</button><span onclick="goTo(\'royalpardon\')" title="Royal Pardon" style="cursor:pointer;font-size:13px;opacity:.7">&#128081;</span></div></div><div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px">' + parts.join(' ') + '</div></div>';
+  return '<div id="sober-timer" style="background:var(--primary);border-radius:14px;padding:14px 16px;margin:8px 0;text-align:center;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15)"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div style="font-size:11px;opacity:.8;font-weight:500;letter-spacing:1px;text-transform:uppercase">Time Since Last Reset</div><div style="display:flex;gap:4px"><button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:14px;padding:0 2px;line-height:1">&#8635;</button><span onclick="goTo(\'royalpardon\')" title="Fresh Start" style="cursor:pointer;font-size:13px;opacity:.7">&#127793;</span></div></div><div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px">' + parts.join(' ') + '</div></div>';
 }
 
 function startSoberTimer() {
@@ -286,7 +286,7 @@ function recordRelapse() {
   D.warchest.lastDayCounted = soberDays();
   D.warchest.lastEntryCount = (D.journal || []).length;
   saveData();
-  // Auto-grant Royal Pardon
+  // Auto-grant Fresh Start
   autoGrantPardon();
   setTimeout(kingdomDamage, 150);
   showRelapseRecovery();
@@ -331,7 +331,7 @@ function showRelapseRecovery(protectedByBoost) {
     var lastPardon = D.royalPardons[D.royalPardons.length - 1];
     h += '<div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:14px;margin-top:8px;text-align:center;box-shadow:0 2px 12px rgba(138,122,106,.15)">';
     h += '<div style="font-size:28px;margin-bottom:2px">&#128081;</div>';
-    h += '<div style="font-size:12px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Royal Pardon</div>';
+    h += '<div style="font-size:12px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Fresh Start</div>';
     h += '<div style="font-size:9px;color:var(--gold);margin-bottom:6px;font-style:italic">"On the path I walk and the journey we are building â€” you are pardoned. Rise and begin again with my blessing."</div>';
     h += '<div style="border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:6px 4px;margin-bottom:4px">';
     h += '<div style="font-size:11px;line-height:1.4;margin-bottom:4px"><em>"' + safe(lastPardon.forgive) + '"</em></div>';

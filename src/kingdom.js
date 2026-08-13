@@ -30,7 +30,7 @@ function characterGreetingHTML() {
 function showCharacterLore(name) {
   var lore = {
     'Your Guide': {
-      title: 'Lord of the Long View',
+      title: 'Guardian of the Long View',
       desc: 'A guide through difficult times, always learning that patterns tell the truth where words deceive. Now serving as your personal strategist \u2014 tracking your data, spotting trends, and alerting you to hidden risks before they become crises.',
       role: 'Analyzes patterns, correlates data, warns of risk factors',
       quote: 'The numbers don\u2019t lie \u2014 but they do whisper. You just have to learn to listen.',
@@ -290,9 +290,9 @@ function getRank(days) {
     {title:'Leader',      next:'Mentor',       sym:'\u265A', threshold:90, nextThreshold:180},
     {title:'Mentor',   next:'Guide',           sym:'\u265C', threshold:180,nextThreshold:270},
     {title:'Guide',       next:'Sage',           sym:'\u2766', threshold:270,nextThreshold:365},
-    {title:'Sage',       next:'Royal', sym:'\u2727', threshold:365,nextThreshold:730},
-    {title:'Royal', next:'Master', sym:'\u265D', threshold:730,nextThreshold:1000},
-    {title:'Master',       next:null,             sym:'\u2629', threshold:1000,nextThreshold:1/0}
+    {title:'Sage',       next:'Pioneer', sym:'\u2727', threshold:365,nextThreshold:730},
+    {title:'Pioneer', next:'Cosmos', sym:'\u2726', threshold:730,nextThreshold:1000},
+    {title:'Cosmos',       next:null,             sym:'\u2727', threshold:1000,nextThreshold:1/0}
   ];
   for (var i = ranks.length - 1; i >= 0; i--) {
     if (days >= ranks[i].threshold) return ranks[i];
@@ -313,8 +313,8 @@ function _rankIconHTML(title, size) {
     'Mentor':'<path d="M17,2 A14,14 0 1,1 8,18 A10,10 0 1,0 17,2" fill="currentColor"/><circle cx="17" cy="12" r="2" opacity=".6" fill="currentColor"/>',
     'Guide':'<path d="M12,2 L14.5,8.6 L21.5,9 L16,13.5 L17.5,20 L12,16.5 L6.5,20 L8,13.5 L2.5,9 L9.5,8.6 Z" fill="currentColor"/>',
     'Sage':'<rect x="7" y="10" width="10" height="7" rx="2" fill="currentColor"/><circle cx="16" cy="7" r="4" fill="currentColor"/><path d="M7,13 Q3,10 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="17" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="17" width="2.5" height="5" rx="1" fill="currentColor"/>',
-    'Royal':'<path d="M7,12 L17,12 L17,20 Q12,24 7,20 Z" fill="currentColor"/><path d="M10,14 L14,14" stroke="currentColor" opacity=".4" stroke-width="1" fill="none"/><path d="M6,4 L9,1 L12,5 L15,1 L18,4 L18,7 L6,7 Z" fill="currentColor"/>',
-    'Master':'<path d="M7,2 L9,0 L12,3 L15,0 L17,2 L17,5 L7,5 Z" fill="currentColor"/><rect x="7" y="9" width="10" height="7" rx="2" fill="currentColor"/><circle cx="15" cy="6" r="3.5" fill="currentColor"/><path d="M7,12 Q3,9 4,6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/><rect x="7" y="16" width="2.5" height="5" rx="1" fill="currentColor"/><rect x="12" y="16" width="2.5" height="5" rx="1" fill="currentColor"/>'
+    'Pioneer':'<circle cx="12" cy="12" r="6" fill="currentColor"/><ellipse cx="12" cy="12" rx="10.5" ry="4" transform="rotate(-20 12 12)" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="19" cy="7" r="1.6" fill="currentColor"/>',
+    'Cosmos':'<path d="M12 2 L13.6 10.4 L22 12 L13.6 13.6 L12 22 L10.4 13.6 L2 12 L10.4 10.4 Z" fill="currentColor"/><circle cx="18" cy="5" r="1.2" fill="currentColor" opacity=".6"/><circle cx="6" cy="18" r="1" fill="currentColor" opacity=".5"/>'
   };
   var charge = c[title];
   if (!charge) return '';
@@ -354,7 +354,7 @@ function kingdomTrackerHTML() {
   var level = kingdomLevel(days);
   var isActive = D.sobriety.startDate ? true : false;
   var levelNames = ['Seed','Root','Sprout','Grove','Garden','Town','Borough','City','Region','Nation','World'];
-  var levelDescs = ['A new beginning','First stones laid','Taking shape','Walls are rising','Growing settlement','A proper town','Walls secured','Thriving city','A proud region','A mighty nation','A legendary world'];
+  var levelDescs = ['A new beginning','First land forms','Taking shape','Land is rising','Growing settlement','A proper town','Fields are farmed','Thriving city','A proud region','A mighty nation','A legendary world'];
   var h = kingdomHTML();
   h += '<div class="card" style="text-align:center;margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:10px 14px 12px">';
   if (isActive) {
@@ -398,7 +398,7 @@ function kingsLedgerHTML() {
   var unitsAvoided = days * dQty;
   var hrsRegained = Math.round(days * 1.5);
   var h = '';
-  h += '<h2 class="page-title">\uD83D\uDCD6 The King\u2019s Ledger</h2>';
+  h += '<h2 class="page-title">\uD83D\uDCD6 The Savings Ledger</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:10px">See how much you\u2019ve saved in money, reduced usage, and regained in time since you began. Enter your daily numbers below.</p>';
   h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
   h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
@@ -440,25 +440,25 @@ function warchestHTML() {
       w.shields = (w.shields||0) + 1;
     }
   }
-  var h = '<h2 class="page-title">&#128176; Rewards</h2>';
+  var h = '<h2 class="page-title">&#9889; Rewards</h2>';
   h += '<div class="card" style="text-align:center;padding:16px">';
-  h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px">Earn coins by staying sober and writing journal entries</div>';
-  // Schilling display
-  h += '<div style="background:linear-gradient(135deg,#d4a017,#f0c030);border-radius:16px;padding:14px;margin-bottom:10px">';
-  h += '<div style="font-size:32px;font-weight:800;color:#2a1a00">' + schillings + '</div>';
-  h += '<div style="font-size:12px;color:#4a3a00;opacity:.8">&#128176; Coins</div></div>';
+  h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px">Earn Energy by staying sober and writing journal entries</div>';
+  // Energy display
+  h += '<div style="background:linear-gradient(135deg,#0891b2,#22d3ee);border-radius:16px;padding:14px;margin-bottom:10px">';
+  h += '<div style="font-size:32px;font-weight:800;color:#04222b">' + schillings + '</div>';
+  h += '<div style="font-size:12px;color:#0a4356;opacity:.85">&#9889; Energy</div></div>';
   // Shield count
   h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--text);margin-bottom:10px">';
   h += '<span style="font-size:22px">&#128737;</span> <strong>' + shields + '</strong> shield' + (shields !== 1 ? 's' : '');
   h += '</div>';
   // Buy shield button
   h += '<div style="display:flex;gap:6px;margin-bottom:10px">';
-  h += '<button class="btn btn-primary btn-sm" onclick="buyShield()" style="flex:1;background:linear-gradient(135deg,#6a4a2a,#8a6a4a);font-size:12px"' + (schillings < 30 ? ' disabled' : '') + '>&#128737; Buy Shield (30 coins)</button>';
+  h += '<button class="btn btn-primary btn-sm" onclick="buyShield()" style="flex:1;background:linear-gradient(135deg,#6a4a2a,#8a6a4a);font-size:12px"' + (schillings < 30 ? ' disabled' : '') + '>&#128737; Buy Shield (30 Energy)</button>';
   h += '</div>';
   // Active boosts
   var boostLines = [];
   if ((bd.streak||0) > 0) boostLines.push('&#2629; Streak Shield &times;' + bd.streak);
-  if (bd.doubleExpiry > Date.now()) boostLines.push('&#269C; Double Coins (' + Math.ceil((bd.doubleExpiry-Date.now())/3600000) + 'h)');
+  if (bd.doubleExpiry > Date.now()) boostLines.push('&#9889; Double Energy (' + Math.ceil((bd.doubleExpiry-Date.now())/3600000) + 'h)');
   if (bd.bonusDate === new Date().toDateString()) boostLines.push('&#10086; Bonus Quest active');
   if (boostLines.length > 0) {
     h += '<div style="background:var(--primary-light);border-radius:8px;padding:8px;margin-bottom:8px">';
@@ -482,7 +482,7 @@ function warchestHTML() {
       h += '<span style="font-size:9px;background:var(--primary-light);padding:1px 5px;border-radius:4px;margin:1px;display:inline-block">' + (mIdx>=0?mNames[mIdx]:'') + '</span>';
     }
   }
-  // King's Ledger � real-world savings calculator
+  // Savings Ledger � real-world savings calculator
   var cpDay = D.sobriety.costPerDay || 0;
   var dQty = D.sobriety.dailyQuantity || 0;
   var uLabel = D.sobriety.unitLabel || '';
@@ -490,7 +490,7 @@ function warchestHTML() {
   var unitsAvoided = days * dQty;
   var hrsRegained = Math.round(days * 1.5);
   h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
-  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:20px">\uD83D\uDCD6</span><h3 style="margin:0;font-size:14px">The King\u2019s Ledger</h3></div>';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:20px">\uD83D\uDCD6</span><h3 style="margin:0;font-size:14px">The Savings Ledger</h3></div>';
   h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">Enter how much you spent daily and the calculator will show what you\u2019ve saved' + (isActive ? ' since your last reset.' : ' once you start your journey.') + '</p>';
   // Inputs always visible
   h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
@@ -508,12 +508,12 @@ function warchestHTML() {
   h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + unitDisplay + '</div></div>';
   h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
   h += '</div></div>';
-  if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your journey to start earning coins</div>';
+  if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your journey to start earning Energy</div>';
   // Shield info
   h += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">';
-  h += '&#128737; Shields protect your streak on relapse. Earn them at milestones (1 month, 3 months, etc.) or buy for 30 coins each.';
+  h += '&#128737; Shields protect your streak on relapse. Earn them at milestones (1 month, 3 months, etc.) or buy for 30 Energy each.';
   h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'more\')" style="margin-top:4px">Back to Arsenal</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'more\')" style="margin-top:4px">Back to Tools</button>';
   // Shop link
   h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'shop\')" style="width:100%;margin-top:6px;font-size:12px;background:linear-gradient(135deg,#2a5a2a,#3a7a3a)">\u269C Visit the Shop</button>';
   h += '</div>';
@@ -521,7 +521,7 @@ function warchestHTML() {
 }
 function buyShield() {
   var w = getWarchest();
-  if ((w.schillings || 0) < 30) { alert('Not enough coins! You need 30.'); render(); return; }
+  if ((w.schillings || 0) < 30) { alert('Not enough Energy! You need 30.'); render(); return; }
   w.schillings -= 30;
   w.shields = (w.shields || 0) + 1;
   saveData(); render();
@@ -578,8 +578,8 @@ function homePageHTML() {
   h += '<div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:700;color:var(--text)">' + _rankIconHTML(rank.title, 16) + ' ' + rank.title + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">RANK</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--accent)">' + streak + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">STREAK</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:22px;font-weight:700;color:#8a6a4a">' + kingdomPopulation(days) + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COMMUNITY</div></div>';
-  h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')" title="' + (shields > 0 ? shields + ' shields' : '') + '"><div style="font-size:22px;font-weight:700;color:#d4a017">' + schillings + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COINS</div></div>';
-  // King's Ledger mini widget
+  h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')" title="' + (shields > 0 ? shields + ' shields' : '') + '"><div style="font-size:22px;font-weight:700;color:#38bdf8">' + schillings + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">ENERGY</div></div>';
+  // Savings Ledger mini widget
   if (D.sobriety.startDate) {
     var _cpDay = D.sobriety.costPerDay || 0;
     var _moneySaved = days * _cpDay;
