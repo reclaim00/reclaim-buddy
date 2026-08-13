@@ -5981,28 +5981,7 @@ function applyTheme() {
     el.style.setProperty('--border','#e5e7eb');
     el.style.setProperty('--primary-light', c.light);
   }
-  // Theme-based kingdom scene colors
-  var ks = document.querySelector('.kingdom-scene');
-  if (ks) {
-    if (D.theme === 'fantasy') {
-      ks.style.setProperty('--sky-c', '#7ec8e3');
-      ks.style.setProperty('--ground-c', '#7cb342');
-      ks.style.setProperty('--hill-c', '#8bc34a');
-      ks.style.setProperty('--keep-c', '#d4a76a');
-      ks.style.setProperty('--roof-c', '#c0392b');
-      ks.style.setProperty('--tower-c', '#d4a76a');
-      ks.style.setProperty('--tower-roof-c', '#c0392b');
-      ks.style.setProperty('--door-c', '#5d4037');
-      ks.style.setProperty('--tree-c', '#4caf50');
-      ks.style.setProperty('--tree-trunk-c', '#5d4037');
-      ks.style.setProperty('--flag-c', '#e74c3c');
-      ks.style.setProperty('--window-c', '#ffe082');
-      ks.style.setProperty('--path-c', '#a1887f');
-    } else {
-      ['sky-c','ground-c','hill-c','keep-c','roof-c','tower-c','tower-roof-c','door-c','tree-c','tree-trunk-c','flag-c','window-c','path-c','cloud-c','bird-c','rubble-c'].forEach(function(k){ ks.style.removeProperty('--'+k); });
-    }
   }
-}
 
 function updateTabLabels() {
   var labels = {home:'Atlas',reflect:'Journal',care:'Wellness',track:'History',more:'Tools'};
@@ -6298,12 +6277,7 @@ function showItemPreview(id) {
   if (!item) return;
   var previewSvg = '';
   var fullDesc = '';
-  if (item.id === 'banners') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="10" y="10" width="80" height="40" rx="4" fill="#6a4a2a"/><rect x="12" y="12" width="8" height="20" rx="1" fill="#8a2a2a"/><rect x="80" y="12" width="8" height="20" rx="1" fill="#8a2a2a"/><polygon points="12,10 16,4 20,10" fill="#8a2a2a"/><polygon points="80,10 84,4 88,10" fill="#8a2a2a"/></svg>'; fullDesc = 'Stone banners hang from the keep walls, adding a regal touch to your castle. Each banner bears your realm\u2019s colors.'; }
-  else if (item.id === 'tapestry') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="20" y="8" width="60" height="44" rx="4" fill="#4a1a2a" opacity=".8"/><rect x="24" y="12" width="52" height="36" rx="2" fill="none" stroke="#d4a017" stroke-width="1" opacity=".6"/><circle cx="50" cy="30" r="10" fill="#d4a017" opacity=".5"/><circle cx="50" cy="30" r="5" fill="#8a2a2a" opacity=".6"/></svg>'; fullDesc = 'A grand royal tapestry hangs behind the throne, embroidered with your heraldic symbols in gold thread.'; }
-  else if (item.id === 'torches') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><rect x="38" y="20" width="3" height="15" rx="1" fill="#4a3a2a"/><ellipse cx="39.5" cy="18" rx="4" ry="5" fill="#ff6622" opacity=".8"/><ellipse cx="39.5" cy="19" rx="2.5" ry="3.5" fill="#ffcc00"/><rect x="58" y="20" width="3" height="15" rx="1" fill="#4a3a2a"/><ellipse cx="59.5" cy="18" rx="4" ry="5" fill="#ff6622" opacity=".8"/><ellipse cx="59.5" cy="19" rx="2.5" ry="3.5" fill="#ffcc00"/><rect x="10" y="45" width="80" height="10" rx="2" fill="#6a5a4a" opacity=".5"/></svg>'; fullDesc = 'Animated torch sconces flank the castle door, casting warm light with flickering flame animations.'; }
-  else if (item.id === 'paths') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><ellipse cx="50" cy="50" rx="40" ry="8" fill="rgba(100,90,80,.4)"/><ellipse cx="30" cy="48" rx="6" ry="3" fill="rgba(120,110,100,.3)"/><ellipse cx="50" cy="50" rx="6" ry="3" fill="rgba(120,110,100,.3)"/><ellipse cx="70" cy="48" rx="6" ry="3" fill="rgba(120,110,100,.3)"/></svg>'; fullDesc = 'A winding cobblestone path leads from the castle gate through the village, decorated with rounded stones.'; }
-  else if (item.id === 'flags') { previewSvg = '<svg viewBox="0 0 100 60" width="100%" height="100"><line x1="20" y1="10" x2="20" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="20,10 40,15 20,20" fill="#cc3a3a"/><line x1="50" y1="10" x2="50" y2="55" stroke="#6a5a4a" stroke-width="2"/><polygon points="50,10 70,15 50,20" fill="#cc3a3a"/><line x1="80" y1="15" x2="80" y2="55" stroke="#6a5a4a" stroke-width="1.5"/><polygon points="80,15 92,18 80,21" fill="#aa3a3a"/></svg>'; fullDesc = 'Your personal heraldic banners fly from every tower and wall, announcing your presence to all who approach.'; }
-  else if (item.id === 'crimson') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="15" width="30" height="30" rx="3" fill="#6a0a0a"/><rect x="15" y="15" width="30" height="6" rx="1.5" fill="#f0e8d0"/><rect x="15" y="42" width="30" height="4" rx="1" fill="#f0e8d0"/><circle cx="30" cy="10" r="8" fill="#c89a6a"/><polygon points="24,2 30,0 36,2" fill="#d4a017"/></svg>'; fullDesc = 'Your coat is dyed a deep crimson red, signaling authority and resilience.'; }
+  if (item.id === 'crimson') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="15" width="30" height="30" rx="3" fill="#6a0a0a"/><rect x="15" y="15" width="30" height="6" rx="1.5" fill="#f0e8d0"/><rect x="15" y="42" width="30" height="4" rx="1" fill="#f0e8d0"/><circle cx="30" cy="10" r="8" fill="#c89a6a"/><polygon points="24,2 30,0 36,2" fill="#d4a017"/></svg>'; fullDesc = 'Your coat is dyed a deep crimson red, signaling authority and resilience.'; }
   else if (item.id === 'silver') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="20" width="30" height="35" rx="3" fill="#c0c0c0"/><rect x="15" y="20" width="30" height="5" rx="1.5" fill="#e8e8e8"/><ellipse cx="30" cy="14" rx="8" ry="6" fill="#d4a574"/><circle cx="28" cy="13" r="1" fill="#333"/><circle cx="32" cy="13" r="1" fill="#333"/></svg>'; fullDesc = 'Your armor is polished to gleaming silver, reflecting the light like a beacon of resilience.'; }
   else if (item.id === 'starry') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="25" width="30" height="30" rx="3" fill="#2a1560"/><ellipse cx="30" cy="18" rx="9" ry="7" fill="#c09a7a"/><polygon points="24,10 30,8 36,10" fill="#2a1560"/><circle cx="20" cy="10" r="1" fill="#fff" opacity=".8"/><circle cx="35" cy="7" r="1.2" fill="#fff" opacity=".9"/><circle cx="28" cy="6" r=".8" fill="#fff" opacity=".7"/><circle cx="40" cy="12" r=".6" fill="#fff" opacity=".6"/></svg>'; fullDesc = 'Your hat transforms into a starry night sky, with twinkling constellations guiding the way.'; }
   else if (item.id === 'streak') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="30" cy="30" r="24" fill="none" stroke="#d4a017" stroke-width="2" opacity=".5"/><path d="M30,6 L34,24 L52,28 L38,38 L42,56 L30,44 L18,56 L22,38 L8,28 L26,24 Z" fill="#d4a017" opacity=".8"/></svg>'; fullDesc = 'A Streak Shield protects your streak from one relapse. Your days continue as if unaffected \u2014 a safety net for hard days.'; }
@@ -6322,9 +6296,9 @@ function shopHTML() {
   var activeBon = bd.bonusDate === new Date().toDateString() ? '<span style="font-size:9px;color:var(--gold)">(active today)</span>' : '';
   var h='<h2 class="page-title">&#128717; '+t('Shop')+'</h2>';
   h+='<div class="card" style="padding:16px;text-align:center">';
-  h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Spend schillings on decor, skins, and boosts</div>';
+  h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Spend schillings on skins and boosts</div>';
   h+='<div style="font-size:24px;font-weight:800;color:#d4a017;margin-bottom:10px">'+sch+' \u269C</div>';
-  var cats=['Decor','Skins','Boosts'];
+  var cats=['Skins','Boosts'];
   for(var ci=0;ci<cats.length;ci++){
     var cat=cats[ci];
     h+='<div style="font-size:12px;font-weight:700;color:var(--text);margin:8px 0 4px;text-align:left;letter-spacing:1px">'+cat+'</div>';

@@ -32,89 +32,31 @@ body.dark .day-scene{display:none}
 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#c8b8a8,var(--gold))}
 body.dark ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#7a6a5a,#5a4a3a);border-color:#3a3640}
 body.dark ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#8a7a6a,#6a5a4a)}
-/* ===== KINGDOM VISUALIZATION ===== */
+/* ===== PLANET VISUALIZATION ===== */
 .kingdom-scene{position:relative;width:100%;max-width:460px;margin:0 auto 10px;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04)}
-.kingdom-scene svg{width:100%;height:auto;display:block}.k-sky{fill:var(--sky-c)}.k-ground{fill:var(--ground-c)}.k-hills{fill:var(--hill-c)}.k-keep{fill:var(--keep-c)}.k-roof{fill:var(--roof-c)}.k-tower{fill:var(--tower-c)}.k-tower-roof{fill:var(--tower-roof-c)}.k-door{fill:var(--door-c)}.k-tree{fill:var(--tree-c)}.k-tree-trunk{fill:var(--tree-trunk-c)}.k-flag-l,.k-flag-r{fill:var(--flag-c)}.k-flagpole{stroke:var(--flagpole-c)}.k-window{fill:var(--window-c)}.k-sun{fill:var(--sun-c)}.k-clouds ellipse{fill:var(--cloud-c);opacity:.6}.k-birds path{stroke:var(--bird-c);fill:none;stroke-linecap:round}.k-rubble{fill:var(--rubble-c)}.k-cren rect{fill:var(--keep-c)}.k-path{fill:var(--path-c)}.k-damage-overlay{fill:#ff4444}
-.kingdom-scene .k-flag-l,.kingdom-scene .k-flag-r,.kingdom-scene .k-birds,.kingdom-scene .k-trees,.kingdom-scene .k-clouds,.kingdom-scene .k-sun,.kingdom-scene .k-window{will-change:transform}
-.kingdom-scene{--sky-c:#2a1a10;--ground-c:#3a2a1a;--hill-c:#2a2a2a;--keep-c:#3a2a1a;--roof-c:#4a2a1a;--tower-c:#3a2a1a;--tower-roof-c:#4a2a1a;--door-c:#1a0a00;--tree-c:#2a1a0a;--tree-trunk-c:#1a0a00;--flag-c:#6a1a1a;--flagpole-c:#3a2a1a;--window-c:#ffdd8844;--sun-c:#ffcc44;--cloud-c:#555;--bird-c:#3a3a4a;--rubble-c:#4a3a2a;--path-c:#5a4a3a}
-.kingdom-scene.tier-1{--sky-c:#2a2a40;--ground-c:#4a3a2a;--hill-c:#3a3a4a;--keep-c:#5a4a3a;--roof-c:#5a3a2a;--tower-c:#5a4a3a;--tower-roof-c:#5a3a2a;--door-c:#2a1a0a;--flag-c:#7a2a2a;--tree-c:#3a5a3a;--tree-trunk-c:#2a1a0a;--window-c:#ffdd8833;--rubble-c:#5a4a3a;--path-c:#6a5a4a;--flagpole-c:#4a3a2a}
-.kingdom-scene.tier-2{--sky-c:#4a5a7a;--ground-c:#5a7a4a;--hill-c:#4a5a5a;--keep-c:#6a5a4a;--roof-c:#7a4a2a;--tower-c:#6a5a4a;--tower-roof-c:#7a4a2a;--door-c:#3a2a1a;--flag-c:#8a2a2a;--tree-c:#4a7a4a;--tree-trunk-c:#3a2a1a;--window-c:#ffdd8866;--cloud-c:#7a8a9a;--path-c:#8a7a6a;--flagpole-c:#5a4a3a}
-.kingdom-scene.tier-3{--sky-c:#6a8aaa;--ground-c:#6a9a5a;--hill-c:#5a7a6a;--keep-c:#8a7a6a;--roof-c:#8a5a3a;--tower-c:#8a7a6a;--tower-roof-c:#8a5a3a;--door-c:#4a3a2a;--flag-c:#aa2a2a;--tree-c:#5a9a5a;--tree-trunk-c:#4a3a2a;--window-c:#ffdd88aa;--sun-c:#ffdd66;--cloud-c:#9aaaba;--path-c:#9a8a7a;--flagpole-c:#6a5a4a}
-.kingdom-scene.tier-4{--sky-c:#7aaad4;--ground-c:#7aba6a;--hill-c:#6a8a6a;--keep-c:#9a8a7a;--roof-c:#9a6a4a;--tower-c:#9a8a7a;--tower-roof-c:#9a6a4a;--door-c:#5a4a3a;--flag-c:#cc3a3a;--tree-c:#6aaa5a;--tree-trunk-c:#5a4a3a;--window-c:#ffdd88cc;--sun-c:#ffee88;--cloud-c:#bbc8d0;--bird-c:#4a4a5a;--path-c:#aa9a8a;--flagpole-c:#7a6a5a}
-.kingdom-scene.tier-5{--sky-c:#8ac0e0;--ground-c:#8aca7a;--hill-c:#7a9a7a;--keep-c:#aa9a8a;--roof-c:#aa7a5a;--tower-c:#aa9a8a;--tower-roof-c:#aa7a5a;--door-c:#6a5a4a;--flag-c:#dd4a4a;--tree-c:#7aba6a;--tree-trunk-c:#6a5a4a;--window-c:#ffdd88ee;--sun-c:#ffeeaa;--cloud-c:#ccd8e0;--bird-c:#5a5a6a;--path-c:#baaa9a;--flagpole-c:#8a7a6a}
-.kingdom-scene.tier-6{--sky-c:#5aa8ff;--ground-c:#8ada8a;--hill-c:#7aaa8a;--keep-c:#baaa9a;--roof-c:#ba8a6a;--tower-c:#baaa9a;--tower-roof-c:#ba8a6a;--door-c:#7a6a5a;--flag-c:#ee5a5a;--tree-c:#8aca7a;--tree-trunk-c:#7a6a5a;--window-c:#ffff88;--sun-c:#ffffcc;--cloud-c:#dde8f0;--bird-c:#6a6a7a;--path-c:#caaa9a;--flagpole-c:#9a8a7a}
-@keyframes flagFlap{0%,100%{transform:rotate(0deg) scaleX(1)}20%{transform:rotate(5deg) scaleX(1.07)}40%{transform:rotate(-3deg) scaleX(0.93)}60%{transform:rotate(6deg) scaleX(1.05)}80%{transform:rotate(-1deg) scaleX(0.98)}}
-.kingdom-scene .k-flag-l{animation:flagFlap 1.5s ease-in-out infinite;transform-origin:171.5px 78px}
-.kingdom-scene .k-flag-r{animation:flagFlap 1.5s ease-in-out infinite .4s;transform-origin:328.5px 78px}
-@keyframes birdFly{0%{transform:translateX(-40px) translateY(0)}25%{transform:translateX(-10px) translateY(-6px)}50%{transform:translateX(20px) translateY(0)}75%{transform:translateX(40px) translateY(-6px)}100%{transform:translateX(60px) translateY(0)}}
-.kingdom-scene .k-birds{animation:birdFly 8s ease-in-out infinite}
-@keyframes wingFlap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(-0.3)}}
-.kingdom-scene .k-bird{display:inline-block;transform-origin:center}
-@keyframes treeSway{0%,100%{transform:translateX(0)}50%{transform:translateX(2px)}}
-.kingdom-scene .k-trees{animation:treeSway 4s ease-in-out infinite;transform-origin:bottom center}
-@keyframes cloudDrift{0%{transform:translateX(0)}100%{transform:translateX(30px)}}
-.kingdom-scene .k-clouds{animation:cloudDrift 25s linear infinite}
-@keyframes sunPulse{0%,100%{opacity:.8;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
-.kingdom-scene .k-sun{transform-origin:410px 50px;animation:sunPulse 3s ease-in-out infinite}
-@keyframes villagerWalk{0%{transform:translateX(-30px)}100%{transform:translateX(530px)}}
-@keyframes walkLeg{0%,100%{transform:rotate(15deg)}50%{transform:rotate(-12deg)}}
-@keyframes goatGraze{0%,100%{transform:rotate(0)}40%{transform:rotate(8deg)}60%{transform:rotate(8deg)}}
-@keyframes goatBody{0%,100%{transform:translateY(0)}50%{transform:translateY(-1px)}}
-@keyframes catTail{0%,100%{transform:rotate(-20deg)}50%{transform:rotate(20deg)}}
-@keyframes catIdle{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-@keyframes dogWag{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(25deg)}}
-@keyframes dogPant{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.1)}}
-.kingdom-scene .k-goat{display:inline-block}
-@keyframes windowGlow{0%,100%{opacity:.5}50%{opacity:.95}}
-.kingdom-scene .k-window{animation:windowGlow 3s ease-in-out infinite}
-@keyframes fireFlame{0%,100%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.25) scaleX(.9)}}
-@keyframes emberRise{0%{opacity:0;transform:translateY(0) translateX(0)}20%{opacity:.8}100%{opacity:0;transform:translateY(-18px) translateX(var(--ex))}}
-@keyframes fireGlow{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.3;transform:scale(1.12)}}
-@keyframes smokePuff{0%{opacity:0;transform:translateY(0) scale(.5)}30%{opacity:.3}100%{opacity:0;transform:translateY(-20px) scale(1.8)}}
-@keyframes torchFlicker{0%,100%{opacity:.6;transform:scaleY(1)}25%{opacity:.8;transform:scaleY(1.15)}50%{opacity:.5;transform:scaleY(0.9)}75%{opacity:.9;transform:scaleY(1.1)}}
+.kingdom-scene svg{width:100%;height:auto;display:block}.k-sky{fill:var(--sky-c)}.k-damage-overlay{fill:#ff4444}
+.kingdom-scene{--sky-c:#04061a}
+.kingdom-scene .k-stars circle{fill:#fff}
+@keyframes starTwinkle{0%,100%{opacity:.35}50%{opacity:1}}
+.kingdom-scene .k-stars circle{animation:starTwinkle 4s ease-in-out infinite}
+@keyframes nebulaDrift{0%,100%{transform:translateX(-8px)}50%{transform:translateX(8px)}}
+@keyframes diskSpin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes planetPulse{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.7;transform:scale(1.06)}}
+@keyframes auroraPlanet{0%,100%{opacity:.15}50%{opacity:.4}}
+@keyframes sunPulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+.kingdom-scene .kd-sun{animation:sunPulse 4s ease-in-out infinite;transform-origin:66px 52px}
+@keyframes cloudDrift{0%{transform:translateX(0)}100%{transform:translateX(14px)}}
+.kingdom-scene .k-clouds{animation:cloudDrift 20s ease-in-out infinite;transform-origin:center}
 .kingdom-scene.damage .k-damage-overlay{animation:kingdomFlash .5s ease forwards}
 .kingdom-scene.flourish{animation:kingdomGlow 1.2s ease}
 @keyframes kingdomFlash{0%{opacity:0}15%{opacity:.35}40%{opacity:.15}100%{opacity:0}}
 @keyframes kingdomGlow{0%{filter:brightness(1) saturate(1)}30%{filter:brightness(1.25) saturate(1.15)}60%{filter:brightness(1.08)}100%{filter:brightness(1) saturate(1)}}
 body.dark .kingdom-scene{box-shadow:0 1px 6px rgba(0,0,0,.3),0 4px 20px rgba(0,0,0,.2)}
-.k-stars{display:none}body.dark .k-stars{display:block}body.dark .k-stars circle{fill:#fff}
-body.dark .kingdom-scene.tier-0 .k-stars circle{opacity:.06}body.dark .kingdom-scene.tier-1 .k-stars circle{opacity:.09}
-body.dark .kingdom-scene.tier-2 .k-stars circle{opacity:.12}body.dark .kingdom-scene.tier-3 .k-stars circle{opacity:.16}
-body.dark .kingdom-scene.tier-4 .k-stars circle{opacity:.22}body.dark .kingdom-scene.tier-5 .k-stars circle{opacity:.3}
-body.dark .kingdom-scene.tier-6 .k-stars circle{opacity:.4}body.dark .kingdom-scene.tier-7 .k-stars circle{opacity:.5}
-body.dark .kingdom-scene.tier-8 .k-stars circle{opacity:.6}body.dark .kingdom-scene.tier-9 .k-stars circle{opacity:.7}
-body.dark .kingdom-scene.tier-10 .k-stars circle{opacity:.8}
-body.dark .kingdom-scene.tier-0{--sky-c:#050510;--ground-c:#080812;--hill-c:#080818}
-body.dark .kingdom-scene.tier-1{--sky-c:#060618;--ground-c:#0c0c1a;--hill-c:#0c0c1c}
-body.dark .kingdom-scene.tier-2{--sky-c:#080820;--ground-c:#101020;--hill-c:#101020}
-body.dark .kingdom-scene.tier-3{--sky-c:#0c0c28;--ground-c:#141428;--hill-c:#141428}
-body.dark .kingdom-scene.tier-4{--sky-c:#101030;--ground-c:#181828;--hill-c:#181830}
-body.dark .kingdom-scene.tier-5{--sky-c:#141438;--ground-c:#1c1c30;--hill-c:#1c1c34}
-body.dark .kingdom-scene.tier-6{--sky-c:#181838;--ground-c:#202038;--hill-c:#202038}
-body.dark .kingdom-scene.tier-7{--sky-c:#202050;--ground-c:#282848;--hill-c:#282848}
-body.dark .kingdom-scene.tier-8{--sky-c:#282860;--ground-c:#303058;--hill-c:#303058}
-body.dark .kingdom-scene.tier-9{--sky-c:#303070;--ground-c:#383868;--hill-c:#383868}
-body.dark .kingdom-scene.tier-10{--sky-c:#303070;--ground-c:#383868;--hill-c:#383868}
-body.dark .kingdom-scene .k-sun{display:none}
-body.dark .kingdom-scene .k-window{fill:#ff8833;animation:lanternGlow 2s ease-in-out infinite}
-body.dark .kingdom-scene .k-clouds ellipse{opacity:.06}
-body.dark .kingdom-scene .k-door{fill:#1a0800}
-@keyframes lanternGlow{0%,100%{opacity:.4}50%{opacity:1}}
-.kingdom-scene.k-rain{--sky-c:#6a7a8a;--ground-c:#5a6a7a;--hill-c:#5a6a7a}
-.kingdom-scene.k-storm{--sky-c:#2a2a3a;--ground-c:#3a3a4a;--hill-c:#3a3a4a}
-.kingdom-scene.k-fog{--sky-c:#8a9aaa;--ground-c:#7a8a9a;--hill-c:#7a8a9a}
-.kingdom-scene.k-mist{--sky-c:#9aaabb;--ground-c:#8a9aaa;--hill-c:#8a9aaa}
-.kingdom-scene.k-cloudy{--sky-c:#7a8a9a;--ground-c:#6a7a8a;--hill-c:#6a7a8a}
-.kingdom-scene.k-aurora{--sky-c:#1a2a3a;--ground-c:#2a3a4a;--hill-c:#2a3a4a}
-.kingdom-scene.k-rainbow{--sky-c:#5a7a9a;--ground-c:#5a7a8a;--hill-c:#5a7a8a}
-.k-storm .k-sun,.k-rain .k-sun,.k-fog .k-sun,.k-mist .k-sun,.k-cloudy .k-sun,.k-aurora .k-sun{display:none}
-.k-rainbow .k-sun{fill:#ffdd44}
-.k-rain .k-clouds ellipse,.k-storm .k-clouds ellipse{fill:#5a6a7a;opacity:.8}
-.k-fog .k-clouds ellipse,.k-mist .k-clouds ellipse{fill:#8a9aaa;opacity:.4}
-.k-cloudy .k-clouds ellipse{fill:#6a7a8a;opacity:.7}
 .kingdom-scene.k-upgraded{box-shadow:0 0 20px rgba(255,215,0,.2),0 0 60px rgba(255,215,0,.08),0 1px 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04)}
-.kingdom-scene.k-upgraded .k-flag-l,.kingdom-scene.k-upgraded .k-flag-r{fill:#ffd700 !important;filter:drop-shadow(0 0 4px rgba(255,215,0,.5))}
 body.dark .kingdom-scene.k-upgraded{box-shadow:0 0 20px rgba(255,215,0,.15),0 0 60px rgba(255,215,0,.06),0 1px 6px rgba(0,0,0,.3),0 4px 20px rgba(0,0,0,.2)}
+/* Weather tints */
+.kingdom-scene.k-rain{--sky-c:#050a18}.kingdom-scene.k-storm{--sky-c:#02040c}.kingdom-scene.k-fog{--sky-c:#060a1c}.kingdom-scene.k-mist{--sky-c:#070b20}.kingdom-scene.k-cloudy{--sky-c:#050818}.kingdom-scene.k-aurora{--sky-c:#03070f}.kingdom-scene.k-rainbow{--sky-c:#050a1a}
+.k-rain .kd-sun,.k-storm .kd-sun,.k-fog .kd-sun,.k-mist .kd-sun,.k-cloudy .kd-sun,.k-aurora .kd-sun{opacity:.3}
 @keyframes rainDrop{0%{transform:translateY(-20px);opacity:0}15%{opacity:.6}100%{transform:translateY(280px);opacity:0}}
 @keyframes lightningFlash{0%,100%{opacity:0}3%{opacity:.7}6%{opacity:0}12%{opacity:.4}15%{opacity:0}}
 @keyframes fogDrift{0%{transform:translateX(0)}100%{transform:translateX(40px)}}

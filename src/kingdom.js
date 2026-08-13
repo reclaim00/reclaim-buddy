@@ -101,6 +101,12 @@ function getKingdomWeather() {
   if(streak>=7)return'clear';if(cravedToday&&streak<3)return'rain';
   if(streak>=3)return'cloudy';if(days>=1)return'fog';return'mist';
 }
+function formR(days) {
+  if (days <= 0) return 20;
+  if (days >= 7) return 62;
+  return 24 + days * 5.4;
+}
+
 function kingdomHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
@@ -112,385 +118,97 @@ function kingdomHTML() {
   var isUpgraded = D.dailyQuests.date === today && (D.dailyQuests.done || []).length >= 3;
   var h = '<div class="kingdom-scene tier-' + level + (isUpgraded ? ' k-upgraded' : '') + ' k-' + weather + '" id="kingdom-scene">';
   h += '<svg viewBox="0 0 500 280">';
+  h += '<defs>';
+  h += '<radialGradient id="kd-sky" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#1c2a52"/><stop offset="55%" stop-color="#0a142e"/><stop offset="100%" stop-color="#04061a"/></radialGradient>';
+  h += '<radialGradient id="kd-molten" cx="42%" cy="36%" r="70%"><stop offset="0%" stop-color="#ffe9a8"/><stop offset="38%" stop-color="#ffac3d"/><stop offset="72%" stop-color="#d94f0a"/><stop offset="100%" stop-color="#5a1a00"/></radialGradient>';
+  h += '<radialGradient id="kd-ocean" cx="40%" cy="34%" r="75%"><stop offset="0%" stop-color="#a8ddff"/><stop offset="45%" stop-color="#3a8fd4"/><stop offset="80%" stop-color="#16527a"/><stop offset="100%" stop-color="#0a2a4a"/></radialGradient>';
+  h += '<radialGradient id="kd-atmo" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(130,200,255,0)"/><stop offset="72%" stop-color="rgba(130,200,255,.14)"/><stop offset="100%" stop-color="rgba(130,200,255,.3)"/></radialGradient>';
+  h += '</defs>';
   h += '<rect width="500" height="280" class="k-sky"/>';
-  // Stars (hidden in day, visible at night via CSS)
+  // Stars — brighter and denser as your world grows
   h += '<g class="k-stars">';
-  var sp = [[50,30],[120,20],[200,45],[310,25],[400,40],[460,30],[80,70],[160,55],[250,65],[340,50],[430,60],[40,100],[140,90],[230,80],[320,95],[410,85],[480,90],[100,120],[190,110],[280,125],[370,115],[450,120],[60,140],[170,135],[260,145],[350,130],[440,140]];
-  for (var si = 0; si < sp.length; si++) h += '<circle cx="' + sp[si][0] + '" cy="' + sp[si][1] + '" r="1.2"/>';
+  var sp = [[50,30],[120,20],[200,45],[310,25],[400,40],[460,30],[80,70],[160,55],[250,65],[340,50],[430,60],[40,100],[140,90],[230,80],[320,95],[410,85],[480,90],[100,120],[190,110],[280,125],[370,115],[450,120],[60,140],[170,135],[260,145],[350,130],[440,140],[24,80],[375,180],[95,205],[315,215],[455,235],[180,250],[120,262],[300,258],[70,240],[420,170],[35,55],[290,15]];
+  for (var si = 0; si < sp.length; si++) h += '<circle cx="' + sp[si][0] + '" cy="' + sp[si][1] + '" r="' + (0.8 + (si % 3) * 0.5) + '" opacity="' + Math.min(0.95, 0.22 + level * 0.06) + '"/>';
   h += '</g>';
-  if (level >= 5) h += '<circle cx="410" cy="50" r="18" class="k-sun"/>';
-  if (level >= 5) h += '<g class="k-clouds"><ellipse cx="100" cy="42" rx="30" ry="10"/><ellipse cx="120" cy="38" rx="20" ry="8"/><ellipse cx="360" cy="35" rx="25" ry="8"/><ellipse cx="380" cy="30" rx="18" ry="7"/></g>';
-  h += '<path d="M0,195 Q80,155 180,190 Q250,165 320,185 Q400,160 500,190 L500,198 L0,198 Z" class="k-hills"/>';
-  h += '<rect y="196" width="500" height="84" class="k-ground"/>';
-  h += '<defs><pattern id="stone" width="16" height="12" patternUnits="userSpaceOnUse"><path d="M0,6 L16,6 M8,0 L8,6 M0,6 L0,12 M0,12 L16,12" stroke="rgba(0,0,0,.07)" stroke-width=".5" fill="none"/></pattern></defs>';
-  h += '<g class="k-castle-group">';
-  if (level === 0) {
-    h += '<path d="M195,198 L195,148 L205,158 L215,142 L225,153 L235,140 L245,152 L255,144 L265,157 L275,147 L285,154 L295,150 L305,198 Z" class="k-keep"/>';
-    h += '<path d="M200,198 L200,162 L210,172 L220,158 L230,168 L240,158 L250,170 L260,158 L270,168 L280,161 L290,170 L300,198 Z" class="k-keep" opacity=".45"/>';
-    h += '<circle cx="178" cy="192" r="6" class="k-rubble"/><circle cx="184" cy="186" r="4" class="k-rubble"/><circle cx="315" cy="190" r="5" class="k-rubble"/><circle cx="322" cy="184" r="3" class="k-rubble"/>';
-  } else {
-    // Keep wall
-    h += '<rect x="195" y="105" width="110" height="93" class="k-keep"/>';
-    h += '<rect x="195" y="105" width="110" height="93" fill="url(#stone)"/>';
-    h += '<rect x="278" y="105" width="27" height="93" fill="rgba(0,0,0,.1)"/>';
-    h += '<rect x="193" y="186" width="114" height="12" class="k-keep" opacity=".7"/><rect x="193" y="186" width="114" height="12" fill="url(#stone)" opacity=".7"/>';
-    // Damage features � cracked walls and rubble for levels 1-2, fading with time
-    if (level <= 2) {
-      if (level === 1) {
-        h += '<path d="M208,120 L216,118 L218,130 L226,126 L228,138 L236,134" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
-        h += '<path d="M258,115 L263,124 L260,130 L268,136 L265,142" fill="none" stroke="rgba(60,30,10,.7)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
-        h += '<path d="M282,145 L286,152 L283,158 L290,162" fill="none" stroke="rgba(60,30,10,.65)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>';
-        h += '<path d="M234,170 L238,176 L235,182" fill="none" stroke="rgba(60,30,10,.5)" stroke-width="1.2" stroke-linecap="round"/>';
-        h += '<circle cx="196" cy="192" r="4.5" class="k-rubble"/><circle cx="204" cy="189" r="3" class="k-rubble"/><circle cx="290" cy="191" r="4" class="k-rubble"/><circle cx="298" cy="187" r="3" class="k-rubble"/><circle cx="305" cy="193" r="2.5" class="k-rubble"/>';
-      } else if (level === 2) {
-        h += '<path d="M215,130 L220,136 L218,142" fill="none" stroke="rgba(60,30,10,.4)" stroke-width="1.2" stroke-linecap="round"/>';
-        h += '<path d="M270,140 L274,146" fill="none" stroke="rgba(60,30,10,.35)" stroke-width="1" stroke-linecap="round"/>';
-        h += '<circle cx="202" cy="192" r="3" class="k-rubble"/><circle cx="296" cy="190" r="2.5" class="k-rubble"/>';
-      }
-    }
-    // Roof
-    if (level >= 2) {
-      h += '<polygon points="190,105 250,70 310,105" class="k-roof"/><polygon points="190,105 250,70 310,105" fill="url(#stone)"/>';
-      h += '<polygon points="244,72 250,68 256,72" class="k-roof" opacity=".8"/>';
-    } else if (level === 1) h += '<polygon points="195,140 250,120 305,140" class="k-roof" opacity=".5"/><path d="M240,122 L245,118 L250,122 L255,118" fill="none" stroke="rgba(60,30,10,.5)" stroke-width=".8" transform="translate(0,2)"/>';
-    // Battlements on keep (level 2+)
-    if (level >= 2) {
-      h += '<g class="k-cren">';
-      for (var ci = 0; ci < 8; ci++) h += '<rect x="' + (195 + ci * 14) + '" y="95" width="10" height="10"/>';
-      h += '</g>';
-    }
-    // Left tower
-    if (level >= 4) {
-      h += '<rect x="150" y="125" width="43" height="73" class="k-tower"/><rect x="150" y="125" width="43" height="73" fill="url(#stone)"/>';
-      h += '<rect x="175" y="125" width="18" height="73" fill="rgba(0,0,0,.08)"/>';
-      h += '<rect x="148" y="186" width="47" height="12" class="k-tower" opacity=".7"/>';
-      h += '<polygon points="145,125 171.5,100 198,125" class="k-tower-roof"/>';
-      // Arrow slit
-      h += '<rect x="169" y="145" width="3" height="12" rx="1" fill="rgba(0,0,0,.35)"/>';
-      h += '<rect x="170" y="148" width="2" height="2" fill="rgba(255,255,255,.12)"/>';
-      // Tower battlements (level 7+)
-      if (level >= 7) {
-        h += '<g><rect x="150" y="115" width="10" height="10" class="k-tower"/><rect x="164" y="115" width="10" height="10" class="k-tower"/><rect x="178" y="115" width="10" height="10" class="k-tower"/></g>';
-      }
-    } else if (level >= 2) {
-      h += '<rect x="155" y="140" width="35" height="58" class="k-tower" opacity=".7"/>';
-    } else if (level === 1) {
-      h += '<rect x="160" y="155" width="25" height="43" class="k-tower" opacity=".4"/>';
-    }
-    // Right tower
-    if (level >= 5) {
-      h += '<rect x="307" y="125" width="43" height="73" class="k-tower"/><rect x="307" y="125" width="43" height="73" fill="url(#stone)"/>';
-      h += '<rect x="333" y="125" width="17" height="73" fill="rgba(0,0,0,.08)"/>';
-      h += '<rect x="305" y="186" width="47" height="12" class="k-tower" opacity=".7"/>';
-      h += '<polygon points="302,125 328.5,100 355,125" class="k-tower-roof"/>';
-      h += '<rect x="327" y="145" width="3" height="12" rx="1" fill="rgba(0,0,0,.35)"/>';
-      h += '<rect x="328" y="148" width="2" height="2" fill="rgba(255,255,255,.12)"/>';
-      if (level >= 7) {
-        h += '<g><rect x="307" y="115" width="10" height="10" class="k-tower"/><rect x="321" y="115" width="10" height="10" class="k-tower"/><rect x="335" y="115" width="10" height="10" class="k-tower"/></g>';
-      }
-    } else if (level === 4) {
-      h += '<rect x="312" y="145" width="30" height="53" class="k-tower" opacity=".5"/>';
-    }
-    // Door with portcullis
-    if (level >= 3) {
-      h += '<path d="M 235,198 L 235,163 Q 250,153 265,163 L 265,198 Z" class="k-door"/>';
-      h += '<line x1="241" y1="164" x2="241" y2="198" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/><line x1="247" y1="160" x2="247" y2="198" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/><line x1="253" y1="160" x2="253" y2="198" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/><line x1="259" y1="164" x2="259" y2="198" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/>';
-    } else if (level >= 1) h += '<path d="M 235,198 L 235,178 Q 250,170 265,178 L 265,198 Z" class="k-door" opacity=".4"/>';
-    // Gothic arched windows
-    if (level >= 4) {
-      h += '<g class="k-windows">';
-      h += '<path d="M211,148 L211,133 Q217,125 223,133 L223,148 Z" class="k-window"/>';
-      h += '<path d="M211,133 Q217,125 223,133" class="k-window" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="1"/>';
-      h += '<line x1="217" y1="127" x2="217" y2="148" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
-      h += '<line x1="211" y1="140" x2="223" y2="140" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
-      h += '<path d="M275,148 L275,133 Q281,125 287,133 L287,148 Z" class="k-window"/>';
-      h += '<path d="M275,133 Q281,125 287,133" class="k-window" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="1"/>';
-      h += '<line x1="281" y1="127" x2="281" y2="148" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
-      h += '<line x1="275" y1="140" x2="287" y2="140" stroke="rgba(0,0,0,.12)" stroke-width=".8"/>';
-      h += '</g>';
-    }
-  }
-  h += '</g>';
-  // Shop decor: banners, tapestry, torches, enhanced flags
-  if (level >= 4) {
-    // Stone Banners hanging from keep walls
-    if (hasShop('banners')) {
-      h += '<rect x="196" y="106" width="4" height="28" rx="1" fill="#6a4a2a" opacity=".7"/>';
-      h += '<polygon points="196,106 200,106 198,98" fill="#8a2a2a" opacity=".7"/>';
-      h += '<rect x="300" y="106" width="4" height="28" rx="1" fill="#6a4a2a" opacity=".7"/>';
-      h += '<polygon points="300,106 304,106 302,98" fill="#8a2a2a" opacity=".7"/>';
-    }
-    // Royal Tapestry behind throne
-    if (hasShop('tapestry')) {
-      h += '<rect x="228" y="80" width="44" height="30" rx="2" fill="#4a1a2a" opacity=".6"/>';
-      h += '<rect x="231" y="83" width="38" height="24" rx="1" fill="none" stroke="#d4a017" stroke-width=".5" opacity=".5"/>';
-      h += '<rect x="235" y="87" width="30" height="16" rx="1" fill="#6a2a3a" opacity=".4"/>';
-      h += '<circle cx="250" cy="95" r="5" fill="#d4a017" opacity=".4"/>';
-      h += '<circle cx="250" cy="95" r="2.5" fill="#8a2a2a" opacity=".5"/>';
-    }
-    // Torch Sconces flanking door
-    if (hasShop('torches')) {
-      h += '<rect x="227" y="164" width="2" height="8" rx=".5" fill="#4a3a2a"/>';
-      h += '<ellipse cx="228" cy="163" rx="2.5" ry="3.5" fill="#ff6622" style="transform-origin:228px 163px;animation:torchFlicker .3s ease-in-out infinite"/>';
-      h += '<ellipse cx="228" cy="164" rx="1.5" ry="2.5" fill="#ffcc00" style="transform-origin:228px 164px;animation:torchFlicker .25s ease-in-out infinite .1s"/>';
-      h += '<circle cx="228" cy="163" r="6" fill="#ff6622" opacity=".12" style="animation:torchFlicker .3s ease-in-out infinite"/>';
-      h += '<rect x="271" y="164" width="2" height="8" rx=".5" fill="#4a3a2a"/>';
-      h += '<ellipse cx="272" cy="163" rx="2.5" ry="3.5" fill="#ff6622" style="transform-origin:272px 163px;animation:torchFlicker .3s ease-in-out infinite .15s"/>';
-      h += '<ellipse cx="272" cy="164" rx="1.5" ry="2.5" fill="#ffcc00" style="transform-origin:272px 164px;animation:torchFlicker .25s ease-in-out infinite .25s"/>';
-      h += '<circle cx="272" cy="163" r="6" fill="#ff6622" opacity=".12" style="animation:torchFlicker .3s ease-in-out infinite .15s"/>';
-    }
-    // Enhanced heraldic flags on towers
-    if (hasShop('flags') && level >= 5) {
-      h += '<line x1="171.5" y1="100" x2="171.5" y2="60" stroke-width="1.5" class="k-flagpole" opacity=".5"/>';
-      h += '<polygon points="171.5,60 185,65 171.5,70" fill="#cc3a3a" opacity=".5" class="k-flag-l"/>';
-      h += '<line x1="328.5" y1="100" x2="328.5" y2="60" stroke-width="1.5" class="k-flagpole" opacity=".5"/>';
-      h += '<polygon points="328.5,60 342,65 328.5,70" fill="#cc3a3a" opacity=".5" class="k-flag-r"/>';
-      // Small pennants on curtain wall guard towers
-      if (level >= 12) {
-        h += '<line x1="129" y1="143" x2="129" y2="133" stroke-width="1" class="k-flagpole" opacity=".4"/>';
-        h += '<polygon points="129,133 136,136 129,139" fill="#aa3a3a" opacity=".4"/>';
-        h += '<line x1="371" y1="143" x2="371" y2="133" stroke-width="1" class="k-flagpole" opacity=".4"/>';
-        h += '<polygon points="371,133 378,136 371,139" fill="#aa3a3a" opacity=".4"/>';
-      }
-    }
-  }
-  // Chimney smoke from castle
-  if (level >= 2) {
-    h += '<g class="k-chimney-smoke">';
-    var s = function(_x,_y,_d){return '<circle cx="'+_x+'" cy="'+_y+'" r="2.5" fill="rgba(180,180,180,.25)" style="animation:smokeRise 3s ease-out infinite;animation-delay:'+_d+'s"/>'};
-    if (level >= 2) h += s(250,68,0)+s(248,68,.9)+s(252,68,1.8);
-    if (level >= 4) h += s(171.5,98,.4)+s(173,98,1.2)+s(170,98,2.1);
-    if (level >= 5) h += s(328.5,98,.7)+s(327,98,1.5)+s(330,98,2.4);
-    if (level >= 14) h += s(250,10,.2)+s(248,10,1.0)+s(252,10,1.9);
-    h += '</g>';
-  }
-  // Flags
-  if (level >= 4) {
-    h += '<g class="k-flags"><line x1="171.5" y1="100" x2="171.5" y2="68" stroke-width="2" class="k-flagpole"/><polygon points="171.5,68 190,73 171.5,78" class="k-flag-l"/>';
-    if (level >= 5) h += '<line x1="328.5" y1="100" x2="328.5" y2="68" stroke-width="2" class="k-flagpole"/><polygon points="328.5,68 347,73 328.5,78" class="k-flag-r"/>';
-    h += '</g>';
-  }
-  // Grand tower on keep (level 14+)
-  if (level >= 14) {
-    h += '<rect x="206" y="36" width="88" height="60" class="k-keep"/>';
-    h += '<polygon points="204,36 250,12 296,36" class="k-roof"/>';
-    h += '<rect x="245" y="18" width="10" height="18" class="k-roof" opacity=".8"/>';
-    h += '<rect x="206" y="36" width="88" height="60" fill="url(#stone)" opacity=".5"/>';
-    // Grand windows on tower
-    h += '<path d="M 230,56 L 230,44 Q 240,38 250,44 L 250,56 Z" fill="rgba(255,255,200,.25)"/>';
-    h += '<line x1="240" y1="40" x2="240" y2="56" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>';
-    h += '<line x1="230" y1="50" x2="250" y2="50" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>';
-    h += '<path d="M 252,56 L 252,44 Q 262,38 272,44 L 272,56 Z" fill="rgba(255,255,200,.25)"/>';
-    h += '<line x1="262" y1="40" x2="262" y2="56" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>';
-    h += '<line x1="252" y1="50" x2="272" y2="50" stroke="rgba(0,0,0,.15)" stroke-width=".8"/>';
-  }
-  // Curtain wall with crenellations across front (level 11+)
-  if (level >= 11) {
-    h += '<g class="k-curtain">';
-    h += '<rect x="130" y="178" width="240" height="18" class="k-keep"/>';
-    h += '<rect x="130" y="178" width="240" height="18" fill="url(#stone)" opacity=".5"/>';
-    for (var ci2 = 0; ci2 < 16; ci2++) h += '<rect x="' + (132 + ci2 * 15) + '" y="171" width="10" height="7" class="k-keep"/>';
-    // Guard towers on curtain wall
-    if (level >= 12) {
-      h += '<rect x="118" y="155" width="22" height="41" class="k-tower"/><polygon points="116,155 129,143 142,155" class="k-tower-roof"/>';
-      h += '<rect x="360" y="155" width="22" height="41" class="k-tower"/><polygon points="358,155 371,143 384,155" class="k-tower-roof"/>';
+  // Nebula wisps
+  h += '<ellipse cx="130" cy="95" rx="170" ry="85" fill="rgba(120,80,220,.07)" style="animation:nebulaDrift 26s ease-in-out infinite alternate"/>';
+  h += '<ellipse cx="390" cy="205" rx="155" ry="70" fill="rgba(60,140,220,.06)" style="animation:nebulaDrift 34s ease-in-out infinite alternate-reverse"/>';
+  // Distant sun
+  h += '<circle cx="66" cy="52" r="20" fill="rgba(255,233,176,.16)"/>';
+  h += '<circle cx="66" cy="52" r="11" fill="#ffe9b0" class="kd-sun"/>';
+
+  var forming = days < 7;
+  var pr = formR(days);
+  if (forming) {
+    // Accretion disk of swirling dust
+    h += '<g style="animation:diskSpin 14s linear infinite;transform-origin:250px 150px">';
+    for (var di = 0; di < 3; di++) {
+      var drx = pr + 20 + di * 15;
+      var dry = (pr + 20 + di * 15) * 0.32;
+      h += '<ellipse cx="250" cy="150" rx="' + drx + '" ry="' + dry + '" fill="none" stroke="rgba(255,201,151,' + (0.32 - di * 0.07) + ')" stroke-width="2" opacity=".5"/>';
     }
     h += '</g>';
-  }
-  // Moat and drawbridge (level 12+)
-  if (level >= 12) {
-    h += '<g class="k-moat">';
-    for (var mi = 0; mi < 4; mi++) {
-      h += '<path d="M' + (130 + mi * 60) + ',196 Q' + (160 + mi * 60) + ',203 ' + (190 + mi * 60) + ',196" fill="none" stroke="#3a7a9a" stroke-width="2" opacity=".5"/>';
+    // Dust motes
+    for (var pu = 0; pu < 26; pu++) {
+      var ang = pu * 13.85;
+      var rad2 = pr + 20 + (pu % 4) * 10;
+      h += '<circle cx="' + (250 + Math.cos(ang * Math.PI / 180) * rad2) + '" cy="' + (150 + Math.sin(ang * Math.PI / 180) * rad2 * 0.32) + '" r="1.3" fill="#ffcc88" opacity="' + (0.3 + (pu % 3) * 0.2) + '"/>';
     }
-    // Drawbridge
-    h += '<rect x="232" y="187" width="36" height="11" rx="1" fill="#6B3410"/>';
-    h += '<line x1="232" y1="187" x2="232" y2="194" stroke="#4a2410" stroke-width="1.5"/><line x1="268" y1="187" x2="268" y2="194" stroke="#4a2410" stroke-width="1.5"/>';
-    h += '<line x1="242" y1="187" x2="242" y2="196" stroke="#4a2410" stroke-width=".8"/><line x1="252" y1="187" x2="252" y2="196" stroke="#4a2410" stroke-width=".8"/><line x1="262" y1="187" x2="262" y2="196" stroke="#4a2410" stroke-width=".8"/>';
-    h += '</g>';
-  }
-  // Animals
-  if (level >= 6) {
-    h += '<g class="k-animals">';
-    // Dog near castle door (level 6+)
-    h += '<g class="k-dog" style="animation:catIdle 3s ease-in-out infinite"><rect x="228" y="224" width="5" height="3" rx="1.5" fill="#8B4513"/>';
-    h += '<circle cx="227" cy="223" r="1.5" fill="#8B4513"/>';
-    h += '<circle cx="226.5" cy="222.5" r=".5" fill="#333"/>';
-    h += '<path d="M 226.5,222 L 226,221" stroke="#333" stroke-width=".3"/>';
-    // Tail
-    h += '<path d="M 233,224 L 235,221" stroke="#8B4513" stroke-width=".8" stroke-linecap="round" style="transform-origin:233px 224px;animation:dogWag 1s ease-in-out infinite"/>';
-    h += '</g>';
-  }
-  if (level >= 7) {
-    // Goat in left field (level 7+)
-    h += '<g class="k-goat" style="animation:goatBody 2s ease-in-out infinite">';
-    h += '<ellipse cx="140" cy="219" rx="5" ry="3" fill="#e8e0d8"/>';
-    h += '<rect x="139" y="216" width="7" height="3" rx="1" fill="#e8e0d8"/>';
-    h += '<circle cx="139" cy="215" r="2" fill="#e8e0d8"/>';
-    h += '<ellipse cx="138" cy="215" rx="1.2" ry=".8" fill="#c8a090" style="transform-origin:138px 215px;animation:goatGraze 2.5s ease-in-out infinite"/>';
-    h += '<circle cx="137.5" cy="214.5" r=".4" fill="#333"/>';
-    // Horns
-    h += '<path d="M 138,213 L 136,211" stroke="#aaa" stroke-width=".6" stroke-linecap="round"/>';
-    h += '<path d="M 140,213 L 142,211" stroke="#aaa" stroke-width=".6" stroke-linecap="round"/>';
-    // Legs
-    h += '<line x1="137" y1="222" x2="136" y2="226" stroke="#ccc" stroke-width="1"/><line x1="142" y1="222" x2="143" y2="226" stroke="#ccc" stroke-width="1"/>';
-    h += '<line x1="138" y1="222" x2="138" y2="226" stroke="#ccc" stroke-width=".8"/><line x1="141" y1="222" x2="141" y2="226" stroke="#ccc" stroke-width=".8"/>';
-    h += '</g>';
-    // Second goat at level 10+
-    if (level >= 10) {
-      h += '<g class="k-goat" style="animation:goatBody 2s ease-in-out infinite .5s">';
-      h += '<ellipse cx="160" cy="220" rx="4" ry="2.5" fill="#d8d0c8"/>';
-      h += '<circle cx="159" cy="217" r="1.8" fill="#d8d0c8"/>';
-      h += '<ellipse cx="158" cy="217" rx="1" ry=".6" fill="#b8a090" style="transform-origin:158px 217px;animation:goatGraze 2.5s ease-in-out infinite .3s"/>';
-      h += '<path d="M 158,215 L 156.5,213.5" stroke="#aaa" stroke-width=".5" stroke-linecap="round"/>';
-      h += '<path d="M 160,215 L 161.5,213.5" stroke="#aaa" stroke-width=".5" stroke-linecap="round"/>';
-      h += '<line x1="157" y1="223" x2="157" y2="226" stroke="#ccc" stroke-width=".8"/><line x1="161" y1="223" x2="161" y2="226" stroke="#ccc" stroke-width=".8"/>';
-      h += '</g>';
-    }
-  }
-  // Cat on wall (level 10+)
-  if (level >= 10) {
-    h += '<g class="k-cat" style="animation:catIdle 4s ease-in-out infinite">';
-    h += '<ellipse cx="323" cy="170" rx="3" ry="2" fill="#2a2a2a"/>';
-    h += '<circle cx="321" cy="168" r="1.5" fill="#2a2a2a"/>';
-    h += '<circle cx="320.5" cy="167.5" r=".3" fill="#44ff44"/>';
-    // Ears
-    h += '<polygon points="320,167 319,165.5 321,166.5" fill="#2a2a2a"/>';
-    h += '<polygon points="322,167 323,165.5 321,166.5" fill="#2a2a2a"/>';
-    // Tail
-    h += '<path d="M 326,170 Q 329,166 328,162" fill="none" stroke="#2a2a2a" stroke-width="1.2" stroke-linecap="round" style="transform-origin:326px 170px;animation:catTail 3s ease-in-out infinite"/>';
-    h += '</g>';
-  }
-  // Trees
-  var tr = Math.min(22, 14 + level * 1.5);
-  h += '<g class="k-trees">';
-  if (level === 0) h += '<rect x="87" y="178" width="6" height="20" class="k-tree-trunk"/><path d="M 87,173 L 93,178 L 81,178 Z" class="k-tree" opacity=".4"/>';
-  else h += '<rect x="85" y="173" width="8" height="25" class="k-tree-trunk"/><circle cx="89" cy="158" r="' + tr + '" class="k-tree"/>';
-  if (level >= 4) h += '<rect x="402" y="173" width="8" height="25" class="k-tree-trunk"/><circle cx="406" cy="158" r="' + Math.max(8, tr-4) + '" class="k-tree"/>';
-  h += '</g>';
-  if (level >= 4) { h += '<path d="M 235,198 Q 220,222 200,248 Q 230,238 250,198" class="k-path" opacity=".35"/>';
-    // Cobblestone Path (shop decor)
-    if (hasShop('paths')) {
-      var cs = [[228,202],[222,208],[215,214],[208,220],[202,226],[196,232],[205,235],[218,230],[232,222],[240,214],[246,206]];
-      for (var csi=0;csi<cs.length;csi++) h += '<ellipse cx="'+cs[csi][0]+'" cy="'+cs[csi][1]+'" rx="3" ry="2" fill="rgba(100,90,80,.25)"/><ellipse cx="'+(cs[csi][0]+1)+'" cy="'+(cs[csi][1]-1)+'" rx="1.5" ry="1" fill="rgba(120,110,100,.15)"/>';
-    }
-  }
-  if (level >= 5) {
-    h += '<g class="k-flowers">';
-    var fc = ['#ff7788','#ff99aa','#ffbb44','#ee77cc'];
-    var fp = level >= 8 ? [[118,215],[124,212],[140,225],[175,222],[318,220],[324,217],[360,215],[366,212],[130,228],[310,228],[145,230],[350,230]] :
-      level >= 6 ? [[120,215],[125,212],[175,222],[320,220],[325,217],[360,215],[130,228],[310,228]] :
-      [[120,215],[125,212],[175,222],[320,220],[325,217]];
-    for (var fi = 0; fi < fp.length; fi++) h += '<circle cx="' + fp[fi][0] + '" cy="' + fp[fi][1] + '" r="' + (level >= 6 ? 3.5 : 3) + '" fill="' + fc[fi % fc.length] + '"/>';
-    h += '</g>';
-  }
-  // Campfire (level 5+)
-  if (level >= 5) {
-    h += '<g class="k-campfire">';
-    h += '<circle cx="150" cy="229" r="10" fill="#ff6622" style="animation:fireGlow 2s ease-in-out infinite"/>';
-    h += '<rect x="143" y="227" width="14" height="3" rx="1" fill="#4a2a10" transform="rotate(-15 150 229)"/>';
-    h += '<rect x="144" y="227" width="12" height="3" rx="1" fill="#5a3a1a" transform="rotate(15 150 229)"/>';
-    h += '<ellipse cx="150" cy="223" rx="4.5" ry="8" fill="#ff4400" style="transform-origin:150px 223px;animation:fireFlame .3s ease-in-out infinite"/>';
-    h += '<ellipse cx="149" cy="224" rx="3.5" ry="6" fill="#ff8800" style="transform-origin:149px 224px;animation:fireFlame .25s ease-in-out infinite .08s"/>';
-    h += '<ellipse cx="151" cy="225" rx="2.5" ry="4.5" fill="#ffcc00" style="transform-origin:151px 225px;animation:fireFlame .35s ease-in-out infinite .15s"/>';
-    h += '<circle cx="150" cy="227" r=".8" fill="#ffaa00" style="--ex:-6px;animation:emberRise 1.5s ease-out infinite"/>';
-    h += '<circle cx="149" cy="227" r=".6" fill="#ff6600" style="--ex:5px;animation:emberRise 1.8s ease-out infinite .4s"/>';
-    h += '<circle cx="151" cy="227" r=".5" fill="#ffee44" style="--ex:-3px;animation:emberRise 1.3s ease-out infinite .8s"/>';
-    h += '<circle cx="150" cy="227" r=".7" fill="#ff8800" style="--ex:4px;animation:emberRise 2s ease-out infinite 1.1s"/>';
-    h += '</g>';
-  }
-  if (level >= 7) h += '<g class="k-birds"><g class="k-bird"><path d="M 60,80 Q 65,76 70,80 Q 75,76 80,80"><animate attributeName="d" dur="0.3s" repeatCount="indefinite" values="M 60,80 Q 65,76 70,80 Q 75,76 80,80;M 60,80 Q 65,84 70,80 Q 75,84 80,80;M 60,80 Q 65,76 70,80 Q 75,76 80,80"/></path></g><g class="k-bird"><path d="M 90,70 Q 95,66 100,70 Q 105,66 110,70"><animate attributeName="d" dur="0.25s" repeatCount="indefinite" values="M 90,70 Q 95,66 100,70 Q 105,66 110,70;M 90,70 Q 95,74 100,70 Q 105,74 110,70;M 90,70 Q 95,66 100,70 Q 105,66 110,70"/></path></g>' + (level>=9?'<g class="k-bird"><path d="M 440,85 Q 445,81 450,85 Q 455,81 460,85"><animate attributeName="d" dur="0.35s" repeatCount="indefinite" values="M 440,85 Q 445,81 450,85 Q 455,81 460,85;M 440,85 Q 445,89 450,85 Q 455,89 460,85;M 440,85 Q 445,81 450,85 Q 455,81 460,85"/></path></g>':'') + '</g>';
-  // Grand tower spires (level 16+)
-  if (level >= 16) {
-    h += '<polygon points="230,23 235,12 240,23" fill="var(--roof-c)" opacity=".8"/>';
-    h += '<polygon points="245,15 250,4 255,15" fill="var(--roof-c)"/>';
-    h += '<polygon points="260,23 265,12 270,23" fill="var(--roof-c)" opacity=".8"/>';
-    h += '<circle cx="250" cy="3" r="1.5" fill="#d4a017"/>';
-  }
-  // Extended outer bailey wall (level 17+)
-  if (level >= 17) {
-    h += '<rect x="90" y="170" width="320" height="8" class="k-keep" opacity=".6"/>';
-    h += '<rect x="90" y="170" width="320" height="8" fill="url(#stone)" opacity=".4"/>';
-    for (var _ci = 0; _ci < 22; _ci++) h += '<rect x="' + (92 + _ci * 14) + '" y="166" width="8" height="4" class="k-keep" opacity=".5"/>';
-    // Gatehouse on outer wall
-    h += '<rect x="232" y="158" width="36" height="20" class="k-tower" opacity=".6"/>';
-    h += '<polygon points="228,158 250,148 272,158" fill="var(--tower-roof-c)" opacity=".6"/>';
-  }
-  // Towering central spire (level 18+)
-  if (level >= 18) {
-    h += '<rect x="242" y="6" width="16" height="30" class="k-keep" opacity=".7"/>';
-    h += '<polygon points="238,6 250,-8 262,6" fill="var(--roof-c)" opacity=".7"/>';
-    h += '<circle cx="250" cy="-9" r="2" fill="#ffd700" opacity=".8"><animate attributeName="r" values="2;3;2" dur="3s" repeatCount="indefinite"/></circle>';
-  }
-  // Great wings on keep sides (level 19+)
-  if (level >= 19) {
-    h += '<rect x="175" y="130" width="20" height="68" class="k-keep" opacity=".5"/>';
-    h += '<polygon points="173,130 185,118 197,130" fill="var(--roof-c)" opacity=".5"/>';
-    h += '<rect x="305" y="130" width="20" height="68" class="k-keep" opacity=".5"/>';
-    h += '<polygon points="303,130 315,118 327,130" fill="var(--roof-c)" opacity=".5"/>';
-  }
-  // Golden dome on central tower (level 20+)
-  if (level >= 20) {
-    h += '<ellipse cx="250" cy="-4" rx="12" ry="6" fill="#d4a017" opacity=".8"/>';
-    h += '<ellipse cx="250" cy="-4" rx="12" ry="6" fill="none" stroke="#ffd700" stroke-width=".8" opacity=".6"/>';
-    h += '<line x1="250" y1="-10" x2="250" y2="-15" stroke="#d4a017" stroke-width="1.5" opacity=".7"/>';
-  }
-  // Cathedral rose window on keep (level 21+)
-  if (level >= 21) {
-    h += '<circle cx="250" cy="130" r="14" fill="rgba(255,200,100,.15)" stroke="var(--roof-c)" stroke-width="1.5" opacity=".7"/>';
-    h += '<circle cx="250" cy="130" r="10" fill="none" stroke="var(--roof-c)" stroke-width=".8" opacity=".5"/>';
-    h += '<circle cx="250" cy="130" r="4" fill="rgba(255,200,100,.25)"/>';
-    for (var _ri = 0; _ri < 6; _ri++) {
-      var _a = _ri * 60;
-      h += '<line x1="250" y1="130" x2="' + (250 + Math.cos(_a * Math.PI / 180) * 10) + '" y2="' + (130 + Math.sin(_a * Math.PI / 180) * 10) + '" stroke="var(--roof-c)" stroke-width=".6" opacity=".4"/>';
-    }
-  }
-  // Viaduct / stone bridge across scene (level 22+)
-  if (level >= 22) {
-    h += '<g opacity=".45">';
-    h += '<path d="M 0,185 Q 30,175 60,182 Q 90,174 120,180 Q 150,173 180,179" fill="none" stroke="#7a6a5a" stroke-width="3"/>';
-    h += '<path d="M 320,179 Q 350,173 380,180 Q 410,174 440,182 Q 470,175 500,185" fill="none" stroke="#7a6a5a" stroke-width="3"/>';
-    for (var _pi = 0; _pi < 6; _pi++) {
-      h += '<rect x="' + (320 + _pi * 30) + '" y="180" width="3" height="10" fill="#6a5a4a" opacity=".5"/>';
-    }
-    h += '</g>';
-  }
-  // Treasure glow from grand tower windows (level 23+)
-  if (level >= 23) {
-    h += '<path d="M 235,55 L 235,45 Q 242,39 250,45 L 250,55 Z" fill="#ffd700" opacity=".6" style="animation:windowGlow 2s ease-in-out infinite"/>';
-    h += '<path d="M 250,55 L 250,45 Q 258,39 265,45 L 265,55 Z" fill="#ffd700" opacity=".4" style="animation:windowGlow 2s ease-in-out infinite .6s"/>';
-    h += '<circle cx="242" cy="50" r="1" fill="#fff" opacity=".8" style="animation:windowGlow 2s ease-in-out infinite .3s"/>';
-    h += '<circle cx="258" cy="50" r="1" fill="#fff" opacity=".6" style="animation:windowGlow 2s ease-in-out infinite .9s"/>';
-  }
-  // Crown-shaped tower top (level 24+)
-  if (level >= 24) {
-    h += '<g opacity=".7">';
-    for (var _crt = 0; _crt < 5; _crt++) {
-      var _cx = 242 + _crt * 4;
-      h += '<polygon points="' + _cx + ',-4 ' + (_cx + 2) + ',-10 ' + (_cx + 4) + ',-4" fill="#d4a017" opacity=".8"/>';
-    }
-    h += '<rect x="239" y="-4" width="22" height="3" rx=".5" fill="#d4a017" opacity=".6"/>';
-    h += '</g>';
-  }
-  // Celestial light rays from heavens (level 25+)
-  if (level >= 25) {
-    h += '<g opacity=".15" style="animation:cloudDrift 20s linear infinite">';
-    h += '<polygon points="250,0 150,180 350,180" fill="rgba(255,215,0,.3)"/>';
-    h += '<polygon points="250,0 180,180 320,180" fill="rgba(255,215,0,.2)"/>';
-    h += '<polygon points="250,0 210,180 290,180" fill="rgba(255,215,0,.1)"/>';
-    h += '</g>';
-    h += '<circle cx="250" cy="-12" r="6" fill="#ffd700" opacity=".6" style="animation:sunPulse 3s ease-in-out infinite"/>';
   }
 
-  // Dragon circling at level 15+
-  if (level >= 15) {
-    h += '<g class="k-dragon"><path d="M 0,40 Q 50,10 100,35 Q 150,55 200,30 Q 250,10 300,35 Q 350,55 400,30 Q 450,10 500,40" fill="none" stroke="#5a3a1a" stroke-width="0" opacity="0"><animate attributeName="opacity" values="0;1;1;0" dur="12s" repeatCount="indefinite"/></path>';
-    h += '<g><animateTransform attributeName="transform" type="translate" values="0,0;0,0;0,0" dur="12s" repeatCount="indefinite"/>';
-    h += '<path d="M 10,30 L 28,22 L 22,30 L 30,38 Z" fill="#5a3a1a"><animateMotion dur="12s" repeatCount="indefinite" path="M 0,40 Q 60,15 130,40 Q 200,60 270,35 Q 340,15 410,40 Q 460,55 500,40"/></path>';
-    h += '<path d="M 10,30 L 28,22 L 22,30 L 30,38 Z" fill="#4a2a0a" opacity=".5"><animateMotion dur="12s" repeatCount="indefinite" path="M 0,38 Q 60,13 130,38 Q 200,58 270,33 Q 340,13 410,38 Q 460,53 500,38"/></path>';
-    h += '<ellipse cx="18" cy="17" rx="3" ry="2" fill="#ff6622"><animateMotion dur="12s" repeatCount="indefinite" path="M 0,40 Q 60,15 130,40 Q 200,60 270,35 Q 340,15 410,40 Q 460,55 500,40"/></ellipse>';
-    h += '</g></g>';
+  // Planet sphere
+  h += '<circle cx="250" cy="150" r="' + pr + '" fill="url(#kd-molten)"/>';
+  h += '<circle cx="250" cy="150" r="' + (pr + 4) + '" fill="none" stroke="rgba(255,170,80,.5)" stroke-width="2" style="animation:planetPulse 3.6s ease-in-out infinite"/>';
+
+  if (forming) {
+    // Molten impact pools and cooling cracks
+    h += '<ellipse cx="238" cy="132" rx="' + (pr * 0.26) + '" ry="' + (pr * 0.16) + '" fill="#ffe3a8" opacity=".5"/>';
+    h += '<ellipse cx="262" cy="168" rx="' + (pr * 0.18) + '" ry="' + (pr * 0.11) + '" fill="#ffe3a8" opacity=".35"/>';
+    h += '<path d="M' + (250 - pr * 0.5) + ',' + (150 + pr * 0.08) + ' Q' + (250 - pr * 0.2) + ',' + (150 + pr * 0.3) + ' ' + (250 + pr * 0.1) + ',' + (150 + pr * 0.12) + '" stroke="#ffbb66" stroke-width="2" fill="none" opacity=".7"/>';
+    h += '<path d="M' + (250 + pr * 0.05) + ',' + (150 - pr * 0.4) + ' Q' + (250 + pr * 0.25) + ',' + (150 - pr * 0.15) + ' ' + (250 + pr * 0.35) + ',' + (150 + pr * 0.28) + '" stroke="#ffbb66" stroke-width="2" fill="none" opacity=".5"/>';
+  } else {
+    // Atmosphere glow
+    h += '<circle cx="250" cy="150" r="' + (pr + 7) + '" fill="url(#kd-atmo)"/>';
+    // Oceans
+    h += '<circle cx="250" cy="150" r="' + pr + '" fill="url(#kd-ocean)"/>';
+    // Continents — more appear the longer the journey lasts
+    var landN = Math.min(4, 1 + Math.floor(days / 30));
+    var greenAmt = Math.min(1, Math.max(0, (days - 14) / 60));
+    var lands = [[-0.28, -0.12, 0.26, 0.2], [0.22, -0.2, 0.2, 0.16], [-0.1, 0.24, 0.22, 0.18], [0.3, 0.22, 0.14, 0.12]];
+    for (var li = 0; li < landN && li < lands.length; li++) {
+      var L = lands[li];
+      var lx = 250 + L[0] * pr * 1.6, ly = 150 + L[1] * pr * 1.6;
+      var lrx = L[2] * pr, lry = L[3] * pr;
+      h += '<ellipse cx="' + lx + '" cy="' + ly + '" rx="' + lrx + '" ry="' + lry + '" fill="#5a7a4a" transform="rotate(' + (li * 37) + ' ' + lx + ' ' + ly + ')"/>';
+      if (greenAmt > 0.25) h += '<ellipse cx="' + (lx - 2) + '" cy="' + (ly - 3) + '" rx="' + (lrx * 0.55) + '" ry="' + (lry * 0.5) + '" fill="#3f8f3f" opacity="' + (0.45 + greenAmt * 0.5) + '" transform="rotate(' + (-li * 22) + ' ' + lx + ' ' + ly + ')"/>';
+    }
+    // Clouds — slowly drifting
+    var cloudN = Math.min(4, Math.floor(days / 45));
+    var cps = [[-0.22, -0.3, 0.2, 0.09], [0.2, -0.05, 0.16, 0.08], [-0.05, 0.28, 0.18, 0.09], [0.28, 0.3, 0.14, 0.07]];
+    for (var ci2 = 0; ci2 < cloudN; ci2++) {
+      var C = cps[ci2];
+      h += '<ellipse class="k-clouds" cx="' + (250 + C[0] * pr * 1.5) + '" cy="' + (150 + C[1] * pr * 1.5) + '" rx="' + (C[2] * pr) + '" ry="' + (C[3] * pr) + '" fill="#ffffff" opacity=".55"/>';
+    }
+    // Lighting highlight
+    h += '<ellipse cx="218" cy="114" rx="24" ry="13" fill="#ffffff" opacity=".16" transform="rotate(-28 218 114)"/>';
+    // Moons
+    if (days >= 90) {
+      h += '<g><animateTransform attributeName="transform" type="rotate" from="0 250 150" to="360 250 150" dur="24s" repeatCount="indefinite"/><circle cx="' + (250 + pr + 34) + '" cy="150" r="9" fill="#d6d9d6"/><circle cx="' + (250 + pr + 36) + '" cy="147" r="2.4" fill="#9aa0a0"/></g>';
+      if (days >= 365) {
+        h += '<g><animateTransform attributeName="transform" type="rotate" from="360 250 150" to="0 250 150" dur="38s" repeatCount="indefinite"/><circle cx="' + (250 - pr - 30) + '" cy="140" r="5" fill="#c2c8c6"/></g>';
+      }
+    }
+    // Rings
+    if (days >= 365) {
+      h += '<ellipse cx="250" cy="150" rx="' + (pr + 26) + '" ry="' + (pr + 26) * 0.32 + '" fill="none" stroke="rgba(230,210,180,.8)" stroke-width="3" opacity=".7" transform="rotate(-12 250 150)"/>';
+      h += '<ellipse cx="250" cy="150" rx="' + (pr + 17) + '" ry="' + (pr + 17) * 0.3 + '" fill="none" stroke="rgba(230,210,180,.5)" stroke-width="2" opacity=".5" transform="rotate(-12 250 150)"/>';
+    }
+    // Sector satellites
+    if (days >= 730) h += '<circle cx="250" cy="150" r="' + (pr + 40) + '" fill="none" stroke="rgba(150,220,255,.15)" stroke-dasharray="3 6" stroke-width="1.5"/>';
+    // Aurora shimmer
+    if (days >= 180) h += '<ellipse cx="250" cy="128" rx="' + (pr * 0.55) + '" ry="' + (pr * 0.16) + '" fill="none" stroke="#66ffdd" stroke-width="2" opacity=".25" style="animation:auroraPlanet 8s ease-in-out infinite alternate"/>';
   }
+
   h += '<rect width="500" height="280" class="k-damage-overlay" opacity="0"/>';
   // Weather overlays
   if(weather==='rain')h+='<g class="w-rain">'+Array.from({length:40},function(_,i){var x=Math.random()*500,y=Math.random()*40*-1,d=70+Math.random()*80;return '<line x1="'+x+'" y1="'+y+'" x2="'+(x-2)+'" y2="'+(y+15)+'" stroke="#88bbff" stroke-width=".5" opacity=".3" style="animation:rainDrop '+d+'ms linear infinite;animation-delay:'+(Math.random()*d)+'ms"/>'}).join('')+'</g>';
@@ -501,6 +219,7 @@ function kingdomHTML() {
   h += '</svg></div>';
   return h;
 }
+
 function kingdomDamage() {
   var el = document.getElementById('kingdom-scene');
   if (!el) return;
@@ -762,11 +481,6 @@ function buyShield() {
   saveData(); render();
 }
 var SHOP_ITEMS = [
-  {id:'banners', cat:'Decor', name:'Stone Carvings', desc:'Carved stone markers on your walls', cost:30, icon:'\u269C'},
-  {id:'tapestry', cat:'Decor', name:'Forest Tapestry', desc:'A warm tapestry in your space', cost:50, icon:'\u265C'},
-  {id:'torches', cat:'Decor', name:'Lantern Sconces', desc:'Animated lantern flames on the keep', cost:40, icon:'\u2727'},
-  {id:'paths', cat:'Decor', name:'Winding Path', desc:'A winding path through the grounds', cost:25, icon:'\u265B'},
-  {id:'flags', cat:'Decor', name:'Personal Banners', desc:'Your banner on every tower', cost:60, icon:'\u2726'},
   {id:'crimson', cat:'Skins', name:'Crimson Coat', desc:'Dye your coat deep crimson', cost:80, icon:'\u2619'},
   {id:'silver', cat:'Skins', name:'Silver Trim', desc:'Trim your cloak with silver', cost:100, icon:'\u2694'},
   {id:'starry', cat:'Skins', name:'Starry Hat', desc:'Your hat glows with starry sky', cost:70, icon:'\u2727'},
@@ -853,7 +567,7 @@ function homePageHTML() {
   h += '<div style="font-size:10px;color:var(--muted)">Level ' + _lvl.level + ' &middot; ' + _prog + '% to next rank</div>';
   h += '</div>';
 
-  // 4. Sobriety timer (right under castle)
+  // 4. Sobriety timer (right under planet)
   h += soberTimerHTML();
 
   // 5. Quick actions
