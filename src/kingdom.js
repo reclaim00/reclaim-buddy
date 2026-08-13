@@ -111,12 +111,14 @@ function kingdomHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
   var weather = getKingdomWeather();
+  var hour = new Date().getHours();
+  var isNight = hour < 6 || hour >= 20 || (typeof document !== 'undefined' && document.body && document.body.classList.contains('dark'));
   // Daily quest upgrade check
   var today = new Date().toDateString();
   D.dailyQuests = D.dailyQuests || { date: '', done: [] };
   if (D.dailyQuests.completed && !D.dailyQuests.done) { D.dailyQuests.done = D.dailyQuests.completed; delete D.dailyQuests.completed; }
   var isUpgraded = D.dailyQuests.date === today && (D.dailyQuests.done || []).length >= 3;
-  var h = '<div class="kingdom-scene tier-' + level + (isUpgraded ? ' k-upgraded' : '') + ' k-' + weather + '" id="kingdom-scene">';
+  var h = '<div class="kingdom-scene tier-' + level + (isUpgraded ? ' k-upgraded' : '') + ' k-' + weather + (isNight ? ' k-night' : '') + '" id="kingdom-scene">';
   h += '<svg viewBox="0 0 500 280">';
   h += '<defs>';
   h += '<radialGradient id="kd-sky" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#1c2a52"/><stop offset="55%" stop-color="#0a142e"/><stop offset="100%" stop-color="#04061a"/></radialGradient>';
@@ -169,19 +171,63 @@ function kingdomHTML() {
   } else {
     // Atmosphere glow
     h += '<circle cx="250" cy="150" r="' + (pr + 7) + '" fill="url(#kd-atmo)"/>';
-    // Oceans
+    // Oceans — day 7 is a water world; land arrives little by little afterward
     h += '<circle cx="250" cy="150" r="' + pr + '" fill="url(#kd-ocean)"/>';
-    // Continents — more appear the longer the journey lasts
-    var landN = Math.min(4, 1 + Math.floor(days / 30));
-    var greenAmt = Math.min(1, Math.max(0, (days - 14) / 60));
-    var lands = [[-0.28, -0.12, 0.26, 0.2], [0.22, -0.2, 0.2, 0.16], [-0.1, 0.24, 0.22, 0.18], [0.3, 0.22, 0.14, 0.12]];
-    for (var li = 0; li < landN && li < lands.length; li++) {
-      var L = lands[li];
-      var lx = 250 + L[0] * pr * 1.6, ly = 150 + L[1] * pr * 1.6;
-      var lrx = L[2] * pr, lry = L[3] * pr;
-      h += '<ellipse cx="' + lx + '" cy="' + ly + '" rx="' + lrx + '" ry="' + lry + '" fill="#5a7a4a" transform="rotate(' + (li * 37) + ' ' + lx + ' ' + ly + ')"/>';
-      if (greenAmt > 0.25) h += '<ellipse cx="' + (lx - 2) + '" cy="' + (ly - 3) + '" rx="' + (lrx * 0.55) + '" ry="' + (lry * 0.5) + '" fill="#3f8f3f" opacity="' + (0.45 + greenAmt * 0.5) + '" transform="rotate(' + (-li * 22) + ' ' + lx + ' ' + ly + ')"/>';
+    // Land growth: starts the day after formation, keeps growing toward ~40% coverage
+    var landG = Math.min(1, Math.max(0, (days - 7) / 150));
+    h += '<clipPath id="kd-sphere"><circle cx="250" cy="150" r="' + pr + '"/></clipPath>';
+    h += '<g clip-path="url(#kd-sphere)">';
+    // Continents — each one surfaces in turn and grows to full size (sum ≈ 40% of disk)
+    var conts = [
+      {x:-0.14, y:-0.04, rx:0.55, ry:0.38, rot:10},
+      {x:0.26, y:-0.10, rx:0.34, ry:0.26, rot:-16},
+      {x:0.04, y:-0.42, rx:0.22, ry:0.18, rot:6},
+      {x:-0.04, y:0.36, rx:0.28, ry:0.20, rot:-8},
+      {x:0.46, y:0.28, rx:0.14, ry:0.10, rot:20},
+      {x:-0.46, y:0.20, rx:0.10, ry:0.08, rot:-12}
+    ];
+    for (var li = 0; li < conts.length; li++) {
+      var c = conts[li];
+      var cg = Math.min(1, Math.max(0, (landG - 0.06 * li) / 0.28));
+      if (cg <= 0.02) continue;
+      var ccx = 250 + c.x * pr, ccy = 150 + c.y * pr;
+      var crx = c.rx * pr * cg, cry = c.ry * pr * cg;
+      h += '<ellipse cx="' + ccx + '" cy="' + ccy + '" rx="' + crx + '" ry="' + cry + '" fill="#4f7f4f" transform="rotate(' + c.rot + ' ' + ccx + ' ' + ccy + ')"/>';
+      h += '<ellipse cx="' + (ccx - 2) + '" cy="' + (ccy - 3) + '" rx="' + (crx * 0.75) + '" ry="' + (cry * 0.72) + '" fill="#7fb06f" opacity=".8" transform="rotate(' + c.rot + ' ' + ccx + ' ' + ccy + ')"/>';
+      // Vegetation speckles for a flourishing world
+      if (days >= 60 && cg > 0.5) {
+        var vegN = Math.min(12, 4 + Math.floor(days / 40));
+        for (var vg = 0; vg < vegN; vg++) {
+          var vA = (vg * 137.5) * Math.PI / 180;
+          var vR = (vg % 4) * 3.5;
+          h += '<circle cx="' + (ccx + Math.cos(vA) * vR * crx / pr) + '" cy="' + (ccy + Math.sin(vA) * vR * cry / pr) + '" r="1.4" fill="#9fd07f" opacity=".9"/>';
+        }
+      }
     }
+    // Night hemisphere — darker, where city lights will glow
+    if (isNight) h += '<ellipse cx="' + (250 + pr * 0.30) + '" cy="150" rx="' + (pr * 0.52) + '" ry="' + (pr * 0.98) + '" fill="rgba(4,8,24,.55)" transform="rotate(-16 250 150)"/>';
+    // Towns and people arrive as land matures
+    var towns = [[-0.18,-0.10], [0.28,-0.14], [0.06,-0.40], [-0.12,-0.22], [0.02,0.30], [0.32,0.02], [0.32,0.06], [-0.04,0.18]];
+    var townN = Math.min(towns.length, Math.floor((days - 40) / 15));
+    for (var ti = 0; ti < townN; ti++) {
+      var tt = towns[ti];
+      var tx = 250 + tt[0] * pr, ty = 150 + tt[1] * pr;
+      // only place towns once the surrounding land has grown enough
+      if (landG < 0.22 + ti * 0.02) continue;
+      var bN = 2 + (ti % 2);
+      for (var bi = 0; bi < bN; bi++) {
+        var bx = tx + (bi - 0.5) * 6, by = ty - (bi % 2) * 2;
+        h += '<rect x="' + (bx - 2) + '" y="' + (by - 3) + '" width="4" height="6" rx="1" fill="#b98d5f"/>';
+        h += '<rect x="' + (bx - 2) + '" y="' + (by - 3) + '" width="4" height="2.2" rx="1" fill="#8a5f3a"/>';
+        if (isNight) h += '<circle cx="' + bx + '" cy="' + (by - 0.5) + '" r="1.1" fill="#ffdd88" style="animation:planetPulse 2.5s ease-in-out infinite"/>';
+        else h += '<rect x="' + (bx - 1) + '" y="' + (by - 1.2) + '" width="2" height="1.6" fill="#ffe9b0" opacity=".55"/>';
+      }
+      // a few tiny people around each town
+      h += '<circle cx="' + (tx + 5) + '" cy="' + (ty + 4) + '" r=".9" fill="#d6a878"/>';
+      h += '<circle cx="' + (tx - 4) + '" cy="' + (ty + 3) + '" r=".9" fill="#c89a6a"/>';
+      h += '<circle cx="' + (tx + 1) + '" cy="' + (ty + 5) + '" r=".9" fill="#d6a878"/>';
+    }
+    h += '</g>';
     // Clouds — slowly drifting
     var cloudN = Math.min(4, Math.floor(days / 45));
     var cps = [[-0.22, -0.3, 0.2, 0.09], [0.2, -0.05, 0.16, 0.08], [-0.05, 0.28, 0.18, 0.09], [0.28, 0.3, 0.14, 0.07]];
