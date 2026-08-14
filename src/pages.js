@@ -1001,7 +1001,7 @@ function journalHTML() {
       var idx = D.journal.length - 1 - i;
       var entryText = getEntryText(entries[i]);
       var searchData = (entryText + ' ' + regnalDate(entries[i].date) + ' ' + (entries[i].mood ? MOODS[entries[i].mood-1].label : '')).toLowerCase().replace(/"/g,'&quot;');
-      h += '<div class="journal-entry card" data-search="' + searchData + '"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryText.replace(/\n/g,'<br>') + '</div></div></div>';
+      h += '<div class="journal-entry card" data-search="' + searchData + '"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + (entries[i].audioKey ? ' <span class="badge" style="font-size:9px;background:var(--primary-light);color:var(--primary)">&#127908;</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryText.replace(/\n/g,'<br>') + '</div>' + (entries[i].audioKey ? '<div style="margin-top:6px"><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\'' + entries[i].audioKey + '\')" style="font-size:10px;padding:3px 8px">&#9654; Play voice note' + (entries[i].audioDur ? ' (' + formatDur(entries[i].audioDur) + ')' : '') + '</button></div>' : '') + '</div></div>';
     }
   }
   return h;
@@ -1016,7 +1016,123 @@ function filterJournal(val) {
   }
 }
 
+// ====== VOICE JOURNALING ======
+var _voiceRec = null, _voiceChunks = [], _voiceTimer = null, _voiceBlob = null, _voiceKey = null, _voiceDur = 0, _voiceSec = 0;
+var _voiceAudio = null;
+
+function voiceSupported() { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
+
+function formatDur(s) {
+  s = Math.max(0, Math.floor(s || 0));
+  var m = Math.floor(s / 60), r = s % 60;
+  return m + ':' + (r < 10 ? '0' : '') + r;
+}
+
+function resetVoiceState() {
+  if (_voiceRec) { try { _voiceRec.onstop = null; _voiceRec.stop(); } catch (e) {} }
+  if (_voiceTimer) { clearInterval(_voiceTimer); _voiceTimer = null; }
+  _voiceRec = null; _voiceChunks = []; _voiceBlob = null; _voiceKey = null; _voiceDur = 0; _voiceSec = 0;
+  updateVoiceUI();
+}
+
+function setJournalMode(mode) {
+  var vp = document.getElementById('j-voice-panel');
+  var tb = document.getElementById('jmode-type');
+  var vb = document.getElementById('jmode-voice');
+  if (vp) vp.style.display = mode === 'voice' ? 'block' : 'none';
+  if (tb) tb.className = 'btn btn-sm ' + (mode === 'type' ? 'btn-primary' : 'btn-outline');
+  if (vb) vb.className = 'btn btn-sm ' + (mode === 'voice' ? 'btn-primary' : 'btn-outline');
+  if (mode === 'voice') updateVoiceUI();
+}
+
+function toggleVoiceRecord() {
+  if (_voiceRec && _voiceRec.state === 'recording') { _voiceRec.stop(); return; }
+  if (_voiceBlob) { _voiceBlob = null; _voiceKey = null; _voiceDur = 0; _voiceSec = 0; }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    var rec = new MediaRecorder(stream);
+    _voiceRec = rec;
+    _voiceChunks = [];
+    rec.ondataavailable = function(e) { if (e.data && e.data.size) _voiceChunks.push(e.data); };
+    rec.onstop = function() {
+      if (stream.getTracks) stream.getTracks().forEach(function(t) { t.stop(); });
+      var type = (_voiceChunks.length && _voiceChunks[0].type) || 'audio/webm';
+      _voiceBlob = new Blob(_voiceChunks, { type: type });
+      if (_voiceTimer) { clearInterval(_voiceTimer); _voiceTimer = null; }
+      updateVoiceUI();
+      if (_voiceSec >= 90) showToast('Max 90 seconds per note.', 'error');
+    };
+    rec.start();
+    _voiceSec = 0;
+    if (_voiceTimer) clearInterval(_voiceTimer);
+    _voiceTimer = setInterval(function() {
+      _voiceSec++;
+      updateVoiceUI();
+      if (_voiceSec >= 90 && _voiceRec && _voiceRec.state === 'recording') _voiceRec.stop();
+    }, 1000);
+    updateVoiceUI();
+  }).catch(function() {
+    alert('Microphone access was blocked or unavailable. Allow microphone access and try again.');
+  });
+}
+
+function updateVoiceUI() {
+  var btn = document.getElementById('vj-btn');
+  if (btn) {
+    if (_voiceRec && _voiceRec.state === 'recording') { btn.innerHTML = '&#9632; Stop'; btn.style.background = 'var(--danger)'; btn.style.color = '#fff'; }
+    else if (_voiceBlob) { btn.innerHTML = '&#128266; Re-record'; btn.style.background = ''; btn.style.color = ''; }
+    else { btn.innerHTML = '&#128266; Record'; btn.style.background = ''; btn.style.color = ''; }
+  }
+  var t = document.getElementById('vj-timer');
+  if (t) t.textContent = (_voiceRec && _voiceRec.state === 'recording') ? 'Recording ' + formatDur(_voiceSec) : (_voiceBlob ? formatDur(_voiceDur || _voiceSec) + ' recorded' : '');
+  var p = document.getElementById('vj-play'); if (p) p.style.display = _voiceBlob ? '' : 'none';
+  var c = document.getElementById('vj-clear'); if (c) c.style.display = _voiceBlob ? '' : 'none';
+}
+
+function previewVoice() {
+  if (!_voiceBlob) return;
+  if (!_voiceAudio) _voiceAudio = new Audio();
+  _voiceAudio.src = URL.createObjectURL(_voiceBlob);
+  _voiceAudio.play().catch(function() {});
+}
+
+function clearVoice() { resetVoiceState(); }
+
+function closeJournalOverlay(btn) {
+  resetVoiceState();
+  var o = btn.closest('.overlay'); if (o) o.remove();
+}
+
+function persistVoiceBlob() {
+  return new Promise(function(resolve) {
+    if (!_voiceBlob) { resolve(false); return; }
+    var key = 'vj_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    var reader = new FileReader();
+    reader.onload = function() {
+      try {
+        localStorage.setItem('rc_voice_' + key, reader.result);
+        _voiceKey = key;
+        _voiceDur = _voiceSec;
+        resolve(true);
+      } catch (e) {
+        _voiceKey = null; _voiceDur = 0;
+        resolve(false);
+      }
+    };
+    reader.onerror = function() { _voiceKey = null; resolve(false); };
+    reader.readAsDataURL(_voiceBlob);
+  });
+}
+
+function playVoiceEntry(key) {
+  var data = localStorage.getItem('rc_voice_' + key);
+  if (!data) { showToast('Voice note is missing on this device.', 'error'); return; }
+  if (!_voiceAudio) _voiceAudio = new Audio();
+  _voiceAudio.src = data;
+  _voiceAudio.play().catch(function() {});
+}
+
 function showNewJournal() {
+  resetVoiceState();
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('New Journal Entry')+'</h3>';
@@ -1024,21 +1140,38 @@ function showNewJournal() {
   h += '<div class="mood-row" style="justify-content:center;gap:8px">';
   for (var i=0;i<MOODS.length;i++) h += '<button class="mood-btn" onclick="this.classList.toggle(\'active\');this._val='+MOODS[i].val+'"><span style="font-size:18px;display:block">'+MOODS[i].emoji+'</span>'+MOODS[i].label+'</button>';
   h += '</div>';
-  h += '<textarea id="journal-text" placeholder="'+t('How are you feeling today?')+'" style="min-height:120px"></textarea>';
+  h += '<div style="display:flex;gap:6px;margin:8px 0 4px">';
+  h += '<button class="btn btn-sm btn-primary" id="jmode-type" onclick="setJournalMode(\'type\')">&#9998; Type</button>';
+  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setJournalMode(\'voice\')">&#127908; Voice</button>';
+  h += '</div>';
+  h += '<div id="j-voice-panel" style="display:none;background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:8px;text-align:center">';
+  if (!voiceSupported()) {
+    h += '<div style="font-size:13px;color:var(--muted)">'+t('Voice recording isn\u2019t supported in this browser. Use Type instead.')+'</div>';
+  } else {
+    h += '<div style="font-size:22px;margin-bottom:4px">&#127908;</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('Speak your thoughts instead of typing. Voice notes are saved on this device.')+'</div>';
+    h += '<button class="btn btn-primary btn-sm" id="vj-btn" onclick="toggleVoiceRecord()">&#128266; Record</button> ';
+    h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; Preview</button> ';
+    h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; Clear</button>';
+    h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">'+t('Max 90 seconds per note. You can also add text below.')+'</div>';
+  }
+  h += '</div>';
+  h += '<textarea id="journal-text" placeholder="'+t('How are you feeling today? (optional with a voice note)')+'" style="min-height:90px"></textarea>';
   h += '<button class="btn btn-primary" onclick="saveJournal(this)">'+t('Save Entry')+'</button>';
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
+  h += '<button class="btn btn-outline" onclick="closeJournalOverlay(this)" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
 
 function saveJournal(btn) {
-  var text = document.getElementById('journal-text');
-  if (!text || !text.value.trim()) { alert(t('Write something first.')); return; }
+  var textEl = document.getElementById('journal-text');
+  var txt = (textEl && textEl.value ? textEl.value.trim() : '');
+  if (!txt && !_voiceBlob) { alert(t('Write or record something first.')); return; }
   var overlay = btn.closest('.overlay');
   var moodBtns = overlay.querySelectorAll('.mood-btn.active');
   var mood = moodBtns.length ? parseInt(moodBtns[0].getAttribute('onclick').match(/\d+/)[0]) : 0;
   var now = new Date();
-  var txt = text.value.trim();
   var entry = {
     text: txt,
     date: now.toDateString(),
@@ -1050,17 +1183,30 @@ function saveJournal(btn) {
     earnSchillings(5, 'Journal entry');
     saveData();
     overlay.remove();
+    resetVoiceState();
     setTimeout(showSchillingNotification, 800);
-    if (checkCrisis(txt)) { showCrisisAlert(txt); }
+    if (txt && checkCrisis(txt)) { showCrisisAlert(txt); }
   };
-  if (isEncryptionEnabled() && ENC_KEY) {
-    encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
-  } else if (isEncryptionEnabled() && !ENC_KEY) {
-    promptEncryptionPassphrase(function() {
-      encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+  var finish = function() {
+    if (txt && isEncryptionEnabled()) {
+      var doEncrypt = function() {
+        encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+      };
+      if (ENC_KEY) doEncrypt();
+      else promptEncryptionPassphrase(function() { doEncrypt(); });
+    } else {
+      saveIt();
+    }
+  };
+  if (_voiceBlob) {
+    persistVoiceBlob().then(function(ok) {
+      if (!ok) { alert('Could not save the voice note on this device. Storage may be full.'); return; }
+      entry.audioKey = _voiceKey;
+      entry.audioDur = _voiceDur;
+      finish();
     });
   } else {
-    saveIt();
+    finish();
   }
 }
 
@@ -1160,6 +1306,8 @@ function crisisNotifyBuddy() {
 
 function deleteJournalEntry(idx) {
   if (!confirm(t('Delete this journal entry?'))) return;
+  var e = D.journal[idx];
+  if (e && e.audioKey) { try { localStorage.removeItem('rc_voice_' + e.audioKey); } catch (x) {} }
   D.journal.splice(idx, 1);
   saveData();
 }
@@ -1167,6 +1315,9 @@ function deleteAllJournalEntries() {
   if (!D.journal.length) return;
   if (!confirm(t('Delete ALL journal entries? This cannot be undone.'))) return;
   if (!confirm(t('Are you sure? All ' + D.journal.length + ' entries will be permanently removed.'))) return;
+  for (var i = 0; i < D.journal.length; i++) {
+    if (D.journal[i] && D.journal[i].audioKey) { try { localStorage.removeItem('rc_voice_' + D.journal[i].audioKey); } catch (x) {} }
+  }
   D.journal = [];
   saveData();
 }
