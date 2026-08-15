@@ -2312,6 +2312,18 @@ function reflectHTML() {
   h += '<div id="quick-mood-area" style="display:none;text-align:center;padding:16px 0"><div style="font-size:13px;color:var(--muted);margin-bottom:10px">'+t('Tap your mood above, then save:')+'</div><button class="btn btn-primary" onclick="saveQuickMood()" style="width:100%">&#9889; '+t('Log Quick Mood')+'</button></div>';
   h += '<textarea id="ref-entry" placeholder="'+t('Write whatever is on your mind')+'..." style="min-height:140px" oninput="updateWordCount(this)"></textarea>';
   h += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:2px 0 6px" id="word-count-row"><span id="word-count">0 '+t('words')+'</span><span>'+t('Goal:')+' ' + goal + ' '+t('words')+'</span></div>';
+  h += '<div style="display:flex;align-items:center;gap:6px;margin:0 0 6px">';
+  h += '<button class="btn btn-sm ' + (voiceSupported() ? 'btn-outline' : '') + '" id="ref-voice-toggle" onclick="toggleRefVoicePanel()">&#127908; '+t('Voice note')+'</button>';
+  h += '<span style="font-size:10px;color:var(--muted)">' + (voiceSupported() ? t('Optional - speak instead of typing') : t('Voice recording not supported in this browser')) + '</span>';
+  h += '</div>';
+  h += '<div id="ref-voice-panel" style="display:none;background:var(--primary-light);border-radius:12px;padding:14px;margin:0 0 8px;text-align:center">';
+  if (voiceSupported()) {
+    h += '<button class="btn btn-primary btn-sm" id="vj-btn" onclick="toggleVoiceRecord()">&#128266; '+t('Record')+'</button> ';
+    h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; Preview</button> ';
+    h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; Clear</button>';
+    h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
+  }
+  h += '</div>';
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
   h += '</div>';
   h += artDailyRoutineHTML();
@@ -2332,8 +2344,8 @@ function reflectHTML() {
       var idx = D.journal.length - 1 - i;
       var entryTextRefl = getEntryText(entries[i]);
       h += '<div class="card journal-entry" data-search="' + (entryTextRefl.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
-      h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
-      h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div></div>';
+      h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + (entries[i].audioKey ? ' <span class="badge" style="font-size:9px;background:var(--primary-light);color:var(--primary)">&#127908;</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
+      h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div>' + (entries[i].audioKey ? '<div style="margin-top:6px"><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\'' + entries[i].audioKey + '\')" style="font-size:10px;padding:3px 8px">&#9654; Play voice note' + (entries[i].audioDur ? ' (' + formatDur(entries[i].audioDur) + ')' : '') + '</button></div>' : '') + '</div>';
       h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect</button>';
       h += '</div>';
     }
@@ -2392,15 +2404,25 @@ function saveQuickMood() {
   }
 }
 
+function toggleRefVoicePanel() {
+  var p = document.getElementById('ref-voice-panel');
+  var b = document.getElementById('ref-voice-toggle');
+  if (!p) return;
+  var show = p.style.display === 'none';
+  p.style.display = show ? 'block' : 'none';
+  if (b) b.className = 'btn btn-sm ' + (show ? 'btn-primary' : 'btn-outline');
+  if (show) updateVoiceUI();
+}
+
 function saveRefJournal() {
   var text = document.getElementById('ref-entry');
-  if (!text||!text.value.trim()) { alert(t('Write something first.')); return; }
+  var txt = (text ? text.value.trim() : '');
+  if (!txt && !_voiceBlob) { alert(t('Write something first.')); return; }
   var active = document.querySelector('#ref-moods .mood-btn.active');
   var mood = active ? parseInt(active.getAttribute('data-val')) : 0;
   var typeBtn = document.querySelector('#journal-types .btn-primary');
   var type = typeBtn ? typeBtn.getAttribute('data-type') : 'free';
   var now = new Date();
-  var txt = text.value.trim();
   var entry = {
     text: txt,
     date: now.toDateString(),
@@ -2411,19 +2433,36 @@ function saveRefJournal() {
   var saveIt = function() {
     D.journal.push(entry);
     earnSchillings(5, 'Journal entry');
-    text.value = '';
+    if (text) text.value = '';
+    resetVoiceState();
+    var pv = document.getElementById('ref-voice-panel');
+    if (pv) pv.style.display = 'none';
+    var tb = document.getElementById('ref-voice-toggle');
+    if (tb) tb.className = 'btn btn-sm ' + (voiceSupported() ? 'btn-outline' : '');
     var idx = D.journal.length - 1;
     saveData();
     showJournalLetter(idx);
   };
-  if (isEncryptionEnabled() && ENC_KEY) {
-    encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
-  } else if (isEncryptionEnabled() && !ENC_KEY) {
-    promptEncryptionPassphrase(function() {
-      encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+  var finish = function() {
+    if (txt && isEncryptionEnabled()) {
+      var doEncrypt = function() {
+        encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+      };
+      if (ENC_KEY) doEncrypt();
+      else promptEncryptionPassphrase(function() { doEncrypt(); });
+    } else {
+      saveIt();
+    }
+  };
+  if (_voiceBlob) {
+    persistVoiceBlob().then(function(ok) {
+      if (!ok) { alert('Could not save the voice note on this device. Storage may be full.'); return; }
+      entry.audioKey = _voiceKey;
+      entry.audioDur = _voiceDur;
+      finish();
     });
   } else {
-    saveIt();
+    finish();
   }
 }
 
@@ -2471,6 +2510,10 @@ function showJournalLetter(idx) {
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">' + timeStr + '</div>';
   // Entry text (shown immediately)
   h += '<div class="card" style="white-space:pre-wrap;font-size:14px;line-height:1.7;margin-bottom:8px">' + safe(entryText) + '</div>';
+  // Voice note playback
+  if (entry.audioKey) {
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px;text-align:center"><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\'' + entry.audioKey + '\')" style="font-size:11px;padding:5px 12px">&#9654; Play voice note' + (entry.audioDur ? ' (' + formatDur(entry.audioDur) + ')' : '') + '</button></div>';
+  }
   // Summary
   if (summaryText) {
     h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">A Thought on Your Entry</div><div style="font-size:13px;line-height:1.6;color:var(--text-light);margin-top:4px">' + summaryText + '</div></div>';
@@ -2605,7 +2648,7 @@ function showReflection(idx) {
   h += '</div>';
   // Original entry
   h += '<details style="padding:6px 0;border-top:1px solid rgba(255,255,255,.05)"><summary style="font-size:9px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.4);letter-spacing:1px;padding:2px 0">READ YOUR ENTRY</summary>';
-  h += '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;white-space:pre-wrap;margin-top:4px;padding:4px 0">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p></details>';
+  h += '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;white-space:pre-wrap;margin-top:4px;padding:4px 0">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+(entry.audioKey?'</p><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\''+entry.audioKey+'\')" style="font-size:10px;padding:4px 10px">&#9654; Play voice note'+(entry.audioDur?' ('+formatDur(entry.audioDur)+')':'')+'</button><p>':'</p>')+'</details>';
   // Close
   h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="jc-close">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
