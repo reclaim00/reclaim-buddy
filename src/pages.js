@@ -1121,6 +1121,7 @@ var _transcribeFinal = '';
 var _trBase = '';
 var _pendingSave = null;
 var _transcriberActive = false;
+var _trRestarts = 0;
 
 function speechRecognitionSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
 
@@ -1150,29 +1151,46 @@ function startTranscription() {
     _transcriber.continuous = true;
     _transcriber.interimResults = true;
     _transcriber.lang = speechLang();
+    _trRestarts = 0;
     _transcriber.onresult = function(ev) {
       var t = _transcribeTarget;
-      if (!t) return;
-      var interim = '', finals = '';
+      var newFinals = '', interim = '';
       for (var i = ev.resultIndex; i < ev.results.length; i++) {
         var r = ev.results[i];
         var tx = (r && r[0] && r[0].transcript) || '';
-        if (r.isFinal) finals += tx; else interim += tx;
+        if (r.isFinal && tx.trim()) newFinals += (newFinals ? ' ' : '') + tx.trim();
+        else if (!r.isFinal && tx) interim += tx;
       }
-      if (finals) {
-        _transcribeFinal += (finals.charAt(0) === ' ' ? finals : ' ' + finals);
+      if (newFinals) {
+        _trRestarts = 0;
+        _transcribeFinal = ((_transcribeFinal ? _transcribeFinal + ' ' : '') + newFinals).replace(/\s+/g, ' ');
+        var base = (_trBase || '').replace(/\s+$/,'');
+        if (t) t.value = ((base ? base + ' ' : '') + _transcribeFinal).replace(/^\s+|\s+$/g, '');
+        if (typeof updateWordCount === 'function') { try { updateWordCount(t); } catch (e) {} }
       }
-      var v = (_trBase || '');
-      if (_transcribeFinal.trim()) v = v.replace(/\s+$/,'') + _transcribeFinal;
-      if (interim) v += ' ' + interim;
-      t.value = v.trim() === '' ? '' : v;
+      var hint = document.getElementById('vj-hint');
+      if (hint) {
+        if (interim) hint.textContent = '… ' + interim;
+        else if (_transcribeFinal) {
+          var wc = _transcribeFinal.split(/\s+/).filter(Boolean).length;
+          hint.textContent = wc + ' ' + t('words transcribed');
+        }
+        else hint.textContent = t('Transcribing as you speak...');
+      }
     };
     _transcriber.onerror = function() {
       try { _transcriber.onend = null; _transcriber.abort(); } catch (e) {}
     };
     _transcriber.onend = function() {
-      if (_transcriberActive && _voiceRec && _voiceRec.state === 'recording') {
-        try { _transcriber.start(); } catch (e) {}
+      if (_transcriberActive && _voiceRec && _voiceRec.state === 'recording' && _trRestarts < 60) {
+        _trRestarts++;
+        setTimeout(function() {
+          if (_transcriberActive && _voiceRec && _voiceRec.state === 'recording') {
+            try { _transcriber.start(); } catch (e) {}
+          }
+        }, 700);
+      } else {
+        _transcriberActive = false;
       }
     };
     var target = currentEntryTextarea();
