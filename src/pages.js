@@ -1062,6 +1062,7 @@ function toggleVoiceRecord() {
       stopTranscription();
       updateVoiceUI();
       if (_voiceSec >= 90) showToast('Max 90 seconds per note.', 'error');
+      if (_pendingSave) { var f = _pendingSave; _pendingSave = null; f(); }
     };
     rec.start();
     _voiceSec = 0;
@@ -1118,6 +1119,8 @@ var _transcriber = null;
 var _transcribeTarget = null;
 var _transcribeFinal = '';
 var _trBase = '';
+var _pendingSave = null;
+var _transcriberActive = false;
 
 function speechRecognitionSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
 
@@ -1181,8 +1184,6 @@ function startTranscription() {
     _transcriber.start();
   } catch (e) {}
 }
-
-var _transcriberActive = false;
 
 function stopTranscription() {
   _transcriberActive = false;
@@ -1270,7 +1271,23 @@ function showNewJournal() {
 function saveJournal(btn) {
   var textEl = document.getElementById('journal-text');
   var txt = (textEl && textEl.value ? textEl.value.trim() : '');
+  if (_voiceRec && _voiceRec.state === 'recording') {
+    _pendingSave = function() {
+      var t2 = document.getElementById('journal-text');
+      txt = (t2 && t2.value ? t2.value.trim() : '');
+      if (!txt && !_voiceBlob) { alert(t('Write or record something first.')); return; }
+      persistJournalOverlay(btn, txt);
+    };
+    stopTranscription();
+    _voiceRec.stop();
+    return;
+  }
   if (!txt && !_voiceBlob) { alert(t('Write or record something first.')); return; }
+  persistJournalOverlay(btn, txt);
+}
+
+function persistJournalOverlay(btn, txt) {
+  var textEl = document.getElementById('journal-text');
   var overlay = btn.closest('.overlay');
   var moodBtns = overlay.querySelectorAll('.mood-btn.active');
   var mood = moodBtns.length ? parseInt(moodBtns[0].getAttribute('onclick').match(/\d+/)[0]) : 0;
@@ -2521,20 +2538,44 @@ function toggleRefVoicePanel() {
 function saveRefJournal() {
   var text = document.getElementById('ref-entry');
   var txt = (text ? text.value.trim() : '');
+  if (_voiceRec && _voiceRec.state === 'recording') {
+    var entryRec = buildRefEntry(text, txt);
+    _pendingSave = function() {
+      var t2 = document.getElementById('ref-entry');
+      txt = (t2 ? t2.value.trim() : '');
+      entryRec.text = txt;
+      if (!txt && !_voiceBlob) { alert(t('Write something first.')); return; }
+      persistRefEntry(entryRec, txt, text);
+    };
+    stopTranscription();
+    _voiceRec.stop();
+    return;
+  }
   if (!txt && !_voiceBlob) { alert(t('Write something first.')); return; }
+  var entry = buildRefEntry(text, txt);
+  persistRefEntry(entry, txt, text);
+}
+
+function buildRefEntry(text, txt) {
   var active = document.querySelector('#ref-moods .mood-btn.active');
   var mood = active ? parseInt(active.getAttribute('data-val')) : 0;
   var typeBtn = document.querySelector('#journal-types .btn-primary');
   var type = typeBtn ? typeBtn.getAttribute('data-type') : 'free';
   var now = new Date();
-  var entry = {
+  return {
     text: txt,
     date: now.toDateString(),
     time: String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),
     mood: mood,
     type: type
   };
+}
+
+function persistRefEntry(entry, txt, text) {
+  var saved = false;
   var saveIt = function() {
+    if (saved) return;
+    saved = true;
     D.journal.push(entry);
     earnSchillings(5, 'Journal entry');
     resetVoiceState();
