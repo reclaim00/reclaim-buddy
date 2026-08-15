@@ -1029,6 +1029,7 @@ function formatDur(s) {
 }
 
 function resetVoiceState() {
+  stopTranscription();
   if (_voiceRec) { try { _voiceRec.onstop = null; _voiceRec.stop(); } catch (e) {} }
   if (_voiceTimer) { clearInterval(_voiceTimer); _voiceTimer = null; }
   _voiceRec = null; _voiceChunks = []; _voiceBlob = null; _voiceKey = null; _voiceDur = 0; _voiceSec = 0;
@@ -1058,11 +1059,13 @@ function toggleVoiceRecord() {
       var type = (_voiceChunks.length && _voiceChunks[0].type) || 'audio/webm';
       _voiceBlob = new Blob(_voiceChunks, { type: type });
       if (_voiceTimer) { clearInterval(_voiceTimer); _voiceTimer = null; }
+      stopTranscription();
       updateVoiceUI();
       if (_voiceSec >= 90) showToast('Max 90 seconds per note.', 'error');
     };
     rec.start();
     _voiceSec = 0;
+    startTranscription();
     if (_voiceTimer) clearInterval(_voiceTimer);
     _voiceTimer = setInterval(function() {
       _voiceSec++;
@@ -1082,10 +1085,24 @@ function updateVoiceUI() {
     else if (_voiceBlob) { btn.innerHTML = '&#128266; Re-record'; btn.style.background = ''; btn.style.color = ''; }
     else { btn.innerHTML = '&#128266; Record'; btn.style.background = ''; btn.style.color = ''; }
   }
-  var t = document.getElementById('vj-timer');
-  if (t) t.textContent = (_voiceRec && _voiceRec.state === 'recording') ? 'Recording ' + formatDur(_voiceSec) : (_voiceBlob ? formatDur(_voiceDur || _voiceSec) + ' recorded' : '');
+  var tm = document.getElementById('vj-timer');
+  if (tm) tm.textContent = (_voiceRec && _voiceRec.state === 'recording') ? 'Recording ' + formatDur(_voiceSec) : (_voiceBlob ? formatDur(_voiceDur || _voiceSec) + ' recorded' : '');
   var p = document.getElementById('vj-play'); if (p) p.style.display = _voiceBlob ? '' : 'none';
   var c = document.getElementById('vj-clear'); if (c) c.style.display = _voiceBlob ? '' : 'none';
+  var h = document.getElementById('vj-hint');
+  if (h) {
+    if (_voiceRec && _voiceRec.state === 'recording') {
+      h.style.display = '';
+      if (speechRecognitionSupported()) {
+        var w = (_transcribeFinal || '').trim().split(/\s+/).filter(Boolean).length;
+        h.textContent = w > 0 ? (w + ' ' + t('words transcribed')) : t('Transcribing as you speak...');
+      } else {
+        h.textContent = t('Recording audio note (transcription not available in this browser)');
+      }
+    } else {
+      h.style.display = 'none';
+    }
+  }
 }
 
 function previewVoice() {
@@ -1096,6 +1113,92 @@ function previewVoice() {
 }
 
 function clearVoice() { resetVoiceState(); }
+
+var _transcriber = null;
+var _transcribeTarget = null;
+var _transcribeFinal = '';
+var _trBase = '';
+
+function speechRecognitionSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
+
+function speechLang() {
+  try {
+    var l = (window.getActiveLanguage ? getActiveLanguage() : 'en-US') || 'en-US';
+    return (l === 'en' ? 'en-US' : l);
+  } catch (e) { return 'en-US'; }
+}
+
+function currentEntryTextarea() {
+  var a = document.getElementById('journal-text');
+  var b = document.getElementById('ref-entry');
+  if (a && a.offsetParent !== null) return a;
+  if (b && b.offsetParent !== null) return b;
+  if (a) return a;
+  if (b) return b;
+  return null;
+}
+
+function startTranscription() {
+  if (!speechRecognitionSupported()) return;
+  try {
+    if (_transcriber) { try { _transcriber.abort(); } catch (e) {} }
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    _transcriber = new SR();
+    _transcriber.continuous = true;
+    _transcriber.interimResults = true;
+    _transcriber.lang = speechLang();
+    _transcriber.onresult = function(ev) {
+      var t = _transcribeTarget;
+      if (!t) return;
+      var interim = '', finals = '';
+      for (var i = ev.resultIndex; i < ev.results.length; i++) {
+        var r = ev.results[i];
+        var tx = (r && r[0] && r[0].transcript) || '';
+        if (r.isFinal) finals += tx; else interim += tx;
+      }
+      if (finals) {
+        _transcribeFinal += (finals.charAt(0) === ' ' ? finals : ' ' + finals);
+      }
+      var v = (_trBase || '');
+      if (_transcribeFinal.trim()) v = v.replace(/\s+$/,'') + _transcribeFinal;
+      if (interim) v += ' ' + interim;
+      t.value = v.trim() === '' ? '' : v;
+    };
+    _transcriber.onerror = function() {
+      try { _transcriber.onend = null; _transcriber.abort(); } catch (e) {}
+    };
+    _transcriber.onend = function() {
+      if (_transcriberActive && _voiceRec && _voiceRec.state === 'recording') {
+        try { _transcriber.start(); } catch (e) {}
+      }
+    };
+    var target = currentEntryTextarea();
+    if (!target) { try { _transcriber.abort(); } catch (e) {} return; }
+    _transcribeTarget = target;
+    _trBase = target.value.replace(/\s+$/, '');
+    _transcribeFinal = '';
+    _transcriberActive = true;
+    _transcriber.start();
+  } catch (e) {}
+}
+
+var _transcriberActive = false;
+
+function stopTranscription() {
+  _transcriberActive = false;
+  var tr = _transcriber;
+  _transcriber = null;
+  if (tr) { try { tr.onend = null; tr.onresult = null; tr.stop(); } catch (e) {} }
+  var t = _transcribeTarget;
+  _transcribeTarget = null;
+  if (t && _transcribeFinal && _transcribeFinal.trim()) {
+    var v = ((_trBase || '') + ' ' + _transcribeFinal.trim()).replace(/^\s+|\s+$/g, '');
+    t.value = v;
+    if (typeof updateWordCount === 'function') { try { updateWordCount(t); } catch (e) {} }
+  }
+  _trBase = null;
+  _transcribeFinal = '';
+}
 
 function closeJournalOverlay(btn) {
   resetVoiceState();
@@ -2322,6 +2425,7 @@ function reflectHTML() {
     h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; Preview</button> ';
     h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; Clear</button>';
     h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
+    h += '<div id="vj-hint" style="font-size:11px;color:var(--muted);margin-top:4px;display:none"></div>';
   }
   h += '</div>';
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
@@ -2433,8 +2537,8 @@ function saveRefJournal() {
   var saveIt = function() {
     D.journal.push(entry);
     earnSchillings(5, 'Journal entry');
-    if (text) text.value = '';
     resetVoiceState();
+    if (text) text.value = '';
     var pv = document.getElementById('ref-voice-panel');
     if (pv) pv.style.display = 'none';
     var tb = document.getElementById('ref-voice-toggle');
