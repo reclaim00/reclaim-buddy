@@ -1345,33 +1345,130 @@ function closeJournalOverlay(btn) {
   var o = btn.closest('.overlay'); if (o) o.remove();
 }
 
+// ====== VOICE NOTE STORAGE (IndexedDB, localStorage fallback) ======
+var _voiceDB = null;
+var _voiceDBReady = null;
+var VOICE_DB_NAME = 'reclaim-voice';
+var VOICE_DB_STORE = 'notes';
+
+function openVoiceDB() {
+  if (_voiceDBReady) return _voiceDBReady;
+  if (!window.indexedDB) {
+    _voiceDBReady = Promise.reject(new Error('indexedDB unavailable'));
+    return _voiceDBReady;
+  }
+  _voiceDBReady = new Promise(function(resolve, reject) {
+    var req = window.indexedDB.open(VOICE_DB_NAME, 1);
+    req.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      if (!db.objectStoreNames.contains(VOICE_DB_STORE)) db.createObjectStore(VOICE_DB_STORE);
+    };
+    req.onsuccess = function(e) {
+      _voiceDB = e.target.result;
+      _voiceDB.onversionchange = function() { try { _voiceDB.close(); } catch (x) {} };
+      resolve(_voiceDB);
+    };
+    req.onerror = function() { reject(req.error || new Error('indexedDB open failed')); };
+  });
+  return _voiceDBReady;
+}
+
+function idbVoiceSet(key, blob) {
+  return openVoiceDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var tx = db.transaction(VOICE_DB_STORE, 'readwrite');
+      tx.objectStore(VOICE_DB_STORE).put(blob, key);
+      tx.oncomplete = function() { resolve(true); };
+      tx.onerror = function() { reject(tx.error); };
+      tx.onabort = function() { reject(tx.error); };
+    });
+  });
+}
+
+function idbVoiceGet(key) {
+  return openVoiceDB().then(function(db) {
+    return new Promise(function(resolve, reject) {
+      var tx = db.transaction(VOICE_DB_STORE, 'readonly');
+      var req = tx.objectStore(VOICE_DB_STORE).get(key);
+      req.onsuccess = function() { resolve(req.result || null); };
+      req.onerror = function() { reject(req.error); };
+    });
+  });
+}
+
+function idbVoiceDelete(key) {
+  return openVoiceDB().then(function(db) {
+    return new Promise(function(resolve) {
+      var tx = db.transaction(VOICE_DB_STORE, 'readwrite');
+      tx.objectStore(VOICE_DB_STORE).delete(key);
+      tx.oncomplete = function() { resolve(); };
+      tx.onerror = function() { resolve(); };
+    });
+  }).catch(function() {});
+}
+
+function deleteVoiceKey(key) {
+  if (!key) return;
+  try { localStorage.removeItem('rc_voice_' + key); } catch (x) {}
+  idbVoiceDelete(key);
+}
+
+function dataURLToBlob(data) {
+  try {
+    var parts = data.split(',');
+    var meta = (parts[0].match(/^data:([^;]+)/) || [])[1] || 'audio/webm';
+    var bin = atob(parts[1]);
+    var arr = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+    return new Blob([arr], { type: meta });
+  } catch (e) { return null; }
+}
+
+function getVoiceBlob(key) {
+  return idbVoiceGet(key).then(function(blob) {
+    if (blob) return blob;
+    var data = localStorage.getItem('rc_voice_' + key);
+    return data ? dataURLToBlob(data) : null;
+  }).catch(function() {
+    var data = localStorage.getItem('rc_voice_' + key);
+    return data ? dataURLToBlob(data) : null;
+  });
+}
+
 function persistVoiceBlob() {
   return new Promise(function(resolve) {
     if (!_voiceBlob) { resolve(false); return; }
     var key = 'vj_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
-    var reader = new FileReader();
-    reader.onload = function() {
-      try {
-        localStorage.setItem('rc_voice_' + key, reader.result);
-        _voiceKey = key;
-        _voiceDur = _voiceSec;
-        resolve(true);
-      } catch (e) {
-        _voiceKey = null; _voiceDur = 0;
-        resolve(false);
-      }
-    };
-    reader.onerror = function() { _voiceKey = null; resolve(false); };
-    reader.readAsDataURL(_voiceBlob);
+    idbVoiceSet(key, _voiceBlob).then(function() {
+      _voiceKey = key;
+      _voiceDur = _voiceSec;
+      resolve(true);
+    }).catch(function() {
+      var reader = new FileReader();
+      reader.onload = function() {
+        try {
+          localStorage.setItem('rc_voice_' + key, reader.result);
+          _voiceKey = key;
+          _voiceDur = _voiceSec;
+          resolve(true);
+        } catch (e) {
+          _voiceKey = null; _voiceDur = 0;
+          resolve(false);
+        }
+      };
+      reader.onerror = function() { _voiceKey = null; resolve(false); };
+      reader.readAsDataURL(_voiceBlob);
+    });
   });
 }
 
 function playVoiceEntry(key) {
-  var data = localStorage.getItem('rc_voice_' + key);
-  if (!data) { showToast('Voice note is missing on this device.', 'error'); return; }
-  if (!_voiceAudio) _voiceAudio = new Audio();
-  _voiceAudio.src = data;
-  _voiceAudio.play().catch(function() {});
+  getVoiceBlob(key).then(function(blob) {
+    if (!blob) { showToast('Voice note is missing on this device.', 'error'); return; }
+    if (!_voiceAudio) _voiceAudio = new Audio();
+    _voiceAudio.src = URL.createObjectURL(blob);
+    _voiceAudio.play().catch(function() {});
+  });
 }
 
 function showNewJournal() {
@@ -1465,9 +1562,12 @@ function persistJournalOverlay(btn, txt) {
   };
   if (_voiceBlob) {
     persistVoiceBlob().then(function(ok) {
-      if (!ok) { alert('Could not save the voice note on this device. Storage may be full.'); return; }
-      entry.audioKey = _voiceKey;
-      entry.audioDur = _voiceDur;
+      if (ok) {
+        entry.audioKey = _voiceKey;
+        entry.audioDur = _voiceDur;
+      } else {
+        showToast('Voice note could not be saved, but your entry was saved.', 'error');
+      }
       finish();
     });
   } else {
@@ -1572,7 +1672,7 @@ function crisisNotifyBuddy() {
 function deleteJournalEntry(idx) {
   if (!confirm(t('Delete this journal entry?'))) return;
   var e = D.journal[idx];
-  if (e && e.audioKey) { try { localStorage.removeItem('rc_voice_' + e.audioKey); } catch (x) {} }
+  if (e && e.audioKey) deleteVoiceKey(e.audioKey);
   D.journal.splice(idx, 1);
   saveData();
 }
@@ -1581,7 +1681,7 @@ function deleteAllJournalEntries() {
   if (!confirm(t('Delete ALL journal entries? This cannot be undone.'))) return;
   if (!confirm(t('Are you sure? All ' + D.journal.length + ' entries will be permanently removed.'))) return;
   for (var i = 0; i < D.journal.length; i++) {
-    if (D.journal[i] && D.journal[i].audioKey) { try { localStorage.removeItem('rc_voice_' + D.journal[i].audioKey); } catch (x) {} }
+    if (D.journal[i] && D.journal[i].audioKey) deleteVoiceKey(D.journal[i].audioKey);
   }
   D.journal = [];
   saveData();
@@ -2752,9 +2852,12 @@ function persistRefEntry(entry, txt, text) {
   };
   if (_voiceBlob) {
     persistVoiceBlob().then(function(ok) {
-      if (!ok) { alert('Could not save the voice note on this device. Storage may be full.'); return; }
-      entry.audioKey = _voiceKey;
-      entry.audioDur = _voiceDur;
+      if (ok) {
+        entry.audioKey = _voiceKey;
+        entry.audioDur = _voiceDur;
+      } else {
+        showToast('Voice note could not be saved, but your entry was saved.', 'error');
+      }
       finish();
     });
   } else {
