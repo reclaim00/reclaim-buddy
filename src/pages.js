@@ -1078,6 +1078,21 @@ function toggleSpeakSummary() {
   if (speakText(summary.plain) && btn) btn.textContent = '&#9632; Stop summary';
 }
 
+function toggleSummarySpeech(btn, textId) {
+  var el = document.getElementById(textId);
+  if (!el) return;
+  var text = (el.textContent || '').trim();
+  if (!text) return;
+  if (speechSupported() && window.speechSynthesis && window.speechSynthesis.speaking) {
+    stopSpeaking();
+    if (btn) btn.textContent = '&#128266; Read summary aloud';
+    return;
+  }
+  if (speakText(text)) {
+    if (btn) btn.textContent = '&#9632; Stop reading';
+  }
+}
+
 function voiceSupported() { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
 
 function formatDur(s) {
@@ -2797,7 +2812,8 @@ function showJournalLetter(idx) {
   }
   // Summary
   if (summaryText) {
-    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">A Thought on Your Entry</div><div style="font-size:13px;line-height:1.6;color:var(--text-light);margin-top:4px">' + summaryText + '</div></div>';
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">A Thought on Your Entry</div><div id="js-summary-say" style="font-size:13px;line-height:1.6;color:var(--text-light);margin-top:4px">' + summaryText + '</div>';
+    h += '<button class="btn btn-sm btn-outline" onclick="toggleSummarySpeech(this,\'js-summary-say\')" style="margin-top:8px;width:100%;font-size:11px">&#128266; Read summary aloud</button></div>';
   }
   // Suggestions / Insights
   if (suggestions && suggestions.length > 0) {
@@ -2826,7 +2842,7 @@ function showJournalLetter(idx) {
   h += '</div>';
   // Closing
   h += '<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:12px"><span>' + safe(D.name || 'Me') + '</span></div>';
-  h += '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()" style="width:100%">&#10003; Close</button>';
+  h += '<button class="btn btn-primary" onclick="stopSpeaking();this.closest(\'.overlay\').remove()" style="width:100%">&#10003; Close</button>';
   h += '</div>';
 
   overlay.innerHTML = h;
@@ -2901,7 +2917,7 @@ function showReflection(idx) {
   h += '<div style="padding:0 4px;opacity:0" id="jc-bars">'+moodBars+'</div>';
   h += '</div>';
   // Scene 3: Summary (dialogue box style)
-  h += '<div id="jc-summary-box" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:10px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">SUMMARY</div><div id="jc-summary-text" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);min-height:1.2em"></div></div>';
+  h += '<div id="jc-summary-box" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:10px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">SUMMARY</div><div id="jc-summary-text" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);min-height:1.2em"></div><button class="btn btn-sm btn-outline" id="jc-read-summary" onclick="toggleSummarySpeech(this,\'jc-summary-text\')" style="display:none;margin-top:10px;width:100%;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.6)">&#128266; Read summary aloud</button></div>';
   // Scene 4: Additional info (bottom)
   h += '<div id="jc-more" style="opacity:0">';
   // Suggestions
@@ -2931,7 +2947,7 @@ function showReflection(idx) {
   h += '<details style="padding:6px 0;border-top:1px solid rgba(255,255,255,.05)"><summary style="font-size:9px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.4);letter-spacing:1px;padding:2px 0">READ YOUR ENTRY</summary>';
   h += '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;white-space:pre-wrap;margin-top:4px;padding:4px 0">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+(entry.audioKey?'</p><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\''+entry.audioKey+'\')" style="font-size:10px;padding:4px 10px">&#9654; Play voice note'+(entry.audioDur?' ('+formatDur(entry.audioDur)+')':'')+'</button><p>':'</p>')+'</details>';
   // Close
-  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="jc-close">'+t('Close')+'</button></div>';
+  h += '<button class="btn btn-outline" onclick="stopSpeaking();this.closest(\'.overlay\').remove()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="jc-close">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 
@@ -3007,6 +3023,8 @@ function showReflection(idx) {
         }
       }
       typeHTML();
+      var readBtn = overlay.querySelector('#jc-read-summary');
+      if (readBtn) readBtn.style.display = '';
     }
   }, 2500);
   // Scene 4: Additional info (fade up)
