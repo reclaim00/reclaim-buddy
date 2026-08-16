@@ -1019,6 +1019,64 @@ function filterJournal(val) {
 // ====== VOICE JOURNALING ======
 var _voiceRec = null, _voiceChunks = [], _voiceTimer = null, _voiceBlob = null, _voiceKey = null, _voiceDur = 0, _voiceSec = 0;
 var _voiceAudio = null;
+var _summarySpoken = false;
+
+function speechSupported() { return !!(window.speechSynthesis && window.SpeechSynthesisUtterance); }
+
+function speakText(text) {
+  if (!speechSupported() || !text) return false;
+  try { window.speechSynthesis.cancel(); } catch (e) {}
+  var u = new SpeechSynthesisUtterance(text);
+  try { u.lang = speechLang(); } catch (e) {}
+  u.rate = 1; u.pitch = 1; u.volume = 1;
+  try { window.speechSynthesis.speak(u); } catch (e) { return false; }
+  return true;
+}
+
+function stopSpeaking() {
+  if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) {} }
+}
+
+function buildVoiceSummary(text) {
+  var mood = 'mixed';
+  try { mood = detectMood(text).primary; } catch (e) {}
+  var dayCount = (typeof soberDays === 'function') ? soberDays() : 0;
+  var streak = D.streak || 0;
+  var entryHour = new Date().getHours();
+  var html = '';
+  try { html = buildSummary(text, mood, extractTopics(text), dayCount, streak, entryHour); } catch (e) {}
+  var plain = html
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&#9755;/g, '> ')
+    .replace(/&#\d+;/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return { html: html, plain: plain };
+}
+
+function toggleSpeakSummary() {
+  var btn = document.getElementById('vj-hear-summary');
+  if (speechSupported() && window.speechSynthesis && window.speechSynthesis.speaking) {
+    stopSpeaking();
+    if (btn) btn.textContent = '&#128266; Hear summary';
+    return;
+  }
+  var text = '';
+  var ta = document.getElementById('journal-text');
+  if (ta) text = ta.value.trim();
+  if (!text) {
+    var tb = document.getElementById('ref-entry');
+    if (tb) text = tb.value.trim();
+  }
+  if (!text) return;
+  var summary = buildVoiceSummary(text);
+  if (speakText(summary.plain) && btn) btn.textContent = '&#9632; Stop summary';
+}
 
 function voiceSupported() { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
 
@@ -1030,6 +1088,8 @@ function formatDur(s) {
 
 function resetVoiceState() {
   stopTranscription();
+  stopSpeaking();
+  _summarySpoken = false;
   if (_voiceRec) { try { _voiceRec.onstop = null; _voiceRec.stop(); } catch (e) {} }
   if (_voiceTimer) { clearInterval(_voiceTimer); _voiceTimer = null; }
   _voiceRec = null; _voiceChunks = []; _voiceBlob = null; _voiceKey = null; _voiceDur = 0; _voiceSec = 0;
@@ -1040,7 +1100,9 @@ function setJournalMode(mode) {
   var vp = document.getElementById('j-voice-panel');
   var tb = document.getElementById('jmode-type');
   var vb = document.getElementById('jmode-voice');
+  var ta = document.getElementById('journal-text');
   if (vp) vp.style.display = mode === 'voice' ? 'block' : 'none';
+  if (ta) ta.style.display = mode === 'voice' ? 'none' : 'block';
   if (tb) tb.className = 'btn btn-sm ' + (mode === 'type' ? 'btn-primary' : 'btn-outline');
   if (vb) vb.className = 'btn btn-sm ' + (mode === 'voice' ? 'btn-primary' : 'btn-outline');
   if (mode === 'voice') updateVoiceUI();
@@ -1049,6 +1111,8 @@ function setJournalMode(mode) {
 function toggleVoiceRecord() {
   if (_voiceRec && _voiceRec.state === 'recording') { _voiceRec.stop(); return; }
   if (_voiceBlob) { _voiceBlob = null; _voiceKey = null; _voiceDur = 0; _voiceSec = 0; }
+  stopSpeaking();
+  _summarySpoken = false;
   navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
     var rec = new MediaRecorder(stream);
     _voiceRec = rec;
@@ -1103,6 +1167,48 @@ function updateVoiceUI() {
     } else {
       h.style.display = 'none';
     }
+  }
+  renderVoiceTalkback();
+}
+
+function renderVoiceTalkback() {
+  var tbox = document.getElementById('vj-transcript-box');
+  if (!tbox) return;
+  var ttext = document.getElementById('vj-transcript');
+  var sbox = document.getElementById('vj-summary');
+  var sbtn = document.getElementById('vj-hear-summary');
+  if (_voiceRec && _voiceRec.state === 'recording') {
+    _summarySpoken = false;
+    tbox.style.display = 'none';
+    if (sbtn) { sbtn.style.display = 'none'; sbtn.textContent = '&#128266; Hear summary'; }
+    return;
+  }
+  if (!_voiceBlob) {
+    _summarySpoken = false;
+    tbox.style.display = 'none';
+    if (sbtn) { sbtn.style.display = 'none'; sbtn.textContent = '&#128266; Hear summary'; }
+    return;
+  }
+  var target = currentEntryTextarea();
+  var transcript = (target && target.value ? target.value.trim() : '');
+  if (ttext) ttext.textContent = transcript;
+  if (sbox) sbox.textContent = '';
+  tbox.style.display = 'block';
+  if (!transcript) {
+    if (sbtn) sbtn.style.display = 'none';
+    return;
+  }
+  var summary = buildVoiceSummary(transcript);
+  if (sbox && summary.html) sbox.innerHTML = summary.html;
+  if (sbtn) {
+    var isSpeaking = speechSupported() && window.speechSynthesis && window.speechSynthesis.speaking;
+    sbtn.style.display = '';
+    sbtn.textContent = isSpeaking ? '&#9632; Stop summary' : '&#128266; Hear summary';
+  }
+  if (!_summarySpoken && !_pendingSave && summary.plain && speechSupported()) {
+    _summarySpoken = true;
+    speakText(summary.plain);
+    if (sbtn) sbtn.textContent = '&#9632; Stop summary';
   }
 }
 
@@ -1264,19 +1370,25 @@ function showNewJournal() {
   h += '</div>';
   h += '<div style="display:flex;gap:6px;margin:8px 0 4px">';
   h += '<button class="btn btn-sm btn-primary" id="jmode-type" onclick="setJournalMode(\'type\')">&#9998; Type</button>';
-  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setJournalMode(\'voice\')">&#127908; Voice</button>';
+  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setJournalMode(\'voice\')">&#127908; Voice Journaling</button>';
   h += '</div>';
   h += '<div id="j-voice-panel" style="display:none;background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:8px;text-align:center">';
   if (!voiceSupported()) {
     h += '<div style="font-size:13px;color:var(--muted)">'+t('Voice recording isn\u2019t supported in this browser. Use Type instead.')+'</div>';
   } else {
     h += '<div style="font-size:22px;margin-bottom:4px">&#127908;</div>';
-    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('Speak your thoughts instead of typing. Voice notes are saved on this device.')+'</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('Speak your thoughts instead of typing. After you stop, you\u2019ll see a transcript and hear a summary read back to you.')+'</div>';
     h += '<button class="btn btn-primary btn-sm" id="vj-btn" onclick="toggleVoiceRecord()">&#128266; Record</button> ';
     h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; Preview</button> ';
     h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; Clear</button>';
     h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">'+t('Max 90 seconds per note. You can also add text below.')+'</div>';
+    h += '<div id="vj-transcript-box" style="display:none;margin-top:10px;text-align:left;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--card)">';
+    h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">'+t('TRANSCRIPT')+'</div>';
+    h += '<div id="vj-transcript" style="font-size:13px;line-height:1.6;white-space:pre-wrap;color:var(--text);max-height:140px;overflow-y:auto"></div>';
+    h += '<div id="vj-summary" style="font-size:12px;line-height:1.6;color:var(--text-light);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"></div>';
+    h += '<button class="btn btn-sm btn-primary" id="vj-hear-summary" onclick="toggleSpeakSummary()" style="display:none;margin-top:8px;width:100%">&#128266; Hear summary</button>';
+    h += '</div>';
   }
   h += '</div>';
   h += '<textarea id="journal-text" placeholder="'+t('How are you feeling today? (optional with a voice note)')+'" style="min-height:90px"></textarea>';
@@ -2461,6 +2573,12 @@ function reflectHTML() {
     h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; Clear</button>';
     h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
     h += '<div id="vj-hint" style="font-size:11px;color:var(--muted);margin-top:4px;display:none"></div>';
+    h += '<div id="vj-transcript-box" style="display:none;margin-top:10px;text-align:left;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--card)">';
+    h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">'+t('TRANSCRIPT')+'</div>';
+    h += '<div id="vj-transcript" style="font-size:13px;line-height:1.6;white-space:pre-wrap;color:var(--text);max-height:140px;overflow-y:auto"></div>';
+    h += '<div id="vj-summary" style="font-size:12px;line-height:1.6;color:var(--text-light);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"></div>';
+    h += '<button class="btn btn-sm btn-primary" id="vj-hear-summary" onclick="toggleSpeakSummary()" style="display:none;margin-top:8px;width:100%">&#128266; Hear summary</button>';
+    h += '</div>';
   }
   h += '</div>';
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
