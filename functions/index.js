@@ -101,7 +101,7 @@ exports.checkNotifications = functions.pubsub.schedule('every 5 minutes').onRun(
               body: toNotify.body,
               icon: 'icon-192.png',
               tag: toNotify.tag,
-              url: '/'
+              url: 'app.html'
             }
           }).catch(function(){});
         }
@@ -135,7 +135,7 @@ exports.onMessageCreate = functions.firestore.document('messages/{messageId}').o
       body: body,
       icon: 'icon-192.png',
       tag: 'reclaim-msg-' + snap.id,
-      url: '/?action=buddy'
+      url: 'app.html?action=buddy'
     }
   }).catch(function() {});
 });
