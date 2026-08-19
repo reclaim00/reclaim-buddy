@@ -8,7 +8,7 @@ function timeToMinutes(t) {
   return parseInt(parts[0]) * 60 + parseInt(parts[1]);
 }
 
-exports.checkNotifications = functions.pubsub.schedule('every 1 minutes').onRun(async function(context) {
+exports.checkNotifications = functions.pubsub.schedule('every 5 minutes').onRun(async function(context) {
   var now = new Date();
   var hmNum = now.getHours() * 60 + now.getMinutes();
   var todayStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
@@ -56,7 +56,7 @@ exports.checkNotifications = functions.pubsub.schedule('every 1 minutes').onRun(
           var notifiedProp = '_notified' + c.key.charAt(0).toUpperCase() + c.key.slice(1);
           if (userData[notifiedProp]) continue;
           var targetMin = timeToMinutes(c.time);
-          if (hmNum >= targetMin && hmNum < targetMin + 3) {
+          if (hmNum >= targetMin && hmNum < targetMin + 5) {
             var title = c.key === 'morning' ? 'Re.Claim Morning' :
                         c.key === 'evening' ? 'Re.Claim Evening' :
                         c.key === 'craving' ? 'Craving Check-In' :
@@ -96,7 +96,13 @@ exports.checkNotifications = functions.pubsub.schedule('every 1 minutes').onRun(
           db.collection('appData').doc(email).set({data: userData, lastUpdated: admin.firestore.FieldValue.serverTimestamp()}, {merge: true}).catch(function(){});
           return admin.messaging().send({
             token: subData.token,
-            webpush: {notification: {title: toNotify.title, body: toNotify.body, icon: 'icon-192.png', tag: toNotify.tag}}
+            data: {
+              title: toNotify.title,
+              body: toNotify.body,
+              icon: 'icon-192.png',
+              tag: toNotify.tag,
+              url: '/'
+            }
           }).catch(function(){});
         }
       }).catch(function(){})
@@ -105,4 +111,31 @@ exports.checkNotifications = functions.pubsub.schedule('every 1 minutes').onRun(
 
   await Promise.all(promises);
   return null;
+});
+
+// Send a push to the recipient whenever a partner message is created.
+exports.onMessageCreate = functions.firestore.document('messages/{messageId}').onCreate(async function(snap) {
+  var d = snap.data();
+  if (!d || !d.to || !d.text) return null;
+  var sender = d.from || '';
+  var recipient = d.to;
+  if (!recipient || recipient === sender) return null;
+
+  var subDoc;
+  try { subDoc = await db.collection('pushSubscriptions').doc(recipient).get(); } catch (e) { return null; }
+  if (!subDoc.exists || !subDoc.data().token) return null;
+
+  var name = d.fromName || sender.split('@')[0] || 'Your partner';
+  var body = d.text.length > 120 ? d.text.slice(0, 120) + '…' : d.text;
+
+  return admin.messaging().send({
+    token: subDoc.data().token,
+    data: {
+      title: 'New message from ' + name,
+      body: body,
+      icon: 'icon-192.png',
+      tag: 'reclaim-msg-' + snap.id,
+      url: '/?action=buddy'
+    }
+  }).catch(function() {});
 });

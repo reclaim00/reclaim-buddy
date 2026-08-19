@@ -104,6 +104,7 @@ function onAuthReady(email, isNew) {
   document.body.classList.add('logged-in');
   if (isNew) { D.joinDate = Date.now(); saveData(); }
   if (Notification.permission === "granted") subscribePush();
+  if (typeof startBuddyMessaging === 'function') startBuddyMessaging();
   registerCurrentUser();
   if (firebase && firebase.auth().currentUser) {
     loadFromFirestore(function(cloudData) {
@@ -1122,6 +1123,7 @@ function handleUrlAction() {
     else if (action === 'breathe') { setTimeout(function(){ startBreathe() }, 600); }
     else if (action === 'sos') { setTimeout(function(){ showSOS() }, 600); }
     else if (action === 'mood') { setTimeout(function(){ goTo('track') }, 600); }
+    else if (action === 'buddy') { setTimeout(function(){ goTo('buddy') }, 600); }
   };
   check();
 }

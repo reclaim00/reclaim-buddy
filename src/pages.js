@@ -4485,6 +4485,7 @@ function buddyHTML() {
   var h = '';
   h += '<h2 class="page-title">'+t('Your Partner')+'</h2>';
   h += '<div class="comrade-card"><div class="comrade-avatar">' + D.buddy.name[0].toUpperCase() + '</div><div><div style="font-weight:700;font-size:16px">' + D.buddy.name + '</div><div style="font-size:12px;color:var(--muted)">' + (D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + D.buddy.contact : '') + (D.buddy.language ? ' &middot; ' + D.buddy.language : '') + '</div></div></div>';
+  h += buddyMessagesHTML();
   h += '<div class="stat-grid" style="margin:8px 0">';
   h += '<div class="stat-card"><div class="num">' + buddyStreak() + '</div><div class="label">Buddy Streak</div></div>';
   h += '<div class="stat-card"><div class="num">' + D.buddyCheckins.length + '</div><div class="label">Check-Ins</div></div>';
@@ -4548,8 +4549,6 @@ function buddyHTML() {
   h += buddyChallengesHTML();
   // Competitions
   h += competitionsHTML();
-  // Messages
-  h += buddyMessagesHTML();
   h += '<div style="display:flex;gap:8px;margin:8px 0">';
   h += '<button class="btn btn-outline btn-sm" onclick="editBuddy()" style="flex:1">Edit Partner</button>';
   h += '<button class="btn btn-danger btn-sm" onclick="removeBuddy()" style="flex:1">Remove</button>';
@@ -4803,6 +4802,7 @@ function saveBuddy() {
   if (!name || !name.value.trim()) { alert(t('Enter your partner\'s name.')); return; }
   D.buddy = { name: name.value.trim(), contact: document.getElementById('buddy-contact') ? document.getElementById('buddy-contact').value.trim() : '', relationship: document.getElementById('buddy-relationship') ? document.getElementById('buddy-relationship').value.trim() : '', language: document.getElementById('buddy-language') ? document.getElementById('buddy-language').value : (D.language || 'English') };
   saveData();
+  startBuddyMessaging();
 }
 
 function buddyCheckin() {
@@ -4859,6 +4859,7 @@ function saveBuddyEdit(btn) {
   D.buddy.relationship = document.getElementById('eb-rel') ? document.getElementById('eb-rel').value.trim() : '';
   D.buddy.language = document.getElementById('eb-lang') ? document.getElementById('eb-lang').value : '';
   saveData();
+  startBuddyMessaging();
   btn.closest('.overlay').remove();
 }
 
@@ -4866,6 +4867,7 @@ function removeBuddy() {
   if (!confirm(t('Remove your accountability partner?'))) return;
   D.buddy = null;
   saveData();
+  stopBuddyMessaging();
   alert(t('Partner removed.'));
   render();
 }
@@ -6754,88 +6756,153 @@ function seerTowerHTML() {
 }
 
 // ====== BUDDY MESSAGING ======
-function buddySendMessage() {
-  var msgInput = document.getElementById('buddy-msg-input');
-  if (!msgInput || !msgInput.value.trim()) return;
-  var msg = msgInput.value.trim();
-  if (!D.messages) D.messages = [];
-  D.messages.push({ from: AUTH_EMAIL, to: D.buddy.contact, text: msg, date: new Date().toDateString(), time: String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0'), timestamp: Date.now() });
-  msgInput.value = '';
-  saveData();
-  // Also save to Firestore
-  DB.collection('messages').add({
-    from: AUTH_EMAIL, to: D.buddy.contact, text: msg,
-    date: new Date().toDateString(),
-    time: String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0'),
+var _buddyMsgsCache = [];
+var _buddyMsgUnread = 0;
+var _buddyMsgReady = false;
+var _buddyMsgListeners = [];
+var _buddyMsgEmail = '';
+var _buddyLastNewAt = 0;
+
+function buddyMsgKey(m) {
+  return (m.timestamp || 0) + '|' + (m.text || '');
+}
+
+function stopBuddyMessaging() {
+  for (var i = 0; i < _buddyMsgListeners.length; i++) { try { _buddyMsgListeners[i](); } catch (e) {} }
+  _buddyMsgListeners = [];
+  _buddyMsgReady = false;
+  _buddyMsgEmail = '';
+}
+
+function buddyMergeMessages(msgs) {
+  var buddyEmail = D.buddy ? D.buddy.contact : '';
+  if (!buddyEmail || !Array.isArray(msgs) || !msgs.length) return 0;
+  var known = {};
+  for (var i = 0; i < _buddyMsgsCache.length; i++) known[buddyMsgKey(_buddyMsgsCache[i])] = true;
+  var incoming = 0;
+  for (var j = 0; j < msgs.length; j++) {
+    var m = msgs[j];
+    if (!m || !m.text) continue;
+    if (m.from !== AUTH_EMAIL && m.from !== buddyEmail) continue;
+    if (m.from === AUTH_EMAIL ? (m.to !== buddyEmail) : (m.to !== AUTH_EMAIL)) continue;
+    var k = buddyMsgKey(m);
+    if (known[k]) continue;
+    known[k] = true;
+    _buddyMsgsCache.push(m);
+    if (m.from === buddyEmail && (!D._msgReadAt || (m.timestamp || 0) > D._msgReadAt)) incoming++;
+    if ((m.timestamp || 0) > _buddyLastNewAt) _buddyLastNewAt = m.timestamp || 0;
+  }
+  _buddyMsgsCache.sort(function(a, b) { return (a.timestamp || 0) - (b.timestamp || 0); });
+  if (_buddyMsgsCache.length > 50) _buddyMsgsCache = _buddyMsgsCache.slice(-50);
+  return incoming;
+}
+
+function renderBuddyMsgList() {
+  var list = document.getElementById('buddy-messages-list');
+  if (!list) return;
+  if (!D.buddy || !D.buddy.contact || !_buddyMsgsCache.length) {
+    list.innerHTML = '<div class="empty-state">Send a raven to ' + safe(D.buddy ? D.buddy.name : 'your partner') + '!</div>';
+    return;
+  }
+  var buddyName = D.buddy ? D.buddy.name : 'Partner';
+  var html = '';
+  for (var i = 0; i < _buddyMsgsCache.length; i++) {
+    var m = _buddyMsgsCache[i];
+    var me = m.from === AUTH_EMAIL;
+    html += '<div class="comrade-msg' + (me ? ' me' : '') + '">';
+    if (!me) html += '<div class="msg-author">' + safe(buddyName) + '</div>';
+    html += '<div>' + safe(m.text) + '</div><div class="msg-date">' + safe(m.date || '') + ' ' + safe(m.time || '') + '</div></div>';
+  }
+  list.innerHTML = '<div class="comrade-scroll">' + html + '</div>';
+  if (pg === 'buddy') {
+    markBuddyMsgsRead();
+    var sc = list.querySelector('.comrade-scroll');
+    if (sc) sc.scrollTop = sc.scrollHeight;
+  }
+}
+
+function updateBuddyMsgBadges() {
+  var pill = document.getElementById('comrade-unread-pill');
+  if (pill) {
+    pill.textContent = _buddyMsgUnread > 0 ? (_buddyMsgUnread + ' new') : '';
+    pill.style.display = _buddyMsgUnread > 0 ? 'inline-block' : 'none';
+  }
+}
+
+function markBuddyMsgsRead() {
+  D._msgReadAt = Date.now();
+  _buddyMsgUnread = 0;
+  updateBuddyMsgBadges();
+  saveDataSilent();
+}
+
+function startBuddyMessaging() {
+  if (!DB || !AUTH_EMAIL || !D.buddy || !D.buddy.contact) { stopBuddyMessaging(); return; }
+  var buddyEmail = D.buddy.contact;
+  if (_buddyMsgEmail === buddyEmail && _buddyMsgListeners.length) return;
+  stopBuddyMessaging();
+  _buddyMsgEmail = buddyEmail;
+  function onSnap(snap) {
+    var msgs = [];
+    try { snap.forEach(function(doc) { msgs.push(doc.data()); }); } catch (e) { return; }
+    var incoming = buddyMergeMessages(msgs);
+    var fresh = _buddyLastNewAt && (Date.now() - _buddyLastNewAt) < 15000;
+    if (incoming > 0) {
+      _buddyMsgUnread += incoming;
+      if (!_buddyMsgReady || !fresh) {
+        // Initial snapshot or history: count unread but don't toast.
+      } else if (pg === 'buddy') {
+        markBuddyMsgsRead();
+      } else {
+        showToast('New message from ' + safe(D.buddy ? D.buddy.name : 'your partner'), 'info');
+      }
+    }
+    _buddyMsgReady = true;
+    renderBuddyMsgList();
+    updateBuddyMsgBadges();
+  }
+  try {
+    var q1 = DB.collection('messages').where('from', '==', AUTH_EMAIL);
+    var q2 = DB.collection('messages').where('from', '==', buddyEmail);
+    if (typeof q1.onSnapshot === 'function') _buddyMsgListeners.push(q1.onSnapshot(onSnap, function() {}));
+    if (typeof q2.onSnapshot === 'function') _buddyMsgListeners.push(q2.onSnapshot(onSnap, function() {}));
+  } catch (e) { console.warn('buddy messaging listener failed:', e); }
+}
+
+function comradeSendMessage() {
+  var input = document.getElementById('comrade-msg-input');
+  if (!input || !input.value.trim()) return;
+  if (!D.buddy || !D.buddy.contact) { showToast('Connect a partner to send messages.', 'error'); return; }
+  var msg = input.value.trim();
+  input.value = '';
+  var now = new Date();
+  var m = {
+    from: AUTH_EMAIL, to: D.buddy.contact, fromName: D.name || 'You',
+    text: msg,
+    date: now.toDateString(),
+    time: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
     timestamp: Date.now()
-  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
-  render();
+  };
+  if (!D.messages) D.messages = [];
+  D.messages.push(m);
+  saveDataSilent();
+  buddyMergeMessages([m]);
+  renderBuddyMsgList();
+  if (DB) {
+    DB.collection('messages').add(m).catch(function(e) { console.warn(e); showToast('Message not sent. Check your connection.', 'error'); });
+  }
 }
 
 function buddyMessagesHTML() {
-  var buddyEmail = D.buddy ? D.buddy.contact : '';
-  var buddyName = D.buddy ? D.buddy.name : 'Partner';
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#x1F4DC;</div><h3 style="margin:0">Scroll of Letters</h3></div><div id="comrade-messages-list">';
-  var localMsgs = (D.messages||[]).filter(function(m){return m.from === buddyEmail || m.to === buddyEmail}).slice(-20);
-  if (!localMsgs.length) {
-    h += '<div class="empty-state">Loading messages...</div>';
-  } else {
-    h += '<div class="comrade-scroll" id="buddy-messages-list">';
-    for (var mi=0;mi<localMsgs.length;mi++) {
-      var isMe = localMsgs[mi].from === AUTH_EMAIL;
-      h += '<div class="comrade-msg' + (isMe ? ' me' : '') + '">';
-      if (!isMe) h += '<div class="msg-author">' + safe(buddyName) + '</div>';
-      h += '<div>' + safe(localMsgs[mi].text) + '</div>';
-      h += '<div class="msg-date">' + safe(localMsgs[mi].date) + ' ' + safe(localMsgs[mi].time) + '</div></div>';
-    }
-    h += '</div>';
-  }
-  h += '</div><div style="display:flex;gap:6px"><input type="text" id="comrade-msg-input" placeholder="Write thy message..." style="flex:1;margin:0"><button class="btn btn-sm btn-primary" onclick="comradeSendMessage()" style="width:auto">Send Raven</button></div></div>';
-  // Fetch messages from Firestore (two simple queries  no composite index needed)
-  if (buddyEmail) {
-    setTimeout(function(){
-      var el = document.getElementById('buddy-messages-list');
-      if (!el) return;
-      Promise.all([
-        DB.collection('messages').where('from', '==', AUTH_EMAIL).limit(30).get(),
-        DB.collection('messages').where('from', '==', buddyEmail).limit(30).get()
-      ]).then(function(results){
-        var fireMsgs = [];
-        results.forEach(function(snapshot){
-          snapshot.forEach(function(doc){
-            var d = doc.data();
-            // Only keep messages between this user and the buddy
-            if ((d.from === AUTH_EMAIL && d.to === buddyEmail) || (d.from === buddyEmail && d.to === AUTH_EMAIL)) {
-              fireMsgs.push(d);
-            }
-          });
-        });
-        // Merge with local, deduplicate by timestamp+text
-        var seen = {};
-        localMsgs.concat(fireMsgs).forEach(function(m){ seen[m.timestamp + m.text] = true; });
-        var all = [];
-        Object.keys(seen).forEach(function(k){
-          var found = localMsgs.concat(fireMsgs).filter(function(m){ return m.timestamp + m.text === k; })[0];
-          if (found) all.push(found);
-        });
-        all.sort(function(a,b){ return (a.timestamp||0) - (b.timestamp||0); });
-        all = all.slice(-20);
-        if (!all.length) {
-          el.innerHTML = '<div class="empty-state">Send a raven to ' + safe(D.buddy?D.buddy.name:'your partner') + '!</div>';
-          return;
-        }
-        var html = '<div class="comrade-scroll">';
-        for (var i=0;i<all.length;i++) {
-          var me = all[i].from === AUTH_EMAIL;
-          html += '<div class="comrade-msg' + (me ? ' me' : '') + '">';
-          if (!me) html += '<div class="msg-author">' + safe(D.buddy?D.buddy.name:'Partner') + '</div>';
-          html += '<div>' + safe(all[i].text) + '</div><div class="msg-date">' + safe(all[i].date) + ' ' + safe(all[i].time) + '</div></div>';
-        }
-        html += '</div>';
-        el.innerHTML = html;
-      }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
-    }, 500);
-  }
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#x1F4DC;</div><h3 style="margin:0">Scroll of Letters</h3><span id="comrade-unread-pill" class="comrade-unread-pill" style="display:none"></span></div>';
+  h += '<div id="buddy-messages-list"><div class="empty-state">Loading messages...</div></div>';
+  h += '<div style="display:flex;gap:6px"><input type="text" id="comrade-msg-input" placeholder="Write thy message..." style="flex:1;margin:0"><button class="btn btn-sm btn-primary" onclick="comradeSendMessage()" style="width:auto">Send Raven</button></div></div>';
+  startBuddyMessaging();
+  setTimeout(function() {
+    renderBuddyMsgList();
+    updateBuddyMsgBadges();
+    if (pg === 'buddy') markBuddyMsgsRead();
+  }, 50);
   return h;
 }
 

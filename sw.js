@@ -1,4 +1,4 @@
-var CACHE = 'reclaim-20260715';
+var CACHE = 'reclaim-20260819';
 var SHELL = ['/', '/app.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon.svg', '/src/style.css', '/src/data.js', '/src/buddy.js', '/src/sober.js', '/src/pages.js', '/src/kingdom.js', '/src/ui.js'];
 
 self.addEventListener('install', function(e) {
@@ -49,13 +49,21 @@ self.addEventListener('fetch', function(e) {
 
 self.addEventListener('push', function(e) {
   var d = e.data ? e.data.json() : {};
-  self.registration.showNotification(d.title || 'Re.Claim', {body: d.body || '', icon: d.icon || 'icon-192.png'});
+  var title = d.title || (d.notification && d.notification.title) || 'Re.Claim';
+  var body = d.body || (d.notification && d.notification.body) || '';
+  var icon = d.icon || (d.notification && d.notification.icon) || 'icon-192.png';
+  var tag = d.tag || (d.notification && d.notification.tag) || 'reclaim-notification';
+  var url = d.url || (d.notification && d.notification.data && d.notification.data.url) || '/';
+  e.waitUntil(self.registration.showNotification(title, {body: body, icon: icon, tag: tag, data: {url: url}}));
 });
 
 self.addEventListener('notificationclick', function(e) {
+  var url = e.notification.data && e.notification.data.url ? e.notification.data.url : '/';
   e.notification.close();
   e.waitUntil(clients.matchAll({type:'window'}).then(function(ws) {
+    var match = ws.find(function(w) { return w.visibilityState === 'visible'; });
+    if (match) { match.focus(); return; }
     if (ws.length) { ws[0].focus(); return; }
-    clients.openWindow('/');
+    clients.openWindow(url);
   }));
 });

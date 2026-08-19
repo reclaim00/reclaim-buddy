@@ -367,6 +367,7 @@ body.dark .badge-gold{background:rgba(122,106,90,.2);color:var(--gold)}
 #comrade-msg-input:focus{border-color:var(--primary);border-bottom-color:var(--primary-dark)}
 .comrade-scroll{border:1px solid var(--stone-border);border-radius:var(--radius-xs);padding:10px;background:var(--card);margin-bottom:8px;max-height:220px;overflow-y:auto;position:relative}
 .comrade-scroll::after{content:'\u269C \u00A0 \u269C \u00A0 \u269C';display:block;text-align:center;font-size:var(--fs-2xs);color:var(--muted);opacity:.3;padding-top:4px}
+.comrade-unread-pill{background:var(--primary);color:#fff;font-size:var(--fs-2xs);font-weight:700;padding:2px 8px;border-radius:10px;margin-left:auto;line-height:1.4}
 .progress-bar{height:16px;background:var(--stone-base);border-radius:3px;overflow:hidden;margin:8px 0;border:1px solid var(--stone-border);box-shadow:inset 0 2px 4px rgba(0,0,0,.2);position:relative}
 .progress-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.08));pointer-events:none;z-index:1}
 .progress-bar .fill{height:100%;background:var(--grad-primary);border-radius:2px;transition:width .4s cubic-bezier(.22,1,.36,1);position:relative;overflow:hidden;box-shadow:inset 0 1px 3px rgba(255,255,255,.12)}

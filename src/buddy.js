@@ -109,7 +109,8 @@ function finishPairing(match, email) {
     pairedList.push({ name: match.name, email: email, language: match.language || (D.language || 'English'), pairedDate: Date.now() });
     D.pairedBuddies = pairedList;
   }
-  saveData();
+saveData();
+  if (typeof startBuddyMessaging === 'function') startBuddyMessaging();
   var result = document.getElementById('pairing-result');
   if (result) result.innerHTML = '<div style="font-size:13px;color:var(--primary);font-weight:600">Connected with ' + safe(match.name) + ' from ' + safe(match.language || 'your language') + '! You can now support each other.</div>';
   var input = document.getElementById('pairing-code');
