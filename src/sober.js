@@ -175,17 +175,34 @@ function soberElapsed() {
 var SOBER_TIMER_ID = null;
 var SOBER_TIMEOUT_ID = null;
 
-function soberTimerHTML() {
+function vigilUnitHTML(num, label) {
+  return '<div class="vigil-unit"><div class="num">' + num + '</div><div class="lbl">' + label + '</div></div>';
+}
+
+function vigilUnitsHTML() {
   var el = soberElapsed();
   if (!el) return '';
-  var parts = [];
-  if (el.years > 0) parts.push(el.years + 'y');
-  if (el.months > 0 || el.years > 0) parts.push(el.months + 'mo');
-  parts.push(el.days + 'd');
-  parts.push(String(el.hours).padStart(2,'0') + 'h');
-  parts.push(String(el.minutes).padStart(2,'0') + 'm');
-  parts.push(String(el.seconds).padStart(2,'0') + 's');
-  return '<div id="sober-timer" style="background:var(--primary);border-radius:14px;padding:14px 16px;margin:8px 0;text-align:center;color:#fff;box-shadow:0 2px 12px rgba(0,0,0,.15)"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div style="font-size:11px;opacity:.8;font-weight:500;letter-spacing:1px;text-transform:uppercase">Time Since Last Reset</div><div style="display:flex;gap:4px"><button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer" style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:14px;padding:0 2px;line-height:1">&#8635;</button><span onclick="goTo(\'royalpardon\')" title="Fresh Start" style="cursor:pointer;font-size:13px;opacity:.7">&#127793;</span></div></div><div style="font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px">' + parts.join(' ') + '</div></div>';
+  var s = '';
+  if (el.years > 0) s += vigilUnitHTML(el.years, 'Years');
+  if (el.months > 0 || el.years > 0) s += vigilUnitHTML(el.months, 'Moons');
+  s += vigilUnitHTML(el.days, 'Days');
+  s += vigilUnitHTML(String(el.hours).padStart(2, '0'), 'Hours');
+  s += vigilUnitHTML(String(el.minutes).padStart(2, '0'), 'Mins');
+  s += vigilUnitHTML(String(el.seconds).padStart(2, '0'), 'Secs');
+  return s;
+}
+
+function soberTimerHTML() {
+  if (!soberElapsed()) return '';
+  return '<div id="sober-timer" class="vigil-timer">'
+    + '<div class="vigil-flame"><div class="wick"></div><div class="candle"></div><div class="flame-outer"></div><div class="flame-inner"></div></div>'
+    + '<div class="vigil-title">The Vigil Candle</div>'
+    + '<div class="vigil-sub">Your flame has held for</div>'
+    + '<div class="vigil-units" id="vigil-units">' + vigilUnitsHTML() + '</div>'
+    + '<div class="vigil-actions">'
+    + '<button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer">&#8635; Rekindle</button>'
+    + '<span onclick="goTo(\'royalpardon\')" title="Fresh Start">&#127793; Fresh Start</span>'
+    + '</div></div>';
 }
 
 function startSoberTimer() {
@@ -203,8 +220,9 @@ function startSoberTimer() {
 function renderSoberTimer() {
   var el = document.getElementById('sober-timer');
   if (!el) return;
-  var html = soberTimerHTML();
-  if (html) el.innerHTML = html;
+  var units = document.getElementById('vigil-units');
+  if (units) { units.innerHTML = vigilUnitsHTML(); return; }
+  el.innerHTML = soberTimerHTML();
 }
 
 function plantHTML() {
