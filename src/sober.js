@@ -195,9 +195,8 @@ function vigilUnitsHTML() {
 function soberTimerHTML() {
   if (!soberElapsed()) return '';
   return '<div id="sober-timer" class="vigil-timer">'
-    + '<div class="vigil-flame"><div class="wick"></div><div class="candle"></div><div class="flame-outer"></div><div class="flame-inner"></div></div>'
     + '<div class="vigil-title">The Vigil Candle</div>'
-    + '<div class="vigil-sub">Your flame has held for</div>'
+    + '<div class="vigil-sub">You have held for</div>'
     + '<div class="vigil-units" id="vigil-units">' + vigilUnitsHTML() + '</div>'
     + '<div class="vigil-actions">'
     + '<button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer">&#8635; Rekindle</button>'
