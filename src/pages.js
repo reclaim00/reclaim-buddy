@@ -1063,7 +1063,7 @@ function toggleSpeakSummary() {
   var btn = document.getElementById('vj-hear-summary');
   if (speechSupported() && window.speechSynthesis && window.speechSynthesis.speaking) {
     stopSpeaking();
-    if (btn) btn.textContent = '&#128266; Hear summary';
+    if (btn) btn.textContent = t('Hear summary again');
     return;
   }
   var text = '';
@@ -1075,7 +1075,7 @@ function toggleSpeakSummary() {
   }
   if (!text) return;
   var summary = buildVoiceSummary(text);
-  if (speakText(summary.plain) && btn) btn.textContent = '&#9632; Stop summary';
+  if (speakText(summary.plain) && btn) btn.textContent = t('Stop summary');
 }
 
 function toggleSummarySpeech(btn, textId) {
@@ -1113,12 +1113,16 @@ function resetVoiceState() {
 
 function setJournalMode(mode) {
   var vp = document.getElementById('j-voice-panel');
-  var tb = document.getElementById('jmode-type');
+  var fb = document.getElementById('jmode-free');
+  var qb = document.getElementById('jmode-quick');
   var vb = document.getElementById('jmode-voice');
   var ta = document.getElementById('journal-text');
+  var qa = document.getElementById('j-quick-area');
   if (vp) vp.style.display = mode === 'voice' ? 'block' : 'none';
-  if (ta) ta.style.display = mode === 'voice' ? 'none' : 'block';
-  if (tb) tb.className = 'btn btn-sm ' + (mode === 'type' ? 'btn-primary' : 'btn-outline');
+  if (ta) ta.style.display = mode === 'quick' ? 'none' : 'block';
+  if (qa) qa.style.display = mode === 'quick' ? 'block' : 'none';
+  if (fb) fb.className = 'btn btn-sm ' + (mode === 'free' ? 'btn-primary' : 'btn-outline');
+  if (qb) qb.className = 'btn btn-sm ' + (mode === 'quick' ? 'btn-primary' : 'btn-outline');
   if (vb) vb.className = 'btn btn-sm ' + (mode === 'voice' ? 'btn-primary' : 'btn-outline');
   if (mode === 'voice') updateVoiceUI();
 }
@@ -1161,9 +1165,9 @@ function toggleVoiceRecord() {
 function updateVoiceUI() {
   var btn = document.getElementById('vj-btn');
   if (btn) {
-    if (_voiceRec && _voiceRec.state === 'recording') { btn.innerHTML = '&#9632; Stop'; btn.style.background = 'var(--danger)'; btn.style.color = '#fff'; }
-    else if (_voiceBlob) { btn.innerHTML = '&#128266; Re-record'; btn.style.background = ''; btn.style.color = ''; }
-    else { btn.innerHTML = '&#128266; Record'; btn.style.background = ''; btn.style.color = ''; }
+    if (_voiceRec && _voiceRec.state === 'recording') { btn.innerHTML = '&#9632; ' + t('Stop'); btn.style.background = 'var(--danger)'; btn.style.color = '#fff'; }
+    else if (_voiceBlob) { btn.innerHTML = '&#128266; ' + t('Re-record'); btn.style.background = ''; btn.style.color = ''; }
+    else { btn.innerHTML = '&#128266; ' + t('Record'); btn.style.background = ''; btn.style.color = ''; }
   }
   var tm = document.getElementById('vj-timer');
   if (tm) tm.textContent = (_voiceRec && _voiceRec.state === 'recording') ? 'Recording ' + formatDur(_voiceSec) : (_voiceBlob ? formatDur(_voiceDur || _voiceSec) + ' recorded' : '');
@@ -1191,17 +1195,20 @@ function renderVoiceTalkback() {
   if (!tbox) return;
   var ttext = document.getElementById('vj-transcript');
   var sbox = document.getElementById('vj-summary');
+  var sboxwrap = document.getElementById('vj-summary-box');
   var sbtn = document.getElementById('vj-hear-summary');
   if (_voiceRec && _voiceRec.state === 'recording') {
     _summarySpoken = false;
     tbox.style.display = 'none';
-    if (sbtn) { sbtn.style.display = 'none'; sbtn.textContent = '&#128266; Hear summary'; }
+    if (sboxwrap) sboxwrap.style.display = 'none';
+    if (sbtn) { sbtn.style.display = 'none'; sbtn.textContent = t('Hear summary again'); }
     return;
   }
   if (!_voiceBlob) {
     _summarySpoken = false;
     tbox.style.display = 'none';
-    if (sbtn) { sbtn.style.display = 'none'; sbtn.textContent = '&#128266; Hear summary'; }
+    if (sboxwrap) sboxwrap.style.display = 'none';
+    if (sbtn) { sbtn.style.display = 'none'; sbtn.textContent = t('Hear summary again'); }
     return;
   }
   var target = currentEntryTextarea();
@@ -1210,20 +1217,22 @@ function renderVoiceTalkback() {
   if (sbox) sbox.textContent = '';
   tbox.style.display = 'block';
   if (!transcript) {
+    if (sboxwrap) sboxwrap.style.display = 'none';
     if (sbtn) sbtn.style.display = 'none';
     return;
   }
   var summary = buildVoiceSummary(transcript);
+  if (sboxwrap) sboxwrap.style.display = 'block';
   if (sbox && summary.html) sbox.innerHTML = summary.html;
   if (sbtn) {
     var isSpeaking = speechSupported() && window.speechSynthesis && window.speechSynthesis.speaking;
     sbtn.style.display = '';
-    sbtn.textContent = isSpeaking ? '&#9632; Stop summary' : '&#128266; Hear summary';
+    sbtn.textContent = isSpeaking ? t('Stop summary') : t('Hear summary again');
   }
   if (!_summarySpoken && !_pendingSave && summary.plain && speechSupported()) {
     _summarySpoken = true;
     speakText(summary.plain);
-    if (sbtn) sbtn.textContent = '&#9632; Stop summary';
+    if (sbtn) sbtn.textContent = t('Stop summary');
   }
 }
 
@@ -1481,30 +1490,36 @@ function showNewJournal() {
   for (var i=0;i<MOODS.length;i++) h += '<button class="mood-btn" onclick="this.classList.toggle(\'active\');this._val='+MOODS[i].val+'"><span style="font-size:18px;display:block">'+MOODS[i].emoji+'</span>'+MOODS[i].label+'</button>';
   h += '</div>';
   h += '<div style="display:flex;gap:6px;margin:8px 0 4px">';
-  h += '<button class="btn btn-sm btn-primary" id="jmode-type" onclick="setJournalMode(\'type\')">&#9998; Type</button>';
-  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setJournalMode(\'voice\')">&#127908; Voice Journaling</button>';
+  h += '<button class="btn btn-sm btn-primary" id="jmode-free" onclick="setJournalMode(\'free\')">&#9998; Free Write</button>';
+  h += '<button class="btn btn-sm btn-outline" id="jmode-quick" onclick="setJournalMode(\'quick\')">&#9889; Quick Mood</button>';
+  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setJournalMode(\'voice\')">&#127908; Voice</button>';
   h += '</div>';
   h += '<div id="j-voice-panel" style="display:none;background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:8px;text-align:center">';
   if (!voiceSupported()) {
-    h += '<div style="font-size:13px;color:var(--muted)">'+t('Voice recording isn\u2019t supported in this browser. Use Type instead.')+'</div>';
+    h += '<div style="font-size:13px;color:var(--muted)">'+t('Voice recording isn\u2019t supported in this browser. Use Free Write instead.')+'</div>';
   } else {
     h += '<div style="font-size:22px;margin-bottom:4px">&#127908;</div>';
-    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('Speak your thoughts instead of typing. After you stop, you\u2019ll see a transcript and hear a summary read back to you.')+'</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('Speak your thoughts. When you stop, your summary will be read back to you.')+'</div>';
     h += '<button class="btn btn-primary btn-sm" id="vj-btn" onclick="toggleVoiceRecord()">&#128266; Record</button> ';
     h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; Preview</button> ';
     h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; Clear</button>';
     h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">'+t('Max 90 seconds per note. You can also add text below.')+'</div>';
+    h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">'+t('Max 90 seconds. You can also add text below.')+'</div>';
     h += '<div id="vj-transcript-box" style="display:none;margin-top:10px;text-align:left;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--card)">';
-    h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">'+t('TRANSCRIPT')+'</div>';
+    h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">'+t('YOUR WORDS')+'</div>';
     h += '<div id="vj-transcript" style="font-size:13px;line-height:1.6;white-space:pre-wrap;color:var(--text);max-height:140px;overflow-y:auto"></div>';
-    h += '<div id="vj-summary" style="font-size:12px;line-height:1.6;color:var(--text-light);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"></div>';
-    h += '<button class="btn btn-sm btn-primary" id="vj-hear-summary" onclick="toggleSpeakSummary()" style="display:none;margin-top:8px;width:100%">&#128266; Hear summary</button>';
-    h += '</div>';
+    h += '<div id="vj-summary-box" style="display:none;margin-top:10px;padding:10px;background:var(--primary-light);border-radius:8px;border-left:3px solid var(--primary)">';
+    h += '<div style="font-size:9px;color:var(--primary);letter-spacing:2px;margin-bottom:6px;font-weight:700">'+t('YOUR SUMMARY')+'</div>';
+    h += '<div id="vj-summary" style="font-size:12px;line-height:1.6;color:var(--text)"></div>';
+    h += '<button class="btn btn-sm btn-primary" id="vj-hear-summary" onclick="toggleSpeakSummary()" style="display:none;margin-top:8px;width:100%">'+t('Hear summary again')+'</button>';
+    h += '</div></div>';
   }
   h += '</div>';
-  h += '<textarea id="journal-text" placeholder="'+t('How are you feeling today? (optional with a voice note)')+'" style="min-height:90px"></textarea>';
-  h += '<button class="btn btn-primary" onclick="saveJournal(this)">'+t('Save Entry')+'</button>';
+  h += '<div id="j-quick-area" style="display:none;text-align:center;padding:12px 0">';
+  h += '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Tap your mood above, then save.')+'</div>';
+  h += '</div>';
+  h += '<textarea id="journal-text" placeholder="'+t('How are you feeling today?')+'" style="min-height:90px"></textarea>';
+  h += '<button class="btn btn-primary" id="j-save-btn" onclick="saveJournal(this)">'+t('Save Entry')+'</button>';
   h += '<button class="btn btn-outline" onclick="closeJournalOverlay(this)" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
@@ -1513,18 +1528,19 @@ function showNewJournal() {
 function saveJournal(btn) {
   var textEl = document.getElementById('journal-text');
   var txt = (textEl && textEl.value ? textEl.value.trim() : '');
+  var isQuickMode = document.getElementById('jmode-quick') && document.getElementById('jmode-quick').className.indexOf('btn-primary') !== -1;
   if (_voiceRec && _voiceRec.state === 'recording') {
     _pendingSave = function() {
       var t2 = document.getElementById('journal-text');
       txt = (t2 && t2.value ? t2.value.trim() : '');
-      if (!txt && !_voiceBlob) { alert(t('Write or record something first.')); return; }
+      if (!txt && !_voiceBlob && !isQuickMode) { alert(t('Write or record something first.')); return; }
       persistJournalOverlay(btn, txt);
     };
     stopTranscription();
     _voiceRec.stop();
     return;
   }
-  if (!txt && !_voiceBlob) { alert(t('Write or record something first.')); return; }
+  if (!txt && !_voiceBlob && !isQuickMode) { alert(t('Write or record something first.')); return; }
   persistJournalOverlay(btn, txt);
 }
 
@@ -2567,58 +2583,78 @@ function buildSummary(txt, mood, topics, dayCount, streak, entryHour) {
   var mins = Math.ceil(words / 15);
 
   // Entry overview
-  lines.push('Entry Overview: ' + words + ' words' + (mins > 1 ? '  about ' + mins + ' minutes of honest reflection' : '  a short check-in that still carries weight') + '.');
+  if (words > 200) lines.push('Entry Overview: ' + words + ' words  about ' + mins + ' minutes of deep, honest reflection. This is a substantial entry. You\'re not scratching the surface  you\'re excavating.');
+  else if (words > 100) lines.push('Entry Overview: ' + words + ' words  about ' + mins + ' minutes of honest reflection. You\'re opening up and getting to the real material.');
+  else if (words > 50) lines.push('Entry Overview: ' + words + ' words  about ' + mins + ' minutes. Sometimes the shortest entries carry the most weight. You said what needed to be said.');
+  else if (words > 10) lines.push('Entry Overview: ' + words + ' words  a brief but meaningful check-in. Even a few words on the page is a victory over silence.');
+  else lines.push('Entry Overview: ' + words + ' words. Every entry counts, no matter how short. You showed up, and that\'s what matters.');
 
   // Sobriety context
-  if (dayCount > 0) lines.push('Sobriety: You\'re ' + dayCount + ' day' + (dayCount!==1?'s':'') + ' into this journey. Every day you hold this line, the foundation deepens and the voice of addiction softens.');
+  if (dayCount > 0 && dayCount <= 7) lines.push('Sobriety: You\'re ' + dayCount + ' day' + (dayCount!==1?'s':'') + ' in. The first week is the hardest  every day you hold this line, you\'re rewriting your story. The cravings will come and go, but you\'re proving you can outlast them.');
+  else if (dayCount > 7 && dayCount <= 30) lines.push('Sobriety: ' + dayCount + ' days. You\'ve crossed the most dangerous threshold. The neural pathways that screamed for your old habit are quieting. Each day now is a deposit in a new life.');
+  else if (dayCount > 30 && dayCount <= 90) lines.push('Sobriety: ' + dayCount + ' days  over a month. This is where real change lives. The habits you\'re building now aren\'t forced anymore; they\'re becoming who you are. The person you were 90 days ago wouldn\'t recognize you.');
+  else if (dayCount > 90 && dayCount <= 365) lines.push('Sobriety: ' + dayCount + ' days. You\'re in territory most people never reach. The old cravings are whispers now, not screams. You\'ve built something real  a life that doesn\'t need escaping from.');
+  else if (dayCount > 365) lines.push('Sobriety: ' + dayCount + ' days  over a year. This is mastery. You\'ve rebuilt your relationship with yourself, with time, with discomfort. What you\'ve done here is rare and worth celebrating.');
 
   // Journal streak
-  if (streak > 3 && streak <= 7) lines.push('Journal Streak: ' + streak + ' days in a row. This is how habits are forged  one page at a time. You\'re building proof to yourself that you show up.');
-  else if (streak > 7 && streak <= 30) lines.push('Journal Streak: A ' + streak + '-day streak means this is becoming automatic. You\'ve passed the hardest threshold  now it\'s momentum.');
+  if (streak >= 1 && streak <= 3) lines.push('Journal Streak: ' + streak + ' day' + (streak!==1?'s':'') + '. You\'re planting seeds. Consistency now will turn this into a habit that sustains you through the hard days ahead.');
+  else if (streak > 3 && streak <= 7) lines.push('Journal Streak: ' + streak + ' days in a row. This is how habits are forged  one page at a time. You\'re building proof to yourself that you show up, even when it\'s hard.');
+  else if (streak > 7 && streak <= 30) lines.push('Journal Streak: A ' + streak + '-day streak. This is becoming automatic. You\'ve passed the hardest threshold  now it\'s momentum. The page is becoming a place you need, not just visit.');
   else if (streak > 30 && streak <= 90) lines.push('Journal Streak: ' + streak + ' days. At this point, journaling isn\'t something you do  it\'s something you are. You\'ve rewired your brain to process rather than suppress.');
-  else if (streak > 90) lines.push('Journal Streak: ' + streak + ' days of uninterrupted journaling. This is mastery-level consistency. You are in the top fraction of people who sustain a practice this long.');
+  else if (streak > 90) lines.push('Journal Streak: ' + streak + ' days of uninterrupted journaling. This is mastery-level consistency. You are in the top fraction of people who sustain a practice this long. The page knows you now.');
 
   // Time of day analysis
-  var timeAnalysis = '';
   if (entryHour >= 5 && entryHour < 12) {
-    timeAnalysis = 'Morning Pages: Writing in the morning taps into your fresh mind  before the day\'s noise drowns out your inner voice. Morning entries tend to be more honest, intuitive, and unguarded. You\'re setting a deliberate tone for the hours ahead.';
+    lines.push('Morning Pages: Writing in the morning taps into your fresh mind  before the day\'s noise drowns out your inner voice. Morning entries tend to be more honest, intuitive, and unguarded. You\'re setting a deliberate tone for the hours ahead.');
   } else if (entryHour >= 12 && entryHour < 17) {
-    timeAnalysis = 'Midday Pause: You stopped in the middle of the current to check in with yourself. That takes awareness  most people push through without asking how they feel. This is a sign of growing mindfulness.';
+    lines.push('Midday Pause: You stopped in the middle of the current to check in with yourself. That takes awareness  most people push through without asking how they feel. This is a sign of growing mindfulness.');
   } else if (entryHour >= 17 && entryHour < 21) {
-    timeAnalysis = 'Evening Reflection: There\'s a reason the evening review is a cornerstone of every wisdom tradition  it lets you digest the day before sleep claims it. By writing now, you\'re processing instead of carrying.';
+    lines.push('Evening Reflection: There\'s a reason the evening review is a cornerstone of every wisdom tradition  it lets you digest the day before sleep claims it. By writing now, you\'re processing instead of carrying.');
   } else {
-    timeAnalysis = 'Night Writing: Late-night entries arrive when the world is quiet and the mind is unfiltered. These pages often hold the deepest truths  the thoughts we\'re too guarded to face in daylight. The stillness is listening.';
+    lines.push('Night Writing: Late-night entries arrive when the world is quiet and the mind is unfiltered. These pages often hold the deepest truths  the thoughts we\'re too guarded to face in daylight. The stillness is listening.');
   }
-  lines.push(timeAnalysis);
 
-  // Mood-specific deep analysis
+  // Mood-specific deep analysis with actionable insights
   var moodDepth = {
-    sad: 'Your words carry a weight today. Sadness isn\'t your enemy — it\'s your inner self telling you something matters. Ask what it wants you to see rather than trying to make it go away.',
-    angry: 'Fire in your words. Anger signals a boundary crossed or a value threatened. Behind almost every anger is a hurt — ask what it\'s protecting.',
-    anxious: 'Anxiety is a loud room. Ground yourself in the present: name one thing you can see, hear, and feel right now. Anxiety lives in the future — bring yourself back to now, where you are safe.',
-    happy: 'There\'s a lightness in your words. Don\'t rush past it — notice what\'s different today and what contributed to this feeling. Savoring positive moments is a skill you\'re practicing right now.',
-    grateful: 'Your words are filled with appreciation. Gratitude rewires the brain to notice what\'s good. This isn\'t naivety — it\'s training your mind for resilience.',
-    reflective: 'You\'re in a contemplative space. This is where growth happens — in the still moments where you make sense of things. Keep asking questions; the answers come in layers.',
-    hopeful: 'Hope radiates from your words. You\'ve been through hard things and you\'re still here, still believing things can get better. Hold onto this hope — it\'s real and it\'s yours.',
-    mixed: 'Your entry holds multiple threads — joy and struggle, hope and fear. You don\'t have to pick one feeling. The goal isn\'t to feel only good things — it\'s to feel all of it without letting any single feeling take the wheel.'
+    sad: 'Your words carry weight today. Sadness isn\'t your enemy  it\'s your inner self telling you something matters. The pain you\'re feeling is proof that you care about something deeply. Rather than trying to make it go away, ask: what is this sadness trying to protect? What would you say to a friend feeling this way? Try naming the specific loss or disappointment  once it has a name, it becomes something you can hold, not something that holds you.',
+    angry: 'Fire in your words. Anger signals a boundary crossed or a value threatened. Behind almost every anger is a hurt  ask what it\'s protecting. Your anger is information: it tells you where your limits are and what you won\'t tolerate. Before you act on it, try this: write down what you wish you could say to the person or situation that triggered this. You don\'t have to send it. But putting it on paper gives the anger somewhere to go that isn\'t destructive.',
+    anxious: 'Anxiety is a loud room. Ground yourself in the present: name one thing you can see, hear, and feel right now. Anxiety lives in the future  bring yourself back to now, where you are safe. Your body is trying to protect you from something it thinks is dangerous. The good news: you\'re already doing something about it by writing. This entry is an act of courage. Try the 5-4-3-2-1 grounding exercise: name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste.',
+    happy: 'There\'s a lightness in your words. Don\'t rush past it  notice what\'s different today and what contributed to this feeling. Savoring positive moments is a skill you\'re practicing right now. Happy moments in recovery are different from happy moments before: these are earned, authentic, and grounded. Write down three specific things that contributed to this feeling. When the hard days come, this entry will remind you that good days are real and they\'re yours.',
+    grateful: 'Your words are filled with appreciation. Gratitude rewires the brain to notice what\'s good. This isn\'t naivety  it\'s training your mind for resilience. Gratitude and addiction can\'t occupy the same space. When you practice noticing what\'s good, you\'re literally rewiring the neural pathways that addiction hijacked. Try this: for each thing you\'re grateful for, write why it matters to you specifically.',
+    reflective: 'You\'re in a contemplative space. This is where growth happens  in the still moments where you make sense of things. Keep asking questions; the answers come in layers. The questions you\'re asking today are the ones that lead to breakthroughs. Don\'t rush to answers. Sit with the uncertainty. Write down the three biggest questions on your mind right now.',
+    hopeful: 'Hope radiates from your words. You\'ve been through hard things and you\'re still here, still believing things can get better. Hold onto this hope  it\'s real and it\'s yours. Hope in recovery isn\'t naive optimism; it\'s the evidence of everything you\'ve survived. Write down one specific thing you\'re looking forward to. Make it concrete. Hope becomes powerful when it has a shape.',
+    mixed: 'Your entry holds multiple threads  joy and struggle, hope and fear. You don\'t have to pick one feeling. The goal isn\'t to feel only good things  it\'s to feel all of it without letting any single feeling take the wheel. Mixed emotions are a sign of emotional complexity, which is healthy. Try separating the threads: write one sentence for each emotion you\'re feeling. Give each one a name.'
   };
   if (moodDepth[mood]) lines.push(moodDepth[mood]);
 
-  // Advanced topic analysis
+  // Advanced topic analysis with cross-topic connections
   if (topics && topics.length) {
     var topicAnalysis = [];
-    if (topics.indexOf('craving') !== -1) topicAnalysis.push('You acknowledged a craving. This is a critical skill  cravings lose power the moment you name them out loud. What triggered it? What did you do instead? Each craving you survive weakens the next one.');
-    if (topics.indexOf('work') !== -1) topicAnalysis.push('Your work life is present in your thoughts. Work stress is one of the most common relapse triggers. Notice if there\'s a pattern: certain times, people, or tasks that activate your stress response. Awareness is the first step to building boundaries.');
-    if (topics.indexOf('relationships') !== -1) topicAnalysis.push('Your relationships are on your mind. The people in our lives can be our greatest support or our biggest triggers. Is there someone you need to set a boundary with? Or someone you could reach out to today? Connection is the opposite of addiction.');
-    if (topics.indexOf('health') !== -1) topicAnalysis.push('You wrote about your health. Recovery and physical health are deeply connected  when we care for our bodies, we strengthen our minds. What\'s one small thing you could do today to honor your body?');
-    if (topics.indexOf('loneliness') !== -1) topicAnalysis.push('You opened up about feeling alone. Loneliness is one of the heaviest burdens in recovery. Please know: writing it down is a step toward connection. You\'ve told the page  now consider telling one trusted person. You don\'t have to carry this alone.');
-    if (topics.indexOf('progress') !== -1) topicAnalysis.push('You reflected on your progress. This is essential  we often move forward so fast that we forget to look back at how far we\'ve come. The distance between where you were and where you are now is real, measurable, and meaningful. You earned this moment of recognition.');
+    if (topics.indexOf('craving') !== -1) topicAnalysis.push('You acknowledged a craving. This is a critical skill  cravings lose power the moment you name them out loud. What triggered it? What did you do instead? Each craving you survive weakens the next one. Try writing down: what were you doing right before the craving hit? The pattern will become clear.');
+    if (topics.indexOf('work') !== -1) topicAnalysis.push('Your work life is present in your thoughts. Work stress is one of the most common relapse triggers. Notice if there\'s a pattern: certain times, people, or tasks that activate your stress response. What boundaries could you set this week? Even one small boundary is a win.');
+    if (topics.indexOf('relationships') !== -1) topicAnalysis.push('Your relationships are on your mind. The people in our lives can be our greatest support or our biggest triggers. Is there someone you need to set a boundary with? Or someone you could reach out to today? Connection is the opposite of addiction. Who in your life makes you feel seen?');
+    if (topics.indexOf('health') !== -1) topicAnalysis.push('You wrote about your health. Recovery and physical health are deeply connected  when we care for our bodies, we strengthen our minds. What\'s one small thing you could do today to honor your body? Even a 10-minute walk counts as an act of self-respect.');
+    if (topics.indexOf('loneliness') !== -1) topicAnalysis.push('You opened up about feeling alone. Loneliness is one of the heaviest burdens in recovery. Please know: writing it down is a step toward connection. You\'ve told the page  now consider telling one trusted person. You don\'t have to carry this alone. Who in your life would understand?');
+    if (topics.indexOf('progress') !== -1) topicAnalysis.push('You reflected on your progress. This is essential  we often move forward so fast that we forget to look back at how far we\'ve come. The distance between where you were and where you are now is real, measurable, and meaningful. Write down three specific things you can do now that you couldn\'t do before.');
     if (topics.indexOf('finances') !== -1) topicAnalysis.push('Financial stress came up. Money worries are real and valid. They can feel overwhelming, but you don\'t have to solve everything today. What\'s one small step you could take this week? Even looking at your numbers is an act of courage, not avoidance.');
-    if (topics.indexOf('wellness') !== -1) topicAnalysis.push('You wrote about wellness and self-care. This shows you\'re thinking about what you need to thrive, not just survive. What\'s one practice that\'s been working for you lately? Double down on what works.');
+    if (topics.indexOf('wellness') !== -1) topicAnalysis.push('You wrote about wellness and self-care. This shows you\'re thinking about what you need to thrive, not just survive. What\'s one practice that\'s been working for you lately? Double down on what works. Self-care in recovery isn\'t selfish  it\'s survival.');
+
+    // Cross-topic connections
+    if (topics.indexOf('craving') !== -1 && topics.indexOf('work') !== -1) topicAnalysis.push('Work and cravings appearing together is a common pattern. Work stress often activates the same neural pathways as addiction. What if you could create a 2-minute ritual between work and your evening  a transition that tells your brain the workday is done?');
+    if (topics.indexOf('loneliness') !== -1 && topics.indexOf('relationships') !== -1) topicAnalysis.push('Loneliness alongside relationships suggests a gap between being around people and feeling connected to them. This is common in recovery. Consider: who in your life knows the real you? If the answer is no one, that\'s not a failure  it\'s a starting point.');
+    if (topics.indexOf('health') !== -1 && topics.indexOf('wellness') !== -1) topicAnalysis.push('Health and wellness together show you\'re thinking holistically about recovery. The body keeps the score  what you do physically affects how you feel mentally. What\'s one small physical practice you could add this week?');
+
     if (topicAnalysis.length) {
       lines.push('Deeper Themes:');
       topicAnalysis.forEach(function(ta) { lines.push('&#9755; ' + ta); });
     }
+  }
+
+  // Personalized recovery insight
+  if (dayCount > 0) {
+    if (dayCount <= 30) lines.push('Recovery Insight: You\'re in the early days  the most important thing right now is showing up. Don\'t worry about being perfect. Just keep writing, keep checking in, keep choosing recovery one day at a time. The foundation you\'re building now will support everything that comes next.');
+    else if (dayCount <= 90) lines.push('Recovery Insight: You\'re past the acute phase and into the real work of rebuilding. This is where patterns emerge  notice what triggers you, what soothes you, what gives you strength. You\'re not just surviving anymore; you\'re learning who you are without addiction.');
+    else lines.push('Recovery Insight: You\'ve built something substantial. At this stage, the challenge shifts from "can I stay clean?" to "what kind of life do I want to build?" The answer lives in these pages. Keep writing toward it.');
   }
 
   // Overall sentiment synthesis
