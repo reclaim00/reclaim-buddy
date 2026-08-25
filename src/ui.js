@@ -533,6 +533,21 @@ function meetingsHTML() {
   var h = '';
   h += '<h2 class="page-title">'+t('Meetings')+'</h2>';
 
+  // Find Meetings Near You card
+  h += '<div class="card" style="border-left:3px solid var(--primary);margin-bottom:8px">';
+  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">';
+  h += '<div style="font-size:28px">&#128205;</div>';
+  h += '<div><div style="font-weight:700;font-size:14px">'+t('Find Meetings Near You')+'</div>';
+  h += '<div style="font-size:11px;color:var(--muted)">'+t('Locate in-person meetings on Google Maps')+'</div></div></div>';
+  h += '<div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">';
+  h += '<select id="meeting-search-type" style="flex:1;padding:8px 10px;border:2px solid var(--border);border-radius:var(--radius-xl);font-size:13px;font-family:inherit;background:var(--card);color:var(--text)">';
+  for (var ti=0;ti<MEETING_TYPES.length;ti++) { h += '<option value="'+MEETING_TYPES[ti].label+'">'+MEETING_TYPES[ti].icon+' '+MEETING_TYPES[ti].label+'</option>'; }
+  h += '</select>';
+  h += '<button class="btn btn-primary btn-sm" onclick="findNearbyMeetings()" style="white-space:nowrap;width:auto;padding:8px 14px">&#128269; '+t('Find Nearby')+'</button>';
+  h += '</div>';
+  h += '<div id="meeting-search-status" style="font-size:11px;color:var(--muted);min-height:16px"></div>';
+  h += '</div>';
+
   // Stats bar
   h += '<div class="stat-grid" style="margin-bottom:8px">';
   h += '<div class="stat-card"><div class="num">' + total + '</div><div class="label">'+t('Total')+'</div></div>';
@@ -586,7 +601,7 @@ function meetingsHTML() {
   h += '<a href="https://www.intherooms.com/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">In The Rooms</a>';
   h += '<a href="https://recoverydharma.online/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Dharma</a>';
   h += '</div>';
-  h += '<a href="https://maps.apple.com/?q=AA+meetings+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">'+t('Find Meetings Near Me')+'</a>';
+  h += '<a href="https://www.google.com/maps/search/AA+meetings+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">'+t('Find Meetings Near Me')+'</a>';
   h += '</div>';
   h += '<div class="card" style="border-left:3px solid var(--rose);padding:14px;text-align:center">';
   h += '<div style="font-size:24px;margin-bottom:4px">&#128663;</div>';
@@ -597,7 +612,7 @@ function meetingsHTML() {
   h += '<div class="card" style="border-left:3px solid var(--accent);padding:14px;background:var(--primary-light)">';
   h += '<div style="font-weight:700;font-size:14px;margin-bottom:6px">&#128104;&#8205;&#127979; '+t('Licensed Therapist Near Me')+'</div>';
   h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">'+t('Find a licensed therapist who specializes in addiction and mental health.')+'</p>';
-  h += '<a href="https://maps.apple.com/?q=licensed+therapist+addiction" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="text-decoration:none;display:block;text-align:center">&#128205; '+t('Find Licensed Therapists Near Me')+'</a>';
+  h += '<a href="https://www.google.com/maps/search/licensed+therapist+addiction+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="text-decoration:none;display:block;text-align:center">&#128205; '+t('Find Licensed Therapists Near Me')+'</a>';
   h += '</div>';
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px">';
   h += '<div style="font-weight:700;font-size:14px;margin-bottom:8px">'+t('Mental Health Resources')+'</div>';
@@ -609,7 +624,7 @@ function meetingsHTML() {
   h += '<a href="https://openpathcollective.org/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">Open Path (low-cost)</a>';
   h += '<a href="https://www.7cups.com/" target="_blank" class="btn btn-sm btn-outline" style="text-decoration:none">7 Cups (free support)</a>';
   h += '</div>';
-  h += '<a href="https://maps.apple.com/?q=mental+health+services+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">&#128205; '+t('Find Facilities Near Me')+'</a>';
+  h += '<a href="https://www.google.com/maps/search/mental+health+services+near+me" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm" style="margin-top:10px;text-decoration:none;display:block">&#128205; '+t('Find Facilities Near Me')+'</a>';
   h += '</div>';
   h += '</details>';
   return h;
@@ -710,6 +725,33 @@ function deleteAllMeetings() {
   if (!confirm(t('Delete all meeting logs?'))) return;
   D.meetingLog = [];
   saveData();
+}
+function findNearbyMeetings() {
+  var status = document.getElementById('meeting-search-status');
+  var typeSelect = document.getElementById('meeting-search-type');
+  var query = (typeSelect ? typeSelect.value : 'AA') + ' meetings near me';
+  if (!navigator.geolocation) {
+    if (status) status.textContent = t('Geolocation not supported. Opening Google Maps...');
+    window.open('https://www.google.com/maps/search/' + encodeURIComponent(query), '_blank');
+    return;
+  }
+  if (status) status.textContent = t('Getting your location...');
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var lat = pos.coords.latitude;
+      var lng = pos.coords.longitude;
+      var url = 'https://www.google.com/maps/search/' + encodeURIComponent(query) + '/@' + lat + ',' + lng + ',13z';
+      if (status) status.textContent = t('Opening Google Maps...');
+      window.open(url, '_blank');
+      setTimeout(function(){ if (status) status.textContent = ''; }, 2000);
+    },
+    function(err) {
+      if (status) status.textContent = t('Location access denied. Opening Google Maps without location...');
+      window.open('https://www.google.com/maps/search/' + encodeURIComponent(query), '_blank');
+      setTimeout(function(){ if (status) status.textContent = ''; }, 2000);
+    },
+    { timeout: 8000, enableHighAccuracy: false }
+  );
 }
 function relapsePlanHTML() {
   var h = '';

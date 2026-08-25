@@ -111,11 +111,13 @@ function onAuthReady(email, isNew) {
       render();
       if (isNew && !D._onboardingDone) { setTimeout(function(){ showOnboarding(); }, 400); }
       if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
+      if (isNew && !D._goalsOnboardingDone && D.assessmentTaken) { setTimeout(function(){ showGoalsOnboarding(); D._goalsOnboardingDone = true; saveData(); }, 800); }
     });
   } else {
     render();
     if (isNew && !D._onboardingDone) { setTimeout(function(){ showOnboarding(); }, 400); }
     if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
+    if (isNew && !D._goalsOnboardingDone && D.assessmentTaken) { setTimeout(function(){ showGoalsOnboarding(); D._goalsOnboardingDone = true; saveData(); }, 800); }
   }
   if (isLockSet()) { showLockScreen(); } else { resetLockTimer(); }
   // Periodic cloud sync — re-check on focus
@@ -1075,23 +1077,41 @@ function handleAuth() {
   var email = document.getElementById('si-email');
   var password = document.getElementById('si-password');
   var error = document.getElementById('si-error');
+  var btn = document.getElementById('si-auth-btn');
+  var btnLabel = document.getElementById('si-btn-label');
   var emailStr = email ? email.value.trim() : '';
   var pwdStr = password ? password.value.trim() : '';
-  if (!emailStr || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { alert(t('Enter a valid email.')); return; }
-  if (!pwdStr || pwdStr.length < 4) { alert(t('Password must be at least 4 characters.')); return; }
+  if (!emailStr || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { if (error) error.textContent = t('Enter a valid email.'); return; }
+  if (!pwdStr || pwdStr.length < 4) { if (error) error.textContent = t('Password must be at least 4 characters.'); return; }
   if (error) error.textContent = '';
+  if (btn) btn.disabled = true;
+  if (btnLabel) btnLabel.textContent = t('Signing in...');
   var isSignUp = SIGN_IN_MODE === 'up';
-  if (isSignUp) {
-    firebase.auth().createUserWithEmailAndPassword(emailStr, pwdStr)
-      .catch(function(err) {
-        if (error) error.textContent = err.message;
-      });
-  } else {
-    firebase.auth().signInWithEmailAndPassword(emailStr, pwdStr)
-      .catch(function(err) {
-        if (error) error.textContent = err.message;
-      });
+  if (isSignUp && btnLabel) btnLabel.textContent = t('Creating account...');
+  if (!firebase || !firebase.auth) {
+    if (error) error.textContent = t('Unable to connect. Check your internet connection and try again.');
+    if (btn) btn.disabled = false;
+    if (btnLabel) btnLabel.textContent = isSignUp ? t('Sign Up') : t('Sign In');
+    return;
   }
+  var authPromise = isSignUp
+    ? firebase.auth().createUserWithEmailAndPassword(emailStr, pwdStr)
+    : firebase.auth().signInWithEmailAndPassword(emailStr, pwdStr);
+  authPromise.catch(function(err) {
+    if (error) {
+      var msg = err.message || 'Authentication failed.';
+      if (msg.indexOf('auth/user-not-found') !== -1) msg = t('No account found with this email. Try Sign Up.');
+      else if (msg.indexOf('auth/wrong-password') !== -1 || msg.indexOf('auth/invalid-credential') !== -1) msg = t('Incorrect email or password.');
+      else if (msg.indexOf('auth/email-already-in-use') !== -1) msg = t('This email is already registered. Try Sign In.');
+      else if (msg.indexOf('auth/weak-password') !== -1) msg = t('Password must be at least 6 characters.');
+      else if (msg.indexOf('auth/too-many-requests') !== -1) msg = t('Too many attempts. Please try again later.');
+      else if (msg.indexOf('auth/network-request-failed') !== -1) msg = t('Network error. Check your connection.');
+      else if (msg.indexOf('auth/invalid-email') !== -1) msg = t('Invalid email address.');
+      error.textContent = msg;
+    }
+    if (btn) btn.disabled = false;
+    if (btnLabel) btnLabel.textContent = isSignUp ? t('Sign Up') : t('Sign In');
+  });
 }
 function sendEmailVerification() {
   var user = firebase && firebase.auth().currentUser;
@@ -1137,11 +1157,12 @@ function showSignIn() {
   app.innerHTML =
     '<div class="si-bg">' +
     '<div class="si-card">' +
-    '<div class="si-title" style="display:none">Re.<span>Claim</span></div>' +
-         '<div class="si-sub">'+t('Your recovery &amp; wellness journey starts here.')+'<br>'+t('Track moods, journal, build habits, and grow.')+'</div>' +
-    '<div class="si-toggle" style="display:flex;gap:0;margin:12px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)">' +
-    '<button class="si-tab-btn active" id="si-tab-in" onclick="setSignInTab(\'in\')" style="flex:1;padding:10px;border:none;background:var(--primary);color:#fff;font-weight:600;font-size:14px;cursor:pointer">'+t('Sign In')+'</button>' +
-    '<button class="si-tab-btn" id="si-tab-up" onclick="setSignInTab(\'up\')" style="flex:1;padding:10px;border:none;background:transparent;color:var(--text);font-weight:600;font-size:14px;cursor:pointer">'+t('Sign Up')+'</button>' +
+    '<div class="si-icon">&#127807;</div>' +
+    '<div class="si-title">Re.<span>Claim</span></div>' +
+    '<div class="si-sub">'+t('Your recovery &amp; wellness journey starts here.')+'<br>'+t('Track moods, journal, build habits, and grow.')+'</div>' +
+    '<div class="si-toggle">' +
+    '<button class="si-tab-btn active" id="si-tab-in" onclick="setSignInTab(\'in\')">'+t('Sign In')+'</button>' +
+    '<button class="si-tab-btn" id="si-tab-up" onclick="setSignInTab(\'up\')">'+t('Sign Up')+'</button>' +
     '</div>' +
     '<div id="si-auth-section">' +
     '<div id="si-email-mode">' +
@@ -1149,10 +1170,10 @@ function showSignIn() {
     '<input class="si-input" type="password" id="si-password" placeholder="'+t('Password')+'" onkeydown="if(event.key===\'Enter\')handleAuth()">' +
     '<div id="si-forgot-container" style="text-align:right;font-size:11px;margin:2px 0 4px"><span id="si-forgot-link" style="color:var(--primary);cursor:pointer;display:none" onclick="handleForgotPassword()">'+t('Forgot password?')+'</span></div>' +
     '<div id="si-error" style="font-size:12px;color:var(--danger);margin:4px 0;text-align:center"></div>' +
-    '<button class="si-btn" onclick="handleAuth()"><span id="si-btn-label">'+t('Sign In')+'</span></button>' +
+    '<button class="si-btn" id="si-auth-btn" onclick="handleAuth()"><span id="si-btn-label">'+t('Sign In')+'</span></button>' +
     '</div>' +
     '</div>' +
-    '<div style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--muted)">'+t('Language')+': <select id="si-language" onchange="D.language=this.value;saveData();showSignIn()" style="font-size:12px;padding:4px 6px;max-width:160px">'+(function(){var r='';for(var li=0;li<LANGUAGES.length;li++){r+='<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>'}return r})()+'</select></div>' +
+    '<div class="si-lang-row">'+t('Language')+': <select id="si-language" onchange="D.language=this.value;saveData();showSignIn()" style="font-size:12px;padding:4px 6px;max-width:160px">'+(function(){var r='';for(var li=0;li<LANGUAGES.length;li++){r+='<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>'}return r})()+'</select></div>' +
     '<div class="si-footer">'+t('Your journal, moods &amp; habits stay on your device. Partner features sync via Firebase.')+'</div>' +
     '</div></div>';
   document.getElementById('tabs').style.display = 'none';

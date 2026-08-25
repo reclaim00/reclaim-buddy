@@ -6559,6 +6559,87 @@ function saveNewGoal() {
   render();
 }
 
+var GOAL_PRESETS = [
+  { icon: '&#128214;', text: 'Journal daily' },
+  { icon: '&#129502;', text: 'Meditate 10 minutes' },
+  { icon: '&#127942;', text: 'Stay sober today' },
+  { icon: '&#127939;', text: 'Exercise 3x per week' },
+  { icon: '&#128104;&#8205;&#129489;', text: 'Attend a meeting' },
+  { icon: '&#128156;', text: 'Improve mental health' },
+  { icon: '&#129309;', text: 'Strengthen relationships' },
+  { icon: '&#128171;', text: 'Build better habits' },
+  { icon: '&#127793;', text: 'Practice gratitude' },
+  { icon: '&#128153;', text: 'Get 7+ hours of sleep' }
+];
+var _goalsOnbSelected = {};
+
+function showGoalsOnboarding() {
+  _goalsOnbSelected = {};
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var h = '<div class="overlay-content" style="max-width:460px">';
+  h += '<div style="text-align:center;margin-bottom:16px">';
+  h += '<div style="font-size:40px;margin-bottom:6px">&#127807;</div>';
+  h += '<h3 style="font-size:18px;font-weight:700;margin:0">'+t('What do you want to accomplish?')+'</h3>';
+  h += '<p style="font-size:12px;color:var(--muted);margin-top:4px">'+t('Select your goals. You can always add more later.')+'</p>';
+  h += '</div>';
+  h += '<div id="goals-onb-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">';
+  for (var gi=0;gi<GOAL_PRESETS.length;gi++) {
+    var gp = GOAL_PRESETS[gi];
+    h += '<div class="goal-onb-chip" id="goc-'+gi+'" onclick="toggleGoalOnb('+gi+')" style="display:flex;align-items:center;gap:6px;padding:10px 8px;border:2px solid var(--border);border-radius:var(--radius-lg);cursor:pointer;transition:all .15s;background:var(--card);font-size:12px;font-weight:500">';
+    h += '<span style="font-size:16px">'+gp.icon+'</span><span>'+t(gp.text)+'</span>';
+    h += '</div>';
+  }
+  h += '</div>';
+  h += '<div style="margin-bottom:12px">';
+  h += '<input type="text" id="goals-onb-custom" placeholder="'+t('Add a custom goal...')+'" style="width:100%;padding:10px 12px;border:2px solid var(--border);border-radius:var(--radius-xl);font-size:13px;font-family:inherit;background:var(--card);color:var(--text);outline:none">';
+  h += '</div>';
+  h += '<button class="btn btn-primary" onclick="saveGoalsOnboarding()" style="width:100%">'+t('Continue')+'</button>';
+  h += '<button class="btn btn-outline" onclick="skipGoalsOnboarding()" style="width:100%;margin-top:6px">'+t('Skip for now')+'</button>';
+  h += '</div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+}
+
+function toggleGoalOnb(idx) {
+  _goalsOnbSelected[idx] = !_goalsOnbSelected[idx];
+  var el = document.getElementById('goc-'+idx);
+  if (el) {
+    if (_goalsOnbSelected[idx]) { el.style.borderColor = 'var(--primary)'; el.style.background = 'var(--primary-light)'; }
+    else { el.style.borderColor = 'var(--border)'; el.style.background = 'var(--card)'; }
+  }
+}
+
+function saveGoalsOnboarding() {
+  if (!D.recoveryGoals) D.recoveryGoals = [];
+  var added = 0;
+  for (var key in _goalsOnbSelected) {
+    if (_goalsOnbSelected[key]) {
+      D.recoveryGoals.push({ text: GOAL_PRESETS[parseInt(key)].text, logs: [] });
+      added++;
+    }
+  }
+  var customInput = document.getElementById('goals-onb-custom');
+  if (customInput && customInput.value.trim()) {
+    var customGoals = customInput.value.split(',').map(function(s){return s.trim()}).filter(Boolean);
+    for (var ci=0;ci<customGoals.length;ci++) {
+      D.recoveryGoals.push({ text: customGoals[ci], logs: [] });
+      added++;
+    }
+  }
+  if (added > 0) {
+    saveData();
+    showToast(added + ' ' + t('goal(s) added!'), 'success');
+  }
+  var overlay = document.querySelector('.overlay');
+  if (overlay) overlay.remove();
+}
+
+function skipGoalsOnboarding() {
+  var overlay = document.querySelector('.overlay');
+  if (overlay) overlay.remove();
+}
+
 function toggleGoal(idx) {
   var g = D.recoveryGoals[idx];
   if (!g.logs) g.logs = [];
