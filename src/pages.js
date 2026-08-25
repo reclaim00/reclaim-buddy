@@ -1680,9 +1680,10 @@ function showCrisisAlert(text) {
 }
 
 function crisisNotifyBuddy() {
-  if (!AUTH_EMAIL || !D.buddy) return;
+  if (!AUTH_EMAIL || !D.buddy || !D.buddy.contact) return;
   var msg = t('I need support right now. Your partner may be in distress. Please reach out.');
-  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy,text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  var uid = (firebase && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '';
+  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy.contact,fromUid:uid,fromName:D.name||'You',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
 function deleteJournalEntry(idx) {
@@ -7002,8 +7003,10 @@ function comradeSendMessage() {
   var msg = input.value.trim();
   input.value = '';
   var now = new Date();
+  var uid = (firebase && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '';
   var m = {
     from: AUTH_EMAIL, to: D.buddy.contact, fromName: D.name || 'You',
+    fromUid: uid,
     text: msg,
     date: now.toDateString(),
     time: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),

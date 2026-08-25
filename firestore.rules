@@ -5,7 +5,7 @@ service cloud.firestore {
       allow read, update, delete: if request.auth != null
         && request.auth.token.email == userId;
       allow create: if request.auth != null
-        && request.auth.uid == request.resource.id;
+        && request.auth.token.email == userId;
     }
     match /pushSubscriptions/{userId} {
       allow read, delete: if request.auth != null
@@ -22,10 +22,17 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow write: if request.auth != null && request.auth.token.email == userId;
     }
+    match /progress/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.token.email == userId;
+    }
     match /messages/{messageId} {
       allow read: if request.auth != null
         && (resource.data.from == request.auth.token.email || resource.data.to == request.auth.token.email);
-      allow create: if request.auth != null && request.resource.data.from == request.auth.token.email;
+      allow create: if request.auth != null
+        && (request.resource.data.from == request.auth.token.email
+            || request.resource.data.from == request.auth.uid
+            || request.resource.data.fromUid == request.auth.uid);
       allow delete: if request.auth != null && resource.data.from == request.auth.token.email;
     }
   }
