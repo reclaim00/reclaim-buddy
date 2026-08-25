@@ -1131,6 +1131,12 @@ function signOut() {
   document.body.classList.remove('logged-in');
   showSignIn();
 }
+// Block back-navigation to app when signed out
+window.addEventListener('popstate', function(e) {
+  if (!AUTH_USER && document.querySelector('.si-bg')) {
+    history.pushState({ si: true }, '', location.pathname + location.search);
+  }
+});
 // ====== URL ACTION HANDLER (for manifest shortcuts) ======
 function handleUrlAction() {
   var params = new URLSearchParams(window.location.search);
@@ -1179,6 +1185,7 @@ function showSignIn() {
   document.getElementById('tabs').style.display = 'none';
   var tb = document.querySelector('.top-bar');
   if (tb) tb.style.display = 'none';
+  try { history.pushState({ si: true }, '', location.pathname + location.search); } catch(e) {}
 }
 
 function handleForgotPassword() {
