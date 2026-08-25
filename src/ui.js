@@ -42,10 +42,10 @@ function showToast(text, type) {
   var c = document.getElementById('toast-container');
   if (!c) return;
   while (c.children.length >= 3) { c.removeChild(c.firstChild); }
-  var icons = {info:'\u269C',success:'\u2714',warning:'\u26A0',danger:'\u2716'};
+  var icons = {info:'&#128172;',success:'&#10004;',warning:'&#9888;',danger:'&#10060;'};
   var t = document.createElement('div');
   t.className = 'toast toast-' + type;
-  t.innerHTML = '<span style="opacity:.6;margin-right:6px">' + (icons[type]||'\u269C') + '</span>' + text;
+  t.innerHTML = '<span style="opacity:.6;margin-right:6px">' + (icons[type]||'&#128172;') + '</span>' + text;
   c.appendChild(t);
   setTimeout(function() {
     t.className += ' toast-out';

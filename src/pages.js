@@ -3682,7 +3682,7 @@ function accCheckin() {
   for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#acc-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
   h += '</div></div>';
   h += '<textarea id="acc-note" placeholder="Any wins, concerns, or things you discussed?" style="min-height:80px"></textarea>';
-  h += '<button class="btn btn-primary btn-sm" onclick="accSave()" style="width:100%">Seal the Record</button>';
+  h += '<button class="btn btn-primary btn-sm" onclick="accSave()" style="width:100%">Save Check-In</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%;margin-top:4px">Cancel</button>';
   h += '</div>';
   overlay.innerHTML = h;
@@ -4532,7 +4532,7 @@ function buddyHTML() {
   if (checkedInToday) {
     h += '<div class="card" style="background:var(--primary-light);border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px"><div><div style="font-weight:600;font-size:14px">Checked in with ' + safe(D.buddy.name) + '</div><div style="font-size:12px;color:var(--muted)">Great job staying connected!</div></div></div></div>';
   } else {
-    h += '<div class="card"><h3>Send Word to ' + safe(D.buddy.name) + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Send a raven and learn of their days.</p><button class="btn btn-primary btn-sm" onclick="comradeCheckin()">Send Word Now</button></div>';
+    h += '<div class="card"><h3>Check In with ' + safe(D.buddy.name) + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Send a quick check-in to stay connected.</p><button class="btn btn-primary btn-sm" onclick="comradeCheckin()">Send Check-In</button></div>';
   }
   h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Shared Goals</h3><button class="btn btn-sm btn-outline" onclick="addGoal()">+ Add</button></div>';
   if (!D.buddyGoals.length) {
@@ -4619,7 +4619,7 @@ function buddyStreak() {
 
 function buddyCompetitionHTML() {
   var myStreak = buddyStreak();
-  var h = '<div class="card" id="comrade-competition"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#9876;&#65039;</div><h3 style="margin:0">Streak Challenge</h3></div><div id="comrade-competition-content"><div class="empty-state">Loading competition data...</div></div></div>';
+  var h = '<div class="card" id="comrade-competition"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#127942;</div><h3 style="margin:0">Streak Challenge</h3></div><div id="comrade-competition-content"><div class="empty-state">Loading competition data...</div></div></div>';
   // Fetch buddy's progress for comparison
   setTimeout(function(){
     var buddyEmail = D.buddy ? D.buddy.contact : '';
@@ -4634,7 +4634,7 @@ function buddyCompetitionHTML() {
       var winner = myStreak > buddyStreakData ? myName : (buddyStreakData > myStreak ? buddyName : 'Tie');
       var myPct = Math.min(100, (myStreak / Math.max(myStreak, buddyStreakData, 1)) * 100);
       var budPct = Math.min(100, (buddyStreakData / Math.max(myStreak, buddyStreakData, 1)) * 100);
-      var emoji = winner === myName ? '&#x265B;' : (winner === buddyName ? '&#x2726;&#x2726;' : '&#x2618;');
+      var emoji = winner === myName ? '&#127942;' : (winner === buddyName ? '&#128079;' : '&#129309;');
       el.innerHTML = '<div style="text-align:center;margin-bottom:8px"><span style="font-size:28px">' + emoji + '</span><div style="font-weight:700;font-size:16px;color:var(--primary)">' + (winner === 'Tie' ? 'You\'re tied!' : winner + ' is winning!') + '</div></div><div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>' + myName + '</span><span style="font-weight:700">' + myStreak + ' days</span></div><div class="progress-bar"><div class="fill" style="width:' + myPct + '%"></div></div></div><div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>' + buddyName + '</span><span style="font-weight:700">' + buddyStreakData + ' days</span></div><div class="progress-bar"><div class="fill" style="width:' + budPct + '%;background:var(--accent)"></div></div></div><div style="text-align:center;font-size:11px;color:var(--muted);margin-top:4px">Keep checking in to stay ahead!</div>';
     }).catch(function(){
       var el = document.getElementById('buddy-competition-content');
@@ -4647,7 +4647,7 @@ function buddyCompetitionHTML() {
 // ====== BUDDY CHALLENGES ======
 function buddyChallengesHTML() {
   var challenges = D.buddyGoals || [];
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#x265B;</div><h3 style="margin:0">Shared Challenges</h3></div>';
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#127919;</div><h3 style="margin:0">Shared Challenges</h3></div>';
   if (!challenges.length) {
     h += '<div class="empty-state">No challenges yet. Create one to compete with ' + (D.buddy ? D.buddy.name : 'your partner') + '!</div>';
     h += '<button class="btn btn-outline btn-sm" onclick="newChallenge()">+ New Challenge</button></div>';
@@ -4844,10 +4844,10 @@ function saveBuddy() {
 function buddyCheckin() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Send Word to ' + (D.buddy ? D.buddy.name : 'your partner') + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did your interaction go?</p><div class="mood-row" id="checkin-moods">';
+  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Check In with ' + (D.buddy ? D.buddy.name : 'your partner') + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did your interaction go?</p><div class="mood-row" id="checkin-moods">';
   var labels = ['Tough','Hard','Okay','Good','Great'];
   for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#checkin-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
-  h += '</div><textarea id="checkin-note" placeholder="What did you talk about? Any wins?" style="min-height:80px"></textarea><button class="btn btn-primary" onclick="saveBuddyCheckin(this)">Seal the Record</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  h += '</div><textarea id="checkin-note" placeholder="What did you talk about? Any wins?" style="min-height:80px"></textarea><button class="btn btn-primary" onclick="saveBuddyCheckin(this)">Save Check-In</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
@@ -5493,8 +5493,8 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += notifRowHTML('journal', '&#x2712;', t('Journal Prompt'), t('Write about your day'));
   h += notifRowHTML('breathe', '&#x2726;', t('Breathing Exercise'), t('Take a mindful moment'));
   h += notifRowHTML('checkinReminder', '&#x2713;', 'Presence Reminder', t('Remind if you haven\'t checked in'));
-  h += notifToggleHTML('buddyCheckin', '&#x2618;', 'Partner Reminder', t('Remind to send word to your partner'));
-  h += notifToggleHTML('streakMilestone', '&#x265B;', 'Milestone Alerts', t('Celebrate hitting milestones'));
+  h += notifToggleHTML('buddyCheckin', '&#128172;', 'Partner Reminder', t('Remind to check in with your partner'));
+  h += notifToggleHTML('streakMilestone', '&#127942;', 'Milestone Alerts', t('Celebrate hitting milestones'));
   h += reminderNotifRowHTML();
   h += '</div>';
   // Encryption settings
@@ -6918,7 +6918,7 @@ function renderBuddyMsgList() {
   var list = document.getElementById('buddy-messages-list');
   if (!list) return;
   if (!D.buddy || !D.buddy.contact || !_buddyMsgsCache.length) {
-    list.innerHTML = '<div class="empty-state">Send a raven to ' + safe(D.buddy ? D.buddy.name : 'your partner') + '!</div>';
+    list.innerHTML = '<div class="empty-state">Send a message to ' + safe(D.buddy ? D.buddy.name : 'your partner') + '!</div>';
     return;
   }
   var buddyName = D.buddy ? D.buddy.name : 'Partner';
@@ -6943,6 +6943,15 @@ function updateBuddyMsgBadges() {
   if (pill) {
     pill.textContent = _buddyMsgUnread > 0 ? (_buddyMsgUnread + ' new') : '';
     pill.style.display = _buddyMsgUnread > 0 ? 'inline-block' : 'none';
+  }
+  var toolsBadge = document.getElementById('tools-badge');
+  if (toolsBadge) {
+    if (_buddyMsgUnread > 0) {
+      toolsBadge.textContent = _buddyMsgUnread;
+      toolsBadge.style.display = 'block';
+    } else {
+      toolsBadge.style.display = 'none';
+    }
   }
 }
 
@@ -7005,15 +7014,19 @@ function comradeSendMessage() {
   saveDataSilent();
   buddyMergeMessages([m]);
   renderBuddyMsgList();
+  showToast('Message sent!', 'success');
   if (DB) {
-    DB.collection('messages').add(m).catch(function(e) { console.warn(e); showToast('Message not sent. Check your connection.', 'error'); });
+    DB.collection('messages').add(m).catch(function(e) {
+      console.warn(e);
+      showToast('Message not delivered. Check your connection.', 'error');
+    });
   }
 }
 
 function buddyMessagesHTML() {
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#x1F4DC;</div><h3 style="margin:0">Scroll of Letters</h3><span id="comrade-unread-pill" class="comrade-unread-pill" style="display:none"></span></div>';
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128172;</div><h3 style="margin:0">Messages</h3><span id="comrade-unread-pill" class="comrade-unread-pill" style="display:none"></span></div>';
   h += '<div id="buddy-messages-list"><div class="empty-state">Loading messages...</div></div>';
-  h += '<div style="display:flex;gap:6px"><input type="text" id="comrade-msg-input" placeholder="Write thy message..." style="flex:1;margin:0"><button class="btn btn-sm btn-primary" onclick="comradeSendMessage()" style="width:auto">Send Raven</button></div></div>';
+  h += '<div style="display:flex;gap:6px"><input type="text" id="comrade-msg-input" placeholder="Write a message..." style="flex:1;margin:0"><button class="btn btn-sm btn-primary" onclick="comradeSendMessage()" style="width:auto">Send</button></div></div>';
   startBuddyMessaging();
   setTimeout(function() {
     renderBuddyMsgList();
