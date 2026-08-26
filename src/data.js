@@ -1276,7 +1276,7 @@ function showSignIn() {
   app.innerHTML =
     '<div class="si-bg">' +
     '<div class="si-card">' +
-    '<div class="si-icon">&#127807;</div>' +
+    '<div class="si-icon"><img src="globe-icon.png" alt="Re.Claim" style="width:80px;height:80px;border-radius:50%;object-fit:cover"></div>' +
     '<div class="si-title">Re.<span>Claim</span></div>' +
     '<div class="si-sub">'+t('Your recovery &amp; wellness journey starts here.')+'<br>'+t('Track moods, journal, build habits, and grow.')+'</div>' +
     '<div class="si-toggle">' +
