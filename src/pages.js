@@ -2795,6 +2795,8 @@ function reflectHTML() {
   h += '</div>';
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
   h += '</div>';
+  // My Values section
+  h += chivalryCodeHTML();
   h += artDailyRoutineHTML();
   h += journalInsightsHTML();
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
@@ -3350,7 +3352,6 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; '+t('Relapse Rescue')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; '+t('Relapse Graveyard')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#6b4a2e">'+t('My Values')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; Your View</div>';
   h += '</div>';
 
