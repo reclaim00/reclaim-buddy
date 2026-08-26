@@ -177,14 +177,16 @@ function kingdomHTML() {
     var landG = Math.min(1, Math.max(0, (days - 7) / 150));
     h += '<clipPath id="kd-sphere"><circle cx="250" cy="150" r="' + pr + '"/></clipPath>';
     h += '<g clip-path="url(#kd-sphere)">';
-    // Continents — each one surfaces in turn and grows to full size (sum ≈ 40% of disk)
+    // Continents — each one surfaces in turn and grows to full size (sum ≈ 55% of disk)
     var conts = [
-      {x:-0.14, y:-0.04, rx:0.55, ry:0.38, rot:10},
-      {x:0.26, y:-0.10, rx:0.34, ry:0.26, rot:-16},
-      {x:0.04, y:-0.42, rx:0.22, ry:0.18, rot:6},
-      {x:-0.04, y:0.36, rx:0.28, ry:0.20, rot:-8},
-      {x:0.46, y:0.28, rx:0.14, ry:0.10, rot:20},
-      {x:-0.46, y:0.20, rx:0.10, ry:0.08, rot:-12}
+      {x:-0.12, y:-0.06, rx:0.65, ry:0.46, rot:10},
+      {x:0.28, y:-0.08, rx:0.42, ry:0.32, rot:-16},
+      {x:0.06, y:-0.38, rx:0.30, ry:0.24, rot:6},
+      {x:-0.06, y:0.34, rx:0.36, ry:0.26, rot:-8},
+      {x:0.44, y:0.26, rx:0.20, ry:0.15, rot:20},
+      {x:-0.44, y:0.18, rx:0.16, ry:0.12, rot:-12},
+      {x:0.18, y:0.42, rx:0.14, ry:0.10, rot:14},
+      {x:-0.34, y:-0.32, rx:0.12, ry:0.09, rot:-20}
     ];
     for (var li = 0; li < conts.length; li++) {
       var c = conts[li];
@@ -202,6 +204,20 @@ function kingdomHTML() {
           var vR = (vg % 4) * 3.5;
           h += '<circle cx="' + (ccx + Math.cos(vA) * vR * crx / pr) + '" cy="' + (ccy + Math.sin(vA) * vR * cry / pr) + '" r="1.4" fill="#9fd07f" opacity=".9"/>';
         }
+      }
+    }
+    // Random green patches that bloom over time — seeded by day for consistency
+    if (days >= 14) {
+      var patchCount = Math.min(25, Math.floor(days / 6));
+      for (var pi = 0; pi < patchCount; pi++) {
+        var seed1 = (days * 7 + pi * 131) % 1000 / 1000;
+        var seed2 = (days * 13 + pi * 97) % 1000 / 1000;
+        var seed3 = (days * 19 + pi * 53) % 1000 / 1000;
+        var px = 250 + (seed1 - 0.5) * pr * 1.6;
+        var py = 150 + (seed2 - 0.5) * pr * 1.6;
+        var pr2 = 2 + seed3 * 5;
+        var greenShade = ['#5a8f4a','#6aa35a','#7fb06f','#4a7a3e','#8bc07a','#3d6e32'][pi % 6];
+        h += '<ellipse cx="' + px + '" cy="' + py + '" rx="' + pr2 + '" ry="' + (pr2 * 0.7) + '" fill="' + greenShade + '" opacity="' + (0.4 + seed3 * 0.4) + '" transform="rotate(' + (seed1 * 60) + ' ' + px + ' ' + py + ')"/>';
       }
     }
     // Night hemisphere — darker, where city lights will glow
