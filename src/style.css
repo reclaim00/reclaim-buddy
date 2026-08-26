@@ -579,17 +579,16 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 .seer-omen.good{border-left-color:var(--primary)}
 .seer-omen.warning{border-left-color:#ca8a04}
 .seer-omen.danger{border-left-color:var(--danger)}
-/* ===== VIGIL CANDLE TIMER ===== */
-.vigil-timer{position:relative;margin:8px 0;border-radius:16px;padding:14px 14px 12px;text-align:center;color:#fff;background:linear-gradient(165deg,var(--primary-dark),var(--primary) 45%,var(--primary-dark));box-shadow:0 2px 12px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.08);border:1px solid rgba(255,215,0,.35);overflow:hidden}
-.vigil-timer::before{content:'';position:absolute;inset:5px;border:1px solid rgba(255,215,0,.22);border-radius:12px;pointer-events:none}
-.vigil-timer::after{content:'\269C';position:absolute;top:7px;right:10px;font-size:10px;color:rgba(255,215,0,.55);letter-spacing:0;pointer-events:none}
+/* ===== RECOVERY TIMER ===== */
+.vigil-timer{position:relative;margin:8px 0;border-radius:16px;padding:14px 14px 12px;text-align:center;color:#fff;background:linear-gradient(165deg,#5b4636,#6b7c5e 45%,#5b4636);box-shadow:0 2px 12px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.08);border:1px solid rgba(139,115,85,.35);overflow:hidden}
+.vigil-timer::before{content:'';position:absolute;inset:5px;border:1px solid rgba(139,115,85,.22);border-radius:12px;pointer-events:none}
 .vigil-title{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.95);margin-bottom:2px}
 .vigil-sub{font-size:9.5px;letter-spacing:.5px;color:rgba(255,255,255,.6);margin-bottom:10px}
 .vigil-units{display:flex;justify-content:center;gap:5px;flex-wrap:wrap;margin-bottom:10px}
-.vigil-unit{background:rgba(0,0,0,.18);border:1px solid rgba(255,215,0,.28);border-radius:9px;padding:5px 7px 4px;min-width:44px;box-shadow:inset 0 1px 2px rgba(0,0,0,.25)}
-.vigil-unit .num{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.5px;color:#ffd34d;line-height:1.05;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.vigil-unit{background:rgba(0,0,0,.18);border:1px solid rgba(139,115,85,.28);border-radius:9px;padding:5px 7px 4px;min-width:44px;box-shadow:inset 0 1px 2px rgba(0,0,0,.25)}
+.vigil-unit .num{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.5px;color:#e8d5b7;line-height:1.05;text-shadow:0 1px 3px rgba(0,0,0,.35)}
 .vigil-unit .lbl{font-size:8px;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.65);margin-top:2px}
 .vigil-actions{display:flex;gap:6px;justify-content:center}
 .vigil-actions button,.vigil-actions span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);font-size:10.5px;padding:5px 9px;border-radius:999px;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:background .2s,border-color .2s,color .2s}
-.vigil-actions button:hover,.vigil-actions span:hover{background:rgba(255,215,0,.16);border-color:rgba(255,215,0,.45);color:#ffd34d}
+.vigil-actions button:hover,.vigil-actions span:hover{background:rgba(139,115,85,.25);border-color:rgba(139,115,85,.5);color:#e8d5b7}
 body.dark .vigil-timer{box-shadow:0 2px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05)}

@@ -388,18 +388,106 @@ function kingdomTrackerHTML() {
   h += '</div>';
   return h;
 }
+
+function showSavingsQuiz() {
+  if (D.sobriety.savingsQuizDone) return false;
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var step = D._savingsQuizStep || 0;
+  var h = '<div class="overlay-content" style="max-width:400px">';
+  h += '<h3 style="margin:0 0 4px">Savings Setup</h3>';
+  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:12px">Let\'s figure out what you\'re saving. This takes 30 seconds.</p>';
+  h += '<div class="card" style="padding:14px">';
+
+  if (step === 0) {
+    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">What did you spend money on?</label>';
+    h += '<input type="text" id="sq-spending" value="' + safe(D.sobriety.spendingOn || '') + '" placeholder="e.g. alcohol, cigarettes, gambling" style="width:100%;font-size:13px;padding:8px;box-sizing:border-box">';
+    h += '<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="_savingsQuizNext(0)">Next</button>';
+  } else if (step === 1) {
+    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">How much did you spend per day on average?</label>';
+    h += '<div style="display:flex;align-items:center;gap:6px">';
+    h += '<span style="font-size:18px;font-weight:700">$</span>';
+    h += '<input type="number" id="sq-cost" min="0" step="0.5" value="' + (D.sobriety.costPerDay || '') + '" placeholder="e.g. 15" style="font-size:18px;padding:8px;width:100px">';
+    h += '<span style="font-size:11px;color:var(--muted)">/day</span></div>';
+    h += '<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="_savingsQuizNext(1)">Next</button>';
+  } else if (step === 2) {
+    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">How much do you earn per week (after tax)?</label>';
+    h += '<div style="display:flex;align-items:center;gap:6px">';
+    h += '<span style="font-size:18px;font-weight:700">$</span>';
+    h += '<input type="number" id="sq-income" min="0" step="1" value="' + (D.sobriety.weeklyIncome || '') + '" placeholder="e.g. 500" style="font-size:18px;padding:8px;width:100px">';
+    h += '<span style="font-size:11px;color:var(--muted)">/week</span></div>';
+    h += '<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="_savingsQuizNext(2)">Next</button>';
+  } else if (step === 3) {
+    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">How many units per day?</label>';
+    h += '<input type="number" id="sq-qty" min="0" step="0.5" value="' + (D.sobriety.dailyQuantity || '') + '" placeholder="e.g. 6" style="font-size:18px;padding:8px;width:100px">';
+    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-top:10px;margin-bottom:4px">What do you call a unit?</label>';
+    h += '<input type="text" id="sq-label" value="' + safe(D.sobriety.unitLabel || '') + '" placeholder="e.g. drinks, cigarettes, hours" style="width:100%;font-size:13px;padding:8px;box-sizing:border-box">';
+    h += '<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="_savingsQuizNext(3)">Finish</button>';
+  }
+
+  h += '</div></div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+  return true;
+}
+
+function _savingsQuizNext(step) {
+  if (step === 0) {
+    var v = document.getElementById('sq-spending');
+    D.sobriety.spendingOn = v ? v.value.trim() : '';
+  } else if (step === 1) {
+    var v = document.getElementById('sq-cost');
+    D.sobriety.costPerDay = parseFloat(v.value) || 0;
+  } else if (step === 2) {
+    var v = document.getElementById('sq-income');
+    D.sobriety.weeklyIncome = parseFloat(v.value) || 0;
+    if (D.sobriety.weeklyIncome > 0) {
+      D.sobriety.dailyIncome = Math.round((D.sobriety.weeklyIncome / 7) * 100) / 100;
+    }
+  } else if (step === 3) {
+    var v1 = document.getElementById('sq-qty');
+    var v2 = document.getElementById('sq-label');
+    D.sobriety.dailyQuantity = parseFloat(v1.value) || 0;
+    D.sobriety.unitLabel = v2 ? v2.value.trim() : '';
+    D.sobriety.savingsQuizDone = true;
+    saveData();
+    var overlay = document.querySelector('.overlay');
+    if (overlay) overlay.remove();
+    render();
+    showToast('Savings profile set!', 'success');
+    return;
+  }
+  D._savingsQuizStep = step + 1;
+  saveData();
+  var overlay = document.querySelector('.overlay');
+  if (overlay) overlay.remove();
+  showSavingsQuiz();
+}
+
 function kingsLedgerHTML() {
+  if (!D.sobriety.savingsQuizDone && D.sobriety.startDate) {
+    showSavingsQuiz();
+  }
   var days = soberDays();
   var isActive = D.sobriety.startDate ? true : false;
   var cpDay = D.sobriety.costPerDay || 0;
   var dQty = D.sobriety.dailyQuantity || 0;
   var uLabel = D.sobriety.unitLabel || '';
-  var moneySaved = days * cpDay;
+  var spendingOn = D.sobriety.spendingOn || '';
+  var weeklyIncome = D.sobriety.weeklyIncome || 0;
+  var dailyIncome = D.sobriety.dailyIncome || 0;
+  var dailySavings = dailyIncome > 0 ? Math.round((dailyIncome - cpDay) * 100) / 100 : cpDay;
+  var weeklySavings = Math.round(dailySavings * 7 * 100) / 100;
+  var moneySaved = Math.round(days * cpDay * 100) / 100;
   var unitsAvoided = days * dQty;
   var hrsRegained = Math.round(days * 1.5);
   var h = '';
   h += '<h2 class="page-title">\uD83D\uDCD6 The Savings Ledger</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:10px">See how much you\u2019ve saved in money, reduced usage, and regained in time since you began. Enter your daily numbers below.</p>';
+  if (spendingOn) {
+    h += '<div class="card" style="padding:10px;margin-bottom:10px;font-size:12px;color:var(--muted)">Spending on: <strong style="color:var(--text)">' + safe(spendingOn) + '</strong>';
+    if (weeklyIncome > 0) h += ' &middot; Income: <strong style="color:var(--text)">$' + weeklyIncome.toLocaleString() + '/wk</strong>';
+    h += ' <button onclick="D.sobriety.savingsQuizDone=false;saveData();render()" style="background:none;border:none;color:var(--primary);font-size:11px;cursor:pointer;text-decoration:underline">Edit</button></div>';
+  }
   h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
   h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
   h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Cost/day ($)</label>';
@@ -414,7 +502,14 @@ function kingsLedgerHTML() {
   var unitDisplay = uLabel ? safe(uLabel) + ' Avoided' : 'Units Avoided';
   h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + unitDisplay + '</div></div>';
   h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
-  h += '</div></div>';
+  h += '</div>';
+  if (dailySavings > 0) {
+    h += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:var(--muted)">';
+    h += 'Saving <strong style="color:#16a34a">$' + dailySavings.toFixed(2) + '/day</strong>';
+    h += ' &middot; <strong style="color:#16a34a">$' + weeklySavings.toFixed(2) + '/week</strong>';
+    h += '</div>';
+  }
+  h += '</div>';
   if (!isActive) h += '<div class="card"><div class="empty-state">Start your sobriety journey to see your real savings.</div></div>';
   h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')">Back to Rewards</button>';
   return h;

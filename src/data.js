@@ -228,7 +228,7 @@ function defaultData() {
     assessmentTaken: false, assessmentResult: null,
     screenerPHQ9: { taken: false, result: null, progress: null },
     screenerGAD7: { taken: false, result: null, progress: null },
-    sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '' },
+    sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '', spendingOn: '', weeklyIncome: 0, savingsQuizDone: false },
     // Pre-populated coping cards displayed from defaults; user can add custom
     customCopingCards: [],
     savedArticles: [], savedBooks: [], savedPodcasts: [], savedVideos: [],

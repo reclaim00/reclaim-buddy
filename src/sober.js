@@ -184,7 +184,7 @@ function vigilUnitsHTML() {
   if (!el) return '';
   var s = '';
   if (el.years > 0) s += vigilUnitHTML(el.years, 'Years');
-  if (el.months > 0 || el.years > 0) s += vigilUnitHTML(el.months, 'Moons');
+  if (el.months > 0 || el.years > 0) s += vigilUnitHTML(el.months, 'Mo');
   s += vigilUnitHTML(el.days, 'Days');
   s += vigilUnitHTML(String(el.hours).padStart(2, '0'), 'Hours');
   s += vigilUnitHTML(String(el.minutes).padStart(2, '0'), 'Mins');
@@ -195,11 +195,11 @@ function vigilUnitsHTML() {
 function soberTimerHTML() {
   if (!soberElapsed()) return '';
   return '<div id="sober-timer" class="vigil-timer">'
-    + '<div class="vigil-title">The Vigil Candle</div>'
+    + '<div class="vigil-title">Recovery Timer</div>'
     + '<div class="vigil-sub">You have held for</div>'
     + '<div class="vigil-units" id="vigil-units">' + vigilUnitsHTML() + '</div>'
     + '<div class="vigil-actions">'
-    + '<button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer">&#8635; Rekindle</button>'
+    + '<button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer">&#8635; Reset</button>'
     + '<span onclick="goTo(\'royalpardon\')" title="Fresh Start">&#127793; Fresh Start</span>'
     + '</div></div>';
 }
