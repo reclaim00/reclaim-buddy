@@ -165,7 +165,7 @@
 <div id="toast-container" aria-live="polite" role="status"></div>
 <div id="conn-status" style="position:fixed;bottom:76px;left:50%;transform:translateX(-50%);z-index:199;pointer-events:none;display:none"><span style="display:inline-block;padding:4px 12px;border-radius:6px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;letter-spacing:.5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15)">&#x26A0; No connection</span></div>
 <div class="top-bar">
-  <div style="display:flex;align-items:center;gap:6px"><div class="globe-logo" role="heading" aria-level="1"><img src="icon-192.png" alt="" width="24" height="24" style="border-radius:6px;object-fit:cover" aria-hidden="true"></div><div><div class="logo-text" role="heading" aria-level="1">Re.<span style="color:var(--primary)">Claim</span></div><div id="regnal-header" style="font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:-2px"></div></div></div>
+  <div style="display:flex;align-items:center;gap:6px"><div class="globe-logo" role="heading" aria-level="1"><img src="globe-icon.png" alt="" width="24" height="24" style="border-radius:50%;object-fit:cover" aria-hidden="true"></div><div><div class="logo-text" role="heading" aria-level="1">Re.<span style="color:var(--primary)">Claim</span></div><div id="regnal-header" style="font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:-2px"></div></div></div>
   <div style="display:flex;gap:6px;align-items:center">
     <span id="sync-indicator" class="sync-indicator" onclick="if(_syncStatus==='error'){syncToFirestore()}" style="display:none" title="Sync status" role="status" aria-live="polite">?</span>
     <button class="sos-btn-float" onclick="showSOS()" title="SOS - Get help now" aria-label="SOS - Get help now" style="font-size:12px;font-weight:900;letter-spacing:1px">SOS</button>
@@ -173,7 +173,7 @@
   </div>
 </div>
 
-<div class="app" id="app"><div id="app-splash" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:20px"><img src="icon-512.png" alt="Re.Claim" style="width:180px;height:180px;border-radius:32px;object-fit:cover;box-shadow:0 8px 32px rgba(42,90,30,.25);margin-bottom:24px"><div style="font-size:36px;font-weight:800;letter-spacing:-1.5px">Re.<span style="color:var(--primary)">Claim</span></div><div style="font-size:13px;color:var(--muted);margin-top:8px;animation:pulse 1.5s ease-in-out infinite">loading...</div></div></div>
+<div class="app" id="app"><div id="app-splash" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:20px"><img src="globe-icon.png" alt="Re.Claim" style="width:180px;height:180px;border-radius:50%;object-fit:cover;box-shadow:0 8px 32px rgba(42,90,30,.25);margin-bottom:24px"><div style="font-size:36px;font-weight:800;letter-spacing:-1.5px">Re.<span style="color:var(--primary)">Claim</span></div><div style="font-size:13px;color:var(--muted);margin-top:8px;animation:pulse 1.5s ease-in-out infinite">loading...</div></div></div>
 
 <div class="tabs" id="tabs">
     <button class="tab active" data-page="home" aria-label="Atlas">
