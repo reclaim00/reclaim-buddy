@@ -1101,7 +1101,14 @@ function handleAuth() {
   var authPromise = isSignUp
     ? firebase.auth().createUserWithEmailAndPassword(emailStr, pwdStr)
     : firebase.auth().signInWithEmailAndPassword(emailStr, pwdStr);
-  authPromise.catch(function(err) {
+  authPromise.then(function(result) {
+    if (isSignUp && result && result.user) {
+      result.user.sendEmailVerification({
+        url: 'https://reclaim00.github.io/reclaim-buddy/',
+        handleCodeInApp: true
+      }).catch(function(e) { console.warn('Welcome email failed:', e); });
+    }
+  }).catch(function(err) {
     if (error) {
       var msg = err.message || 'Authentication failed.';
       if (msg.indexOf('auth/user-not-found') !== -1) msg = t('No account found with this email. Try Sign Up.');

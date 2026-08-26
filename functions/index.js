@@ -139,3 +139,13 @@ exports.onMessageCreate = functions.firestore.document('messages/{messageId}').o
     }
   }).catch(function() {});
 });
+
+exports.onUserCreate = functions.auth.user().onCreate(async function(user) {
+  var email = user.email;
+  if (!email) return null;
+  await db.collection('appData').doc(email).set({
+    welcomeSent: true,
+    welcomeDate: admin.firestore.FieldValue.serverTimestamp()
+  }, { merge: true });
+  return null;
+});
