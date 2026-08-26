@@ -1564,6 +1564,7 @@ function persistJournalOverlay(btn, txt) {
     resetVoiceState();
     setTimeout(showSchillingNotification, 800);
     if (txt && checkCrisis(txt)) { showCrisisAlert(txt); }
+    else if (txt && checkHardTime(txt)) { showHardTimeSupport(); }
   };
   var finish = function() {
     if (txt && isEncryptionEnabled()) {
@@ -1684,6 +1685,65 @@ function crisisNotifyBuddy() {
   var msg = t('I need support right now. Your partner may be in distress. Please reach out.');
   var uid = (firebase && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '';
   if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy.contact,fromUid:uid,fromName:D.name||'You',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+}
+
+var HARD_TIME_PATTERNS = [
+  /\b(breakup|broke up|break up|breakup|divorce|separated|leaving me|left me)\b/i,
+  /\b(depression|depressed|feeling down|feeling low|hopeless|empty inside)\b/i,
+  /\b(anxiety|anxious|panic|panic attack|overwhelmed|can\'?t breathe)\b/i,
+  /\b(lonely|loneliness|alone|no one cares|no friends|isolated)\b/i,
+  /\b(grief|grieving|loss|lost someone|death of|funeral|miss them)\b/i,
+  /\b(stress|stressed|burnout|burned out|overworked|exhausted)\b/i,
+  /\b(trauma|ptsd|flashback|nightmare|hypervigilant)\b/i,
+  /\b(bad time|hard time|rough time|tough time|struggling|going through it)\b/i,
+  /\b(mental health|need help|need support|can\'?t cope|falling apart)\b/i,
+  /\b(shame|worthless|hate myself|don\'?t like myself|ugly inside)\b/i
+];
+
+function checkHardTime(text) {
+  for (var i=0;i<HARD_TIME_PATTERNS.length;i++) {
+    if (HARD_TIME_PATTERNS[i].test(text)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function showHardTimeSupport() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  var h = '<div class="overlay-content" style="max-width:400px">';
+  h += '<div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:6px">&#128153;</div><h3 style="font-size:17px;font-weight:700;margin:0">You\'re going through a hard time</h3>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4">What you\'re feeling is valid. You don\'t have to go through this alone. Here are some options:</p></div>';
+
+  h += '<div class="card" style="margin-bottom:8px;padding:14px">';
+  h += '<div style="font-weight:700;font-size:13px;margin-bottom:6px">Find a Therapist Near You</div>';
+  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.4">A professional can help you work through what you\'re feeling. Many offer sliding-scale fees.</p>';
+  h += '<a href="https://www.psychologytoday.com/us/therapists" target="_blank" style="display:block;text-align:center;padding:10px;background:var(--primary);color:#fff;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;margin-bottom:6px">Find Licensed Therapists</a>';
+  h += '<a href="https://www.google.com/maps/search/mental+health+facilities+near+me" target="_blank" style="display:block;text-align:center;padding:10px;background:var(--primary-light);color:var(--primary);border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;margin-bottom:6px">Find Mental Health Facilities Near Me</a>';
+  h += '<a href="https://openpathcollective.org/" target="_blank" style="display:block;text-align:center;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--muted);text-decoration:none">Open Path -- Therapy for $30-$80/session</a>';
+  h += '</div>';
+
+  if (AUTH_EMAIL && D.buddy && D.buddy.contact) {
+    h += '<div class="card" style="margin-bottom:8px;padding:14px">';
+    h += '<div style="font-weight:700;font-size:13px;margin-bottom:6px">Reach Out to Your Partner</div>';
+    h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.4">Your partner cares about you. Let them know you\'re going through a tough time.</p>';
+    h += '<button class="btn btn-primary btn-sm" onclick="crisisNotifyBuddy();this.textContent=\'Partner Notified\';this.disabled=true" style="width:100%">Send a Message to Your Partner</button>';
+    h += '</div>';
+  }
+
+  h += '<div class="card" style="margin-bottom:8px;padding:14px">';
+  h += '<div style="font-weight:700;font-size:13px;margin-bottom:6px">Immediate Support</div>';
+  h += '<div style="display:flex;gap:6px">';
+  h += '<a href="tel:988" style="flex:1;text-align:center;padding:10px;background:var(--danger-bg,#fee2e2);border-radius:8px;font-size:13px;font-weight:600;color:var(--danger,#dc2626);text-decoration:none">Call 988</a>';
+  h += '<a href="sms:741741&body=HELLO" style="flex:1;text-align:center;padding:10px;background:var(--primary-light);border-radius:8px;font-size:13px;font-weight:600;color:var(--primary);text-decoration:none">Text 741741</a>';
+  h += '</div>';
+  h += '</div>';
+
+  h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%;margin-top:4px">Close</button>';
+  h += '</div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
 }
 
 function deleteJournalEntry(idx) {
@@ -2875,6 +2935,8 @@ function persistRefEntry(entry, txt, text) {
     var idx = D.journal.length - 1;
     saveData();
     showJournalLetter(idx);
+    if (txt && checkCrisis(txt)) { showCrisisAlert(txt); }
+    else if (txt && checkHardTime(txt)) { showHardTimeSupport(); }
   };
   var finish = function() {
     if (txt && isEncryptionEnabled()) {
@@ -3288,6 +3350,7 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; '+t('Relapse Rescue')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; '+t('Relapse Graveyard')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#6b4a2e">'+t('My Values')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; Your View</div>';
   h += '</div>';
 
@@ -5190,7 +5253,6 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#6b4a2e">'+t('My Values')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#127793; '+t('Fresh Start')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#6b4a2e">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
