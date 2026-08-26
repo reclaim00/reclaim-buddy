@@ -5190,7 +5190,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#6b4a2e">&#9733; '+t('My Values')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'chivalrycode\')" style="border-color:#6b4a2e">'+t('My Values')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#127793; '+t('Fresh Start')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#6b4a2e">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';

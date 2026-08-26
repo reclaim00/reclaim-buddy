@@ -789,41 +789,34 @@ function relapsePlanHTML() {
 function chivalryCodeHTML() {
   var cc = D.chivalryCode || { code: [], checkins: [] };
   var h = '';
-  h += '<h2 class="page-title">&#11088; My Values</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(190,24,93,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-guardian);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)">"A person without a code is a wanderer. Define your principles, and every choice becomes clear."</div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
+  h += '<h2 class="page-title">My Values</h2>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:10px 14px;margin-bottom:10px"><div style="font-size:12px;color:var(--muted);font-style:italic;line-height:1.5">"A person without a code is a wanderer. Define your principles, and every choice becomes clear."</div></div>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:10px">Choose 3-5 principles to live by. These are your code — not goals, but the kind of person you are becoming.</p>';
 
   // Code list
-  h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">&#128221; My Code</h3>';
+  h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">My Code</h3>';
   if (!cc.code || !cc.code.length) {
     h += '<div class="empty-state" style="font-size:12px">Your code is empty. Add your first principle below.</div>';
   } else {
     for (var ci=0;ci<cc.code.length;ci++) {
       var item = cc.code[ci];
-      h += '<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">';
-      h += '<span style="font-size:20px">' + (item.icon || '&#9876;') + '</span>';
+      h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">';
+      h += '<div style="width:6px;height:6px;border-radius:3px;background:var(--primary);flex-shrink:0"></div>';
       h += '<div style="flex:1;font-size:13px;font-weight:600">' + item.text + '</div>';
-      h += '<button class="btn btn-sm btn-outline" onclick="chivalryRemove(' + ci + ')" style="font-size:11px;padding:4px 8px;min-width:0;color:var(--danger)">&#10005;</button>';
+      h += '<button class="btn btn-sm btn-outline" onclick="chivalryRemove(' + ci + ')" style="font-size:11px;padding:4px 8px;min-width:0;color:var(--danger)">Remove</button>';
       h += '</div>';
     }
   }
   h += '</div>';
 
   // Add new principle
-  h += '<div class="card" id="chivalry-add-card"><h3 style="font-size:14px;margin-bottom:8px">&#10133; Add a Principle</h3>';
-  h += '<div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap">';
-  var icons = ['&#9876;','&#128737;','&#9877;','&#9752;','&#10017;','&#9733;','&#9775;','&#9875;','&#9874;','&#10013;','&#9961;','&#127775;'];
-  for (var ii=0;ii<icons.length;ii++) {
-    h += '<span class="chiv-icon" onclick="document.getElementById(\'chiv-icon\').textContent=this.innerHTML;this.parentNode.querySelectorAll(\'.chiv-icon\').forEach(function(e){e.style.borderColor=\'transparent\'});this.style.borderColor=\'var(--primary)\'" style="font-size:22px;cursor:pointer;padding:4px 8px;border:2px solid transparent;border-radius:8px;transition:.15s">' + icons[ii] + '</span>';
-  }
-  h += '</div>';
-  h += '<input type="text" id="chiv-text" placeholder="e.g. I will be patient. I will tell the truth. I will show up." style="margin-bottom:6px">';
+  h += '<div class="card" id="chivalry-add-card"><h3 style="font-size:14px;margin-bottom:8px">Add a Principle</h3>';
+  h += '<input type="text" id="chiv-text" placeholder="e.g. I will be patient. I will tell the truth. I will show up." style="margin-bottom:8px">';
   h += '<button class="btn btn-sm btn-primary" onclick="chivalryAdd()">Add to My Code</button>';
-  h += '<span id="chiv-icon" style="display:none">&#9876;</span>';
   h += '</div>';
 
   // Daily reflection
-  h += '<div class="card" style="border-left:3px solid var(--accent)"><h3 style="font-size:14px;margin-bottom:4px">&#128214; Today\'s Reflection</h3>';
+  h += '<div class="card" style="border-left:3px solid var(--accent)"><h3 style="font-size:14px;margin-bottom:4px">Today\'s Reflection</h3>';
   var todayStr = new Date().toDateString();
   var todayEntry = null;
   if (cc.checkins) {
@@ -843,7 +836,7 @@ function chivalryCodeHTML() {
       h += '<p style="font-size:12px;color:var(--muted);margin-bottom:6px">How did you live your code today? What principle guided you?</p>';
       var codeOpts = '';
       for (var ni=0;ni<cc.code.length;ni++) {
-        codeOpts += '<label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0"><input type="checkbox" class="chiv-code-cb" value="' + ni + '">' + (cc.code[ni].icon || '&#9876;') + ' ' + cc.code[ni].text + '</label>';
+        codeOpts += '<label style="display:flex;align-items:center;gap:6px;font-size:12px;padding:3px 0"><input type="checkbox" class="chiv-code-cb" value="' + ni + '">' + cc.code[ni].text + '</label>';
       }
       h += '<div style="margin-bottom:6px;padding:6px 0">' + codeOpts + '</div>';
       h += '<textarea id="chiv-today" placeholder="Today I honored my code by..." style="min-height:60px;margin-bottom:6px"></textarea>';
@@ -856,7 +849,7 @@ function chivalryCodeHTML() {
 
   // History
   if (cc.checkins && cc.checkins.length) {
-    h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">&#128214; Reflection History</h3>';
+    h += '<div class="card"><h3 style="font-size:14px;margin-bottom:8px">Reflection History</h3>';
     var recent = cc.checkins.slice().reverse().slice(0,10);
     for (var hi=0;hi<recent.length;hi++) {
       var ce = recent[hi];
@@ -873,11 +866,9 @@ function chivalryCodeHTML() {
 function chivalryAdd() {
   var text = document.getElementById('chiv-text');
   if (!text || !text.value.trim()) return;
-  var iconEl = document.getElementById('chiv-icon');
-  var icon = iconEl ? iconEl.textContent : '&#9876;';
   if (!D.chivalryCode) D.chivalryCode = { code: [], checkins: [] };
   if (D.chivalryCode.code.length >= 5) { showToast('Maximum 5 principles in your code. Remove one first.', 'error'); return; }
-  D.chivalryCode.code.push({ icon: icon, text: text.value.trim() });
+  D.chivalryCode.code.push({ icon: '', text: text.value.trim() });
   saveData(); render();
 }
 function chivalryRemove(idx) {
@@ -1616,10 +1607,21 @@ function safetyHTML() {
     for (var a=0;a<addictions.length;a++) {
       var type = addictions[a];
       var sp = SAFETY_PLANS[type] || SAFETY_PLANS['Other'];
-      h += '<div style="background:var(--primary-light);padding:12px;border-radius:10px;margin-bottom:8px">';
-      h += '<div style="font-weight:700;font-size:13px;margin-bottom:4px">' + type + '</div>';
-      h += '<p style="font-size:12px;line-height:1.5;margin-bottom:6px">' + sp.plan + '</p>';
-      h += '<div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:3px">Steps:</div>';
+      h += '<div style="background:var(--primary-light);padding:14px;border-radius:10px;margin-bottom:10px">';
+      h += '<div style="font-weight:700;font-size:14px;margin-bottom:6px">' + type + '</div>';
+      h += '<p style="font-size:12px;line-height:1.5;margin-bottom:10px;color:var(--text-light)">' + sp.plan + '</p>';
+      if (sp.sections) {
+        for (var sec=0;sec<sp.sections.length;sec++) {
+          var section = sp.sections[sec];
+          h += '<div style="margin-bottom:10px">';
+          h += '<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid rgba(0,0,0,.08)">' + (sec+1) + '. ' + section.title + '</div>';
+          for (var it=0;it<section.items.length;it++) {
+            h += '<div style="display:flex;align-items:flex-start;gap:6px;padding:3px 0;font-size:12px;line-height:1.4"><span style="color:var(--primary);flex-shrink:0;margin-top:1px">*</span><span>' + section.items[it] + '</span></div>';
+          }
+          h += '</div>';
+        }
+      }
+      h += '<div style="font-size:11px;font-weight:600;color:var(--muted);margin:6px 0 3px">Quick Steps:</div>';
       for (var s=0;s<sp.steps.length;s++) {
         h += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px"><span style="width:18px;height:18px;border-radius:9px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">' + (s+1) + '</span>' + sp.steps[s] + '</div>';
       }
