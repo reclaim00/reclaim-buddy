@@ -177,6 +177,10 @@ select{appearance:none;background-repeat:no-repeat;background-position:right 12p
 .mood-btn:hover{color:var(--text);transform:translateY(-1px)}
 .mood-btn.active{border-color:var(--primary);background:var(--primary-light);color:var(--primary);box-shadow:0 1px 6px rgba(45,106,79,.12)}
 body.dark .mood-btn.active{background:rgba(138,122,154,.08);box-shadow:0 1px 6px rgba(138,122,154,.12)}
+.vj-dot{width:10px;height:10px;border-radius:50%;background:var(--danger);display:inline-block;animation:rcMicPulse 1.2s ease-in-out infinite}
+@keyframes rcMicPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+#vj-btn.rc-recording{animation:rcBtnShake .5s ease-in-out infinite}
+@keyframes rcBtnShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
 .mood-chart{display:flex;align-items:flex-end;gap:var(--space-xs);height:80px;padding:8px 0}
 .mood-bar{flex:1;border-radius:var(--radius-xs) 4px 0 0;min-height:4px;position:relative;transition:all .3s}
 .mood-bar:hover{opacity:.8;transform:scaleY(1.05)}

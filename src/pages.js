@@ -979,42 +979,7 @@ function filterMoods(val) {
 }
 
 // ====== JOURNAL ======
-function journalHTML() {
-  var h = '<div style="display:flex;justify-content:space-between;align-items:center;margin:8px 0;gap:8px">';
-  h += '<h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left;font-size:18px;padding:8px 0">'+t('Journal')+'</h2>';
-  h += '<div style="display:flex;gap:4px">';
-  if (D.journal.length) h += '<button class="btn btn-sm btn-danger" onclick="deleteAllJournalEntries()" style="padding:4px 8px;font-size:10px;width:auto">'+t('Delete All')+'</button>';
-  h += '<button class="btn btn-sm btn-primary" onclick="showNewJournal()">+ '+t('New')+'</button></div></div>';
-  // Insights summary
-  if (D.journal.length || D.moods.length) {
-    h += '<div class="card" style="padding:10px 12px">';
-    h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;cursor:pointer" onclick="var e=document.getElementById(\'journal-insights-body\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">';
-    h += '<span style="font-size:16px">&#128302;</span><span style="font-size:12px;font-weight:600;color:var(--primary)">Journal Insights</span><span style="font-size:10px;color:var(--muted)">(click to toggle)</span></div>';
-    h += '<div id="journal-insights-body" style="display:none">' + insightsHTML() + '</div></div>';
-  }
-  h += '<input type="text" id="js" placeholder="'+t('Search entries...')+'" oninput="filterJournal(this.value)" style="margin-bottom:8px;width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box">';
-  if (!D.journal.length) {
-    h += '<div class="card"><div class="empty-state">'+t('No journal entries yet. Start writing!')+'</div></div>';
-  } else {
-    var entries = D.journal.slice().reverse();
-    for (var i=0;i<entries.length && i<50;i++) {
-      var idx = D.journal.length - 1 - i;
-      var entryText = getEntryText(entries[i]);
-      var searchData = (entryText + ' ' + regnalDate(entries[i].date) + ' ' + (entries[i].mood ? MOODS[entries[i].mood-1].label : '')).toLowerCase().replace(/"/g,'&quot;');
-      h += '<div class="journal-entry card" data-search="' + searchData + '"><div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + (entries[i].audioKey ? ' <span class="badge" style="font-size:9px;background:var(--primary-light);color:var(--primary)">&#127908;</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div><div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryText.replace(/\n/g,'<br>') + '</div>' + (entries[i].audioKey ? '<div style="margin-top:6px"><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\'' + entries[i].audioKey + '\')" style="font-size:10px;padding:3px 8px">&#9654; Play voice note' + (entries[i].audioDur ? ' (' + formatDur(entries[i].audioDur) + ')' : '') + '</button></div>' : '') + '</div></div>';
-    }
-  }
-  return h;
-}
-
-function filterJournal(val) {
-  var q = val.toLowerCase();
-  var entries = document.querySelectorAll('.journal-entry');
-  for (var i=0;i<entries.length;i++) {
-    var searchData = entries[i].getAttribute('data-search');
-    entries[i].style.display = !q || (searchData && searchData.indexOf(q) !== -1) ? '' : 'none';
-  }
-}
+function journalHTML() { return reflectHTML(); }
 
 // ====== VOICE JOURNALING ======
 var _voiceRec = null, _voiceChunks = [], _voiceTimer = null, _voiceBlob = null, _voiceKey = null, _voiceDur = 0, _voiceSec = 0;
@@ -1067,12 +1032,8 @@ function toggleSpeakSummary() {
     return;
   }
   var text = '';
-  var ta = document.getElementById('journal-text');
-  if (ta) text = ta.value.trim();
-  if (!text) {
-    var tb = document.getElementById('ref-entry');
-    if (tb) text = tb.value.trim();
-  }
+  var tb = document.getElementById('ref-entry');
+  if (tb) text = tb.value.trim();
   if (!text) return;
   var summary = buildVoiceSummary(text);
   if (speakText(summary.plain) && btn) btn.textContent = t('Stop summary');
@@ -1109,22 +1070,6 @@ function resetVoiceState() {
   if (_voiceTimer) { clearInterval(_voiceTimer); _voiceTimer = null; }
   _voiceRec = null; _voiceChunks = []; _voiceBlob = null; _voiceKey = null; _voiceDur = 0; _voiceSec = 0;
   updateVoiceUI();
-}
-
-function setJournalMode(mode) {
-  var vp = document.getElementById('j-voice-panel');
-  var fb = document.getElementById('jmode-free');
-  var qb = document.getElementById('jmode-quick');
-  var vb = document.getElementById('jmode-voice');
-  var ta = document.getElementById('journal-text');
-  var qa = document.getElementById('j-quick-area');
-  if (vp) vp.style.display = mode === 'voice' ? 'block' : 'none';
-  if (ta) ta.style.display = mode === 'quick' ? 'none' : 'block';
-  if (qa) qa.style.display = mode === 'quick' ? 'block' : 'none';
-  if (fb) fb.className = 'btn btn-sm ' + (mode === 'free' ? 'btn-primary' : 'btn-outline');
-  if (qb) qb.className = 'btn btn-sm ' + (mode === 'quick' ? 'btn-primary' : 'btn-outline');
-  if (vb) vb.className = 'btn btn-sm ' + (mode === 'voice' ? 'btn-primary' : 'btn-outline');
-  if (mode === 'voice') updateVoiceUI();
 }
 
 function toggleVoiceRecord() {
@@ -1165,12 +1110,16 @@ function toggleVoiceRecord() {
 function updateVoiceUI() {
   var btn = document.getElementById('vj-btn');
   if (btn) {
-    if (_voiceRec && _voiceRec.state === 'recording') { btn.innerHTML = '&#9632; ' + t('Stop'); btn.style.background = 'var(--danger)'; btn.style.color = '#fff'; }
-    else if (_voiceBlob) { btn.innerHTML = '&#128266; ' + t('Re-record'); btn.style.background = ''; btn.style.color = ''; }
-    else { btn.innerHTML = '&#128266; ' + t('Record'); btn.style.background = ''; btn.style.color = ''; }
+    if (_voiceRec && _voiceRec.state === 'recording') { btn.innerHTML = '&#9632; ' + t('Stop'); btn.style.background = 'var(--danger)'; btn.style.color = '#fff'; btn.classList.add('rc-recording'); }
+    else if (_voiceBlob) { btn.innerHTML = '&#128266; ' + t('Re-record'); btn.style.background = ''; btn.style.color = ''; btn.classList.remove('rc-recording'); }
+    else { btn.innerHTML = '&#128266; ' + t('Record'); btn.style.background = ''; btn.style.color = ''; btn.classList.remove('rc-recording'); }
   }
   var tm = document.getElementById('vj-timer');
   if (tm) tm.textContent = (_voiceRec && _voiceRec.state === 'recording') ? 'Recording ' + formatDur(_voiceSec) : (_voiceBlob ? formatDur(_voiceDur || _voiceSec) + ' recorded' : '');
+  var st = document.getElementById('vj-status');
+  var stx = document.getElementById('vj-status-text');
+  if (st && stx) st.style.display = (_voiceRec && _voiceRec.state === 'recording') ? 'flex' : 'none';
+  if (stx) stx.textContent = (_voiceRec && _voiceRec.state === 'recording') ? t('Recording… speak now') : '';
   var p = document.getElementById('vj-play'); if (p) p.style.display = _voiceBlob ? '' : 'none';
   var c = document.getElementById('vj-clear'); if (c) c.style.display = _voiceBlob ? '' : 'none';
   var h = document.getElementById('vj-hint');
@@ -1221,6 +1170,7 @@ function renderVoiceTalkback() {
   if (sbox) sbox.textContent = '';
   tbox.style.display = 'block';
   if (!transcript) {
+    if (ttext) ttext.textContent = t('Voice note recorded. Tap Save Entry to keep it.');
     if (sboxwrap) sboxwrap.style.display = 'none';
     if (sbtn) sbtn.style.display = 'none';
     return;
@@ -1267,11 +1217,8 @@ function speechLang() {
 }
 
 function currentEntryTextarea() {
-  var a = document.getElementById('journal-text');
   var b = document.getElementById('ref-entry');
-  if (a && a.offsetParent !== null) return a;
   if (b && b.offsetParent !== null) return b;
-  if (a) return a;
   if (b) return b;
   return null;
 }
@@ -1351,11 +1298,6 @@ function stopTranscription() {
   }
   _trBase = null;
   _transcribeFinal = '';
-}
-
-function closeJournalOverlay(btn) {
-  resetVoiceState();
-  var o = btn.closest('.overlay'); if (o) o.remove();
 }
 
 // ====== VOICE NOTE STORAGE (IndexedDB, localStorage fallback) ======
@@ -1482,118 +1424,6 @@ function playVoiceEntry(key) {
     _voiceAudio.src = URL.createObjectURL(blob);
     _voiceAudio.play().catch(function() {});
   });
-}
-
-function showNewJournal() {
-  resetVoiceState();
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('New Journal Entry')+'</h3>';
-  h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;border-left:3px solid var(--primary)"><strong>'+t('Prompt:')+'</strong> ' + todayPrompt() + '</div>';
-  h += '<div class="mood-row" style="justify-content:center;gap:8px">';
-  for (var i=0;i<MOODS.length;i++) h += '<button class="mood-btn" onclick="this.classList.toggle(\'active\');this._val='+MOODS[i].val+'"><span style="font-size:18px;display:block">'+MOODS[i].emoji+'</span>'+MOODS[i].label+'</button>';
-  h += '</div>';
-  h += '<div style="display:flex;gap:6px;margin:8px 0 4px">';
-  h += '<button class="btn btn-sm btn-primary" id="jmode-free" onclick="setJournalMode(\'free\')">&#9998; Free Write</button>';
-  h += '<button class="btn btn-sm btn-outline" id="jmode-quick" onclick="setJournalMode(\'quick\')">&#9889; Quick Mood</button>';
-  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setJournalMode(\'voice\')">&#127908; Voice</button>';
-  h += '</div>';
-  h += '<div id="j-voice-panel" style="display:none;background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:8px;text-align:center">';
-  if (!voiceSupported()) {
-    h += '<div style="font-size:13px;color:var(--muted)">'+t('Voice recording isn\u2019t supported in this browser. Use Free Write instead.')+'</div>';
-  } else {
-    h += '<div style="font-size:22px;margin-bottom:4px">&#127908;</div>';
-    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('Speak your thoughts. When you stop, your summary will be read back to you.')+'</div>';
-    h += '<button class="btn btn-primary btn-sm" id="vj-btn" onclick="toggleVoiceRecord()">&#128266; Record</button> ';
-    h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; Preview</button> ';
-    h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; Clear</button>';
-    h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">'+t('Max 90 seconds. You can also add text below.')+'</div>';
-    h += '<div id="vj-transcript-box" style="display:none;margin-top:10px;text-align:left;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--card)">';
-    h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">'+t('YOUR WORDS')+'</div>';
-    h += '<div id="vj-transcript" style="font-size:13px;line-height:1.6;white-space:pre-wrap;color:var(--text);max-height:140px;overflow-y:auto"></div>';
-    h += '<div id="vj-summary-box" style="display:none;margin-top:10px;padding:10px;background:var(--primary-light);border-radius:8px;border-left:3px solid var(--primary)">';
-    h += '<div style="font-size:9px;color:var(--primary);letter-spacing:2px;margin-bottom:6px;font-weight:700">'+t('YOUR SUMMARY')+'</div>';
-    h += '<div id="vj-summary" style="font-size:12px;line-height:1.6;color:var(--text)"></div>';
-    h += '<button class="btn btn-sm btn-primary" id="vj-hear-summary" onclick="toggleSpeakSummary()" style="display:none;margin-top:8px;width:100%">'+t('Hear summary again')+'</button>';
-    h += '</div></div>';
-  }
-  h += '</div>';
-  h += '<div id="j-quick-area" style="display:none;text-align:center;padding:12px 0">';
-  h += '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Tap your mood above, then save.')+'</div>';
-  h += '</div>';
-  h += '<textarea id="journal-text" placeholder="'+t('How are you feeling today?')+'" style="min-height:90px"></textarea>';
-  h += '<button class="btn btn-primary" id="j-save-btn" onclick="saveJournal(this)">'+t('Save Entry')+'</button>';
-  h += '<button class="btn btn-outline" onclick="closeJournalOverlay(this)" style="margin-top:6px">'+t('Cancel')+'</button></div>';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-}
-
-function saveJournal(btn) {
-  var textEl = document.getElementById('journal-text');
-  var txt = (textEl && textEl.value ? textEl.value.trim() : '');
-  var isQuickMode = document.getElementById('jmode-quick') && document.getElementById('jmode-quick').className.indexOf('btn-primary') !== -1;
-  if (_voiceRec && _voiceRec.state === 'recording') {
-    _pendingSave = function() {
-      var t2 = document.getElementById('journal-text');
-      txt = (t2 && t2.value ? t2.value.trim() : '');
-      if (!txt && !_voiceBlob && !isQuickMode) { alert(t('Write or record something first.')); return; }
-      persistJournalOverlay(btn, txt);
-    };
-    stopTranscription();
-    _voiceRec.stop();
-    return;
-  }
-  if (!txt && !_voiceBlob && !isQuickMode) { alert(t('Write or record something first.')); return; }
-  persistJournalOverlay(btn, txt);
-}
-
-function persistJournalOverlay(btn, txt) {
-  var textEl = document.getElementById('journal-text');
-  var overlay = btn.closest('.overlay');
-  var moodBtns = overlay.querySelectorAll('.mood-btn.active');
-  var mood = moodBtns.length ? parseInt(moodBtns[0].getAttribute('onclick').match(/\d+/)[0]) : 0;
-  var now = new Date();
-  var entry = {
-    text: txt,
-    date: now.toDateString(),
-    time: String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),
-    mood: mood
-  };
-  var saveIt = function() {
-    D.journal.push(entry);
-    earnSchillings(5, 'Journal entry');
-    saveData();
-    overlay.remove();
-    resetVoiceState();
-    setTimeout(showSchillingNotification, 800);
-    if (txt && checkCrisis(txt)) { showCrisisAlert(txt); }
-    else if (txt && checkHardTime(txt)) { showHardTimeSupport(); }
-  };
-  var finish = function() {
-    if (txt && isEncryptionEnabled()) {
-      var doEncrypt = function() {
-        encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
-      };
-      if (ENC_KEY) doEncrypt();
-      else promptEncryptionPassphrase(function() { doEncrypt(); });
-    } else {
-      saveIt();
-    }
-  };
-  if (_voiceBlob) {
-    persistVoiceBlob().then(function(ok) {
-      if (ok) {
-        entry.audioKey = _voiceKey;
-        entry.audioDur = _voiceDur;
-      } else {
-        showToast('Voice note could not be saved, but your entry was saved.', 'error');
-      }
-      finish();
-    });
-  } else {
-    finish();
-  }
 }
 
 var CRISIS_PATTERNS = [
@@ -2758,8 +2588,8 @@ function reflectHTML() {
   h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;border-left:3px solid var(--primary)"><strong>'+t("Today's Prompt:")+'</strong> ' + todayPrompt() + '</div>';
   // Journal modes: Type vs Voice Journaling
   h += '<div style="display:flex;gap:6px;margin:8px 0" id="ref-modes">';
-  h += '<button class="btn btn-sm btn-primary" id="jmode-type" onclick="setRefJournalMode(\'type\')">&#9998; '+t('Type')+'</button>';
-  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setRefJournalMode(\'voice\')">&#127908; '+t('Voice Journaling')+'</button>';
+  h += '<button class="btn btn-sm btn-primary" id="jmode-type" onclick="setRefJournalMode(\'type\')" style="flex:1">&#9998; '+t('Type')+'</button>';
+  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setRefJournalMode(\'voice\')" style="flex:1">&#127908; '+t('Voice Journaling')+'</button>';
   h += '</div>';
   // Type panel (Free Write / Quick Mood selector)
   h += '<div id="j-type-panel">';
@@ -2769,9 +2599,7 @@ function reflectHTML() {
   ];
   h += '<div style="display:flex;gap:6px;margin:8px 0" id="journal-types">';
   for (var ti=0;ti<types.length;ti++) {
-    (function(tid, tdesc){
-      h += '<button class="btn btn-sm ' + (ti===0?'btn-primary':'btn-outline') + '" onclick="[].forEach.call(document.querySelectorAll(\'#journal-types .btn\'),function(b){b.className=\'btn btn-sm btn-outline\'});this.className=\'btn btn-sm btn-primary\';document.getElementById(\'ref-entry\').placeholder=this.getAttribute(\'data-ph\');var q=document.getElementById(\'quick-mood-area\');if(\''+tid+'\'===\'quick\'){document.getElementById(\'ref-entry\').style.display=\'none\';document.getElementById(\'word-count-row\').style.display=\'none\';document.getElementById(\'save-entry-btn\').style.display=\'none\';if(q)q.style.display=\'block\'}else{document.getElementById(\'ref-entry\').style.display=\'block\';document.getElementById(\'word-count-row\').style.display=\'flex\';document.getElementById(\'save-entry-btn\').style.display=\'inline-block\';if(q)q.style.display=\'none\'}" data-type="' + tid + '" data-ph="' + tdesc + '" style="flex:1;font-size:11px">' + types[ti].icon + ' ' + types[ti].label + '</button>';
-    })(types[ti].id, types[ti].desc);
+    h += '<button class="btn btn-sm ' + (ti===0?'btn-primary':'btn-outline') + '" onclick="pickJournalType(this,\'' + types[ti].id + '\')" data-type="' + types[ti].id + '" data-ph="' + types[ti].desc + '" style="flex:1;font-size:11px">' + types[ti].icon + ' ' + types[ti].label + '</button>';
   }
   h += '</div>';
   h += '<div id="quick-mood-area" style="display:none;text-align:center;padding:16px 0"><div style="font-size:13px;color:var(--muted);margin-bottom:10px">'+t('Tap your mood above, then save:')+'</div><button class="btn btn-primary" onclick="saveQuickMood()" style="width:100%">&#9889; '+t('Log Quick Mood')+'</button></div>';
@@ -2781,7 +2609,7 @@ function reflectHTML() {
   var moodEmojis = ['&#128542;','&#128533;','&#128528;','&#128578;','&#128513;'];
   var labels = [t('Terrible'),t('Bad'),t('Okay'),t('Good'),t('Great')];
   for (var i=0;i<5;i++) {
-    h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#ref-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')"><span style="font-size:18px;display:block">'+moodEmojis[i]+'</span>'+labels[i]+'</button>';
+    h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="pickRefMood(this)"><span style="font-size:18px;display:block">'+moodEmojis[i]+'</span>'+labels[i]+'</button>';
   }
   h += '</div>';
   h += '<textarea id="ref-entry" placeholder="'+t('Write whatever is on your mind')+'..." style="min-height:140px" oninput="updateWordCount(this)"></textarea>';
@@ -2790,17 +2618,23 @@ function reflectHTML() {
   h += '<div id="j-voice-panel" style="display:none;background:var(--primary-light);border-radius:12px;padding:14px;margin:8px 0;text-align:center">';
   if (voiceSupported()) {
     h += '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">&#127908; '+t('Voice Journaling')+'</div>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">'+t('Speak naturally — your words are transcribed live and your summary is read back to you when you stop.')+'</div>';
     h += '<button class="btn btn-primary btn-sm" id="vj-btn" onclick="toggleVoiceRecord()">&#128266; '+t('Record')+'</button> ';
-    h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; Preview</button> ';
-    h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; Clear</button>';
+    h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; '+t('Preview')+'</button> ';
+    h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; '+t('Clear')+'</button>';
+    h += '<div id="vj-status" style="display:none;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:12px;font-weight:600;color:var(--danger)"><span class="vj-dot"></span><span id="vj-status-text"></span></div>';
     h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
     h += '<div id="vj-hint" style="font-size:11px;color:var(--muted);margin-top:4px;display:none"></div>';
     h += '<div id="vj-transcript-box" style="display:none;margin-top:10px;text-align:left;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--card)">';
     h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">'+t('TRANSCRIPT')+'</div>';
     h += '<div id="vj-transcript" style="font-size:13px;line-height:1.6;white-space:pre-wrap;color:var(--text);max-height:140px;overflow-y:auto"></div>';
-    h += '<div id="vj-summary" style="font-size:12px;line-height:1.6;color:var(--text-light);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)"></div>';
+    h += '<div id="vj-summary-box" style="display:none;margin-top:10px;padding:10px;background:var(--primary-light);border-radius:8px;border-left:3px solid var(--primary)">';
+    h += '<div style="font-size:9px;color:var(--primary);letter-spacing:2px;margin-bottom:6px;font-weight:700">'+t('YOUR SUMMARY')+'</div>';
+    h += '<div id="vj-summary" style="font-size:12px;line-height:1.6;color:var(--text)"></div>';
     h += '<button class="btn btn-sm btn-primary" id="vj-hear-summary" onclick="toggleSpeakSummary()" style="display:none;margin-top:8px;width:100%">&#128266; '+t('Hear summary')+'</button>';
-    h += '</div>';
+    h += '</div></div>';
+  } else {
+    h += '<div style="font-size:13px;color:var(--muted);line-height:1.5">'+t('Voice journaling isn\u2019t supported in this browser. Use Type mode instead.')+'</div>';
   }
   h += '</div>';
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
@@ -2885,6 +2719,35 @@ function saveQuickMood() {
   }
 }
 
+function pickJournalType(btn, tid) {
+  if (!btn) return;
+  [].forEach.call(document.querySelectorAll('#journal-types .btn'), function(b){ b.className = 'btn btn-sm btn-outline'; });
+  btn.className = 'btn btn-sm btn-primary';
+  var te = document.getElementById('ref-entry');
+  var ph = btn.getAttribute && btn.getAttribute('data-ph');
+  if (te && ph) te.placeholder = ph;
+  var q = document.getElementById('quick-mood-area');
+  var wc = document.getElementById('word-count-row');
+  var sw = document.getElementById('save-entry-btn');
+  if (tid === 'quick') {
+    if (te) te.style.display = 'none';
+    if (wc) wc.style.display = 'none';
+    if (sw) sw.style.display = 'none';
+    if (q) q.style.display = 'block';
+  } else {
+    if (te) te.style.display = 'block';
+    if (wc) wc.style.display = 'flex';
+    if (sw) sw.style.display = 'inline-block';
+    if (q) q.style.display = 'none';
+  }
+}
+
+function pickRefMood(btn) {
+  if (!btn) return;
+  [].forEach.call(document.querySelectorAll('#ref-moods .mood-btn'), function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+
 function setRefJournalMode(mode) {
   var vp = document.getElementById('j-voice-panel');
   var tpn = document.getElementById('j-type-panel');
@@ -2919,7 +2782,8 @@ function saveRefJournal() {
     var entryRec = buildRefEntry(text, txt);
     _pendingSave = function() {
       var t2 = document.getElementById('ref-entry');
-      txt = (t2 ? t2.value.trim() : '');
+      var t2v = (t2 ? t2.value.trim() : '');
+      txt = t2v || entryRec.text;
       entryRec.text = txt;
       if (!txt && !_voiceBlob) { alert(t('Write something first.')); return; }
       persistRefEntry(entryRec, txt, text);
@@ -2939,6 +2803,7 @@ function buildRefEntry(text, txt) {
   var typeBtn = document.querySelector('#journal-types .btn-primary');
   var type = typeBtn ? typeBtn.getAttribute('data-type') : 'free';
   var now = new Date();
+  if (!txt) txt = '\uD83C\uDF9C\uFE0F ' + t('Voice journaling note');
   return {
     text: txt,
     date: now.toDateString(),
@@ -4621,7 +4486,7 @@ function buddyHTML() {
   if (checkedInToday) {
     h += '<div class="card" style="background:var(--primary-light);border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px"><div><div style="font-weight:600;font-size:14px">Checked in with ' + safe(D.buddy.name) + '</div><div style="font-size:12px;color:var(--muted)">Great job staying connected!</div></div></div></div>';
   } else {
-    h += '<div class="card"><h3>Check In with ' + safe(D.buddy.name) + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Send a quick check-in to stay connected.</p><button class="btn btn-primary btn-sm" onclick="comradeCheckin()">Send Check-In</button></div>';
+    h += '<div class="card"><h3>Check In with ' + safe(D.buddy.name) + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Send a quick check-in to stay connected.</p><button class="btn btn-primary btn-sm" onclick="buddyCheckin()">Send Check-In</button></div>';
   }
   h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Shared Goals</h3><button class="btn btn-sm btn-outline" onclick="addGoal()">+ Add</button></div>';
   if (!D.buddyGoals.length) {
