@@ -664,16 +664,6 @@ function homePageHTML() {
 return h;
 }
 
-function toggleRecoveryStory() {
-  var box = document.getElementById('howRecoveredBox');
-  var btn = document.getElementById('howRecoveredBtn');
-  if (!box || !btn) return;
-  var open = box.style.display !== 'none';
-  box.style.display = open ? 'none' : 'block';
-  btn.innerHTML = open ? t('How They Recovered') : t('Hide Story');
-  if (!open) box.scrollIntoView({behavior:'smooth', block:'nearest'});
-}
-
   // === ACTIVE HOME PAGE ===
 
   // 0. Journey date banner (top of home page)
@@ -795,5 +785,15 @@ function homeHTML() {
   }
 
   return h;
+}
+
+function toggleRecoveryStory() {
+  var box = document.getElementById('howRecoveredBox');
+  var btn = document.getElementById('howRecoveredBtn');
+  if (!box || !btn) return;
+  var open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  btn.innerHTML = open ? t('How They Recovered') : t('Hide Story');
+  if (!open) box.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
