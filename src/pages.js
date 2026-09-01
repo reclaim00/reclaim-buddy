@@ -5384,6 +5384,12 @@ function myWhyHTML() {
 }
 
 // ====== PROFILE ======
+function saveProfileField(prop, val) {
+  D[prop] = (typeof val === 'string' ? val.trim() : val);
+  saveDataSilent();
+  try { registerCurrentUser(); } catch(e) { console.warn('registerCurrentUser failed:', e); }
+  showToast('Saved','success');
+}
 function profileHTML() {
   var h = '<h2 class="page-title">Profile</h2>';
   h += '<div class="card" style="text-align:center;padding:24px">';
@@ -5406,9 +5412,9 @@ function profileHTML() {
   h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
   h += '</div></div>';
   h += '<div class="card"><h3>'+t('Profile')+'</h3>';
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Name')+'</span><input type="text" value="'+(D.name||'')+'" onchange="D.name=this.value;registerCurrentUser();saveDataSilent()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Phone Number')+'</span><input type="tel" value="'+(D.phoneNumber||'')+'" onchange="D.phoneNumber=this.value;registerCurrentUser();saveDataSilent()" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Language')+'</span><select onchange="D.language=this.value;registerCurrentUser();saveDataSilent();delete _pageCache[pg];render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Name')+'</span><input type="text" value="'+esc(D.name||'')+'" onchange="saveProfileField(\'name\', this.value)" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Phone Number')+'</span><input type="tel" value="'+esc(D.phoneNumber||'')+'" onchange="saveProfileField(\'phoneNumber\', this.value)" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Language')+'</span><select onchange="saveProfileField(\'language\', this.value);delete _pageCache[pg];render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Accent Colour')+'</span><div style="display:flex;gap:4px">';
