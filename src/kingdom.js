@@ -661,8 +661,18 @@ function homePageHTML() {
     h += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">The path is open \u2014 and it\u2019s waiting for you.<br>Start your journey and build something real.</div>';
     h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">Start Your Journey</button>';
     h += '</div></div>';
-    return h;
-  }
+return h;
+}
+
+function toggleRecoveryStory() {
+  var box = document.getElementById('howRecoveredBox');
+  var btn = document.getElementById('howRecoveredBtn');
+  if (!box || !btn) return;
+  var open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  btn.innerHTML = open ? t('How They Recovered') : t('Hide Story');
+  if (!open) box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
 
   // === ACTIVE HOME PAGE ===
 
@@ -777,8 +787,11 @@ function homeHTML() {
     h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:20px">&#x265B;</span><span style="font-weight:700;font-size:14px">'+t('They Recovered Too')+'</span></div>';
     h += '<div style="font-weight:600;font-size:15px;margin-bottom:2px">' + pick.name + '</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">'+t('Overcame')+' ' + pick.addiction + '</div>';
+    h += '<button class="btn btn-sm btn-outline" id="howRecoveredBtn" onclick="toggleRecoveryStory()" style="width:100%">' + t('How They Recovered') + '</button>';
+    h += '<div id="howRecoveredBox" style="display:none;margin-top:8px">';
     h += '<div style="font-size:13px;line-height:1.5;margin-bottom:6px">' + pick.story + '</div>';
     h += '<div style="font-size:13px;font-style:italic;color:var(--text);background:var(--primary-light);padding:8px 10px;border-radius:8px">' + pick.quote + '</div></div>';
+    h += '</div>';
   }
 
   return h;
