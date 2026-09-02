@@ -771,16 +771,34 @@ function homeHTML() {
   // Famous recovery figure (matched to user's addictions)
   var userAddictions = D.targetAddictions || [];
   var matchedFigs = userAddictions.length ? FAMOUS_RECOVERY.filter(function(f){ return f.types.some(function(t){ return userAddictions.indexOf(t) >= 0; }); }) : [];
+  var hadMatches = matchedFigs.length > 0;
   if (!matchedFigs.length) matchedFigs = FAMOUS_RECOVERY;
   if (matchedFigs.length) {
     var pick = matchedFigs[Math.floor(Math.random() * matchedFigs.length)];
-    h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:20px">&#x265B;</span><span style="font-weight:700;font-size:14px">'+t('They Recovered Too')+'</span></div>';
-    h += '<div style="font-weight:600;font-size:15px;margin-bottom:2px">' + pick.name + '</div>';
-    h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">'+t('Overcame')+' ' + pick.addiction + '</div>';
-    h += '<button class="btn btn-sm btn-outline" id="howRecoveredBtn" onclick="toggleRecoveryStory()" style="width:100%">' + t('How They Recovered') + '</button>';
-    h += '<div id="howRecoveredBox" style="display:none;margin-top:8px">';
-    h += '<div style="font-size:13px;line-height:1.5;margin-bottom:6px">' + pick.story + '</div>';
-    h += '<div style="font-size:13px;font-style:italic;color:var(--text);background:var(--primary-light);padding:8px 10px;border-radius:8px">' + pick.quote + '</div></div>';
+    var matched = hadMatches && pick.types.some(function(t){ return userAddictions.indexOf(t) >= 0; });
+    var years = recoveryYears(pick);
+    var icon = addictionIcon(pick.types);
+    var first = (pick.name.split(/\s+/)[0] || 'Y').replace(/[()]/g, '');
+    h += '<div class="card" style="border-left:3px solid var(--primary);padding:14px;background:linear-gradient(160deg,var(--card),var(--primary-light))">';
+    h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:22px">&#x265B;</span><div style="flex:1;min-width:0"><div style="font-weight:800;font-size:14px;letter-spacing:.3px">'+t('They Recovered Too')+'</div><div style="font-size:11px;color:var(--muted)">'+t('Real people proved recovery is possible')+'</div></div>'+(matched?'<span class="badge badge-green">'+t('Matched to you')+'</span>':'')+'</div>';
+    h += '<div style="display:flex;gap:10px;align-items:center">';
+    h += '<div style="width:48px;height:48px;border-radius:50%;flex:0 0 48px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.15)">'+escText(first.charAt(0).toUpperCase())+'</div>';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="font-weight:700;font-size:15px">'+escText(pick.name)+'</div>';
+    h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+icon+' '+t('Overcame')+' <strong style="color:var(--text)">'+escText(pick.addiction)+'</strong>'+(years?' <span style="display:inline-block;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700;color:var(--primary);margin-left:4px">'+years+' '+t('yrs sober')+'</span>':'')+'</div>';
+    h += '</div></div>';
+    h += '<div style="margin-top:12px;padding:10px 12px;border-left:3px solid var(--accent);background:var(--card);border-radius:0 10px 10px 0;font-size:13px;font-style:italic;line-height:1.5;color:var(--muted)">' + pick.quote + '</div>';
+    h += '<div style="display:flex;gap:6px;margin-top:10px">';
+    h += '<button class="btn btn-sm btn-primary" id="howRecoveredBtn" onclick="toggleRecoveryStory()" style="flex:1">' + t('How They Recovered') + '</button>';
+    h += '<button class="btn btn-sm btn-outline" onclick="nextRecoveryStory()" style="width:auto" title="'+t('Show another recovery story')+'">&#x21BB; '+t('Another')+'</button>';
+    h += '</div>';
+    h += '<div id="howRecoveredBox" style="display:none;margin-top:10px">';
+    h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px">';
+    h += '<div style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--primary);margin-bottom:8px"><span style="font-size:15px">&#x2728;</span>'+t('How they did it')+'</div>';
+    h += '<div style="font-size:13px;line-height:1.65;color:var(--text)">' + pick.story + '</div>';
+    h += '<div style="margin-top:10px;padding:10px 12px;border-left:3px solid var(--primary);background:var(--primary-light);border-radius:0 10px 10px 0;font-size:13px;font-style:italic;line-height:1.5">' + pick.quote + '</div>';
+    h += '<div style="margin-top:10px;text-align:center;font-size:12px;color:var(--muted)">'+t('If they can reclaim their life, so can you.')+'</div>';
+    h += '</div></div>';
     h += '</div>';
   }
 
@@ -795,5 +813,36 @@ function toggleRecoveryStory() {
   box.style.display = open ? 'none' : 'block';
   btn.innerHTML = open ? t('How They Recovered') : t('Hide Story');
   if (!open) box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function nextRecoveryStory() {
+  delete _pageCache[pg];
+  render();
+}
+
+function addictionIcon(types) {
+  var icons = {'Alcohol':'&#127870;','Drugs (prescription/illicit)':'&#128138;','Gambling':'&#127922;','Sex/Love':'&#128157;','Pornography':'&#128293;'};
+  if (!types || !types.length) return '&#10024;';
+  return icons[types[0]] || '&#10024;';
+}
+
+function escText(s) {
+  return (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function recoveryYears(pick) {
+  if (!pick || !pick.story) return null;
+  var s = pick.story;
+  var m = s.match(/sober for over (\d{1,3}) years/i) || s.match(/sober for more than (\d{1,3}) years/i) || s.match(/sober for (\d{1,3}) years/i) || s.match(/clean for over (\d{1,3}) years/i);
+  if (m) return m[1];
+  var y = s.match(/(?:sober|clean)\s+(?:since|by)\s+(1\d{3}|20[0-2]\d)/i)
+       || s.match(/got (?:sober|clean) in (1\d{3}|20[0-2]\d)/i)
+       || s.match(/quit drinking (?:and drugs )?in (1\d{3}|20[0-2]\d)/i)
+       || s.match(/quit (?:in|by) (1\d{3}|20[0-2]\d)/i);
+  if (y) {
+    var yrs = new Date().getFullYear() - parseInt(y[1], 10);
+    if (yrs >= 0) return yrs;
+  }
+  return null;
 }
 
