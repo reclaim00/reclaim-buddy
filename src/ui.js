@@ -8,10 +8,10 @@ window.addEventListener('unhandledrejection', function(e) {
 });
 // ====== NOTIFICATIONS ======
 function notifRowHTML(key, emoji, label, desc) {
-  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',checkinReminder:false,checkinReminderTime:'18:00',buddyCheckin:false,streakMilestone:false};
+  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',buddyCheckin:false};
   var enabled = n[key] || false;
   var timeKey = key + 'Time';
-  var timeVal = n[timeKey] || (key==='morning'?'08:00':key==='evening'?'20:00':key==='craving'?'14:00':key==='journal'?'12:00':key==='breathe'?'10:00':key==='checkinReminder'?'18:00':'12:00');
+  var timeVal = n[timeKey] || (key==='morning'?'08:00':key==='evening'?'20:00':key==='craving'?'14:00':key==='journal'?'12:00':key==='breathe'?'10:00':'12:00');
   return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+emoji+'</span><div><div style="font-size:13px;font-weight:600">'+label+'</div><div style="font-size:11px;color:var(--muted)">'+desc+'</div></div></div><div style="display:flex;align-items:center;gap:8px"><input type="time" value="'+timeVal+'" onchange="D.notifications.'+timeKey+'=this.value;saveDataSilent()" style="width:auto;padding:4px 8px;font-size:12px;margin:0;border-radius:8px;border:1px solid var(--border)"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.'+key+'=this.checked;if(this.checked)requestNotif();saveDataSilent()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
 }
 function reminderNotifRowHTML() {
@@ -20,7 +20,7 @@ function reminderNotifRowHTML() {
   return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">&#9200;</span><div><div style="font-size:13px;font-weight:600">Reminders</div><div style="font-size:11px;color:var(--muted)">Get notified when a reminder is due</div></div></div><div style="display:flex;align-items:center;gap:8px"><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.reminderNotif=this.checked;if(this.checked)requestNotif();saveDataSilent()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div></div>';
 }
 function notifToggleHTML(key, emoji, label, desc) {
-  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',checkinReminder:false,checkinReminderTime:'18:00',buddyCheckin:false,streakMilestone:false};
+  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',buddyCheckin:false};
   var enabled = n[key] || false;
   return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+emoji+'</span><div><div style="font-size:13px;font-weight:600">'+label+'</div><div style="font-size:11px;color:var(--muted)">'+desc+'</div></div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.'+key+'=this.checked;if(this.checked)requestNotif();saveDataSilent()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div>';
 }
@@ -66,14 +66,14 @@ function swNotify(title, body, icon, tag) {
 }
 function checkNotifications() {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
-  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',checkinReminder:false,checkinReminderTime:'18:00',buddyCheckin:false,streakMilestone:false};
+  var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',buddyCheckin:false};
   var now = new Date();
   var hm = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   var hmNum = now.getHours() * 60 + now.getMinutes();
-  var s = D.streak || 0;
+  var s = soberDays();
   var todayStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
   if (D._notifiedDate !== todayStr) {
-    D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false; D._notifiedCheckinReminder = false;
+    D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false;
     D._notifiedDate = todayStr;
   }
   function notifDue(key, timeStr) {
@@ -103,14 +103,6 @@ function checkNotifications() {
     swNotify('Time to Breathe', 'Take a 2-minute breathing exercise. Inhale calm, exhale stress.', 'icon-192.png', 'reclaim-breathe');
     D._notifiedBreathe = true; saveData();
   }
-  // Check-in reminder
-  if (notifDue('checkinReminder', n.checkinReminderTime || '18:00')) {
-    var checkedInToday = D.checkins && D.checkins.some(function(c){return c.date===todayStr});
-    if (!checkedInToday) {
-      swNotify('Check-In Reminder', s > 0 ? 'Day ' + s + ' is waiting! You haven\'t checked in today. Keep your streak alive!' : 'You haven\'t checked in today. How was your day?', 'icon-192.png', 'reclaim-checkin');
-      D._notifiedCheckinReminder = true; saveData();
-    }
-  }
   // Buddy check-in reminder
   if (n.buddyCheckin && D.buddy && D.buddy.name && D._notifiedBuddyCheckin !== todayStr) {
     var acc = D.accountability || {};
@@ -118,18 +110,6 @@ function checkNotifications() {
     if (now >= buddyNextDue) {
       swNotify('Partner check-in', 'Time to check in with ' + D.buddy.name + '! Reach out and stay connected.', 'icon-192.png', 'reclaim-buddy');
       D._notifiedBuddyCheckin = todayStr; saveData();
-    }
-  }
-  // Streak milestone celebration
-  if (n.streakMilestone && s > 0) {
-    var msList = [7,14,21,30,60,90,180,365];
-    if (!D._notifiedMilestones) D._notifiedMilestones = [];
-    for (var msi=0;msi<msList.length;msi++) {
-      if (s === msList[msi] && D._notifiedMilestones.indexOf(msList[msi]) === -1) {
-        var msgs = ['7 days! One week of strength.','14 days! Two weeks of commitment.','21 days! Three weeks  a habit forming.','30 days! One month  incredible.','60 days! Two months of resilience.','90 days! Three months  you\'re transforming.','180 days! Half a year of recovery.','365 days! ONE YEAR  a rebirth.'];
-        swNotify('Streak Milestone! ??', msgs[msi] + ' You\'re on day ' + s + '.', 'icon-192.png', 'reclaim-milestone-'+msList[msi]);
-        D._notifiedMilestones.push(msList[msi]); saveData();
-      }
     }
   }
   // Check due reminders
@@ -513,9 +493,9 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','warchest','shop','kingsledger','achievements','alliances','mywhy'];
+var MORE_SUB_PAGES = ['journal','calendar','library','music','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','chivalrycode','royalpardon','achievements','mywhy'];
 var REFLECT_SUB_PAGES = [];
-var CARE_SUB_PAGES = ['relapseplan','relapserescue','relapsegraveyard'];
+var CARE_SUB_PAGES = ['relapseplan','relapserescue'];
 
 var MEETING_TYPES = [
   { id: 'aa', label: 'AA', icon: '&#10017;' },
@@ -889,119 +869,6 @@ function chivalryCheckin() {
   showToast('Reflection logged.', 'success');
 }
 
-// ====== RELAPSE GRAVEYARD ======
-function relapseGraveyardHTML() {
-  var rg = D.relapseGraveyard || { graves: [] };
-  var h = '';
-  h += '<h2 class="page-title">&#9904; Relapse Graveyard</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(42,42,42,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-heroguide);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9876;</div><div style="font-size:12px;color:var(--muted)"><em>"Everyone who has struggled teaches the next how to stand. Honor the dead, keep walking."</em></div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Past relapses are not failures — they are fallen comrades who taught you something. Mark them here with respect, and carry their lesson forward.</p>';
-
-  // Import existing relapse dates
-  var existingDates = D.sobriety && D.sobriety.relapseDates ? D.sobriety.relapseDates : [];
-  var importedCount = 0;
-  if (existingDates.length && (!rg.graves || !rg.graves.length)) {
-    rg.graves.forEach(function(g){ if (existingDates.indexOf(g.date) >= 0) importedCount++; });
-    var unimported = existingDates.filter(function(d){ return !rg.graves.some(function(g){ return g.date === d; }); });
-    if (unimported.length) {
-      h += '<div class="card" style="border:2px solid var(--accent);background:var(--primary-light);text-align:center;padding:12px">';
-      h += '<div style="font-size:13px;margin-bottom:6px">&#128161; Found ' + unimported.length + ' relapse date' + (unimported.length > 1 ? 's' : '') + ' in your record. Add ' + (unimported.length > 1 ? 'them' : 'it') + ' to the graveyard?</div>';
-      h += '<button class="btn btn-sm btn-primary" onclick="graveImport(' + unimported.length + ')">Import to Graveyard</button>';
-      h += '</div>';
-    }
-  }
-
-  // Grave grid
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px" id="grave-grid">';
-  if (!rg.graves || !rg.graves.length) {
-    h += '<div style="grid-column:1/-1" class="empty-state">No graves yet. Past relapses can be laid to rest here — with honor, not shame.</div>';
-  } else {
-    for (var gi=0;gi<rg.graves.length;gi++) {
-      var g = rg.graves[gi];
-      h += graveTombstoneHTML(g, gi);
-    }
-  }
-  h += '</div>';
-
-  // Add new grave
-  h += '<div class="card"><h3 style="font-size:14px;margin-bottom:6px">&#9963; Lay a Relapse to Rest</h3>';
-  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Date of relapse</label>';
-  h += '<input type="date" id="grave-date" style="margin-bottom:6px">';
-  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What triggered it?</label>';
-  h += '<input type="text" id="grave-trigger" placeholder="e.g. stress, social pressure, loneliness" style="margin-bottom:6px">';
-  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What did it teach you?</label>';
-  h += '<textarea id="grave-lesson" placeholder="e.g. I need to call someone before the urge peaks. Isolation is my enemy." style="min-height:60px;margin-bottom:6px"></textarea>';
-  h += '<div style="display:flex;gap:6px"><button class="btn btn-sm btn-primary" onclick="graveAdd()">&#9963; Lay to Rest</button><button class="btn btn-sm btn-outline" onclick="graveRandom()">&#127922; Random Epitaph</button></div>';
-  h += '</div>';
-
-  // Epitaph inspiration
-  h += '<div class="card" style="border-left:3px solid var(--border);padding:10px;font-size:11px;color:var(--muted);line-height:1.6">';
-  h += '<strong style="font-size:12px">Epitaph ideas:</strong><br>';
-  h += '"Here lies a lesson I will not unlearn." &bull; "Fell so I could rise stronger." &bull; "This grave marks where shame dies." &bull; "Not my end — my teacher." &bull; "I carried this stone so others won\'t have to."';
-  h += '</div>';
-
-  return h;
-}
-function graveTombstoneHTML(g, idx) {
-  var epitaph = g.epitaph || g.lesson || 'Here lies a lesson.';
-  var dateLabel = g.date ? regnalDate(g.date) : 'Unknown';
-  return '<div style="background:var(--card);border:1px solid var(--border);border-radius:12px 12px 8px 8px;padding:10px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(0,0,0,.06)">' +
-    '<div style="font-size:28px;margin-bottom:2px;opacity:.5">&#9904;</div>' +
-    '<div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:2px">' + dateLabel + '</div>' +
-    (g.trigger ? '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">' + g.trigger + '</div>' : '') +
-    '<div style="font-size:11px;font-style:italic;color:var(--text);line-height:1.4;padding:4px;background:var(--primary-light);border-radius:6px;min-height:32px;display:flex;align-items:center;justify-content:center">"' + epitaph + '"</div>' +
-    '<button class="btn btn-sm btn-outline" onclick="graveRemove(' + idx + ')" style="position:absolute;top:4px;right:4px;font-size:10px;padding:2px 6px;min-width:0;color:var(--danger);border-color:transparent">&#10005;</button>' +
-    '<div style="font-size:10px;color:var(--muted);margin-top:4px;opacity:.6">&#127801; rest in peace</div></div>';
-}
-function graveAdd() {
-  var dateEl = document.getElementById('grave-date');
-  var triggerEl = document.getElementById('grave-trigger');
-  var lessonEl = document.getElementById('grave-lesson');
-  if (!dateEl || !dateEl.value) { showToast('Please select a date.', 'error'); return; }
-  if (!lessonEl || !lessonEl.value.trim()) { showToast('Every grave needs a lesson. What did you learn?', 'error'); return; }
-  if (!D.relapseGraveyard) D.relapseGraveyard = { graves: [] };
-  D.relapseGraveyard.graves.push({
-    date: dateEl.value,
-    trigger: (triggerEl ? triggerEl.value.trim() : ''),
-    lesson: lessonEl.value.trim(),
-    epitaph: lessonEl.value.trim().slice(0,80)
-  });
-  saveData(); render();
-  showToast('Laid to rest. The lesson stays with you.', 'info');
-}
-function graveRemove(idx) {
-  if (!D.relapseGraveyard || !D.relapseGraveyard.graves) return;
-  D.relapseGraveyard.graves.splice(idx, 1);
-  saveData(); render();
-  showToast('Grave removed. The lesson remains.', 'info');
-}
-function graveImport(count) {
-  var existingDates = D.sobriety && D.sobriety.relapseDates ? D.sobriety.relapseDates : [];
-  if (!D.relapseGraveyard) D.relapseGraveyard = { graves: [] };
-  existingDates.forEach(function(d){
-    if (!D.relapseGraveyard.graves.some(function(g){ return g.date === d; })) {
-      D.relapseGraveyard.graves.push({ date: d, trigger: '', lesson: 'A past relapse marked for remembrance.', epitaph: 'Fell so I could rise stronger.' });
-    }
-  });
-  saveData(); render();
-  showToast('Imported ' + count + ' relapse' + (count > 1 ? 's' : '') + ' into the graveyard.', 'success');
-}
-function graveRandom() {
-  var epitaphs = [
-    'Here lies a lesson I will not unlearn.',
-    'Fell so I could rise stronger.',
-    'This grave marks where shame died.',
-    'Not my end — my teacher.',
-    'I carried this stone so others won\'t have to.',
-    'A stumble, not a fall.',
-    'This day broke me. I rebuilt.',
-    'I lost a round to win the game.',
-    'I am not what happened to me.',
-    'From this ash, something grew.'
-  ];
-  var lessonEl = document.getElementById('grave-lesson');
-  if (lessonEl) lessonEl.value = epitaphs[Math.floor(Math.random() * epitaphs.length)];
-}
 
 // ====== ROYAL PARDON (Fresh Start) ======
 function royalPardonHTML() {
@@ -1444,11 +1311,10 @@ function timeCapsuleHTML() {
         h += '<div style="flex:1"><div style="font-weight:600;font-size:14px">' + c.title.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
         h += '<div style="font-size:11px;color:var(--muted)">' + (isReady ? '<span style="color:var(--accent);font-weight:600">Ready to open!</span>' : 'Opens ' + new Date(c.unlockAt).toLocaleDateString() + ' (' + daysLeft + ' days)') + '</div></div>';
         h += '<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();if(confirm(\'Delete this capsule?\')){D.timeCapsules.splice('+i+',1);saveData()}" style="padding:2px 6px;font-size:10px;width:auto">&#10005;</button>';
-  h += '</div></div>';
-  // Daily Quests
-  h += dailyQuestsHTML();
+        h += '</div></div>';
       }
     }
+    // Daily Quests (rendered once)
     if (opened.length) {
       h += '<h3 style="font-size:14px;font-weight:700;color:var(--muted);margin:12px 0 4px">&#128220; Opened (' + opened.length + ')</h3>';
       for (var i=0;i<D.timeCapsules.length;i++) {
@@ -1728,7 +1594,7 @@ function render() {
     programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML, seer: seerTowerHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, relapsegraveyard: relapseGraveyardHTML, royalpardon: royalPardonHTML, warchest: warchestHTML, shop: shopHTML, kingsledger: kingsLedgerHTML, achievements: achievementsHTML, alliances: alliancesHTML, mywhy: myWhyHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, chivalrycode: chivalryCodeHTML, royalpardon: royalPardonHTML, achievements: achievementsHTML, mywhy: myWhyHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
@@ -1757,7 +1623,7 @@ function render() {
       tbEl.textContent = ready;
       tbEl.style.display = ready ? 'block' : 'none';
     }
-    if (curPg === 'home') { setTimeout(function(){ checkMilestone(); checkAchievements(); checkPostCrisis(); if (D.sobriety.startDate) startSoberTimer(); }, 500); }
+    if (curPg === 'home') { setTimeout(function(){ checkAchievements(); checkPostCrisis(); if (D.sobriety.startDate) startSoberTimer(); }, 500); }
     app.style.opacity = '1';
     app.style.transform = 'translateY(0)';
     app._renderTO = null;
