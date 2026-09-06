@@ -9,7 +9,7 @@ beforeEach(() => {
   global.AUTH_EMAIL = null;
   global.ENC_KEY = null;
   global.ENC_UNLOCK_CALLBACK = null;
-  global.MORE_SUB_PAGES = ['profile', 'warchest', 'shop', 'achievements', 'insights', 'alliances'];
+  global.MORE_SUB_PAGES = ['profile', 'achievements', 'insights'];
 });
 
 describe('a11y — critical violations', () => {
