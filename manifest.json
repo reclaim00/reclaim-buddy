@@ -21,8 +21,7 @@
   "shortcuts": [
     { "name": "New Journal Entry", "short_name": "Journal", "description": "Write a new journal entry", "url": "./?action=journal", "icons": [{ "src": "globe-icon.png", "sizes": "192x192", "type": "image/png" }] },
     { "name": "Breathing Exercise", "short_name": "Breathe", "description": "Start a guided breathing exercise", "url": "./?action=breathe", "icons": [{ "src": "globe-icon.png", "sizes": "192x192", "type": "image/png" }] },
-    { "name": "SOS", "short_name": "SOS", "description": "Get crisis support", "url": "./?action=sos", "icons": [{ "src": "globe-icon.png", "sizes": "192x192", "type": "image/png" }] },
-    { "name": "Mood Check-In", "short_name": "Mood", "description": "Log your mood", "url": "./?action=mood", "icons": [{ "src": "globe-icon.png", "sizes": "192x192", "type": "image/png" }] }
+    { "name": "SOS", "short_name": "SOS", "description": "Get crisis support", "url": "./?action=sos", "icons": [{ "src": "globe-icon.png", "sizes": "192x192", "type": "image/png" }] }
   ],
   "screenshots": [
     { "src": "screenshots/screenshot-home.png", "sizes": "750x1334", "type": "image/png", "form_factor": "narrow", "label": "Home" },
