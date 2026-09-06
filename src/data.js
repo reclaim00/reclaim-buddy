@@ -221,20 +221,18 @@ function defaultData() {
     moods: [],
     journal: [],
     habits: [], // [{id, name, logs: ['date strings']}]
-    checkins: [], streak: 0, breatheCount: 0, lastBreatheDate: '',
+    breatheCount: 0, lastBreatheDate: '',
     targetAddictions: [],
-    dailyQuests: { date: '', done: [] },
     buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [], competitions: [],
     assessmentTaken: false, assessmentResult: null,
     screenerPHQ9: { taken: false, result: null, progress: null },
     screenerGAD7: { taken: false, result: null, progress: null },
-    sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '', spendingOn: '', weeklyIncome: 0, savingsQuizDone: false },
+    sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '', spendingOn: '', weeklyIncome: 0 },
     // Pre-populated coping cards displayed from defaults; user can add custom
     customCopingCards: [],
     savedArticles: [], savedBooks: [], savedPodcasts: [], savedVideos: [],
     savedMusic: [],
     lastReportDate: null,
-    routines: { morning: [], evening: [], lastMorning: null, lastEvening: null },
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
     chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], journalWordGoal: 50, playlist: [], reminders: [],
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
@@ -245,14 +243,11 @@ function defaultData() {
     emergencyContacts: [],
     _postCrisisPending: false,
     chivalryCode: { code: [], checkins: [] },
-    relapseGraveyard: { graves: [] },
     royalPardons: [],
     researchOptIn: false,
     researchLastSubmitted: null,
     meetingLog: [],
     myWhy: { reasons: [], createdAt: null },
-    warchest: { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 },
-    shopPurchases: [],
     achievements: []
   };
 }
@@ -578,7 +573,6 @@ function loadData() {
 
 var _pageCache = {};
 function saveData() {
-  updateSchillings();
   try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('saveData: localStorage write failed', e); showToast('Could not save to local storage. Check available space.','error'); }
   syncToFirestore();
   applyTheme();
@@ -586,19 +580,10 @@ function saveData() {
   render();
 }
 function saveDataSilent() {
-  updateSchillings();
   try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('saveDataSilent: localStorage write failed', e); showToast('Could not save to local storage. Check available space.','error'); }
   syncToFirestore();
   applyTheme();
 }
-function updateSchillings() {
-  D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
-  var days = soberDays();
-  var lastDay = D.warchest.lastDayCounted || 0;
-  if (days > lastDay) { D.warchest.schillings += (days - lastDay) * 5; D.warchest.lastDayCounted = days; }
-  D.warchest.lastEntryCount = (D.journal || []).length;
-}
-var _pendingSchill = null;
 var _audioCtx = null;
 function _initAudio() { if (_audioCtx) return; try { var AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; _audioCtx = new AC(); if (_audioCtx.state === 'suspended') _audioCtx.resume(); } catch(e) {} }
 function playSound(type) {
@@ -725,32 +710,6 @@ function playSound(type) {
     }
   } catch(e) {}
 }
-function earnSchillings(amount, reason) {
-  var w = getWarchest();
-  if (w.boostData.doubleExpiry > Date.now()) amount *= 2;
-  D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
-  var before = D.warchest.schillings || 0;
-  D.warchest.schillings = before + amount;
-  D.warchest.lastEntryCount = (D.journal || []).length;
-  D.warchest.lastDayCounted = soberDays();
-  _pendingSchill = { amount: amount, reason: reason };
-  if (amount > 0) playSound('coin');
-}
-function showSchillingNotification() {
-  if (!_pendingSchill) return;
-  showSchillingCutscene(_pendingSchill.amount, _pendingSchill.reason, D.warchest.schillings);
-  _pendingSchill = null;
-}
-function showSchillingCutscene(amount, reason, total) {
-  var existing = document.getElementById('schilling-cutscene');
-  if (existing) existing.remove();
-  var ov = document.createElement('div');
-  ov.id = 'schilling-cutscene';
-  ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25);animation:overlayFade .3s ease';
-  ov.innerHTML = '<div style="background:linear-gradient(135deg,#0891b2,#22d3ee);border-radius:20px;padding:24px 32px;text-align:center;max-width:280px;width:90vw;box-shadow:0 8px 40px rgba(0,0,0,.2);animation:schillingPop .5s cubic-bezier(.22,1,.36,1)"><div style="font-size:48px;margin-bottom:4px">&#9889;</div><div style="font-size:28px;font-weight:800;color:#04222b">+' + amount + '</div><div style="font-size:13px;color:#0a4356;margin:2px 0">' + reason + '</div><div style="width:40px;height:2px;background:rgba(4,34,43,.15);margin:8px auto"></div><div style="font-size:12px;color:#0a4356;opacity:.8">Total: ' + total + ' Energy</div></div>';
-  document.body.appendChild(ov);
-  setTimeout(function() { var e = document.getElementById('schilling-cutscene'); if (e) e.remove(); }, 2500);
-}
 function safe(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function validateData(d) {
   if (!d || typeof d !== 'object') return defaultData();
@@ -765,9 +724,7 @@ function validateData(d) {
   if (d.version < 2) {
     if (!d.journalWordGoal) d.journalWordGoal = 50;
     if (!d.accentColor) d.accentColor = 'green';
-    if (!d.warchest) d.warchest = { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
     if (!d.achievements) d.achievements = [];
-    if (!d.shopPurchases) d.shopPurchases = [];
     d.version = 2;
   }
   if (d.version < 3) {
@@ -776,7 +733,6 @@ function validateData(d) {
     if (!d.relapseRescue) d.relapseRescue = { logs: [] };
     if (!d.emergencyContacts) d.emergencyContacts = [];
     if (!d.chivalryCode) d.chivalryCode = { code: [], checkins: [] };
-    if (!d.relapseGraveyard) d.relapseGraveyard = { graves: [] };
     if (!d.royalPardons) d.royalPardons = [];
     d.version = 3;
   }
@@ -930,13 +886,6 @@ async function unlockWithBiometric() {
 }
 
 var D = AUTH_USER ? loadData() : defaultData();
-// Migrate warchest for boosts and milestone data
-D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
-D.warchest.boostData = D.warchest.boostData || { streak: 0, doubleExpiry: 0, bonusDate: '' };
-D.warchest.milestonesClaimed = D.warchest.milestonesClaimed || [];
-D.shopPurchases = D.shopPurchases || [];
-function hasShop(id) { return (D.shopPurchases||[]).indexOf(id) >= 0; }
-function getWarchest() { var w = D.warchest = D.warchest || {}; w.boostData = w.boostData || {}; w.boostData.streak = w.boostData.streak || 0; w.boostData.doubleExpiry = w.boostData.doubleExpiry || 0; w.boostData.bonusDate = w.boostData.bonusDate || ''; w.milestonesClaimed = w.milestonesClaimed || []; return w; }
 var pg = 'home';
 var subPg = '';
 
@@ -1405,11 +1354,9 @@ function collectResearchData() {
     t: Date.now(),
     // Anonymized — no emails, no names, no journal text
     soberDays: soberStart ? soberDays() : 0,
-    streak: D.streak || 0,
     journalCount: (D.journal||[]).length,
     moodCount: (D.moods||[]).length,
     cravingCount: (D.cravings||[]).length,
-    checkinCount: (D.checkins||[]).length,
     breatheCount: D.breatheCount || 0,
     copingCardCount: (D.customCopingCards||[]).length,
     habitCount: (D.habits||[]).length,
