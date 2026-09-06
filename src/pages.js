@@ -523,7 +523,7 @@ var RECOVERY_PROGRAMS = {
       'Week 2: Tools — Create a coping card for a situation that challenges you.',
       'Week 2: Tools — Practice urge surfing: notice a craving, describe it, watch it pass.',
       'Week 2: Tools — Use the SOS helplines page. Save a number to your phone.',
-      'Week 2: Tools — Complete a daily check-in. What was your win today?',
+      'Week 2: Tools — Log your mood each day. What was your win today?',
       'Week 2: Tools — Write a commitment statement to yourself. Read it aloud.',
       'Week 2: Tools — Try the grounding exercise: name 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.',
       'Week 2: Tools — Review your week. What coping tools worked best for you?',
@@ -821,13 +821,6 @@ function timelineHTML() {
       events.push({date: md, type:'mood', label:'Mood: ' + MOODS[D.moods[mi].val-1].label, detail:D.moods[mi].date});
     }
   }
-  // Check-ins
-  for (var ci=0;ci<D.checkins.length;ci++) {
-    var cd = new Date(D.checkins[ci].date);
-    if (!isNaN(cd.getTime())) {
-      events.push({date: cd, type:'checkin', label:'Daily check-in', detail:''});
-    }
-  }
   // Buddy check-ins
   for (var bci=0;bci<D.buddyCheckins.length;bci++) {
     var bd = new Date(D.buddyCheckins[bci].date);
@@ -838,8 +831,8 @@ function timelineHTML() {
   // Sort by date (oldest first)
   events.sort(function(a,b){return a.date - b.date});
   if (!events.length) return '<div class="card"><div class="empty-state">No events yet. Start tracking to see your timeline.</div></div>';
-  var colors = {start:'var(--primary)', relapse:'var(--danger)', journal:'var(--blue)', mood:'var(--accent)', checkin:'#22c55e', buddy:'var(--rose)'};
-  var icons = {start:'&#x2726;', relapse:'&#x2628;', journal:'&#x2712;', mood:'&#x2766;', checkin:'&#x2713;', buddy:'&#x2618;'};
+  var colors = {start:'var(--primary)', relapse:'var(--danger)', journal:'var(--blue)', mood:'var(--accent)', buddy:'var(--rose)'};
+  var icons = {start:'&#x2726;', relapse:'&#x2628;', journal:'&#x2712;', mood:'&#x2766;', buddy:'&#x2618;'};
   var h = '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="var el=document.getElementById(\'timeline-body\');var btn=document.getElementById(\'timeline-toggle\');if(el.style.display===\'none\'){el.style.display=\'block\';btn.textContent=\'&#9650; '+t('Hide Timeline')+'\'}else{el.style.display=\'none\';btn.textContent=\'&#9660; '+t('Show Timeline')+'\'}">';
   h += '<div style="display:flex;align-items:center;gap:8px"><div style="font-size:20px">&#x2726;</div><div><h3 style="margin:0;font-size:14px">'+t('Recovery Timeline')+'</h3></div></div>';
   h += '<span id="timeline-toggle" style="font-size:13px;color:var(--primary);font-weight:600">&#9660; '+t('Show Timeline')+'</span>';
@@ -864,7 +857,6 @@ function timelineHTML() {
 // ====== STREAKS VIEWER ======
 function calcAllStreaks() {
   var dates = [];
-  for (var ci=0;ci<D.checkins.length;ci++) { dates.push(D.checkins[ci].date); }
   for (var mi=0;mi<D.moods.length;mi++) { dates.push(D.moods[mi].date); }
   dates.sort();
   var unique = [], seen = {};
@@ -890,7 +882,7 @@ function streaksHTML() {
   for (var si2=0;si2<streaks.length;si2++) totalActiveDays += streaks[si2].length;
   var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:20px">&#128293;</div><h3 style="margin:0">'+t('Your Streaks')+'</h3></div><div class="stat-grid" style="margin-bottom:8px"><div class="stat-card"><div class="num">' + current.length + '</div><div class="label">'+t('Current')+'</div></div><div class="stat-card"><div class="num">' + longest.length + '</div><div class="label">'+t('Best Ever')+'</div></div><div class="stat-card"><div class="num">' + totalActiveDays + '</div><div class="label">'+t('Active Days')+'</div></div></div><div id="streaks-list">';
   if (!streaks.length) {
-    h += '<div class="empty-state">'+t('No streaks yet. Log moods or check in daily to build your streak!')+'</div>';
+    h += '<div class="empty-state">'+t('No streaks yet. Log moods daily to build your streak!')+'</div>';
   } else {
     for (var si3=streaks.length-1; si3>=0; si3--) {
       var s = streaks[si3], isCur = si3 === streaks.length-1;
@@ -966,7 +958,6 @@ function logMood(val) {
   var time = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   D.moods = D.moods.filter(function(m){return m.date!==today});
   D.moods.push({val:val,date:today,time:time});
-  if (!D.streak) D.streak = 1;
   saveData();
 }
 
@@ -981,450 +972,6 @@ function filterMoods(val) {
 // ====== JOURNAL ======
 function journalHTML() { return reflectHTML(); }
 
-// ====== VOICE JOURNALING ======
-var _voiceRec = null, _voiceChunks = [], _voiceTimer = null, _voiceBlob = null, _voiceKey = null, _voiceDur = 0, _voiceSec = 0;
-var _voiceAudio = null;
-var _summarySpoken = false;
-
-function speechSupported() { return !!(window.speechSynthesis && window.SpeechSynthesisUtterance); }
-
-function speakText(text) {
-  if (!speechSupported() || !text) return false;
-  try { window.speechSynthesis.cancel(); } catch (e) {}
-  var u = new SpeechSynthesisUtterance(text);
-  try { u.lang = speechLang(); } catch (e) {}
-  u.rate = 1; u.pitch = 1; u.volume = 1;
-  try { window.speechSynthesis.speak(u); } catch (e) { return false; }
-  return true;
-}
-
-function stopSpeaking() {
-  if (window.speechSynthesis) { try { window.speechSynthesis.cancel(); } catch (e) {} }
-}
-
-function buildVoiceSummary(text) {
-  var mood = 'mixed';
-  try { mood = detectMood(text).primary; } catch (e) {}
-  var dayCount = (typeof soberDays === 'function') ? soberDays() : 0;
-  var streak = D.streak || 0;
-  var entryHour = new Date().getHours();
-  var html = '';
-  try { html = buildSummary(text, mood, extractTopics(text), dayCount, streak, entryHour); } catch (e) {}
-  var plain = html
-    .replace(/<br\s*\/?>/gi, ' ')
-    .replace(/<[^>]+>/g, '')
-    .replace(/&#9755;/g, '> ')
-    .replace(/&#\d+;/g, '')
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/\s+/g, ' ')
-    .trim();
-  return { html: html, plain: plain };
-}
-
-function toggleSpeakSummary() {
-  var btn = document.getElementById('vj-hear-summary');
-  if (speechSupported() && window.speechSynthesis && window.speechSynthesis.speaking) {
-    stopSpeaking();
-    if (btn) btn.textContent = t('Hear summary again');
-    return;
-  }
-  var text = '';
-  var tb = document.getElementById('ref-entry');
-  if (tb) text = tb.value.trim();
-  if (!text) return;
-  var summary = buildVoiceSummary(text);
-  if (speakText(summary.plain) && btn) btn.textContent = t('Stop summary');
-}
-
-function toggleSummarySpeech(btn, textId) {
-  var el = document.getElementById(textId);
-  if (!el) return;
-  var text = (el.textContent || '').trim();
-  if (!text) return;
-  if (speechSupported() && window.speechSynthesis && window.speechSynthesis.speaking) {
-    stopSpeaking();
-    if (btn) btn.textContent = '&#128266; Read summary aloud';
-    return;
-  }
-  if (speakText(text)) {
-    if (btn) btn.textContent = '&#9632; Stop reading';
-  }
-}
-
-function voiceSupported() { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
-
-function formatDur(s) {
-  s = Math.max(0, Math.floor(s || 0));
-  var m = Math.floor(s / 60), r = s % 60;
-  return m + ':' + (r < 10 ? '0' : '') + r;
-}
-
-function resetVoiceState() {
-  stopTranscription();
-  stopSpeaking();
-  _summarySpoken = false;
-  if (_voiceRec) { try { _voiceRec.onstop = null; _voiceRec.stop(); } catch (e) {} }
-  if (_voiceTimer) { clearInterval(_voiceTimer); _voiceTimer = null; }
-  _voiceRec = null; _voiceChunks = []; _voiceBlob = null; _voiceKey = null; _voiceDur = 0; _voiceSec = 0;
-  updateVoiceUI();
-}
-
-function toggleVoiceRecord() {
-  if (_voiceRec && _voiceRec.state === 'recording') { _voiceRec.stop(); return; }
-  if (_voiceBlob) { _voiceBlob = null; _voiceKey = null; _voiceDur = 0; _voiceSec = 0; }
-  stopSpeaking();
-  _summarySpoken = false;
-  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
-    var rec = new MediaRecorder(stream);
-    _voiceRec = rec;
-    _voiceChunks = [];
-    rec.ondataavailable = function(e) { if (e.data && e.data.size) _voiceChunks.push(e.data); };
-    rec.onstop = function() {
-      if (stream.getTracks) stream.getTracks().forEach(function(t) { t.stop(); });
-      var type = (_voiceChunks.length && _voiceChunks[0].type) || 'audio/webm';
-      _voiceBlob = new Blob(_voiceChunks, { type: type });
-      if (_voiceTimer) { clearInterval(_voiceTimer); _voiceTimer = null; }
-      stopTranscription();
-      updateVoiceUI();
-      if (_voiceSec >= 90) showToast('Max 90 seconds per note.', 'error');
-      if (_pendingSave) { var f = _pendingSave; _pendingSave = null; f(); }
-    };
-    rec.start();
-    _voiceSec = 0;
-    startTranscription();
-    if (_voiceTimer) clearInterval(_voiceTimer);
-    _voiceTimer = setInterval(function() {
-      _voiceSec++;
-      updateVoiceUI();
-      if (_voiceSec >= 90 && _voiceRec && _voiceRec.state === 'recording') _voiceRec.stop();
-    }, 1000);
-    updateVoiceUI();
-  }).catch(function() {
-    alert('Microphone access was blocked or unavailable. Allow microphone access and try again.');
-  });
-}
-
-function updateVoiceUI() {
-  var btn = document.getElementById('vj-btn');
-  if (btn) {
-    if (_voiceRec && _voiceRec.state === 'recording') { btn.innerHTML = '&#9632; ' + t('Stop'); btn.style.background = 'var(--danger)'; btn.style.color = '#fff'; btn.classList.add('rc-recording'); }
-    else if (_voiceBlob) { btn.innerHTML = '&#128266; ' + t('Re-record'); btn.style.background = ''; btn.style.color = ''; btn.classList.remove('rc-recording'); }
-    else { btn.innerHTML = '&#128266; ' + t('Record'); btn.style.background = ''; btn.style.color = ''; btn.classList.remove('rc-recording'); }
-  }
-  var tm = document.getElementById('vj-timer');
-  if (tm) tm.textContent = (_voiceRec && _voiceRec.state === 'recording') ? 'Recording ' + formatDur(_voiceSec) : (_voiceBlob ? formatDur(_voiceDur || _voiceSec) + ' recorded' : '');
-  var st = document.getElementById('vj-status');
-  var stx = document.getElementById('vj-status-text');
-  if (st && stx) st.style.display = (_voiceRec && _voiceRec.state === 'recording') ? 'flex' : 'none';
-  if (stx) stx.textContent = (_voiceRec && _voiceRec.state === 'recording') ? t('Recording… speak now') : '';
-  var p = document.getElementById('vj-play'); if (p) p.style.display = _voiceBlob ? '' : 'none';
-  var c = document.getElementById('vj-clear'); if (c) c.style.display = _voiceBlob ? '' : 'none';
-  var h = document.getElementById('vj-hint');
-  if (h) {
-    if (_voiceRec && _voiceRec.state === 'recording') {
-      h.style.display = '';
-      if (speechRecognitionSupported()) {
-        var w = (_transcribeFinal || '').trim().split(/\s+/).filter(Boolean).length;
-        h.textContent = w > 0 ? (w + ' ' + t('words transcribed')) : t('Transcribing as you speak...');
-      } else {
-        h.textContent = t('Recording audio note (transcription not available in this browser)');
-      }
-    } else {
-      h.style.display = 'none';
-    }
-  }
-  renderVoiceTalkback();
-}
-
-function renderVoiceTalkback() {
-  var tbox = document.getElementById('vj-transcript-box');
-  if (!tbox) return;
-  var ttext = document.getElementById('vj-transcript');
-  var sbox = document.getElementById('vj-summary');
-  var sboxwrap = document.getElementById('vj-summary-box');
-  var sbtn = document.getElementById('vj-hear-summary');
-  if (_voiceRec && _voiceRec.state === 'recording') {
-    _summarySpoken = false;
-    var targetNow = currentEntryTextarea();
-    var nowText = (targetNow && targetNow.value ? targetNow.value.trim() : '');
-    if (ttext) ttext.textContent = nowText;
-    tbox.style.display = 'block';
-    if (sbox) sbox.textContent = '';
-    if (sboxwrap) sboxwrap.style.display = 'none';
-    if (sbtn) { sbtn.style.display = 'none'; sbtn.textContent = t('Hear summary again'); }
-    return;
-  }
-  if (!_voiceBlob) {
-    _summarySpoken = false;
-    tbox.style.display = 'none';
-    if (sboxwrap) sboxwrap.style.display = 'none';
-    if (sbtn) { sbtn.style.display = 'none'; sbtn.textContent = t('Hear summary again'); }
-    return;
-  }
-  var target = currentEntryTextarea();
-  var transcript = (target && target.value ? target.value.trim() : '');
-  if (ttext) ttext.textContent = transcript;
-  if (sbox) sbox.textContent = '';
-  tbox.style.display = 'block';
-  if (!transcript) {
-    if (ttext) ttext.textContent = t('Voice note recorded. Tap Save Entry to keep it.');
-    if (sboxwrap) sboxwrap.style.display = 'none';
-    if (sbtn) sbtn.style.display = 'none';
-    return;
-  }
-  var summary = buildVoiceSummary(transcript);
-  if (sboxwrap) sboxwrap.style.display = 'block';
-  if (sbox && summary.html) sbox.innerHTML = summary.html;
-  if (sbtn) {
-    var isSpeaking = speechSupported() && window.speechSynthesis && window.speechSynthesis.speaking;
-    sbtn.style.display = '';
-    sbtn.textContent = isSpeaking ? t('Stop summary') : t('Hear summary again');
-  }
-  if (!_summarySpoken && !_pendingSave && summary.plain && speechSupported()) {
-    _summarySpoken = true;
-    speakText(summary.plain);
-    if (sbtn) sbtn.textContent = t('Stop summary');
-  }
-}
-
-function previewVoice() {
-  if (!_voiceBlob) return;
-  if (!_voiceAudio) _voiceAudio = new Audio();
-  _voiceAudio.src = URL.createObjectURL(_voiceBlob);
-  _voiceAudio.play().catch(function() {});
-}
-
-function clearVoice() { resetVoiceState(); }
-
-var _transcriber = null;
-var _transcribeTarget = null;
-var _transcribeFinal = '';
-var _trBase = '';
-var _pendingSave = null;
-var _transcriberActive = false;
-var _trRestarts = 0;
-
-function speechRecognitionSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
-
-function speechLang() {
-  try {
-    var l = (window.getActiveLanguage ? getActiveLanguage() : 'en-US') || 'en-US';
-    return (l === 'en' ? 'en-US' : l);
-  } catch (e) { return 'en-US'; }
-}
-
-function currentEntryTextarea() {
-  var b = document.getElementById('ref-entry');
-  if (b && b.offsetParent !== null) return b;
-  if (b) return b;
-  return null;
-}
-
-function startTranscription() {
-  if (!speechRecognitionSupported()) return;
-  try {
-    if (_transcriber) { try { _transcriber.abort(); } catch (e) {} }
-    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    _transcriber = new SR();
-    _transcriber.continuous = true;
-    _transcriber.interimResults = true;
-    _transcriber.lang = speechLang();
-    _trRestarts = 0;
-    _transcriber.onresult = function(ev) {
-      var t = _transcribeTarget;
-      var newFinals = '', interim = '';
-      for (var i = ev.resultIndex; i < ev.results.length; i++) {
-        var r = ev.results[i];
-        var tx = (r && r[0] && r[0].transcript) || '';
-        if (r.isFinal && tx.trim()) newFinals += (newFinals ? ' ' : '') + tx.trim();
-        else if (!r.isFinal && tx) interim += tx;
-      }
-      if (newFinals) {
-        _trRestarts = 0;
-        _transcribeFinal = ((_transcribeFinal ? _transcribeFinal + ' ' : '') + newFinals).replace(/\s+/g, ' ');
-        var base = (_trBase || '').replace(/\s+$/,'');
-        if (t) t.value = ((base ? base + ' ' : '') + _transcribeFinal).replace(/^\s+|\s+$/g, '');
-        if (typeof updateWordCount === 'function') { try { updateWordCount(t); } catch (e) {} }
-      }
-      var hint = document.getElementById('vj-hint');
-      if (hint) {
-        if (interim) hint.textContent = '… ' + interim;
-        else if (_transcribeFinal) {
-          var wc = _transcribeFinal.split(/\s+/).filter(Boolean).length;
-          hint.textContent = wc + ' ' + t('words transcribed');
-        }
-        else hint.textContent = t('Transcribing as you speak...');
-      }
-    };
-    _transcriber.onerror = function() {
-      try { _transcriber.onend = null; _transcriber.abort(); } catch (e) {}
-    };
-    _transcriber.onend = function() {
-      if (_transcriberActive && _voiceRec && _voiceRec.state === 'recording' && _trRestarts < 60) {
-        _trRestarts++;
-        setTimeout(function() {
-          if (_transcriberActive && _voiceRec && _voiceRec.state === 'recording') {
-            try { _transcriber.start(); } catch (e) {}
-          }
-        }, 700);
-      } else {
-        _transcriberActive = false;
-      }
-    };
-    var target = currentEntryTextarea();
-    if (!target) { try { _transcriber.abort(); } catch (e) {} return; }
-    _transcribeTarget = target;
-    _trBase = target.value.replace(/\s+$/, '');
-    _transcribeFinal = '';
-    _transcriberActive = true;
-    _transcriber.start();
-  } catch (e) {}
-}
-
-function stopTranscription() {
-  _transcriberActive = false;
-  var tr = _transcriber;
-  _transcriber = null;
-  if (tr) { try { tr.onend = null; tr.onresult = null; tr.stop(); } catch (e) {} }
-  var t = _transcribeTarget;
-  _transcribeTarget = null;
-  if (t && _transcribeFinal && _transcribeFinal.trim()) {
-    var v = ((_trBase || '') + ' ' + _transcribeFinal.trim()).replace(/^\s+|\s+$/g, '');
-    t.value = v;
-    if (typeof updateWordCount === 'function') { try { updateWordCount(t); } catch (e) {} }
-  }
-  _trBase = null;
-  _transcribeFinal = '';
-}
-
-// ====== VOICE NOTE STORAGE (IndexedDB, localStorage fallback) ======
-var _voiceDB = null;
-var _voiceDBReady = null;
-var VOICE_DB_NAME = 'reclaim-voice';
-var VOICE_DB_STORE = 'notes';
-
-function openVoiceDB() {
-  if (_voiceDBReady) return _voiceDBReady;
-  if (!window.indexedDB) {
-    _voiceDBReady = Promise.reject(new Error('indexedDB unavailable'));
-    return _voiceDBReady;
-  }
-  _voiceDBReady = new Promise(function(resolve, reject) {
-    var req = window.indexedDB.open(VOICE_DB_NAME, 1);
-    req.onupgradeneeded = function(e) {
-      var db = e.target.result;
-      if (!db.objectStoreNames.contains(VOICE_DB_STORE)) db.createObjectStore(VOICE_DB_STORE);
-    };
-    req.onsuccess = function(e) {
-      _voiceDB = e.target.result;
-      _voiceDB.onversionchange = function() { try { _voiceDB.close(); } catch (x) {} };
-      resolve(_voiceDB);
-    };
-    req.onerror = function() { reject(req.error || new Error('indexedDB open failed')); };
-  });
-  return _voiceDBReady;
-}
-
-function idbVoiceSet(key, blob) {
-  return openVoiceDB().then(function(db) {
-    return new Promise(function(resolve, reject) {
-      var tx = db.transaction(VOICE_DB_STORE, 'readwrite');
-      tx.objectStore(VOICE_DB_STORE).put(blob, key);
-      tx.oncomplete = function() { resolve(true); };
-      tx.onerror = function() { reject(tx.error); };
-      tx.onabort = function() { reject(tx.error); };
-    });
-  });
-}
-
-function idbVoiceGet(key) {
-  return openVoiceDB().then(function(db) {
-    return new Promise(function(resolve, reject) {
-      var tx = db.transaction(VOICE_DB_STORE, 'readonly');
-      var req = tx.objectStore(VOICE_DB_STORE).get(key);
-      req.onsuccess = function() { resolve(req.result || null); };
-      req.onerror = function() { reject(req.error); };
-    });
-  });
-}
-
-function idbVoiceDelete(key) {
-  return openVoiceDB().then(function(db) {
-    return new Promise(function(resolve) {
-      var tx = db.transaction(VOICE_DB_STORE, 'readwrite');
-      tx.objectStore(VOICE_DB_STORE).delete(key);
-      tx.oncomplete = function() { resolve(); };
-      tx.onerror = function() { resolve(); };
-    });
-  }).catch(function() {});
-}
-
-function deleteVoiceKey(key) {
-  if (!key) return;
-  try { localStorage.removeItem('rc_voice_' + key); } catch (x) {}
-  idbVoiceDelete(key);
-}
-
-function dataURLToBlob(data) {
-  try {
-    var parts = data.split(',');
-    var meta = (parts[0].match(/^data:([^;]+)/) || [])[1] || 'audio/webm';
-    var bin = atob(parts[1]);
-    var arr = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
-    return new Blob([arr], { type: meta });
-  } catch (e) { return null; }
-}
-
-function getVoiceBlob(key) {
-  return idbVoiceGet(key).then(function(blob) {
-    if (blob) return blob;
-    var data = localStorage.getItem('rc_voice_' + key);
-    return data ? dataURLToBlob(data) : null;
-  }).catch(function() {
-    var data = localStorage.getItem('rc_voice_' + key);
-    return data ? dataURLToBlob(data) : null;
-  });
-}
-
-function persistVoiceBlob() {
-  return new Promise(function(resolve) {
-    if (!_voiceBlob) { resolve(false); return; }
-    var key = 'vj_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
-    idbVoiceSet(key, _voiceBlob).then(function() {
-      _voiceKey = key;
-      _voiceDur = _voiceSec;
-      resolve(true);
-    }).catch(function() {
-      var reader = new FileReader();
-      reader.onload = function() {
-        try {
-          localStorage.setItem('rc_voice_' + key, reader.result);
-          _voiceKey = key;
-          _voiceDur = _voiceSec;
-          resolve(true);
-        } catch (e) {
-          _voiceKey = null; _voiceDur = 0;
-          resolve(false);
-        }
-      };
-      reader.onerror = function() { _voiceKey = null; resolve(false); };
-      reader.readAsDataURL(_voiceBlob);
-    });
-  });
-}
-
-function playVoiceEntry(key) {
-  getVoiceBlob(key).then(function(blob) {
-    if (!blob) { showToast('Voice note is missing on this device.', 'error'); return; }
-    if (!_voiceAudio) _voiceAudio = new Audio();
-    _voiceAudio.src = URL.createObjectURL(blob);
-    _voiceAudio.play().catch(function() {});
-  });
-}
 
 var CRISIS_PATTERNS = [
   /\b(kill myself|killing myself|kill themselves|killing themselves|kill people|killing people|kill someone|killing someone|end my life|want to die|better off dead|end it all|take my own)\b/i,
@@ -1582,8 +1129,6 @@ function showHardTimeSupport() {
 
 function deleteJournalEntry(idx) {
   if (!confirm(t('Delete this journal entry?'))) return;
-  var e = D.journal[idx];
-  if (e && e.audioKey) deleteVoiceKey(e.audioKey);
   D.journal.splice(idx, 1);
   saveData();
 }
@@ -1591,185 +1136,10 @@ function deleteAllJournalEntries() {
   if (!D.journal.length) return;
   if (!confirm(t('Delete ALL journal entries? This cannot be undone.'))) return;
   if (!confirm(t('Are you sure? All ' + D.journal.length + ' entries will be permanently removed.'))) return;
-  for (var i = 0; i < D.journal.length; i++) {
-    if (D.journal[i] && D.journal[i].audioKey) deleteVoiceKey(D.journal[i].audioKey);
-  }
   D.journal = [];
   saveData();
 }
 
-// ====== ART'S DAILY ROUTINE ======
-var ROUTINE_POOLS = {
-  morning: [
-    'Start with 5 minutes of sunlight or stretching to wake up your body.',
-    'Drink a full glass of water before anything else. Hydration fuels clarity.',
-    'Write down one thing you are looking forward to today. Keep it small.',
-    'Take 3 deep breaths and set one intention for the day ahead.',
-    'Stretch your neck, shoulders, and back for 2 minutes. Your body holds tension.',
-    'Name one person you care about and send them a good thought.',
-    'Read yesterday\'s journal entry to see how far you\'ve come in 24 hours.',
-    'Make your bed  one small win before the day begins.',
-    'Step outside for 60 seconds. Feel the air and listen to the sounds around you.',
-    'Say one affirmation out loud. "I am enough. Today is mine."',
-    'Journal three words that describe how you want today to feel.',
-    'Do 10 jumping jacks to get your blood flowing.',
-    'Sit in silence for 2 minutes. Let your mind wake up naturally.',
-    'Write a quick note of encouragement to your future self at the end of the day.',
-    'Tidy one small area of your room. Order outside creates calm inside.',
-    'Splash cold water on your face and take a sharp, energizing breath.',
-    'Ask yourself: who do I want to be today?',
-    'Massage your temples and scalp for 30 seconds to release morning tension.',
-    'Look at yourself in the mirror and say one thing you like about who you are.',
-    'Stretch your arms overhead and let out a long, intentional yawn.',
-    'Sip something warm slowly. Let the warmth settle in your chest.',
-    'Write down one worry you are leaving behind today.',
-    'Clench and release each muscle group from your toes to your jaw.',
-    'Listen to one uplifting song before you look at your phone.',
-    'Trace your day in your mind: what needs to happen, what can wait.',
-    'Roll your shoulders back and down. Open your chest. Breathe deep.',
-    'Light a candle or incense and take 5 slow breaths with the scent.',
-    'Text one person you love and tell them something specific you appreciate about them.',
-    'Do a 1-minute plank to remind yourself that you are stronger than you think.',
-    'Stand barefoot on the floor for 30 seconds. Feel grounded before the day pulls you.'
-  ],
-  midday: [
-    'Step away for 5 minutes. Box breathe: in 4, hold 4, out 4, hold 4.',
-    'Pause and name one thing you can see, hear, and feel right now to ground yourself.',
-    'Check in with your body. Are you hungry, thirsty, or just tired?',
-    'Close your eyes and take 5 slow breaths before your next task.',
-    'Stand up and stretch. Your body wasn\'t designed to sit all day.',
-    'Drink some water and notice how your mind feels afterward.',
-    'Ask yourself: what do I need right now in this moment?',
-    'Take a 2-minute walk, even if it\'s just to another room and back.',
-    'Listen to one song without doing anything else. Just be with the music.',
-    'Write down one thing that went well so far today.',
-    'Eat something without any screens. Just you and your food.',
-    'Roll your neck slowly in circles  right, back, left, forward. Repeat.',
-    'Step outside and look at the sky for 30 seconds. Let your eyes rest.',
-    'Close your eyes and imagine your favorite peaceful place for 60 seconds.',
-    'Do 5 wall push-ups to reset your posture and energy.',
-    'Write down one decision you\'re proud of today so far.',
-    'Hum or sing quietly for 10 seconds. Vibrations calm the nervous system.',
-    'Count backward from 30 slowly. If your mind wanders, start over.',
-    'Massage your hands and wrists. We hold so much tension there.',
-    'Name one thing you\'re looking forward to later today.',
-    'Send a kind message to someone you haven\'t talked to in a while.',
-    'Shake out your hands and feet for 10 seconds. Release built-up energy.',
-    'Read one page of something inspiring. Let new thoughts in.',
-    'Close your eyes and visualize finishing one task you\'ve been avoiding.',
-    'Stand up and reach for the ceiling as high as you can. Then side to side.',
-    'Write down one thing you can let go of for the rest of the day.',
-    'Breathe in for 4 seconds, hold for 4, exhale for 6. Lengthen the exhale.',
-    'Look at something green  a plant, a tree, even a photo. Nature calms the mind.',
-    'Ask a coworker or friend how they\'re really doing today.',
-    'Do a quick brain dump: write everything on your mind for 60 seconds.'
-  ],
-  evening: [
-    'Reflect on one moment today that you want to remember. Write it down.',
-    'Before bed, name one small thing that went ok today. Even the smallest win counts.',
-    'Write down what frustrated you today  then tear it up or delete it. Let it go.',
-    'List 3 things you are grateful for today. No repeats allowed.',
-    'Close your eyes and replay one good moment from today in full detail.',
-    'Take 5 slow breaths and release the day. Tomorrow is a fresh start.',
-    'Write a sentence about how you feel right now. No judgment, just honesty.',
-    'Set one intention for tomorrow before you close your eyes.',
-    'Thank your body for carrying you through today, however it went.',
-    'Put your phone away 15 minutes earlier than usual. Give your mind space to settle.',
-    'Douse your face with cool water and look at yourself. You made it through today.',
-    'Write one thing you learned about yourself today.',
-    'Stretch your legs and hips for 3 minutes. Tension collects there from the day.',
-    'Lie down and scan your body from head to toe. Notice without changing anything.',
-    'List 5 sounds you heard today. It trains your brain to notice the present.',
-    'Write a short letter to tomorrow\'s you. What do you want them to know?',
-    'Dim the lights 30 minutes before bed. Signal your brain that it\'s time to rest.',
-    'Think of one person who made your day better, even in a small way.',
-    'Close your eyes and imagine releasing the day like letting go of a balloon.',
-    'Take a warm shower and let the water wash away the weight of the day.',
-    'Write down one thing you forgive yourself for today.',
-    'Read something calming for 5 minutes. Fiction, poetry, or something simple.',
-    'Ask yourself: what was the best moment of my day?',
-    'Press your palms together at your chest and bow your head slightly. A silent thank you.',
-    'Breathe in for 4, hold for 7, exhale for 8. Do this 4 times.',
-    'Write down one thing that went differently than expected. Did it turn out okay?',
-    'Gently roll your ankles and wrists in circles to release the day\'s tension.',
-    'Name one thing you want to remember from today a year from now.',
-    'Put a hand on your chest and say out loud: "I did enough today."',
-    'Turn off all notifications for the night. The world can wait until morning.'
-  ],
-  extra: [
-    'Every day you stay consistent, your brain builds stronger recovery pathways. You are literally rewiring yourself.',
-    'Healing isn\'t linear. Some days will feel harder  that doesn\'t mean you\'re going backwards.',
-    'You showed up today. That is not small. That is everything.',
-    'The fact that you\'re here, reading this, means you haven\'t given up. That takes strength.',
-    'Be gentle with yourself today. You are doing the best you can with what you have.',
-    'Progress isn\'t measured in perfection. It\'s measured in showing up again and again.',
-    'Your only job today is to be a little kinder to yourself than yesterday.',
-    'Recovery is not about being fixed. It\'s about being free to become who you really are.',
-    'Small steps compound. What you do today matters more than what you did yesterday.',
-    'You don\'t have to have it all figured out. Just keep moving forward.',
-    'You are not behind. There is no race. You are exactly where you need to be.',
-    'The urge to quit is temporary. The pride of pushing through lasts forever.',
-    'Healing happens in the quiet moments when no one is watching.',
-    'Your past does not define your future. Every day is a chance to rewrite your story.',
-    'It\'s okay to have a hard day. What matters is how you treat yourself through it.',
-    'Remember why you started. That reason is still valid, even if the path has changed.',
-    'Some days surviving is winning. And winning is enough.',
-    'Growth isn\'t always visible. Like roots, most of it happens underground.',
-    'Your mind lies sometimes. Especially when it tells you that you can\'t do this.',
-    'Be proud of yourself. You\'re carrying weight that nobody sees.',
-    'There is no such thing as too slow. Only forward.',
-    'You are not your worst moment. You are not your relapse. You are the person who got back up.',
-    'Self-care is not selfish. It\'s how you refuel so you can show up for what matters.',
-    'Today might be tough, but so are you. Tougher, actually.',
-    'One day, this will be a chapter in your story. Not the whole book.',
-    'You don\'t need to be fixed. You need to be understood  starting with yourself.',
-    'Keep going. Your future self is counting on you.',
-    'The braver you are in facing your pain, the freer you become.',
-    'There is strength in asking for help. You don\'t have to do this alone.',
-    'You are allowed to take up space. Your feelings matter. Your recovery matters.'
-  ]
-};
-
-function artDailyRoutineHTML() {
-  var today = new Date().toDateString();
-  if (D._artRoutineDate === today && D._artRoutine) return D._artRoutine;
-  var h = '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-heroguide);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div><h3 style="margin:0;font-size:15px">Daily Routine</h3><p style="margin:0;font-size:11px;color:var(--muted)">Based on your journal entries</p></div></div>';
-  if (!D.journal.length) {
-    h += '<div class="empty-state">Write in your journal to get a personalized daily routine.</div></div>';
-    return h;
-  }
-  var moodCounts = [0,0,0,0,0];
-  for (var mi=0;mi<D.moods.length;mi++) { moodCounts[D.moods[mi].val-1]++; }
-  var topMood = 0;
-  for (var mi2=0;mi2<5;mi2++) { if (moodCounts[mi2] > moodCounts[topMood]) topMood = mi2; }
-  var recentText = D.journal.slice(-3).map(function(j){var t=getEntryText(j);return t?t.toLowerCase():''}).join(' ');
-  var hasStress = recentText.indexOf('stress') !== -1 || recentText.indexOf('anxi') !== -1 || recentText.indexOf('overwhelm') !== -1;
-  var hasCraving = recentText.indexOf('craving') !== -1 || recentText.indexOf('trigger') !== -1 || recentText.indexOf('urge') !== -1;
-  var hasGratitude = recentText.indexOf('grateful') !== -1 || recentText.indexOf('thank') !== -1 || recentText.indexOf('bless') !== -1;
-
-  var dayIndex = Math.floor(Date.now() / 86400000);
-  var morningPool = ROUTINE_POOLS.morning;
-  var middayPool = ROUTINE_POOLS.midday;
-  var eveningPool = ROUTINE_POOLS.evening;
-  var extraPool = ROUTINE_POOLS.extra;
-  var morning = morningPool[dayIndex % morningPool.length];
-  var midday = middayPool[(dayIndex + Math.floor(morningPool.length / 2)) % middayPool.length];
-  var evening = eveningPool[(dayIndex + Math.floor(middayPool.length / 2)) % eveningPool.length];
-  var extra = extraPool[(dayIndex + Math.floor(eveningPool.length / 2)) % extraPool.length];
-  if (hasCraving) extra = 'You mentioned cravings. Cravings last 15-30 minutes. Surf the wave  it will pass. Keep your hands busy, call someone, or breathe through it.';
-  else if (hasStress) extra = 'You seem stressed. Try the 5-4-3-2-1 grounding exercise: 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.';
-  else if (hasGratitude) extra = 'You\'ve been practicing gratitude  that rewires your brain for positivity. Share one grateful thought with someone today.';
-
-  h += '<div style="margin-bottom:6px"><div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px">&#127749;</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Morning</div><div style="font-size:12px;color:var(--muted);line-height:1.4">' + morning + '</div></div></div>';
-  h += '<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px">&#9728;&#65039;</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Midday</div><div style="font-size:12px;color:var(--muted);line-height:1.4">' + midday + '</div></div></div>';
-  h += '<div style="display:flex;align-items:center;gap:6px;padding:8px 0"><span style="font-size:16px">&#127769;</span><div style="flex:1"><div style="font-size:13px;font-weight:600">Evening</div><div style="font-size:12px;color:var(--muted);line-height:1.4">' + evening + '</div></div></div>';
-  h += '</div>';
-  h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.5;border-left:3px solid var(--primary)"><strong>Note:</strong> ' + extra + '</div>';
-  h += '</div>';
-  D._artRoutineDate = today;
-  D._artRoutine = h;
-  return h;
-}
 
 // ====== REFLECT WITH ART ======
 // Song recommendations by emotional tone
@@ -2422,7 +1792,7 @@ function buildSuggestions(entry, mood, entries, idx) {
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   if (hasCravings) suggestions.push('I see you logged a craving recently. Try the Urge Surfing card in Coping Cards  it\'s designed for exactly this moment.');
 
-  var streak = D.streak || 0;
+  var streak = calcJournalStreak();
   if (streak > 5) suggestions.push('You\'re on a ' + streak + '-day journaling streak. Consistency like this is how recovery becomes a lifestyle, not just a goal.');
 
   if (D.name && D.buddyCode) suggestions.push('Have you shared this entry with your partner yet? Sometimes the people closest to us see our growth before we do.');
@@ -2586,11 +1956,6 @@ function reflectHTML() {
   h += '<div class="card">';
   h += '<h3>'+t('Write in Your Journal')+'</h3>';
   h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;border-left:3px solid var(--primary)"><strong>'+t("Today's Prompt:")+'</strong> ' + todayPrompt() + '</div>';
-  // Journal modes: Type vs Voice Journaling
-  h += '<div style="display:flex;gap:6px;margin:8px 0" id="ref-modes">';
-  h += '<button class="btn btn-sm btn-primary" id="jmode-type" onclick="setRefJournalMode(\'type\')" style="flex:1">&#9998; '+t('Type')+'</button>';
-  h += '<button class="btn btn-sm btn-outline" id="jmode-voice" onclick="setRefJournalMode(\'voice\')" style="flex:1">&#127908; '+t('Voice Journaling')+'</button>';
-  h += '</div>';
   // Type panel (Free Write / Quick Mood selector)
   h += '<div id="j-type-panel">';
   var types = [
@@ -2614,34 +1979,10 @@ function reflectHTML() {
   h += '</div>';
   h += '<textarea id="ref-entry" placeholder="'+t('Write whatever is on your mind')+'..." style="min-height:140px" oninput="updateWordCount(this)"></textarea>';
   h += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:2px 0 6px" id="word-count-row"><span id="word-count">0 '+t('words')+'</span><span>'+t('Goal:')+' ' + goal + ' '+t('words')+'</span></div>';
-  // Voice Journaling panel
-  h += '<div id="j-voice-panel" style="display:none;background:var(--primary-light);border-radius:12px;padding:14px;margin:8px 0;text-align:center">';
-  if (voiceSupported()) {
-    h += '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">&#127908; '+t('Voice Journaling')+'</div>';
-    h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px;line-height:1.5">'+t('Speak naturally — your words are transcribed live and your summary is read back to you when you stop.')+'</div>';
-    h += '<button class="btn btn-primary btn-sm" id="vj-btn" onclick="toggleVoiceRecord()">&#128266; '+t('Record')+'</button> ';
-    h += '<button class="btn btn-outline btn-sm" id="vj-play" onclick="previewVoice()" style="display:none">&#9654; '+t('Preview')+'</button> ';
-    h += '<button class="btn btn-outline btn-sm" id="vj-clear" onclick="clearVoice()" style="display:none">&#10005; '+t('Clear')+'</button>';
-    h += '<div id="vj-status" style="display:none;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:12px;font-weight:600;color:var(--danger)"><span class="vj-dot"></span><span id="vj-status-text"></span></div>';
-    h += '<div id="vj-timer" style="font-size:12px;color:var(--muted);margin-top:8px;min-height:16px"></div>';
-    h += '<div id="vj-hint" style="font-size:11px;color:var(--muted);margin-top:4px;display:none"></div>';
-    h += '<div id="vj-transcript-box" style="display:none;margin-top:10px;text-align:left;border:1px solid var(--border);border-radius:10px;padding:10px;background:var(--card)">';
-    h += '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:4px">'+t('TRANSCRIPT')+'</div>';
-    h += '<div id="vj-transcript" style="font-size:13px;line-height:1.6;white-space:pre-wrap;color:var(--text);max-height:140px;overflow-y:auto"></div>';
-    h += '<div id="vj-summary-box" style="display:none;margin-top:10px;padding:10px;background:var(--primary-light);border-radius:8px;border-left:3px solid var(--primary)">';
-    h += '<div style="font-size:9px;color:var(--primary);letter-spacing:2px;margin-bottom:6px;font-weight:700">'+t('YOUR SUMMARY')+'</div>';
-    h += '<div id="vj-summary" style="font-size:12px;line-height:1.6;color:var(--text)"></div>';
-    h += '<button class="btn btn-sm btn-primary" id="vj-hear-summary" onclick="toggleSpeakSummary()" style="display:none;margin-top:8px;width:100%">&#128266; '+t('Hear summary')+'</button>';
-    h += '</div></div>';
-  } else {
-    h += '<div style="font-size:13px;color:var(--muted);line-height:1.5">'+t('Voice journaling isn\u2019t supported in this browser. Use Type mode instead.')+'</div>';
-  }
-  h += '</div>';
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
   h += '</div>';
   // My Values section
   h += chivalryCodeHTML();
-  h += artDailyRoutineHTML();
   h += journalInsightsHTML();
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">Journal Reflections</div>';
@@ -2659,8 +2000,8 @@ function reflectHTML() {
       var idx = D.journal.length - 1 - i;
       var entryTextRefl = getEntryText(entries[i]);
       h += '<div class="card journal-entry" data-search="' + (entryTextRefl.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
-      h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + (entries[i].audioKey ? ' <span class="badge" style="font-size:9px;background:var(--primary-light);color:var(--primary)">&#127908;</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
-      h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div>' + (entries[i].audioKey ? '<div style="margin-top:6px"><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\'' + entries[i].audioKey + '\')" style="font-size:10px;padding:3px 8px">&#9654; Play voice note' + (entries[i].audioDur ? ' (' + formatDur(entries[i].audioDur) + ')' : '') + '</button></div>' : '') + '</div>';
+      h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
+      h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div></div>';
       h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect</button>';
       h += '</div>';
     }
@@ -2701,12 +2042,10 @@ function saveQuickMood() {
   var entry = {text:txt, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'), mood:mood, type:'quick'};
   var saveIt = function() {
     D.journal.push(entry);
-    earnSchillings(5, 'Journal entry');
     if (!D.moods) D.moods = [];
     D.moods.push({val:mood, date:now.toDateString(), time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')});
     saveData();
     render();
-    setTimeout(showSchillingNotification, 800);
   };
   if (isEncryptionEnabled() && ENC_KEY) {
     encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
@@ -2749,50 +2088,24 @@ function pickRefMood(btn) {
 }
 
 function setRefJournalMode(mode) {
-  var vp = document.getElementById('j-voice-panel');
   var tpn = document.getElementById('j-type-panel');
-  var te = document.getElementById('ref-entry');
-  var wc = document.getElementById('word-count-row');
-  var tb = document.getElementById('jmode-type');
-  var vb = document.getElementById('jmode-voice');
-  if (tb) tb.className = 'btn btn-sm ' + (mode === 'type' ? 'btn-primary' : 'btn-outline');
-  if (vb) vb.className = 'btn btn-sm ' + (mode === 'voice' ? 'btn-primary' : 'btn-outline');
-  if (tpn) tpn.style.display = mode === 'type' ? 'block' : 'none';
-  if (vp) vp.style.display = mode === 'voice' ? 'block' : 'none';
+  if (tpn) tpn.style.display = 'block';
   if (mode === 'type') {
     var qm = document.getElementById('quick-mood-area');
+    var te = document.getElementById('ref-entry');
+    var wc = document.getElementById('word-count-row');
     if (te) te.style.display = 'block';
     if (wc) wc.style.display = 'flex';
     if (qm) qm.style.display = 'none';
     var freeBtn = document.querySelector('#journal-types .btn[data-type="free"]');
     if (freeBtn) { try { freeBtn.click(); } catch (e) {} }
-  } else {
-    if (te) te.style.display = 'none';
-    if (wc) wc.style.display = 'none';
-    var sw = document.getElementById('save-entry-btn');
-    if (sw) sw.style.display = 'inline-block';
-    updateVoiceUI();
   }
 }
 
 function saveRefJournal() {
   var text = document.getElementById('ref-entry');
   var txt = (text ? text.value.trim() : '');
-  if (_voiceRec && _voiceRec.state === 'recording') {
-    var entryRec = buildRefEntry(text, txt);
-    _pendingSave = function() {
-      var t2 = document.getElementById('ref-entry');
-      var t2v = (t2 ? t2.value.trim() : '');
-      txt = t2v || entryRec.text;
-      entryRec.text = txt;
-      if (!txt && !_voiceBlob) { alert(t('Write something first.')); return; }
-      persistRefEntry(entryRec, txt, text);
-    };
-    stopTranscription();
-    _voiceRec.stop();
-    return;
-  }
-  if (!txt && !_voiceBlob) { alert(t('Write something first.')); return; }
+  if (!txt) { alert(t('Write something first.')); return; }
   var entry = buildRefEntry(text, txt);
   persistRefEntry(entry, txt, text);
 }
@@ -2803,7 +2116,6 @@ function buildRefEntry(text, txt) {
   var typeBtn = document.querySelector('#journal-types .btn-primary');
   var type = typeBtn ? typeBtn.getAttribute('data-type') : 'free';
   var now = new Date();
-  if (!txt) txt = '\uD83C\uDF9C\uFE0F ' + t('Voice journaling note');
   return {
     text: txt,
     date: now.toDateString(),
@@ -2819,8 +2131,6 @@ function persistRefEntry(entry, txt, text) {
     if (saved) return;
     saved = true;
     D.journal.push(entry);
-    earnSchillings(5, 'Journal entry');
-    resetVoiceState();
     if (text) text.value = '';
     setRefJournalMode('type');
     var idx = D.journal.length - 1;
@@ -2840,19 +2150,7 @@ function persistRefEntry(entry, txt, text) {
       saveIt();
     }
   };
-  if (_voiceBlob) {
-    persistVoiceBlob().then(function(ok) {
-      if (ok) {
-        entry.audioKey = _voiceKey;
-        entry.audioDur = _voiceDur;
-      } else {
-        showToast('Voice note could not be saved, but your entry was saved.', 'error');
-      }
-      finish();
-    });
-  } else {
-    finish();
-  }
+  finish();
 }
 
 function showJournalLetter(idx) {
@@ -2869,7 +2167,7 @@ function showJournalLetter(idx) {
   var dayCount = soberDays();
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   var totalEntries = D.journal.length;
-  var streak = D.streak || 0;
+  var streak = calcJournalStreak();
   var moodColors = {sad:'#60a5fa',angry:'#ef4444',anxious:'#f59e0b',happy:'#34d399',grateful:'#a78bfa',reflective:'#818cf8',hopeful:'#fbbf24',mixed:'#94a3b8'};
   var moodLabels = {sad:'Sad',angry:'Angry',anxious:'Anxious',happy:'Happy',grateful:'Grateful',reflective:'Reflective',hopeful:'Hopeful',mixed:'Mixed'};
   var mc = moodColors[mood] || '#94a3b8';
@@ -2899,14 +2197,9 @@ function showJournalLetter(idx) {
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">' + timeStr + '</div>';
   // Entry text (shown immediately)
   h += '<div class="card" style="white-space:pre-wrap;font-size:14px;line-height:1.7;margin-bottom:8px">' + safe(entryText) + '</div>';
-  // Voice note playback
-  if (entry.audioKey) {
-    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px;text-align:center"><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\'' + entry.audioKey + '\')" style="font-size:11px;padding:5px 12px">&#9654; Play voice note' + (entry.audioDur ? ' (' + formatDur(entry.audioDur) + ')' : '') + '</button></div>';
-  }
   // Summary
   if (summaryText) {
-    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">A Thought on Your Entry</div><div id="js-summary-say" style="font-size:13px;line-height:1.6;color:var(--text-light);margin-top:4px">' + summaryText + '</div>';
-    h += '<button class="btn btn-sm btn-outline" onclick="toggleSummarySpeech(this,\'js-summary-say\')" style="margin-top:8px;width:100%;font-size:11px">&#128266; Read summary aloud</button></div>';
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">A Thought on Your Entry</div><div id="js-summary-say" style="font-size:13px;line-height:1.6;color:var(--text-light);margin-top:4px">' + summaryText + '</div></div>';
   }
   // Suggestions / Insights
   if (suggestions && suggestions.length > 0) {
@@ -2935,7 +2228,7 @@ function showJournalLetter(idx) {
   h += '</div>';
   // Closing
   h += '<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:12px"><span>' + safe(D.name || 'Me') + '</span></div>';
-  h += '<button class="btn btn-primary" onclick="stopSpeaking();this.closest(\'.overlay\').remove()" style="width:100%">&#10003; Close</button>';
+  h += '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()" style="width:100%">&#10003; Close</button>';
   h += '</div>';
 
   overlay.innerHTML = h;
@@ -2960,7 +2253,7 @@ function showReflection(idx) {
   var dayCount = soberDays();
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   var totalEntries = D.journal.length;
-  var streak = D.streak || 0;
+  var streak = calcJournalStreak();
   var moodColors = {sad:'#60a5fa',angry:'#ef4444',anxious:'#f59e0b',happy:'#34d399',grateful:'#a78bfa',reflective:'#818cf8',hopeful:'#fbbf24',mixed:'#94a3b8'};
   var moodLabels = {sad:'Sad',angry:'Angry',anxious:'Anxious',happy:'Happy',grateful:'Grateful',reflective:'Reflective',hopeful:'Hopeful',mixed:'Mixed'};
   var mc = moodColors[mood] || '#94a3b8';
@@ -3010,7 +2303,7 @@ function showReflection(idx) {
   h += '<div style="padding:0 4px;opacity:0" id="jc-bars">'+moodBars+'</div>';
   h += '</div>';
   // Scene 3: Summary (dialogue box style)
-  h += '<div id="jc-summary-box" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:10px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">SUMMARY</div><div id="jc-summary-text" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);min-height:1.2em"></div><button class="btn btn-sm btn-outline" id="jc-read-summary" onclick="toggleSummarySpeech(this,\'jc-summary-text\')" style="display:none;margin-top:10px;width:100%;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.6)">&#128266; Read summary aloud</button></div>';
+  h += '<div id="jc-summary-box" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:12px 14px;margin:10px 0;opacity:0"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">SUMMARY</div><div id="jc-summary-text" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,.8);min-height:1.2em"></div></div>';
   // Scene 4: Additional info (bottom)
   h += '<div id="jc-more" style="opacity:0">';
   // Suggestions
@@ -3038,9 +2331,9 @@ function showReflection(idx) {
   h += '</div>';
   // Original entry
   h += '<details style="padding:6px 0;border-top:1px solid rgba(255,255,255,.05)"><summary style="font-size:9px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.4);letter-spacing:1px;padding:2px 0">READ YOUR ENTRY</summary>';
-  h += '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;white-space:pre-wrap;margin-top:4px;padding:4px 0">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+(entry.audioKey?'</p><button class="btn btn-sm btn-primary" onclick="playVoiceEntry(\''+entry.audioKey+'\')" style="font-size:10px;padding:4px 10px">&#9654; Play voice note'+(entry.audioDur?' ('+formatDur(entry.audioDur)+')':'')+'</button><p>':'</p>')+'</details>';
+  h += '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;white-space:pre-wrap;margin-top:4px;padding:4px 0">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p>'+'</details>';
   // Close
-  h += '<button class="btn btn-outline" onclick="stopSpeaking();this.closest(\'.overlay\').remove()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="jc-close">'+t('Close')+'</button></div>';
+  h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px;opacity:0;font-size:10px;border-color:rgba(255,255,255,.15);color:rgba(255,255,255,.5)" id="jc-close">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 
@@ -3116,8 +2409,6 @@ function showReflection(idx) {
         }
       }
       typeHTML();
-      var readBtn = overlay.querySelector('#jc-read-summary');
-      if (readBtn) readBtn.style.display = '';
     }
   }, 2500);
   // Scene 4: Additional info (fade up)
@@ -3179,7 +2470,6 @@ function showRelapsePlan() {
   h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
-  if (plan.statement) renderRelapsePlanSummary();
 }
 
 function saveRelapsePlan(btn) {
@@ -3239,32 +2529,12 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'assessment\')">'+t('Assessment')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">'+t('Relapse Plan')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; '+t('Relapse Rescue')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'relapsegraveyard\')" style="border-color:var(--muted)">&#9904; '+t('Relapse Graveyard')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; Your View</div>';
   h += '</div>';
 
   // Journal-based insights
   h += journalInsightsHTML();
-
-  // Daily check-in
-  h += '<div class="card"><h3>'+t('Daily Check-In')+'</h3>';
-  var today = new Date().toDateString();
-  var checkedIn = D.checkins.filter(function(c){return c.date===today}).length;
-  if (checkedIn) {
-    var lastCheckin = D.checkins.filter(function(c){return c.date===today});
-    var ciData = lastCheckin.length ? lastCheckin[lastCheckin.length-1] : null;
-    var moodEmojis = ['&#128545;','&#128544;','&#128529;','&#128578;','&#128513;'];
-    var moodStr = ciData && ciData.mood ? moodEmojis[ciData.mood-1] : '&#9989;';
-    h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--primary-light);border-radius:10px;margin-bottom:6px"><span style="font-size:22px">'+moodStr+'</span><div style="flex:1"><div style="font-weight:600;font-size:13px;color:var(--primary)">'+t('Checked in today')+'</div>' +
-      (ciData && ciData.win ? '<div style="font-size:11px;color:var(--text);margin-top:2px">&#127775; "'+ciData.win.substring(0,60)+(ciData.win.length>60?'...':'')+'"</div>' : '') +
-      '</div></div>';
-    h += '<button class="btn btn-sm btn-outline" onclick="doCheckin()" style="font-size:11px">&#127918; Return to the Roll</button>';
-  } else {
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('How was your day?')+'</p>';
-    h += '<button class="btn btn-primary btn-sm" onclick="doCheckin()">'+t('Mark Presence')+'</button>';
-  }
-  h += '</div>';
 
   // Helplines
   var helplines = [
@@ -3479,12 +2749,11 @@ function rescueRecommit() {
   D.relapseRescue.logs.push(log);
   D.sobriety.relapseDates.push(Date.now());
   D.sobriety.startDate = Date.now();
-  D.streak = 0;
   scheduleFollowUp();
   saveData();
   setTimeout(kingdomDamage, 150);
 
-  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'royalpardon\')">&#128081; Fresh Start</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
+  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'royalpardon\')">&#128081; Fresh Start</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
 }
 
 function rescueSkip() {
@@ -3760,13 +3029,6 @@ function buildPeriodComparisonInsights() {
   } else if (recent.length > previous.length && recent.length >= 3) {
     insights.push({icon:'&#9989;',text:'Your journal frequency <strong>increased</strong> this week (' + recent.length + ' entries, up from ' + previous.length + ' last week). Consistent self-reflection builds resilience.',severity:'positive'});
   }
-  if (D.checkins && D.checkins.length >= 3) {
-    var recentC = D.checkins.filter(function(c){var d=new Date(c.date||c.timestamp);return d.getTime() > weekAgo});
-    var prevC = D.checkins.filter(function(c){var d=new Date(c.date||c.timestamp);return d.getTime() > twoWeeksAgo && d.getTime() <= weekAgo});
-    if (recentC.length < prevC.length && prevC.length >= 2) {
-      insights.push({icon:'&#128204;',text:'Check-ins <strong>dropped</strong> from ' + prevC.length + ' to ' + recentC.length + ' week over week. Regular check-ins help catch warning signs early.',severity:'medium'});
-    }
-  }
   return insights;
 }
 
@@ -3776,11 +3038,8 @@ function buildRiskAssessment() {
   var daysSinceLastJournal = D.journal.length ? Math.round((Date.now() - new Date(D.journal[D.journal.length-1].date).getTime())/86400000) : 999;
   var recentCravings = D.cravings ? D.cravings.filter(function(c){return Date.now()-new Date(c.timestamp||c.date).getTime() < 7*86400000}).length : 0;
   var recentMood = 3;
-  if (D.checkins && D.checkins.length >= 3) {
-    var weekAgo = Date.now() - 7*86400000;
-    var recentCheckinMoods = D.checkins.filter(function(c){var d=new Date(c.date||c.timestamp);return d.getTime() > weekAgo}).map(function(c){return c.mood||3});
-    if (recentCheckinMoods.length >= 2) recentMood = recentCheckinMoods.reduce(function(a,b){return a+b},0)/recentCheckinMoods.length;
-  }
+  var recentMoods = D.moods ? D.moods.filter(function(m){return Date.now()-new Date(m.date).getTime() < 7*86400000}).map(function(m){return m.val||3}) : [];
+  if (recentMoods.length >= 2) recentMood = recentMoods.reduce(function(a,b){return a+b},0)/recentMoods.length;
   if (daysSinceLastJournal > 7) { risk.level = 'high'; risk.factors.push('No journal entry in ' + daysSinceLastJournal + ' days'); }
   else if (daysSinceLastJournal > 3) { risk.factors.push('Journal gap of ' + daysSinceLastJournal + ' days'); if (risk.level === 'low') risk.level = 'medium'; }
   if (recentCravings >= 3) { risk.level = 'high'; risk.factors.push(recentCravings + ' cravings this week'); }
@@ -3812,24 +3071,6 @@ function buildHeroGuideInsights() {
     else if (recentCount > olderCount && recentCount >= 3) insights.push({ icon: '&#128200;', text: 'Your journal frequency is <strong>increasing</strong>  a great sign of growing engagement with your recovery.', severity: 'positive' });
   } else {
     insights.push({ icon: '&#128221;', text: 'You haven\'t started journaling yet. Journaling is one of the most effective tools for recognizing patterns in your recovery.', severity: 'info' });
-  }
-
-  // Check-in patterns
-  if (D.checkins && D.checkins.length >= 3) {
-    var recentCheckins = D.checkins.slice(-7);
-    var avgMood = recentCheckins.reduce(function(s,c){return s + (c.mood || 3)}, 0) / Math.max(1, recentCheckins.length);
-    if (avgMood < 2.5 && recentCheckins.length >= 3) insights.push({ icon: '&#128555;', text: 'Your recent check-in mood has been trending <strong>below average</strong>. Low mood lasting several days is worth talking to someone about.', severity: 'high' });
-    else if (avgMood >= 4) insights.push({ icon: '&#128513;', text: 'Your mood has been consistently <strong>high</strong> in recent check-ins. That\'s great  keep paying attention to what\'s working.', severity: 'positive' });
-    var checkDates = D.checkins.map(function(c){return c.date});
-    var uniqueDays = {};
-    checkDates.forEach(function(d){uniqueDays[d.substring(0,10)]=true});
-    var uniqueCount = Object.keys(uniqueDays).length;
-    var totalCheckDays = D.checkins.length;
-    if (uniqueCount < totalCheckDays * 0.5 && totalCheckDays > 5) insights.push({ icon: '&#128204;', text: 'You\'ve missed more check-ins than you\'ve completed recently. Regular check-ins help catch warning signs early.', severity: 'medium' });
-  } else if (D.checkins && D.checkins.length > 0) {
-    insights.push({ icon: '&#128204;', text: 'You\'ve done <strong>' + D.checkins.length + ' check-in' + (D.checkins.length !== 1 ? 's' : '') + '</strong> so far. The more consistently you check in, the more patterns you can spot.', severity: 'info' });
-  } else {
-    insights.push({ icon: '&#128204;', text: 'No check-ins yet. The daily check-in helps track your mood and wins over time.', severity: 'info' });
   }
 
   // Craving patterns
@@ -4048,57 +3289,6 @@ function pendingFollowUpHTML() {
   return h;
 }
 
-function doCheckin(replay) {
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var h = '<div class="overlay-content" style="max-width:420px">';
-  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:34px;height:34px;border-radius:17px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;font-weight:700">&#128204;</div><div><h3 style="margin:0;font-size:15px;font-weight:700">'+t('Daily Check-In')+'</h3><p style="margin:2px 0 0;font-size:11px;color:var(--muted)">'+t('How was your day?')+'</p></div></div>';
-  h += '<div id="cm-form" style="text-align:left">';
-  h += '<div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px">Mood:</div><div class="mood-row" style="gap:2px;margin-bottom:6px">';
-  var moodLabels = ['\u{1F621}','\u{1F620}','\u{1F611}','\u{1F642}','\u{1F60A}'];
-  for (var mi=0;mi<5;mi++) h += '<button class="mood-btn cm-mood" data-val="'+(mi+1)+'" onclick="document.querySelectorAll(\'.cm-mood\').forEach(function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+moodLabels[mi]+'</button>';
-  h += '</div>';
-  h += '<div style="display:flex;gap:6px;margin-bottom:6px"><div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:2px">'+t('Win today')+'</div><input id="cm-win" class="input" style="width:100%;font-size:12px;padding:5px 7px" placeholder="One win..."></div><div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:2px">'+t('Intention')+'</div><input id="cm-intent" class="input" style="width:100%;font-size:12px;padding:5px 7px" placeholder="Tomorrow..."></div></div>';
-  h += '<button class="btn btn-primary btn-sm" onclick="submitCheckin()" style="width:100%;font-size:12px;padding:7px">&#9889; Check In</button>';
-  h += '</div></div>';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-  window._cmOverlay = overlay;
-}
-function submitCheckin() {
-  var today = new Date().toDateString();
-  var moodEl = document.querySelector('.cm-mood.active');
-  var mood = moodEl ? parseInt(moodEl.getAttribute('data-val')) : 3;
-  var win = document.getElementById('cm-win').value.trim();
-  var intent = document.getElementById('cm-intent').value.trim();
-  D.checkins = D.checkins || [];
-  D.checkins.push({date:today,time:new Date().toLocaleTimeString(),mood:mood,win:win,intent:intent});
-  D.streak = (D.streak || 0) + 1;
-  earnSchillings(1, 'Daily check-in');
-  saveData();
-  if (window._cmOverlay) window._cmOverlay.remove();
-  showCheckinReaction(mood);
-  setTimeout(showSchillingNotification, 800);
-}
-function showCheckinReaction(mood) {
-  var reactions = [
-    'Nice. Another check-in logged. Your mood trend is getting clearer. Keep it up.',
-    'Good \u2014 you checked in. That single action tells more than any theory. Consistency is the real pattern.',
-    'Check-in received. You showed up. That\u2019s the hardest part. Well done.',
-    'Daily check \u2014 you answered the roll call. Discipline is armor.',
-    'The daily ritual strengthens the soul. You cast your intention into the world. Let it echo.',
-    'You checked in. That\u2019s another thread in the tapestry of your new self. Keep weaving.'
-  ];
-  var msg = reactions[Math.floor(Math.random() * reactions.length)];
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.style.background = 'rgba(0,0,0,.4)';
-  overlay.innerHTML = '<div style="background:var(--card);border-radius:20px;max-width:340px;width:90%;padding:28px 24px;text-align:center;border:2px solid var(--primary);animation:scaleIn .3s ease;box-shadow:0 12px 40px rgba(0,0,0,.2)">' +
-    '<div style="width:48px;height:48px;border-radius:24px;background:var(--primary);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:20px">&#10003;</div>' +
-    '<p style="font-size:13px;line-height:1.6;color:var(--text);margin-bottom:16px">' + msg + '</p>' +
-    '<button class="btn btn-primary btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">Continue</button></div>';
-  document.body.appendChild(overlay);
-}
 
 // ====== BREATHING ======
 function startBreathe() {
@@ -4388,10 +3578,8 @@ function reportsHTML() {
     }
   }
   var journalCount = D.journal.filter(function(j){return new Date(j.date).getTime() > cutoff.getTime()}).length;
-  var checkinCount = D.checkins.filter(function(c){return new Date(c.date).getTime() > cutoff.getTime()}).length;
   var sober = soberDays();
 
-  var soberStreaks = D.checkins.filter(function(c){return new Date(c.date).getTime() > cutoff.getTime()}).length;
   var cravingsCount = D.cravings ? D.cravings.filter(function(c){return c.timestamp > cutoff.getTime()}).length : 0;
   var breatheCount = D.breatheCount || 0;
   var moodChart = '';
@@ -4411,7 +3599,6 @@ function reportsHTML() {
   h += '<div class="stat-grid">';
   h += '<div class="stat-card"><div class="num">' + avgMood + '</div><div class="label">Avg Mood</div></div>';
   h += '<div class="stat-card"><div class="num">' + journalCount + '</div><div class="label">Journaled</div></div>';
-  h += '<div class="stat-card"><div class="num">' + checkinCount + '</div><div class="label">Check-Ins</div></div>';
   h += '</div>';
   if (moodChart) { h += '<div style="font-size:11px;color:var(--muted);margin:4px 0 2px">Mood timeline</div>' + moodChart; }
   h += '</div>';
@@ -4445,7 +3632,6 @@ function reportsHTML() {
   if (sober >= 180) milestones.push({icon:'&#x2726;&#x2727;',title:'6 Months Sober',desc:'Half a year of freedom'});
   if (sober >= 365) milestones.push({icon:'&#x265B;&#x265B;',title:'1 Year Sober',desc:'One year of reclaiming your life'});
   if (journalCount >= (REPORT_PERIOD==='month'?10:3)) milestones.push({icon:'&#x2712;',title:'Consistent Journaler',desc:'Wrote ' + (REPORT_PERIOD==='month'?'10+':'3+') + ' times'});
-  if (checkinCount >= (REPORT_PERIOD==='month'?20:5)) milestones.push({icon:'&#x2713;',title:D.checkins.length>=20?'Check-In Champion':'Daily Check-In Champ',desc:'Checked in ' + (REPORT_PERIOD==='month'?'20+':'5+') + ' times'});
   if (D.habits.length > 0 && habitsDone >= D.habits.length * (REPORT_PERIOD==='month'?20:5)) milestones.push({icon:'&#x2694;',title:'Habit Hero',desc:'Most habits completed'});
   if (!milestones.length) h += '<div class="empty-state">Complete more activities to earn milestones!</div>';
   for (var i=0;i<milestones.length;i++) {
@@ -4866,11 +4052,9 @@ function removeBuddy() {
 function progressSnapshot() {
   return {
     soberDays: soberDays(),
-    streak: D.streak || 0,
     journalCount: D.journal.length,
     moodCount: D.moods.length,
     habitsDone: D.habits.filter(function(h){return h.logs && h.logs.length}).length,
-    checkins: D.checkins.length,
     addictionType: D.sobriety.addictionType || '',
     updated: new Date().toLocaleDateString()
   };
@@ -4929,14 +4113,13 @@ function calendarHTML() {
     var isToday = dateStr === now.toDateString();
     var isFuture = dateObj > now;
     var hasMood = D.moods.some(function(m){return m.date===dateStr});
-    var hasCheck = D.checkins.some(function(c){return c.date===dateStr});
     var habitsDone = D.habits.filter(function(h){return h.logs && h.logs.indexOf(dateStr)!==-1}).length;
     var hasJournal = D.journal.some(function(j){return j.date===dateStr});
     if (!isFuture) {
       if (hasMood && habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--primary);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
       else if (hasMood && hasJournal) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:#3b82f6;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
       else if (hasMood) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:#22c55e;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
-      else if (hasCheck || habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--accent);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      else if (habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--accent);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
       else { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--border);color:var(--muted)" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
     } else {
       h += '<div class="cal-day future" style="background:transparent;color:var(--muted)"><span>'+day+'</span></div>';
@@ -4945,7 +4128,7 @@ function calendarHTML() {
   var rem = 7 - ((firstDay + daysInMonth) % 7);
   if (rem < 7) { for (var i=1;i<=rem;i++) { h += '<div class="cal-day other-month" style="background:transparent;cursor:default">'+i+'</div>'; } }
   h += '</div>';
-  h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#3b82f6"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#22c55e"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Check-in/Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span></div>';
+  h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#3b82f6"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#22c55e"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span></div>';
   h += '<button class="btn btn-outline btn-sm" onclick="CAL_MONTH_OFFSET=0;render()" style="margin-top:8px">'+t('Jump to Today')+'</button>';
   h += '</div>';
   return h;
@@ -4956,12 +4139,10 @@ function showDayDetail(dateStr) {
   overlay.className = 'overlay';
   var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+dateStr+'</h3>';
   var mood = D.moods.filter(function(m){return m.date===dateStr});
-  var check = D.checkins.filter(function(c){return c.date===dateStr});
   var habits = D.habits.filter(function(h){return h.logs && h.logs.indexOf(dateStr)!==-1});
   var journal = D.journal.filter(function(j){return j.date===dateStr});
   h += '<div style="font-size:13px;line-height:1.8">';
   h += '<div><strong>'+t('Mood:')+'</strong> '+(mood.length?MOODS[mood[mood.length-1].val-1].label:t('None'))+'</div>';
-  h += '<div><strong>Check-in:</strong> '+(check.length?'Yes':'No')+'</div>';
   h += '<div><strong>Habits done:</strong> '+(habits.length?habits.map(function(h){return h.name}).join(', '):'None')+'</div>';
   h += '<div><strong>Journal entries:</strong> '+(journal.length?journal.length:'None')+'</div>';
   h += '</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">'+t('Close')+'</button></div>';
@@ -5136,7 +4317,6 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">'+t('Calendar')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'reminders\')">'+t('Reminders')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'kingsledger\')" style="border-color:#d4a017">\uD83D\uDCD6 '+t('Savings Ledger')+'</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Recovery')+'</h3>';
   h += '<div class="sub-grid">';
@@ -5146,10 +4326,7 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#127793; '+t('Fresh Start')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#6b4a2e">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'warchest\')" style="border-color:#2d6a27">&#9889; '+t('Rewards')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'alliances\')" style="border-color:#6366f1">&#129309; '+t('Alliances')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
-  h += '<div class="sub-item" onclick="goTo(\'shop\')" style="border-color:#d4a017">\u2727 '+t('Shop')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; '+t('Programs')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; '+t('Screeners')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
@@ -5170,117 +4347,6 @@ function moreHTML() {
   return h;
 }
 
-// ====== ALLIANCES ======
-function alliancesHTML() {
-  var days = soberDays();
-  var rank = getRank(days);
-  var level = kingdomLevel(days);
-  var wc = D.warchest || {};
-  var shields = wc.shields || 0;
-  var h = '<h2 class="page-title">&#9876; Support Alliances</h2>';
-  h += '<div style="display:grid;grid-template-columns:1fr;gap:10px;margin:8px 0">';
-
-  // Kingdom card helper
-  function kingdomCard(opts) {
-    var isUser = opts.isUser;
-    var c = '<div class="card" style="padding:14px;text-align:center;border-left:4px solid ' + (isUser ? '#d4a017' : '#6366f1') + '">';
-    c += '<div style="font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">' + (isUser ? '&#128081; Your Space' : '&#9876; Allied Space') + '</div>';
-    c += '<div style="font-size:16px;font-weight:700;font-family:Georgia,serif;color:var(--primary-dark);margin-bottom:2px">' + safe(opts.name) + '</div>';
-    c += '<div style="font-size:24px;margin:4px 0">' + (opts.rank ? opts.rank.icon : '') + '</div>';
-    c += '<div style="font-size:13px;color:var(--text)">' + (opts.rank ? opts.rank.title : '') + '</div>';
-    c += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0">';
-    c += '<div><div style="font-size:18px;font-weight:800;color:var(--primary)">' + opts.days + '</div><div style="font-size:8px;color:var(--muted);letter-spacing:1px">DAYS</div></div>';
-    c += '<div><div style="font-size:18px;font-weight:800;color:var(--accent)">Lv' + opts.level + '</div><div style="font-size:8px;color:var(--muted);letter-spacing:1px">CASTLE</div></div>';
-    c += '<div><div style="font-size:18px;font-weight:800;color:#d4a017">' + opts.shields + '</div><div style="font-size:8px;color:var(--muted);letter-spacing:1px">SHIELDS</div></div>';
-    c += '</div>';
-    if (opts.population) {
-      c += '<div style="font-size:11px;color:var(--muted)">&#128101; ' + opts.population + ' allies</div>';
-    }
-    c += '</div>';
-    return c;
-  }
-
-  // User's kingdom
-  h += kingdomCard({
-    isUser: true,
-    name: '',
-    rank: rank,
-    days: days,
-    level: level,
-    shields: shields,
-    population: kingdomPopulation(days)
-  });
-
-  // Buddy kingdoms
-  var buddyShown = 0;
-  var maxBuddies = 2;
-
-  // Current buddy
-  if (D.buddy && D.buddy.name) {
-    var bName = D.buddy.name;
-    var bc = D.buddy.contact || '';
-    (function(name, contact) {
-      try {
-        if (firebase && firebase.auth().currentUser && contact) {
-          DB.collection('progress').doc(contact).get().then(function(doc) {
-            var p = doc.exists ? doc.data() : null;
-            var el = document.getElementById('ally-' + contact.replace(/[^a-z0-9]/gi,''));
-            if (!el) return;
-            if (p) {
-              var bRank = getRank(p.soberDays || 0);
-              var bLevel = kingdomLevel(p.soberDays || 0);
-              el.innerHTML = kingdomCard({
-                name: name,
-                rank: bRank,
-                days: p.soberDays || 0,
-                level: bLevel,
-                shields: p.shields || 0,
-                population: kingdomPopulation(p.soberDays || 0)
-              });
-            } else {
-              el.innerHTML = '<div class="card" style="padding:14px;text-align:center;border-left:4px solid #6366f1"><div style="font-size:10px;color:var(--muted);letter-spacing:2px">ALLIED REALM</div><div style="font-size:16px;font-weight:700;color:var(--primary-dark);margin:4px 0">' + safe(name) + '</div><div style="font-size:12px;color:var(--muted)">Awaiting their first dispatch...</div></div>';
-            }
-          }).catch(function(e){ console.warn('Ally data fetch failed for', contact, e); });
-
-          // Share current snapshot so buddy can see us
-          var snap = progressSnapshot();
-          DB.collection('progress').doc(AUTH_EMAIL).set(snap).catch(function(e){ console.warn('Ally snapshot share failed:', e); });
-        }
-      } catch(e) { console.warn('Ally block error:', e); }
-    })(bName, bc);
-
-    var id = 'ally-' + bc.replace(/[^a-z0-9]/gi,'');
-    h += '<div id="' + id + '">' + kingdomCard({ name: bName, rank: {icon:'&#9876;',title:'Partner'}, days: '?', level: '?', shields: '?', population: '?' }) + '</div>';
-    buddyShown++;
-  }
-
-  // Fill remaining slots
-  while (buddyShown < maxBuddies) {
-    if (buddyShown === 0) {
-      h += '<div class="card" style="padding:20px;text-align:center;border:2px dashed var(--border);background:transparent;cursor:pointer" onclick="goTo(\'buddy\')">';
-      h += '<div style="font-size:32px;margin-bottom:6px">&#9876;</div>';
-      h += '<div style="font-size:14px;font-weight:600;color:var(--muted)">Seek an Ally</div>';
-      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">Find a partner to form a lasting alliance</div>';
-      h += '</div>';
-    } else {
-      h += '<div class="card" style="padding:20px;text-align:center;border:2px dashed var(--border);background:transparent">';
-      h += '<div style="font-size:32px;margin-bottom:6px">&#128736;</div>';
-      h += '<div style="font-size:14px;font-weight:600;color:var(--muted)">Open Path</div>';
-      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">An alliance seat awaits a new space</div>';
-      h += '</div>';
-    }
-    buddyShown++;
-  }
-
-  h += '</div>';
-
-  h += '<div class="card" style="padding:12px;margin-top:4px;font-size:12px;color:var(--muted);text-align:center">';
-  h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">&#9876; Alliances are formed through the Partner page. Progress is shared automatically when you visit this page.</div>';
-  h += '<button class="btn btn-sm btn-outline" onclick="goTo(\'buddy\')" style="margin-top:6px;display:inline-flex">Find or Manage Partner</button>';
-  h += '</div>';
-
-  return h;
-}
 
 // ====== RECOMMENDATIONS ======
 function showRecommendations() {
@@ -5409,8 +4475,7 @@ function profileHTML() {
   }
   h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">Joined ' + (D.joinDate ? new Date(D.joinDate).toLocaleDateString() : 'today') + '</div>';
   h += '<div style="font-size:12px;color:var(--muted)">Sober ' + soberDays() + ' days</div>';
-  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)"><div style="font-size:32px">' + soberLevel().icon + '</div><div style="font-size:18px;font-weight:800;color:var(--primary)">Level ' + soberLevel().level + ': ' + soberLevel().title + '</div><div class="progress-bar" style="max-width:160px;margin:6px auto"><div class="fill" style="width:' + soberLevelProgress() + '%"></div></div><div style="font-size:11px;color:var(--muted)">' + soberLevel().desc + '</div>';
-  h += '</div></div>';
+  h += '</div>';
   h += '<div class="card"><h3>'+t('Profile')+'</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Name')+'</span><input type="text" value="'+esc(D.name||'')+'" onchange="saveProfileField(\'name\', this.value)" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Phone Number')+'</span><input type="tel" value="'+esc(D.phoneNumber||'')+'" onchange="saveProfileField(\'phoneNumber\', this.value)" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
@@ -5533,7 +4598,6 @@ function exportData() {
       moodsLogged: (D.moods||[]).length,
       cravingsLogged: (D.cravings||[]).length,
       soberDays: D.sobriety && D.sobriety.startDate ? soberDays() : 0,
-      checkinsCount: (D.checkins||[]).length,
       copingCardsCount: (D.copingCards||[]).length + (D.customCopingCards||[]).length,
       habitsTracked: (D.habits||[]).length
     },
@@ -5599,8 +4663,6 @@ function showProgressReport() {
   var moodAvg = (D.moods||[]).length ? Math.round((D.moods||[]).reduce(function(s,m){return s+m.mood},0) / (D.moods||[]).length * 10) / 10 : 'N/A';
   var journalCount = (D.journal||[]).length;
   var cravingCount = (D.cravings||[]).length;
-  var checkinCount = (D.checkins||[]).length;
-  var streakDays = D.streak || 0;
   var phq = D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result : null;
   var gad = D.screenerGAD7 && D.screenerGAD7.result ? D.screenerGAD7.result : null;
   var phqHistory = (D.screenerPHQ9 && D.screenerPHQ9._history) || [];
@@ -5628,8 +4690,6 @@ function showProgressReport() {
   h += '<div><span style="color:var(--muted)">'+t('Journal entries')+':</span> <strong>' + journalCount + '</strong></div>';
   h += '<div><span style="color:var(--muted)">'+t('Moods logged')+':</span> <strong>' + (D.moods||[]).length + '</strong> ('+(moodAvg!=='N/A'?t('avg ')+moodAvg+'/5':'N/A')+')</div>';
   h += '<div><span style="color:var(--muted)">'+t('Cravings logged')+':</span> <strong>' + cravingCount + '</strong></div>';
-  h += '<div><span style="color:var(--muted)">'+t('Daily check-ins')+':</span> <strong>' + checkinCount + '</strong></div>';
-  h += '<div><span style="color:var(--muted)">'+t('Current streak')+':</span> <strong>' + streakDays + ' '+t('days')+'</strong></div>';
   h += '</div></div>';
 
   // PHQ-9
@@ -5711,8 +4771,6 @@ function exportProgressReport() {
   lines.push('Journal entries: ' + (D.journal||[]).length);
   lines.push('Moods logged: ' + (D.moods||[]).length);
   lines.push('Cravings logged: ' + (D.cravings||[]).length);
-  lines.push('Daily check-ins: ' + (D.checkins||[]).length);
-  lines.push('Current streak: ' + (D.streak||0) + ' days');
 
   var phq = D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result : null;
   var gad = D.screenerGAD7 && D.screenerGAD7.result ? D.screenerGAD7.result : null;
@@ -5897,7 +4955,6 @@ function showCravingBreaker() {
     if (_cravingBreakerState.timer) { clearInterval(_cravingBreakerState.timer); _cravingBreakerState.timer = null; }
     if (!D.cravings) D.cravings = [];
     D.cravings.push({ intensity: Math.round(Math.random() * 3 + 3), trigger: _cravingBreakerState.trigger || 'survived', date: new Date().toDateString(), time: String(new Date().getHours()).padStart(2,'0')+':'+String(new Date().getMinutes()).padStart(2,'0'), timestamp: Date.now(), survived: true });
-    earnSchillings(10 + Math.floor(Math.random() * 5), 'Craving defeated');
     saveData();
     ov.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center;animation:siFade .3s ease;padding:28px 24px">' +
       '<div style="font-size:48px;margin-bottom:4px;font-family:Georgia,serif">\u269C</div>' +
@@ -5910,7 +4967,7 @@ function showCravingBreaker() {
           return '<button class="btn btn-sm btn-outline" onclick="this.style.background=\'var(--primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';this.textContent=\'\\u2713 \' + this.textContent" style="font-size:9px;padding:3px">' + h + '</button>';
         }).join('') +
       '</div></div>' +
-      '<button class="btn btn-primary btn-sm" onclick="var e=document.getElementById(\'craving-breaker-ov\');if(e){e.remove()};showSchillingNotification();render()" style="width:100%;font-size:12px">\u269C Continue</button></div>';
+      '<button class="btn btn-primary btn-sm" onclick="var e=document.getElementById(\'craving-breaker-ov\');if(e){e.remove()};render()" style="width:100%;font-size:12px">\u269C Continue</button></div>';
   };
   render();
   var existing = document.getElementById('craving-breaker-ov');
@@ -5974,283 +5031,6 @@ function filterCravings(val) {
 }
 
 
-var ADDICTION_TASKS = {
-  'Alcohol':[
-    {id:'alc1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose sobriety',pts:5},
-    {id:'alc2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced and how you handled it',pts:5},
-    {id:'alc3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with its intensity and trigger',pts:5},
-    {id:'alc4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner or a sober friend',pts:8},
-    {id:'alc5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for alcohol',pts:3},
-    {id:'alc6',icon:'\u269C',title:'Hydrate',desc:'Drink 8 glasses of water today',pts:5},
-    {id:'alc7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day and any close calls',pts:6},
-    {id:'alc8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle when a craving hits',pts:5},
-    {id:'alc9',icon:'\u2727',title:'Refusal Rehearsal',desc:'Practice saying no to a drink out loud three times',pts:4},
-    {id:'alc10',icon:'\u269C',title:'High-Risk Plan',desc:'Plan your evening to avoid tempting situations',pts:6},
-    {id:'alc11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one alcohol recovery statistic or fact',pts:3},
-    {id:'alc12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things sobriety has given you',pts:5}
-  ],
-  'Drugs (prescription/illicit)':[
-    {id:'drg1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose recovery',pts:5},
-    {id:'drg2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
-    {id:'drg3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
-    {id:'drg4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'drg5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for substance use',pts:3},
-    {id:'drg6',icon:'\u269C',title:'Movement Break',desc:'Go for a 10-minute walk or stretch',pts:5},
-    {id:'drg7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and struggles',pts:6},
-    {id:'drg8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
-    {id:'drg9',icon:'\u2727',title:'Read a Story',desc:'Read one recovery success story',pts:4},
-    {id:'drg10',icon:'\u269C',title:'Safe People',desc:'Text one person who supports your recovery',pts:6},
-    {id:'drg11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about substance recovery',pts:3},
-    {id:'drg12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things recovery has given you',pts:5}
-  ],
-  'Pornography':[
-    {id:'prn1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this path',pts:5},
-    {id:'prn2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
-    {id:'prn3',icon:'\u2766',title:'Urge Check',desc:'Log a craving with intensity and trigger',pts:5},
-    {id:'prn4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'prn5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for this area',pts:3},
-    {id:'prn6',icon:'\u269C',title:'Move Your Body',desc:'Do 15 jumping jacks or a quick workout',pts:5},
-    {id:'prn7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day honestly',pts:6},
-    {id:'prn8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
-    {id:'prn9',icon:'\u2727',title:'Learn Something',desc:'Read one article about recovery',pts:4},
-    {id:'prn10',icon:'\u269C',title:'Restructure Space',desc:'Move your phone/laptop to a public area for 2 hours',pts:6},
-    {id:'prn11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about porn recovery',pts:3},
-    {id:'prn12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things you are gaining back',pts:5}
-  ],
-  'Gambling':[
-    {id:'gam1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you quit gambling',pts:5},
-    {id:'gam2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
-    {id:'gam3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'gam4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'gam5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for gambling',pts:3},
-    {id:'gam6',icon:'\u269C',title:'Money Check',desc:'Log your spending today and note what you saved',pts:5},
-    {id:'gam7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and close calls',pts:6},
-    {id:'gam8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
-    {id:'gam9',icon:'\u2727',title:'Free Activity',desc:'Do a hobby that does not cost money',pts:4},
-    {id:'gam10',icon:'\u269C',title:'Block Access',desc:'Enable a blocker or limit access to gambling sites',pts:6},
-    {id:'gam11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about gambling recovery',pts:3},
-    {id:'gam12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 non-financial things you value',pts:5}
-  ],
-  'Smoking/Nicotine':[
-    {id:'smk1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you quit nicotine',pts:5},
-    {id:'smk2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
-    {id:'smk3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
-    {id:'smk4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'smk5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan for nicotine',pts:3},
-    {id:'smk6',icon:'\u269C',title:'Hands Busy',desc:'Keep your hands occupied for 10 minutes with a fidget or hobby',pts:5},
-    {id:'smk7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today wins and cravings',pts:6},
-    {id:'smk8',icon:'\u2767',title:'Breathe Deep',desc:'Take 10 slow deep breaths when an urge hits',pts:5},
-    {id:'smk9',icon:'\u2727',title:'Healthy Swap',desc:'Replace one smoking trigger with a healthy alternative',pts:4},
-    {id:'smk10',icon:'\u269C',title:'Go Outside',desc:'Step outside for fresh air without lighting up',pts:6},
-    {id:'smk11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about nicotine recovery',pts:3},
-    {id:'smk12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 health benefits you have noticed',pts:5}
-  ],
-  'Caffeine':[
-    {id:'caf1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to cut back',pts:5},
-    {id:'caf2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered your caffeine use today',pts:5},
-    {id:'caf3',icon:'\u2766',title:'Craving Check',desc:'Log a craving with intensity and trigger',pts:5},
-    {id:'caf4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'caf5',icon:'\u2619',title:'Read Your Plan',desc:'Review your caffeine reduction plan',pts:3},
-    {id:'caf6',icon:'\u269C',title:'Water First',desc:'Drink a full glass of water before any caffeine',pts:5},
-    {id:'caf7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your energy levels today',pts:6},
-    {id:'caf8',icon:'\u2767',title:'Natural Boost',desc:'Go for a 10-minute walk instead of reaching for caffeine',pts:5},
-    {id:'caf9',icon:'\u2727',title:'Track Intake',desc:'Log every caffeinated drink today',pts:4},
-    {id:'caf10',icon:'\u269C',title:'Cut-off Time',desc:'No caffeine after 2 PM today',pts:6},
-    {id:'caf11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about caffeine and sleep',pts:3},
-    {id:'caf12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 ways better sleep will improve your life',pts:5}
-  ],
-  'Sex/Love':[
-    {id:'sex1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this change',pts:5},
-    {id:'sex2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
-    {id:'sex3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'sex4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'sex5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
-    {id:'sex6',icon:'\u269C',title:'Move Your Body',desc:'Exercise for 15 minutes to channel energy',pts:5},
-    {id:'sex7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about today with honesty',pts:6},
-    {id:'sex8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
-    {id:'sex9',icon:'\u2727',title:'Healthy Connection',desc:'Reach out to a friend with no romantic intent',pts:4},
-    {id:'sex10',icon:'\u269C',title:'Boundary Check',desc:'Identify and write one boundary you will keep today',pts:6},
-    {id:'sex11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about healthy relationships',pts:3},
-    {id:'sex12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 non-physical qualities you appreciate',pts:5}
-  ],
-  'Shopping':[
-    {id:'shp1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to spend mindfully',pts:5},
-    {id:'shp2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a shopping urge today',pts:5},
-    {id:'shp3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'shp4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'shp5',icon:'\u2619',title:'Read Your Plan',desc:'Review your shopping safety plan',pts:3},
-    {id:'shp6',icon:'\u269C',title:'24-Hour Rule',desc:'Wait 24 hours before any non-essential purchase',pts:5},
-    {id:'shp7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your spending feelings today',pts:6},
-    {id:'shp8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
-    {id:'shp9',icon:'\u2727',title:'Free Fun',desc:'Do an enjoyable activity that costs nothing',pts:4},
-    {id:'shp10',icon:'\u269C',title:'Unsubscribe',desc:'Unsubscribe from one marketing email or notification',pts:6},
-    {id:'shp11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about compulsive buying',pts:3},
-    {id:'shp12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 non-material things you already have',pts:5}
-  ],
-  'Social Media':[
-    {id:'soc1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to cut back',pts:5},
-    {id:'soc2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a scroll today',pts:5},
-    {id:'soc3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'soc4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'soc5',icon:'\u2619',title:'Read Your Plan',desc:'Review your social media safety plan',pts:3},
-    {id:'soc6',icon:'\u269C',title:'Phone Down',desc:'Keep your phone in another room for 1 hour',pts:5},
-    {id:'soc7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about how social media affected your mood',pts:6},
-    {id:'soc8',icon:'\u2767',title:'Breathe Not Scroll',desc:'Do 10 deep breaths before opening any app',pts:5},
-    {id:'soc9',icon:'\u2727',title:'Real Connection',desc:'Call or meet one person in real life',pts:4},
-    {id:'soc10',icon:'\u269C',title:'Clean Your Feed',desc:'Unfollow one account that does not serve you',pts:6},
-    {id:'soc11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about social media and mental health',pts:3},
-    {id:'soc12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things you enjoy offline',pts:5}
-  ],
-  'Gaming':[
-    {id:'gme1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to game mindfully',pts:5},
-    {id:'gme2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered a gaming urge today',pts:5},
-    {id:'gme3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'gme4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'gme5',icon:'\u2619',title:'Read Your Plan',desc:'Review your gaming safety plan',pts:3},
-    {id:'gme6',icon:'\u269C',title:'Timer Set',desc:'Set a timer and stop gaming when it rings',pts:5},
-    {id:'gme7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your gaming feelings today',pts:6},
-    {id:'gme8',icon:'\u2767',title:'Breathe Before Launch',desc:'Do 10 breaths before starting a session',pts:5},
-    {id:'gme9',icon:'\u2727',title:'Offline Hobby',desc:'Spend 30 minutes on a non-screen hobby',pts:4},
-    {id:'gme10',icon:'\u269C',title:'Log Your Hours',desc:'Track total gaming time today honestly',pts:6},
-    {id:'gme11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about gaming and the brain',pts:3},
-    {id:'gme12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 real-world experiences you value',pts:5}
-  ],
-  'Eating/Food':[
-    {id:'eat1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons for a healthy relationship with food',pts:5},
-    {id:'eat2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify what triggered an eating urge today',pts:5},
-    {id:'eat3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'eat4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'eat5',icon:'\u2619',title:'Read Your Plan',desc:'Review your eating safety plan',pts:3},
-    {id:'eat6',icon:'\u269C',title:'Mindful Bite',desc:'Eat one meal slowly without any distractions',pts:5},
-    {id:'eat7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your relationship with food today',pts:6},
-    {id:'eat8',icon:'\u2767',title:'Pause Before Eating',desc:'Take 5 breaths before each meal',pts:5},
-    {id:'eat9',icon:'\u2727',title:'Hunger Check',desc:'Rate your hunger before eating on a scale of 1-10',pts:4},
-    {id:'eat10',icon:'\u269C',title:'One Healthy Swap',desc:'Replace one processed snack with whole food',pts:6},
-    {id:'eat11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about intuitive eating',pts:3},
-    {id:'eat12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things your body does for you',pts:5}
-  ],
-  'Self-Harm':[
-    {id:'shm1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons to choose safety',pts:5},
-    {id:'shm2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
-    {id:'shm3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'shm4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner or helpline',pts:8},
-    {id:'shm5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
-    {id:'shm6',icon:'\u269C',title:'Ice Distraction',desc:'Hold an ice cube in your hand until it melts',pts:5},
-    {id:'shm7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your emotions today — no judgment',pts:6},
-    {id:'shm8',icon:'\u2767',title:'Breathe Through It',desc:'Do three rounds of 4-7-8 breathing',pts:5},
-    {id:'shm9',icon:'\u2727',title:'Safe Sensation',desc:'Use a safe sensory tool (cold, texture, sound)',pts:4},
-    {id:'shm10',icon:'\u269C',title:'Reach Out',desc:'Tell one trusted person how you are feeling',pts:6},
-    {id:'shm11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one fact about self-harm recovery',pts:3},
-    {id:'shm12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things you are grateful for today',pts:5}
-  ],
-  'Other':[
-    {id:'oth1',icon:'\u2618',title:'Name Your Why',desc:'Write three reasons you chose this change',pts:5},
-    {id:'oth2',icon:'\u2694',title:'Trigger Patrol',desc:'Identify one trigger you faced today',pts:5},
-    {id:'oth3',icon:'\u2766',title:'Urge Check',desc:'Log an urge with intensity and trigger',pts:5},
-    {id:'oth4',icon:'\u2726',title:'Call a Partner',desc:'Reach out to your accountability partner',pts:8},
-    {id:'oth5',icon:'\u2619',title:'Read Your Plan',desc:'Review your safety plan',pts:3},
-    {id:'oth6',icon:'\u269C',title:'Move Your Body',desc:'Do 10 minutes of physical activity',pts:5},
-    {id:'oth7',icon:'\u2712',title:'Evening Reflection',desc:'Journal about your day honestly',pts:6},
-    {id:'oth8',icon:'\u2767',title:'Breathe Through It',desc:'Do one 4-7-8 breathing cycle',pts:5},
-    {id:'oth9',icon:'\u2727',title:'Learn Something',desc:'Read one recovery tip or fact',pts:4},
-    {id:'oth10',icon:'\u269C',title:'One Healthy Choice',desc:'Make one choice today that supports your goal',pts:6},
-    {id:'oth11',icon:'\u2628',title:'Know Your Numbers',desc:'Read one recovery fact',pts:3},
-    {id:'oth12',icon:'\u265B',title:'Gratitude Pause',desc:'List 5 things you appreciate today',pts:5}
-  ]
-};
-
-var _Q = {};
-_Q.journal = function() { var t=new Date().toDateString(); return D.journal && D.journal.some(function(e){return e.date===t}); };
-_Q.craving = function() { var t=new Date().toDateString(); return D.cravings && D.cravings.some(function(e){return e.date===t || (e.timestamp && new Date(e.timestamp).toDateString()===t)}); };
-_Q.buddy = function() { var t=new Date().toDateString(); return D.buddyCheckins && D.buddyCheckins.some(function(e){try{return new Date(e.date).toDateString()===t}catch(ex){}return false}); };
-_Q.breathe = function() { var t=new Date().toDateString(); return D.lastBreatheDate === t; };
-function _getTaskCheck(task) {
-  var t = task.title;
-  if (t.indexOf('Breathe') >= 0 || t === 'Pause Before Eating') return _Q.breathe;
-  if (t.indexOf('Name Your Why') >= 0 || t.indexOf('Evening Reflection') >= 0 || t.indexOf('Gratitude Pause') >= 0) return _Q.journal;
-  if (t.indexOf('Trigger Patrol') >= 0 || t.indexOf('Craving Check') >= 0 || t.indexOf('Urge Check') >= 0) return _Q.craving;
-    if (t.indexOf('Call a Partner') >= 0) return _Q.buddy;
-  return null;
-}
-function getDailyQuests() {
-  D.dailyQuests = D.dailyQuests || { date: '', done: [] };
-  if (D.dailyQuests.completed && !D.dailyQuests.done) { D.dailyQuests.done = D.dailyQuests.completed; delete D.dailyQuests.completed; }
-  var today = new Date();
-  var dateStr = today.toDateString();
-  if (D.dailyQuests.date !== dateStr) D.dailyQuests = { date: dateStr, done: [] };
-  var type = (D.targetAddictions && D.targetAddictions.length) ? D.targetAddictions[0] : 'Other';
-  var tasks = ADDICTION_TASKS[type] || ADDICTION_TASKS['Other'];
-  var dayNum = today.getDate();
-  var picks = [];
-  var n = tasks.length;
-  var w = getWarchest();
-  var bonusActive = w.boostData.bonusDate === dateStr;
-  var questCount = bonusActive ? Math.min(4, n) : Math.min(3, n);
-  for (var p = 0; p < questCount && p < n; p++) {
-    var idx = (dayNum * 7 + p * 13 + type.length) % n;
-    picks.push(tasks[idx]);
-  }
-  return { tasks: picks, done: D.dailyQuests.done || [], date: dateStr, bonus: bonusActive };
-}
-function confirmQuest(taskId) {
-  var q = getDailyQuests();
-  if (!q || !q.tasks) return;
-  var task = null;
-  q.tasks.forEach(function(t){ if (t.id === taskId) task = t; });
-  if (!task) return;
-  if (confirm('\u2714 Did you complete this challenge?\n\n' + task.title + '\n\nTap OK to claim your reward.')) {
-    completeQuest(taskId);
-  }
-}
-function completeQuest(taskId) {
-  try {
-    var q = getDailyQuests();
-    if (!q || !q.done || q.done.indexOf(taskId) >= 0) return;
-    q.done.push(taskId);
-    D.dailyQuests.done = q.done;
-    var task = null;
-    if (q.tasks) q.tasks.forEach(function(t){ if (t.id === taskId) task = t; });
-    if (task && task.pts) earnSchillings(task.pts, 'Daily quest: ' + (task.title || ''));
-    if (q.done.length === (q.tasks ? q.tasks.length : 0) && (q.tasks ? q.tasks.length : 0) >= 3) { earnSchillings(10, 'All daily quests complete!'); playSound('quest'); }
-    saveData();
-  } catch(e) {
-    console.error('Quest error:', e);
-    saveData();
-  }
-}
-function dailyQuestsHTML() {
-  var q = getDailyQuests();
-  if (!q.tasks.length) return '';
-  var type = (D.targetAddictions && D.targetAddictions.length) ? D.targetAddictions[0] : 'Other';
-  var h = '<div class="card" style="margin:6px 0">';
-  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div style="font-size:16px">\u2727</div><div><div style="font-size:13px;font-weight:700;color:var(--primary)">' + type + ' Daily Quests</div><div style="font-size:10px;color:var(--muted)">Complete all ' + (q.bonus ? '4' : '3') + ' for bonus Energy' + (q.bonus ? '<span style="color:var(--gold)"> &#10086; Bonus Quest active!</span>' : '') + '</div></div></div>';
-  var allDone = true;
-  q.tasks.forEach(function(t){
-    var done = q.done.indexOf(t.id) >= 0;
-    if (!done) allDone = false;
-    var checkFn = _getTaskCheck(t);
-    var autoDone = checkFn ? checkFn() : false;
-    var isManual = !checkFn;
-    var active = done || autoDone;
-    h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:8px;background:' + (active ? 'var(--primary-light)' : 'var(--card)') + ';border:1px solid ' + (active ? 'var(--primary)' : 'var(--border)') + ';opacity:' + (done ? '.7' : '1') + '">';
-    h += '<div style="font-size:20px;min-width:28px;text-align:center">' + (done ? '\u2713' : t.icon) + '</div>';
-    h += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;' + (done ? 'text-decoration:line-through' : '') + '">' + t.title + '</div><div style="font-size:10px;color:var(--muted)">' + t.desc + '</div></div>';
-    h += '<div style="text-align:right"><div style="font-size:10px;color:#d4a017;font-weight:700">+' + t.pts + '</div>';
-    if (!done) {
-      if (autoDone) {
-        h += '<button class="btn btn-sm btn-primary" onclick="completeQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u2727 Claim</button>';
-      } else if (isManual) {
-        h += '<button class="btn btn-sm btn-primary" onclick="confirmQuest(\'' + t.id + '\')" style="font-size:9px;padding:3px 8px;margin-top:2px">\u2727 Done</button>';
-      }
-    }
-    h += '</div></div>';
-  });
-  if (allDone && q.tasks.length) {
-    h += '<div style="text-align:center;padding:8px;font-size:12px;font-weight:700;color:var(--accent)">\u269C All quests complete! Well fought today.</div>';
-  }
-  h += '</div>';
-  return h;
-}
 
 function calcJournalStreak() {
   if (!D.journal.length) return 0;
@@ -6413,28 +5193,14 @@ function startConfetti() {
   }
 }
 
-function checkMilestone() {
-  var days = soberDays();
-  var milestones = [1,3,7,14,21,30,60,90,180,365,730,1000];
-  for (var i=0;i<milestones.length;i++) {
-    if (days === milestones[i] && D.lastMilestoneShown < days) {
-      D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
-      D.warchest.shields = (D.warchest.shields || 0) + 1;
-      saveData();
-      showMilestoneParty(days); break;
-    }
-  }
-}
 
 // ====== ACHIEVEMENTS ======
 function checkAchievements() {
   if (!D.achievements) D.achievements = [];
   var days = soberDays();
   var entries = (D.journal || []).length;
-  var wc = D.warchest || {};
-  var shields = wc.shields || 0;
+  var shields = 0;
   var questsDone = 0;
-  if (D.dailyQuests && D.dailyQuests.done) questsDone += D.dailyQuests.done.length;
   var newOnes = [];
   for (var i = 0; i < ACHIEVEMENTS.length; i++) {
     var a = ACHIEVEMENTS[i];
@@ -6613,7 +5379,6 @@ function showShareCard() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   var days = soberDays();
-  var streak = D.streak || 0;
   var journalCount = D.journal.length;
   var cravingCount = D.cravings ? D.cravings.length : 0;
   var pledgeStreak = calcPledgeStreak();
@@ -6624,7 +5389,6 @@ function showShareCard() {
   h += '<div style="font-size:48px;font-weight:800;line-height:1">' + days + '</div><div style="font-size:14px;opacity:.9">'+t('days sober')+'</div>';
   h += '<div style="display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:12px">';
   h += '<div><strong>' + journalCount + '</strong><br>'+t('journal entries')+'</div>';
-  h += '<div><strong>' + streak + '</strong><br>'+t('day streak')+'</div>';
   h += '<div><strong>' + pledgeStreak + '</strong><br>'+t('pledge streak')+'</div></div>';
   h += '<div style="margin-top:10px;font-size:10px;opacity:.6">reclaim00.github.io/reclaim-buddy</div></div>';
   h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">'+t('Screenshot this card to share your progress.')+'</p>';
@@ -6715,12 +5479,10 @@ function seerTowerHTML() {
   // Omens based on user data
   var journalCount = (D.journal||[]).length;
   var moodCount = (D.moods||[]).length;
-  var streak = D.streak || 0;
   var soberStart = D.sobriety && D.sobriety.startDate;
   var soberDaysCount = soberStart ? soberDays() : 0;
   var cravingCount = (D.cravings||[]).length;
   var breatheCount = D.breatheCount || 0;
-  var checkinCount = (D.checkins||[]).length;
   var relapses = (D.sobriety && D.sobriety.relapseDates) ? D.sobriety.relapseDates.length : 0;
   var sosUsed = D.sosUsed || false;
   var planExists = !!(D.relapsePlan && D.relapsePlan.statement);
@@ -6783,10 +5545,10 @@ function seerTowerHTML() {
   if (cravingCount > 0) omens.push({type:'neutral', text: cravingCount + ' cravings recorded. Naming them is the first victory. Each logged craving is a trigger spotted before it takes hold.'});
 
   // Check-ins
-  if (checkinCount >= 30) omens.push({type:'good', text: checkinCount + ' daily check-ins. Your presence is a ritual now \u2014 consistency builds on it.'});
+  var journalStreak = calcJournalStreak();
 
   // Current streak
-  if (streak >= 14) omens.push({type:'good', text: 'A ' + streak + '-day streak! Your consistency is inspiring.'});
+  if (journalStreak >= 7) omens.push({type:'good', text: 'A ' + journalStreak + '-day journaling streak! Your consistency is inspiring.'});
 
   // Show omens (limit to 6 most relevant)
   var priority = {danger:0, warning:1, good:2, neutral:3};
@@ -6995,7 +5757,7 @@ function sobrietyGridHTML() {
   for (var i=6;i>=0;i--) {
     var d = new Date(today); d.setDate(d.getDate()-i);
     var ds = d.toDateString();
-    var checked = D.checkins.some(function(c){return c.date===ds});
+    var checked = D.moods.some(function(m){return m.date===ds});
     var isToday = i===0;
     h += '<div style="text-align:center"><div style="width:32px;height:32px;border-radius:8px;background:'+(checked?'var(--primary)':isToday?'var(--primary-light)':'var(--border)')+';display:flex;align-items:center;justify-content:center;font-size:14px;color:'+(checked?'#fff':'var(--muted)')+'">'+(checked?'?':days[(d.getDay()+1)%7][0])+'</div><div style="font-size:9px;color:var(--muted);margin-top:2px">'+days[d.getDay()].substring(0,2)+'</div></div>';
   }
@@ -7047,81 +5809,15 @@ function achievementsHTML() {
   }
   return h;
 }
-function showItemPreview(id) {
-  var item = null;
-  for (var i = 0; i < SHOP_ITEMS.length; i++) { if (SHOP_ITEMS[i].id === id) { item = SHOP_ITEMS[i]; break; } }
-  if (!item) return;
-  var previewSvg = '';
-  var fullDesc = '';
-  if (item.id === 'crimson') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="15" width="30" height="30" rx="3" fill="#6a0a0a"/><rect x="15" y="15" width="30" height="6" rx="1.5" fill="#f0e8d0"/><rect x="15" y="42" width="30" height="4" rx="1" fill="#f0e8d0"/><circle cx="30" cy="10" r="8" fill="#c89a6a"/><polygon points="24,2 30,0 36,2" fill="#d4a017"/></svg>'; fullDesc = 'Your coat is dyed a deep crimson red, signaling authority and resilience.'; }
-  else if (item.id === 'silver') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="20" width="30" height="35" rx="3" fill="#c0c0c0"/><rect x="15" y="20" width="30" height="5" rx="1.5" fill="#e8e8e8"/><ellipse cx="30" cy="14" rx="8" ry="6" fill="#d4a574"/><circle cx="28" cy="13" r="1" fill="#333"/><circle cx="32" cy="13" r="1" fill="#333"/></svg>'; fullDesc = 'Your armor is polished to gleaming silver, reflecting the light like a beacon of resilience.'; }
-  else if (item.id === 'starry') { previewSvg = '<svg viewBox="0 0 60 80" width="100%" height="100"><rect x="15" y="25" width="30" height="30" rx="3" fill="#2a1560"/><ellipse cx="30" cy="18" rx="9" ry="7" fill="#c09a7a"/><polygon points="24,10 30,8 36,10" fill="#2a1560"/><circle cx="20" cy="10" r="1" fill="#fff" opacity=".8"/><circle cx="35" cy="7" r="1.2" fill="#fff" opacity=".9"/><circle cx="28" cy="6" r=".8" fill="#fff" opacity=".7"/><circle cx="40" cy="12" r=".6" fill="#fff" opacity=".6"/></svg>'; fullDesc = 'Your hat transforms into a starry night sky, with twinkling constellations guiding the way.'; }
-  else if (item.id === 'streak') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="30" cy="30" r="24" fill="none" stroke="#d4a017" stroke-width="2" opacity=".5"/><path d="M30,6 L34,24 L52,28 L38,38 L42,56 L30,44 L18,56 L22,38 L8,28 L26,24 Z" fill="#d4a017" opacity=".8"/></svg>'; fullDesc = 'A Streak Shield protects your streak from one relapse. Your days continue as if unaffected \u2014 a safety net for hard days.'; }
-  else if (item.id === 'double') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><circle cx="20" cy="30" r="16" fill="#d4a017" opacity=".8"/><circle cx="40" cy="30" r="16" fill="#d4a017" opacity=".6"/><text x="30" y="35" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">x2</text></svg>'; fullDesc = 'Double all Energy earned for 24 hours. Every check-in, quest, and milestone pays double.'; }
-  else if (item.id === 'bonus') { previewSvg = '<svg viewBox="0 0 60 60" width="100%" height="100"><rect x="10" y="10" width="40" height="40" rx="4" fill="#6B4423"/><text x="30" y="38" text-anchor="middle" font-size="22" font-weight="800" fill="#ffd700">+1</text></svg>'; fullDesc = 'Unlock a 4th daily quest slot today only. More quests mean more Energy and faster progress.'; }
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;padding:24px"><div style="font-size:36px;margin-bottom:4px">' + item.icon + '</div><h3 style="font-size:18px;font-weight:700;margin:0 0 2px">' + item.name + '</h3><div style="font-size:11px;color:var(--muted);margin-bottom:12px">' + item.cat + ' &middot; ' + item.cost + ' &#9889;</div><div style="background:var(--primary-light);border-radius:12px;padding:12px;margin-bottom:12px">' + previewSvg + '</div><p style="font-size:13px;color:var(--text-light);line-height:1.5;margin-bottom:12px">' + fullDesc + '</p><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t('Close')+'</button></div>';
-  document.body.appendChild(overlay);
-}
-
-function shopHTML() {
-  var s = D.shopPurchases||[];var w=getWarchest();var sch=w.schillings||0;var bd=w.boostData||{};
-  var activeStr = (bd.streak||0) > 0 ? '<span style="font-size:9px;color:var(--gold)">('+bd.streak+' active)</span>' : '';
-  var activeDbl = bd.doubleExpiry > Date.now() ? '<span style="font-size:9px;color:var(--gold)">('+Math.ceil((bd.doubleExpiry-Date.now())/3600000)+'h left)</span>' : '';
-  var activeBon = bd.bonusDate === new Date().toDateString() ? '<span style="font-size:9px;color:var(--gold)">(active today)</span>' : '';
-  var h='<h2 class="page-title">&#128717; '+t('Shop')+'</h2>';
-  h+='<div class="card" style="padding:16px;text-align:center">';
-  h+='<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Spend Energy on skins and boosts</div>';
-  h+='<div style="font-size:24px;font-weight:800;color:#38bdf8;margin-bottom:10px">'+sch+' &#9889;</div>';
-  var cats=['Skins','Boosts'];
-  for(var ci=0;ci<cats.length;ci++){
-    var cat=cats[ci];
-    h+='<div style="font-size:12px;font-weight:700;color:var(--text);margin:8px 0 4px;text-align:left;letter-spacing:1px">'+cat+'</div>';
-    for(var i=0;i<SHOP_ITEMS.length;i++){
-      var item=SHOP_ITEMS[i];if(item.cat!==cat)continue;
-      var owned=s.indexOf(item.id)>=0;
-      var isBoost=item.cat==='Boosts';
-      var boostStatus='';
-      if(isBoost){
-        if(item.id==='streak')boostStatus=activeStr;
-        else if(item.id==='double')boostStatus=activeDbl;
-        else if(item.id==='bonus')boostStatus=activeBon;
-      }
-      h+='<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;margin:3px 0;border-radius:6px;background:'+((owned&&!isBoost)?'var(--primary-light)':'var(--card)')+';border:1px solid '+((owned&&!isBoost)?'var(--primary)':'var(--border)')+'">';
-      h+='<div style="font-size:18px">'+item.icon+'</div>';
-      h+='<div style="flex:1;text-align:left;min-width:0"><div style="font-size:11px;font-weight:600">'+item.name+' '+boostStatus+'</div><div style="font-size:9px;color:var(--muted)">'+item.desc+'</div></div>';
-      h+='<button class="btn btn-sm" onclick="showItemPreview(\''+item.id+'\')" style="font-size:9px;padding:2px 6px;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer" title="Preview">\uD83D\uDD0D</button>';
-      if(owned&&!isBoost){h+='<span style="font-size:10px;color:var(--accent);font-weight:700">\u2713 Owned</span>';}
-      else{h+='<button class="btn btn-sm btn-primary" onclick="buyShopItem(\''+item.id+'\')" style="font-size:9px;padding:3px 8px"'+(sch<item.cost?' disabled':'')+'>'+item.cost+' &#9889;</button>';}
-      h+='</div>';
-    }
-  }
-  h+='<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')" style="margin-top:8px">Back to Rewards</button>';
-  h+='</div>';return h;
-}
-function buyShopItem(id) {
-  var s=D.shopPurchases||[];
-  var item=null;for(var i=0;i<SHOP_ITEMS.length;i++){if(SHOP_ITEMS[i].id===id){item=SHOP_ITEMS[i];break}}
-  if(!item)return;var w=getWarchest();var sch=w.schillings||0;
-  if(sch<item.cost){alert('Not enough Energy! Need '+item.cost+'.');return;}
-  D.warchest.schillings=sch-item.cost;
-  // Boost items are consumable — track in boostData, not shopPurchases
-  if (id==='streak') { D.warchest.boostData.streak = (D.warchest.boostData.streak||0) + 1; }
-  else if (id==='double') { D.warchest.boostData.doubleExpiry = Date.now() + 86400000; }
-  else if (id==='bonus') { D.warchest.boostData.bonusDate = new Date().toDateString(); }
-  else { D.shopPurchases=D.shopPurchases||[];D.shopPurchases.push(id); }
-  saveData();playSound('coin');render();
-}
 function waxSealSVG(s) {
   var r = s/2;
   return '<svg viewBox="0 0 '+s+' '+s+'" width="'+s+'" height="'+s+'" style="vertical-align:middle"><defs><radialGradient id="wg" cx="38%" cy="32%"><stop offset="0%" stop-color="#c0392b"/><stop offset="55%" stop-color="#922b21"/><stop offset="100%" stop-color="#641e16"/></radialGradient></defs><circle cx="'+r+'" cy="'+r+'" r="'+(r-1)+'" fill="url(#wg)" stroke="#4a120a" stroke-width="1.5"/><circle cx="'+r+'" cy="'+r+'" r="'+(r-4)+'" fill="none" stroke="#e6b800" stroke-width=".6" stroke-dasharray="2.5,2" opacity=".5"/><path d="M'+(r-8)+' '+(r+4)+'V'+(r-6)+'l4 3 4-5 4 5 4-3v'+(r+2)+'z" fill="#f4d03f" opacity=".85"/><rect x="'+(r-8)+'" y="'+(r+4)+'" width="16" height="2" rx="1" fill="#1a5276" opacity=".6"/></svg>';
 }
 function _rtHeroGuide(cx,isActive){
   var skinTone = '#c89a6a';
-  var bodyColor = hasShop('crimson') ? '#6a0a0a' : '#4a1570';
-  var crownColor = hasShop('crimson') ? '#cc2222' : '#d4a017';
-  var jewelColor = hasShop('crimson') ? '#ff4444' : '#e04040';
+  var bodyColor = '#4a1570';
+  var crownColor = '#d4a017';
+  var jewelColor = '#e04040';
   var h='<g class="npc-idle">'+(isActive?'<circle cx="'+cx+'" cy="28" r="19" fill="none" stroke="#ffd700" stroke-width="1.5" opacity=".5"><animate attributeName="opacity" values=".3;.7;.3" dur="2s" repeatCount="indefinite"/></circle>':'');
   h+='<path d="M'+(cx-14)+',20 L'+(cx-14)+',46 L'+(cx+14)+',46 L'+(cx+14)+',20 Z" fill="#3a0a50" opacity=".5" rx="2"/>';
   h+='<rect x="'+(cx-10)+'" y="20" width="20" height="26" rx="3" fill="'+bodyColor+'"/>';
