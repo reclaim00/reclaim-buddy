@@ -18,11 +18,10 @@ function characterGreetingHTML() {
   var timeWord = hr < 12 ? 'morning' : hr < 17 ? 'afternoon' : 'evening';
   var dayMod = Math.floor(dayOfYear / chars.length);
   var msg = pick.msgs[dayMod % pick.msgs.length];
-  var rank = getRank(soberDays());
   h += '<div class="card" style="border-left:3px solid var(--primary);padding:10px 14px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="display:flex;align-items:center;gap:10px">';
   h += '<div style="width:36px;height:36px;border-radius:18px;background:' + pick.color + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')" title="Learn about ' + pick.name + '">' + pick.svg + '</div>';
-  h += '<div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:1px">Good ' + timeWord + ' from <strong style="color:var(--primary);cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')">' + pick.name + '</strong> &mdash; to ' + _rankIconHTML(rank.title, 13) + ' ' + rank.title + '</div><div style="font-size:13px;line-height:1.5">' + msg + '</div></div>';
+  h += '<div style="flex:1"><div style="font-size:11px;color:var(--muted);margin-bottom:1px">Good ' + timeWord + ' from <strong style="color:var(--primary);cursor:pointer" onclick="showCharacterLore(\'' + pick.name + '\')">' + pick.name + '</strong></div><div style="font-size:13px;line-height:1.5">' + msg + '</div></div>';
   h += '</div></div>';
   return h;
 }
@@ -92,7 +91,7 @@ function kingdomPopulation(days) {
   return 275 + (lvl - 14) * 50;
 }
 function getKingdomWeather() {
-  var days=soberDays();var streak=D.streak||0;var hour=new Date().getHours();var isNight=hour<6||hour>=20;
+  var days=soberDays();var streak=calcJournalStreak();var hour=new Date().getHours();var isNight=hour<6||hour>=20;
   var today=new Date().toDateString();var cravedToday=D.cravings&&D.cravings.some(function(c){var d=c.date||(c.timestamp?new Date(c.timestamp).toDateString():'');return d===today});
   var relapsedToday=D.relapseHistory&&D.relapseHistory.length>0&&D.relapseHistory[D.relapseHistory.length-1].date===today;
   var isMilestone=days>0&&(days%30===0||days%90===0||days%365===0);
@@ -113,12 +112,7 @@ function kingdomHTML() {
   var weather = getKingdomWeather();
   var hour = new Date().getHours();
   var isNight = hour < 6 || hour >= 20 || (typeof document !== 'undefined' && document.body && document.body.classList.contains('dark'));
-  // Daily quest upgrade check
-  var today = new Date().toDateString();
-  D.dailyQuests = D.dailyQuests || { date: '', done: [] };
-  if (D.dailyQuests.completed && !D.dailyQuests.done) { D.dailyQuests.done = D.dailyQuests.completed; delete D.dailyQuests.completed; }
-  var isUpgraded = D.dailyQuests.date === today && (D.dailyQuests.done || []).length >= 3;
-  var h = '<div class="kingdom-scene tier-' + level + (isUpgraded ? ' k-upgraded' : '') + ' k-' + weather + (isNight ? ' k-night' : '') + '" id="kingdom-scene">';
+  var h = '<div class="kingdom-scene tier-' + level + ' k-' + weather + (isNight ? ' k-night' : '') + '" id="kingdom-scene">';
   h += '<svg viewBox="0 0 500 280">';
   h += '<defs>';
   h += '<radialGradient id="kd-sky" cx="50%" cy="40%" r="80%"><stop offset="0%" stop-color="#1c2a52"/><stop offset="55%" stop-color="#0a142e"/><stop offset="100%" stop-color="#04061a"/></radialGradient>';
@@ -374,26 +368,8 @@ function kingdomTrackerHTML() {
   var h = kingdomHTML();
   h += '<div class="card" style="text-align:center;margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:10px 14px 12px">';
   if (isActive) {
-    h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:2px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">days sober</span>';
-    var sh = (D.warchest && D.warchest.shields) || 0;
-    if (sh > 0) h += '<span style="font-size:13px;color:var(--accent);margin-left:2px" title="' + sh + ' shield' + (sh!==1?'s':'') + ' protecting your streak">&#128737;</span>';
-    h += '</div>';
+    h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:6px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">days sober</span></div>';
     h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + levelNames[Math.min(level,10)] + ' &mdash; ' + (levelDescs[Math.min(level,10)]||'') + '</div>';
-    // Rank badge
-    var rank = getRank(days);
-    h += '<div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px">';
-    h += _rankIconHTML(rank.title, 16) + ' ';
-    h += '<span style="font-size:14px;font-weight:700;color:var(--primary)">' + rank.title + '</span>';
-    if (rank.next) {
-      var prog = days - rank.threshold;
-      var need = rank.nextThreshold - rank.threshold;
-      var pct = Math.min(100, Math.round(prog / need * 100));
-      h += '<span style="font-size:11px;color:var(--muted)">\u2192 ' + rank.next + '</span>';
-      h += '</div><div style="width:80%;margin:2px auto 6px;height:5px;background:var(--border);border-radius:3px;overflow:hidden">';
-      h += '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;transition:width .4s"></div></div>';
-    } else {
-      h += '</div><div style="font-size:10px;color:var(--accent);margin-bottom:4px">The space is yours</div>';
-    }
     h += soberTimerHTML();
     h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
     h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
@@ -405,246 +381,6 @@ function kingdomTrackerHTML() {
   return h;
 }
 
-function showSavingsQuiz() {
-  if (D.sobriety.savingsQuizDone) return false;
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  var step = D._savingsQuizStep || 0;
-  var h = '<div class="overlay-content" style="max-width:400px">';
-  h += '<h3 style="margin:0 0 4px">Savings Setup</h3>';
-  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:12px">Let\'s figure out what you\'re saving. This takes 30 seconds.</p>';
-  h += '<div class="card" style="padding:14px">';
-
-  if (step === 0) {
-    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">What did you spend money on?</label>';
-    h += '<input type="text" id="sq-spending" value="' + safe(D.sobriety.spendingOn || '') + '" placeholder="e.g. alcohol, cigarettes, gambling" style="width:100%;font-size:13px;padding:8px;box-sizing:border-box">';
-    h += '<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="_savingsQuizNext(0)">Next</button>';
-  } else if (step === 1) {
-    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">How much did you spend per day on average?</label>';
-    h += '<div style="display:flex;align-items:center;gap:6px">';
-    h += '<span style="font-size:18px;font-weight:700">$</span>';
-    h += '<input type="number" id="sq-cost" min="0" step="0.5" value="' + (D.sobriety.costPerDay || '') + '" placeholder="e.g. 15" style="font-size:18px;padding:8px;width:100px">';
-    h += '<span style="font-size:11px;color:var(--muted)">/day</span></div>';
-    h += '<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="_savingsQuizNext(1)">Next</button>';
-  } else if (step === 2) {
-    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">How much do you earn per week (after tax)?</label>';
-    h += '<div style="display:flex;align-items:center;gap:6px">';
-    h += '<span style="font-size:18px;font-weight:700">$</span>';
-    h += '<input type="number" id="sq-income" min="0" step="1" value="' + (D.sobriety.weeklyIncome || '') + '" placeholder="e.g. 500" style="font-size:18px;padding:8px;width:100px">';
-    h += '<span style="font-size:11px;color:var(--muted)">/week</span></div>';
-    h += '<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="_savingsQuizNext(2)">Next</button>';
-  } else if (step === 3) {
-    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px">How many units per day?</label>';
-    h += '<input type="number" id="sq-qty" min="0" step="0.5" value="' + (D.sobriety.dailyQuantity || '') + '" placeholder="e.g. 6" style="font-size:18px;padding:8px;width:100px">';
-    h += '<label style="font-size:11px;color:var(--muted);display:block;margin-top:10px;margin-bottom:4px">What do you call a unit?</label>';
-    h += '<input type="text" id="sq-label" value="' + safe(D.sobriety.unitLabel || '') + '" placeholder="e.g. drinks, cigarettes, hours" style="width:100%;font-size:13px;padding:8px;box-sizing:border-box">';
-    h += '<button class="btn btn-primary" style="margin-top:10px;width:100%" onclick="_savingsQuizNext(3)">Finish</button>';
-  }
-
-  h += '</div></div>';
-  overlay.innerHTML = h;
-  document.body.appendChild(overlay);
-  return true;
-}
-
-function _savingsQuizNext(step) {
-  if (step === 0) {
-    var v = document.getElementById('sq-spending');
-    D.sobriety.spendingOn = v ? v.value.trim() : '';
-  } else if (step === 1) {
-    var v = document.getElementById('sq-cost');
-    D.sobriety.costPerDay = parseFloat(v.value) || 0;
-  } else if (step === 2) {
-    var v = document.getElementById('sq-income');
-    D.sobriety.weeklyIncome = parseFloat(v.value) || 0;
-    if (D.sobriety.weeklyIncome > 0) {
-      D.sobriety.dailyIncome = Math.round((D.sobriety.weeklyIncome / 7) * 100) / 100;
-    }
-  } else if (step === 3) {
-    var v1 = document.getElementById('sq-qty');
-    var v2 = document.getElementById('sq-label');
-    D.sobriety.dailyQuantity = parseFloat(v1.value) || 0;
-    D.sobriety.unitLabel = v2 ? v2.value.trim() : '';
-    D.sobriety.savingsQuizDone = true;
-    saveData();
-    var overlay = document.querySelector('.overlay');
-    if (overlay) overlay.remove();
-    render();
-    showToast('Savings profile set!', 'success');
-    return;
-  }
-  D._savingsQuizStep = step + 1;
-  saveData();
-  var overlay = document.querySelector('.overlay');
-  if (overlay) overlay.remove();
-  showSavingsQuiz();
-}
-
-function kingsLedgerHTML() {
-  if (!D.sobriety.savingsQuizDone && D.sobriety.startDate) {
-    showSavingsQuiz();
-  }
-  var days = soberDays();
-  var isActive = D.sobriety.startDate ? true : false;
-  var cpDay = D.sobriety.costPerDay || 0;
-  var dQty = D.sobriety.dailyQuantity || 0;
-  var uLabel = D.sobriety.unitLabel || '';
-  var spendingOn = D.sobriety.spendingOn || '';
-  var weeklyIncome = D.sobriety.weeklyIncome || 0;
-  var dailyIncome = D.sobriety.dailyIncome || 0;
-  var dailySavings = dailyIncome > 0 ? Math.round((dailyIncome - cpDay) * 100) / 100 : cpDay;
-  var weeklySavings = Math.round(dailySavings * 7 * 100) / 100;
-  var moneySaved = Math.round(days * cpDay * 100) / 100;
-  var unitsAvoided = days * dQty;
-  var hrsRegained = Math.round(days * 1.5);
-  var h = '';
-  h += '<h2 class="page-title">\uD83D\uDCD6 The Savings Ledger</h2>';
-  if (spendingOn) {
-    h += '<div class="card" style="padding:10px;margin-bottom:10px;font-size:12px;color:var(--muted)">Spending on: <strong style="color:var(--text)">' + safe(spendingOn) + '</strong>';
-    if (weeklyIncome > 0) h += ' &middot; Income: <strong style="color:var(--text)">$' + weeklyIncome.toLocaleString() + '/wk</strong>';
-    h += ' <button onclick="D.sobriety.savingsQuizDone=false;saveData();render()" style="background:none;border:none;color:var(--primary);font-size:11px;cursor:pointer;text-decoration:underline">Edit</button></div>';
-  }
-  h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
-  h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
-  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Cost/day ($)</label>';
-  h += '<input type="number" min="0" step="0.5" value="' + cpDay + '" onchange="D.sobriety.costPerDay=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 15" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Quantity/day</label>';
-  h += '<input type="number" min="0" step="0.5" value="' + dQty + '" onchange="D.sobriety.dailyQuantity=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 6" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Unit label</label>';
-  h += '<input type="text" value="' + safe(uLabel) + '" onchange="D.sobriety.unitLabel=this.value;saveData();render()" placeholder="drinks" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-  h += '</div>';
-  h += '<div class="stat-grid">';
-  h += '<div class="stat-card"><div class="num" style="color:#d4a017">$' + moneySaved.toLocaleString() + '</div><div class="label">Money Saved</div></div>';
-  var unitDisplay = uLabel ? safe(uLabel) + ' Avoided' : 'Units Avoided';
-  h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + unitDisplay + '</div></div>';
-  h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
-  h += '</div>';
-  if (dailySavings > 0) {
-    h += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:var(--muted)">';
-    h += 'Saving <strong style="color:#16a34a">$' + dailySavings.toFixed(2) + '/day</strong>';
-    h += ' &middot; <strong style="color:#16a34a">$' + weeklySavings.toFixed(2) + '/week</strong>';
-    h += '</div>';
-  }
-  h += '</div>';
-  if (!isActive) h += '<div class="card"><div class="empty-state">Start your sobriety journey to see your real savings.</div></div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'warchest\')">Back to Rewards</button>';
-  return h;
-}
-
-function warchestHTML() {
-  var w = getWarchest();
-  var days = soberDays();
-  var entries = (D.journal || []).length;
-  var schillings = w.schillings || 0;
-  var shields = w.shields || 0;
-  var bd = w.boostData || {};
-  var dayEarned = days * 5;
-  var entryEarned = entries * 5;
-  var isActive = D.sobriety.startDate ? true : false;
-  // Award milestone shields
-  var milestones = [30,90,180,365,730];
-  var mNames = ['1 Month','3 Months','6 Months','1 Year','2 Years'];
-  for (var mi=0;mi<milestones.length;mi++) {
-    if (days >= milestones[mi] && (w.milestonesClaimed||[]).indexOf(milestones[mi]) < 0) {
-      w.milestonesClaimed = w.milestonesClaimed || [];
-      w.milestonesClaimed.push(milestones[mi]);
-      w.shields = (w.shields||0) + 1;
-    }
-  }
-  var h = '<h2 class="page-title">&#9889; Rewards</h2>';
-  h += '<div class="card" style="text-align:center;padding:16px">';
-  h += '<div style="font-size:11px;color:var(--text-light);margin-bottom:8px">Earn Energy by staying sober and writing journal entries</div>';
-  // Energy display
-  h += '<div style="background:linear-gradient(135deg,#0891b2,#22d3ee);border-radius:16px;padding:14px;margin-bottom:10px">';
-  h += '<div style="font-size:32px;font-weight:800;color:#04222b">' + schillings + '</div>';
-  h += '<div style="font-size:12px;color:#0a4356;opacity:.85">&#9889; Energy</div></div>';
-  // Shield count
-  h += '<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-size:14px;color:var(--text);margin-bottom:10px">';
-  h += '<span style="font-size:22px">&#128737;</span> <strong>' + shields + '</strong> shield' + (shields !== 1 ? 's' : '');
-  h += '</div>';
-  // Buy shield button
-  h += '<div style="display:flex;gap:6px;margin-bottom:10px">';
-  h += '<button class="btn btn-primary btn-sm" onclick="buyShield()" style="flex:1;background:linear-gradient(135deg,#6a4a2a,#8a6a4a);font-size:12px"' + (schillings < 30 ? ' disabled' : '') + '>&#128737; Buy Shield (30 Energy)</button>';
-  h += '</div>';
-  // Active boosts
-  var boostLines = [];
-  if ((bd.streak||0) > 0) boostLines.push('&#2629; Streak Shield &times;' + bd.streak);
-  if (bd.doubleExpiry > Date.now()) boostLines.push('&#9889; Double Energy (' + Math.ceil((bd.doubleExpiry-Date.now())/3600000) + 'h)');
-  if (bd.bonusDate === new Date().toDateString()) boostLines.push('&#10086; Bonus Quest active');
-  if (boostLines.length > 0) {
-    h += '<div style="background:var(--primary-light);border-radius:8px;padding:8px;margin-bottom:8px">';
-    h += '<div style="font-size:10px;font-weight:700;color:var(--primary);margin-bottom:3px">Active Boosts</div>';
-    for (var bi=0;bi<boostLines.length;bi++) h += '<div style="font-size:11px;color:var(--text);line-height:1.6">' + boostLines[bi] + '</div>';
-    h += '</div>';
-  }
-  // Earnings breakdown
-  h += '<div style="background:var(--primary-light);border-radius:10px;padding:10px;margin-bottom:8px">';
-  h += '<div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:4px">Earnings Breakdown</div>';
-  h += '<div style="display:flex;justify-content:space-around;font-size:12px;color:var(--text)">';
-  h += '<span>' + days + ' days &times; 5 = ' + dayEarned + '</span>';
-  h += '<span>' + entries + ' entries &times; 5 = ' + entryEarned + '</span>';
-  h += '</div></div>';
-  // Milestone shields
-  var awarded = w.milestonesClaimed||[];
-  if (awarded.length > 0) {
-    h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">Milestone shields earned: ' + awarded.length + '</div>';
-    for (var mi2=0;mi2<awarded.length;mi2++) {
-      var mIdx = milestones.indexOf(awarded[mi2]);
-      h += '<span style="font-size:9px;background:var(--primary-light);padding:1px 5px;border-radius:4px;margin:1px;display:inline-block">' + (mIdx>=0?mNames[mIdx]:'') + '</span>';
-    }
-  }
-  // Savings Ledger � real-world savings calculator
-  var cpDay = D.sobriety.costPerDay || 0;
-  var dQty = D.sobriety.dailyQuantity || 0;
-  var uLabel = D.sobriety.unitLabel || '';
-  var moneySaved = days * cpDay;
-  var unitsAvoided = days * dQty;
-  var hrsRegained = Math.round(days * 1.5);
-  h += '<div class="card" style="border:2px solid var(--gold);background:linear-gradient(135deg,rgba(255,215,0,.04),var(--card));padding:14px;margin-bottom:10px">';
-  h += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><span style="font-size:20px">\uD83D\uDCD6</span><h3 style="margin:0;font-size:14px">The Savings Ledger</h3></div>';
-  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">Enter how much you spent daily and the calculator will show what you\u2019ve saved' + (isActive ? ' since your last reset.' : ' once you start your journey.') + '</p>';
-  // Inputs always visible
-  h += '<div style="display:flex;gap:4px;margin-bottom:8px">';
-  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Cost/day ($)</label>';
-  h += '<input type="number" min="0" step="0.5" value="' + cpDay + '" onchange="D.sobriety.costPerDay=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 15" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Quantity/day</label>';
-  h += '<input type="number" min="0" step="0.5" value="' + dQty + '" onchange="D.sobriety.dailyQuantity=parseFloat(this.value)||0;saveData();render()" placeholder="e.g. 6" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-  h += '<div style="flex:1"><label style="font-size:9px;color:var(--muted);display:block">Unit label</label>';
-  h += '<input type="text" value="' + safe(uLabel) + '" onchange="D.sobriety.unitLabel=this.value;saveData();render()" placeholder="drinks" style="font-size:12px;padding:4px 6px;margin:0"></div>';
-  h += '</div>';
-  // Results � always visible
-  h += '<div class="stat-grid">';
-  h += '<div class="stat-card"><div class="num" style="color:#d4a017">$' + moneySaved.toLocaleString() + '</div><div class="label">Money Saved</div></div>';
-  var unitDisplay = uLabel ? safe(uLabel) + ' Avoided' : 'Units Avoided';
-  h += '<div class="stat-card"><div class="num" style="color:var(--accent)">' + unitsAvoided.toLocaleString() + '</div><div class="label">' + unitDisplay + '</div></div>';
-  h += '<div class="stat-card"><div class="num" style="color:var(--primary)">' + hrsRegained + 'h</div><div class="label">Time Regained</div></div>';
-  h += '</div></div>';
-  if (!isActive) h += '<div style="font-size:13px;color:var(--muted);margin:6px 0">Begin your journey to start earning Energy</div>';
-  // Shield info
-  h += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:8px">';
-  h += '&#128737; Shields protect your streak on relapse. Earn them at milestones (1 month, 3 months, etc.) or buy for 30 Energy each.';
-  h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="goTo(\'more\')" style="margin-top:4px">Back to Tools</button>';
-  // Shop link
-  h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'shop\')" style="width:100%;margin-top:6px;font-size:12px;background:linear-gradient(135deg,#2a5a2a,#3a7a3a)">\u269C Visit the Shop</button>';
-  h += '</div>';
-  return h;
-}
-function buyShield() {
-  var w = getWarchest();
-  if ((w.schillings || 0) < 30) { alert('Not enough Energy! You need 30.'); render(); return; }
-  w.schillings -= 30;
-  w.shields = (w.shields || 0) + 1;
-  saveData(); render();
-}
-var SHOP_ITEMS = [
-  {id:'crimson', cat:'Skins', name:'Crimson Coat', desc:'Dye your coat deep crimson', cost:80, icon:'\u2619'},
-  {id:'silver', cat:'Skins', name:'Silver Trim', desc:'Trim your cloak with silver', cost:100, icon:'\u2694'},
-  {id:'starry', cat:'Skins', name:'Starry Hat', desc:'Your hat glows with starry sky', cost:70, icon:'\u2727'},
-  {id:'streak', cat:'Boosts', name:'Streak Protection', desc:'Protects your streak for 1 relapse', cost:50, icon:'\u2629'},
-  {id:'double', cat:'Boosts', name:'Double Rewards', desc:'Double rewards earned for 24 hours', cost:75, icon:'\u269C'},
-  {id:'bonus', cat:'Boosts', name:'Bonus Task', desc:'Unlock a 4th daily task today', cost:40, icon:'\u2766'}
-];
 
 function homePageHTML() {
   var days = soberDays();
@@ -677,60 +413,19 @@ return h;
   h += '</div>';
 
   // 2. Stats bar
-  var rank = getRank(days);
-  var streak = D.streak || 0;
-  var wc = D.warchest || {};
-  var schillings = wc.schillings || 0;
-  var shields = wc.shields || 0;
-
   h += '<div class="card" style="margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:12px 10px 10px">';
   h += '<div style="display:flex;justify-content:space-around;align-items:center">';
   h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--primary)">' + days + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">DAYS</div></div>';
-  h += '<div style="text-align:center;flex:1"><div style="font-size:16px;font-weight:700;color:var(--text)">' + _rankIconHTML(rank.title, 16) + ' ' + rank.title + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">RANK</div></div>';
-  h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--accent)">' + streak + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">STREAK</div></div>';
   h += '<div style="text-align:center;flex:1"><div style="font-size:22px;font-weight:700;color:#8a6a4a">' + kingdomPopulation(days) + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COMMUNITY</div></div>';
-  h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')" title="' + (shields > 0 ? shields + ' shields' : '') + '"><div style="font-size:22px;font-weight:700;color:#38bdf8">' + schillings + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">ENERGY</div></div>';
-  // Savings Ledger mini widget
-  if (D.sobriety.startDate) {
-    var _cpDay = D.sobriety.costPerDay || 0;
-    var _moneySaved = days * _cpDay;
-    if (_cpDay > 0) {
-      h += '<div style="text-align:center;flex:1"><div style="font-size:18px;font-weight:700;color:var(--gold)">$' + _moneySaved.toLocaleString() + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px;cursor:pointer" onclick="goTo(\'warchest\')">SAVED</div></div>';
-    } else {
-      h += '<div style="text-align:center;flex:1;cursor:pointer" onclick="goTo(\'warchest\')"><div style="font-size:10px;color:var(--muted)">Set daily cost</div><div style="font-size:9px;letter-spacing:1px;color:var(--gold)">in Rewards</div></div>';
-    }
-  }
   h += '</div>';
-  // Rank progress
-  if (rank.next) {
-    var prog = days - rank.threshold;
-    var need = rank.nextThreshold - rank.threshold;
-    var pct = Math.min(100, Math.round(prog / need * 100));
-    h += '<div style="width:70%;margin:6px auto 2px;height:3px;background:var(--border);border-radius:2px;overflow:hidden">';
-    h += '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:2px;transition:width .4s"></div></div>';
-    h += '<div style="font-size:9px;color:var(--muted);text-align:center">' + pct + '% to ' + rank.next + '</div>';
-  } else {
-    h += '<div style="font-size:9px;color:var(--accent);text-align:center;margin-top:2px">The space is yours</div>';
-  }
   h += '</div>';
 
-  // 3. Level card (medieval rank, clickable ? profile)
-  var _lvl = soberLevel();
-  var _prog = soberLevelProgress();
-  h += '<div class="card" style="margin-top:8px;padding:10px;text-align:center;cursor:pointer" onclick="goTo(\'profile\')">';
-  h += '<div style="font-size:24px">' + _lvl.icon + '</div>';
-  h += '<div style="font-size:14px;font-weight:700;color:var(--primary)">' + _lvl.title + '</div>';
-  h += '<div class="progress-bar" style="max-width:140px;margin:4px auto"><div class="fill" style="width:' + _prog + '%"></div></div>';
-  h += '<div style="font-size:10px;color:var(--muted)">Level ' + _lvl.level + ' &middot; ' + _prog + '% to next rank</div>';
-  h += '</div>';
-
-  // 4. Sobriety timer (right under planet)
+  // 3. Sobriety timer (right under planet)
   h += soberTimerHTML();
 
-  // 5. Quick actions
+  // 4. Quick actions
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">';
   h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'journal\')" style="background:linear-gradient(135deg,#5a3a1a,#7a5a3a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2726</span> Journal</button>';
-  h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'track\')" style="background:linear-gradient(135deg,#3a5a2a,#5a7a4a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2619</span> Check-In</button>';
   h += '<button class="btn btn-primary btn-sm" onclick="showCravingBreaker()" style="background:linear-gradient(135deg,#5a2a2a,#7a4a4a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2694</span> Craving</button>';
   h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="background:linear-gradient(135deg,#2a4a5a,#4a6a7a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2766</span> Breathe</button>';
   h += '</div>';
@@ -751,7 +446,6 @@ function homeHTML() {
 
   h += dailyQuote();
 
-  h += dailyQuestsHTML();
   h += recoveryGoalsHTML();
 
   // Time capsule ready notification
