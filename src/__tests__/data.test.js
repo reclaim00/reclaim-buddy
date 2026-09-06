@@ -86,7 +86,7 @@ describe('validateData()', () => {
 describe('saveDataSilent', () => {
   function stubMissing() {
     const stubs = {};
-    ['updateSchillings', 'applyTheme', 'syncToFirestore', 'showToast'].forEach(k => {
+    ['applyTheme', 'syncToFirestore', 'showToast'].forEach(k => {
       stubs[k] = global[k];
       global[k] = () => {};
     });
