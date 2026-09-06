@@ -68,7 +68,7 @@ var SOBER_LEVELS = [
   {level:10, minDays:365, title:'Sage', icon:'\u2727', desc:'A pillar of the community'},
   {level:11, minDays:730, title:'Pioneer', icon:'\u2726', desc:'A world in steady orbit'},
   {level:12, minDays:1000, title:'Cosmos', icon:'\u2727', desc:'Long may you thrive'},
-  {level:13, minDays:1825, title:'Legend', icon:'\u265E', desc:'Five years â€” an living legend'}
+  {level:13, minDays:1825, title:'Legend', icon:'\u265E', desc:'Five years — a living legend'}
 ];
 
 // ====== ACHIEVEMENTS ======
@@ -85,8 +85,6 @@ var ACHIEVEMENTS = [
   {id:'decade_early',   icon:'\u2629',  title:'Millennium',       desc:'Stay sober for 1000 days',       check:function(d){return d>=1000}},
   {id:'scribe',         icon:'\u270D',  title:'Storyteller',     desc:'Write 10 journal entries',       check:function(d,j){return j>=10}},
   {id:'chronicler',     icon:'\u270D',  title:'Journaler',       desc:'Write 50 journal entries',       check:function(d,j){return j>=50}},
-  {id:'shield_bearer',  icon:'\u265A',  title:'Shield Holder',    desc:'Earn 3 shields',                 check:function(d,j,s){return s>=3}},
-  {id:'quest_knight',   icon:'\u269C',  title:'Quest Seeker',     desc:'Complete 10 quests',             check:function(d,j,s,q){return q>=10}},
   {id:'comrade',        icon:'\u2726',  title:'True Partner',     desc:'Pair with a buddy',              check:function(){return D.buddyPair && D.buddyPair.partnerId}},
   {id:'stone_wall',     icon:'\u265E',  title:'Stone Foundation',       desc:'Grow your planet to level 5',           check:function(d){return kingdomLevel(d)>=5}},
   {id:'dragon_lord',    icon:'\u265B',  title:'Peak',      desc:'Grow your planet to level 15',          check:function(d){return kingdomLevel(d)>=15}},
@@ -235,7 +233,7 @@ function plantHTML() {
   var scale = 1.2;
   h += '<div style="transform:scale(' + scale + ');transform-origin:bottom center;display:inline-block">';
   h += '<div style="display:flex;flex-direction:column;align-items:center">';
-  // Plant stem/seed â€” only show if active
+  // Plant stem/seed — only show if active
   if (isActive) {
     var plantH = (stage===0?24:(stage*18+30));
     h += '<div class="plant-grow'+(stage>=6?' glow':'')+'" style="width:'+(60*scale)+'px;height:'+(plantH*scale)+'px">';
@@ -286,22 +284,7 @@ function plantHTML() {
 function recordRelapse() {
   if (!confirm(t('This records a relapse date. Remember: recovery is not linear. Every day is a fresh start.'))) return;
   if (!D.sobriety.relapseDates) D.sobriety.relapseDates = [];
-  var w = getWarchest();
-  // Shop streak shield: consume one to prevent streak reset
-  if (w.boostData.streak > 0) {
-    w.boostData.streak--;
-    w.lastDayCounted = soberDays();
-    w.lastEntryCount = (D.journal || []).length;
-    saveData();
-    setTimeout(kingdomDamage, 150);
-    showRelapseRecovery(true);
-    return;
-  }
   D.sobriety.relapseDates.push(Date.now());
-  D.warchest = D.warchest || { schillings: 0, shields: 0, lastDayCounted: 0, lastEntryCount: 0 };
-  D.warchest.shields = (D.warchest.shields || 0) + 1;
-  D.warchest.lastDayCounted = soberDays();
-  D.warchest.lastEntryCount = (D.journal || []).length;
   saveData();
   // Auto-grant Fresh Start
   autoGrantPardon();
@@ -326,30 +309,23 @@ function autoGrantPardon() {
   saveData();
 }
 
-function showRelapseRecovery(protectedByBoost) {
+function showRelapseRecovery() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var shieldMsg = '';
-  if (protectedByBoost) {
-    shieldMsg = '<div style="font-size:14px;color:var(--gold);margin-bottom:6px;background:var(--primary-light);border-radius:8px;padding:8px">&#128737; <strong>Streak Shield absorbed the relapse!</strong> Your sober streak is fully preserved.</div>';
-  } else {
-    var shields = (D.warchest && D.warchest.shields) || 0;
-    shieldMsg = shields > 0 ? '<div style="font-size:13px;color:var(--gold);margin-bottom:6px">&#128737; Your streak is protected by ' + shields + ' shield' + (shields!==1?'s':'') + '</div>' : '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">&#128737; Your next relapse will earn a shield to protect your streak</div>';
-  }
-  var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#128737;</div><h3 style="font-size:20px;font-weight:700;color:var(--danger);margin:0">Relapse Recorded</h3><p style="font-size:13px;color:var(--muted);margin-top:4px">' + (protectedByBoost ? 'Your streak continues â€” a Streak Shield protected it' : 'Your streak continues â€” a shield absorbed the impact') + '</p>' + shieldMsg + '</div>';
+  var h = '<div class="overlay-content" style="max-width:480px"><div style="text-align:center;margin-bottom:12px"><div style="font-size:40px;margin-bottom:4px">&#127793;</div><h3 style="font-size:20px;font-weight:700;color:var(--danger);margin:0">Relapse Recorded</h3><p style="font-size:13px;color:var(--muted);margin-top:4px">You are not back to square one. Every day is a fresh start.</p></div>';
   // Next 1 hour
-  h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#9200; Next 1 Hour</div><div style="font-size:13px;color:var(--text);line-height:1.5">Breathe. You are not back to square one â€” you have all the tools you\'ve built. Drink water, wash your face, step outside. Call or text your comrade or a crisis line if you need to talk. Delete the means of access. Write one sentence about what happened without judgment.</div></div>';
+  h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#9200; Next 1 Hour</div><div style="font-size:13px;color:var(--text);line-height:1.5">Breathe. You are not back to square one — you have all the tools you\'ve built. Drink water, wash your face, step outside. Call or text your comrade or a crisis line if you need to talk. Delete the means of access. Write one sentence about what happened without judgment.</div></div>';
   // Next 24 hours
-  h += '<div class="card" style="border-left:4px solid var(--accent);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128204; Next 24 Hours</div><div style="font-size:13px;color:var(--text);line-height:1.5">Identify the trigger â€” what happened right before? Log it in your journal. Restore your environment (remove triggers). Re-commit to your sobriety timer. Reach out to your comrade or a support group. Follow your safety plan. Be kind to yourself  shame fuels the cycle, honesty breaks it.</div></div>';
+  h += '<div class="card" style="border-left:4px solid var(--accent);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128204; Next 24 Hours</div><div style="font-size:13px;color:var(--text);line-height:1.5">Identify the trigger — what happened right before? Log it in your journal. Restore your environment (remove triggers). Re-commit to your sobriety timer. Reach out to your comrade or a support group. Follow your safety plan. Be kind to yourself  shame fuels the cycle, honesty breaks it.</div></div>';
   // Next week
-  h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128198; Next 1 Week</div><div style="font-size:13px;color:var(--text);line-height:1.5">Review what led to the relapse and update your trigger list. Strengthen your daily routine  add one extra check-in or coping practice. Forgive yourself fully. Relapse is part of recovery for many people. What matters is what you do next. You are still on the path.</div></div>';
+  h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128198; Next 1 Week</div><div style="font-size:13px;color:var(--text);line-height:1.5">Review what led to the relapse and update your trigger list. Strengthen your daily routine  add one extra coping practice. Forgive yourself fully. Relapse is part of recovery for many people. What matters is what you do next. You are still on the path.</div></div>';
   // Auto-pardon certificate
-  if (!protectedByBoost && D.royalPardons && D.royalPardons.length) {
+  if (D.royalPardons && D.royalPardons.length) {
     var lastPardon = D.royalPardons[D.royalPardons.length - 1];
     h += '<div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:14px;margin-top:8px;text-align:center;box-shadow:0 2px 12px rgba(138,122,106,.15)">';
     h += '<div style="font-size:28px;margin-bottom:2px">&#128081;</div>';
     h += '<div style="font-size:12px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Fresh Start</div>';
-    h += '<div style="font-size:9px;color:var(--gold);margin-bottom:6px;font-style:italic">"On the path I walk and the journey we are building â€” you are pardoned. Rise and begin again with my blessing."</div>';
+    h += '<div style="font-size:9px;color:var(--gold);margin-bottom:6px;font-style:italic">"On the path I walk and the journey we are building — you are pardoned. Rise and begin again with my blessing."</div>';
     h += '<div style="border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:6px 4px;margin-bottom:4px">';
     h += '<div style="font-size:11px;line-height:1.4;margin-bottom:4px"><em>"' + safe(lastPardon.forgive) + '"</em></div>';
     if (lastPardon.commit) h += '<div style="font-size:10px;color:var(--text-light)">&#9876; <strong>Vow:</strong> ' + safe(lastPardon.commit) + '</div>';
@@ -358,7 +334,7 @@ function showRelapseRecovery(protectedByBoost) {
     h += '<div style="font-size:8px;color:var(--muted);letter-spacing:2px;margin-top:1px">SEAL OF YOUR FRESH START</div>';
     h += '</div>';
   }
-  h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'relapsegraveyard\')">&#9904; Relapse Graveyard</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">I\'ve Got This</button></div></div>';
+  h += '<div style="display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()">I\'ve Got This</button></div></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
@@ -453,7 +429,7 @@ function showResetAlternatives() {
   overlay.innerHTML = '<div class="overlay-content" style="text-align:center;max-width:360px;padding:24px;border-radius:20px">' +
     '<div style="font-size:40px;margin-bottom:6px">&#129309;</div>' +
     '<div style="font-size:17px;font-weight:700;color:var(--primary-dark);margin-bottom:2px">You\'ve Got This</div>' +
-    '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5">A reset is a big step. Before you decide, try one of these â€” they might help shift your state of mind.</div>' +
+    '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5">A reset is a big step. Before you decide, try one of these — they might help shift your state of mind.</div>' +
     '<button class="btn btn-primary btn-sm" onclick="closeOverlay(this);startBreathe()" style="margin-bottom:6px;background:linear-gradient(135deg,#2a4a5a,#4a6a7a);border:none">&#x2766; Breathing Exercise</button>' +
     '<button class="btn btn-primary btn-sm" onclick="closeOverlay(this);suggestDistraction()" style="margin-bottom:6px;background:linear-gradient(135deg,#5a3a1a,#7a5a3a);border:none">&#x2619; Do Something You Enjoy</button>' +
     '<button class="btn btn-outline btn-sm" onclick="closeOverlay(this);resetSoberTimer()" style="margin-bottom:6px">I Still Want to Reset</button>' +
