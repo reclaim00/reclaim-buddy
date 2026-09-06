@@ -47,7 +47,8 @@ exports.checkNotifications = functions.pubsub.schedule('every 5 minutes').onRun(
           {key: 'breathe', time: n.breatheTime, msg: 'Take a 2-minute breathing exercise. Inhale calm, exhale stress.'}
         ];
 
-        var streak = userData.streak || 0;
+        var sobrietyStart = userData.sobriety && userData.sobriety.startDate;
+        var streak = sobrietyStart ? Math.max(0, Math.floor((now.getTime() - new Date(sobrietyStart).getTime()) / 86400000)) : 0;
         var toNotify = null;
 
         for (var i=0;i<checks.length;i++) {
