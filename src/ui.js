@@ -1602,6 +1602,23 @@ function promptInstall() {
     alert(t('Open this page in your browser menu and select "Add to Home Screen" or "Install App".'));
   }
 }
+function installCardHTML() {
+  if (_appInstalled) return '';
+  var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || (typeof navigator !== 'undefined' && navigator.standalone) || false;
+  if (isStandalone) return '';
+  if (localStorage.getItem('rc_install_dismissed')) return '';
+  return '<div id="install-card" class="card" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px dashed var(--primary);background:linear-gradient(135deg,rgba(58,122,46,.08),var(--card))">'
+    + '<div style="font-size:26px;line-height:1">&#128242;</div>'
+    + '<div style="flex:1;cursor:pointer" onclick="promptInstall()"><div style="font-weight:800;font-size:14px">' + t('Add Re.Claim to your Home Screen') + '</div><div style="font-size:12px;color:var(--muted)">' + t('Works offline and opens like an app') + '</div></div>'
+    + '<span style="font-size:20px;color:var(--muted);cursor:pointer" onclick="promptInstall()">&#8250;</span>'
+    + '<button class="btn btn-sm" onclick="dismissInstallCard()" style="width:auto;padding:4px 8px;font-size:14px;line-height:1;background:none;border:none;color:var(--muted);cursor:pointer;margin:0">&times;</button>'
+    + '</div>';
+}
+function dismissInstallCard() {
+  localStorage.setItem('rc_install_dismissed', '1');
+  var card = document.getElementById('install-card');
+  if (card) card.remove();
+}
 // ====== INIT ======
 applyTheme();
 var connEl = document.getElementById('conn-status');
