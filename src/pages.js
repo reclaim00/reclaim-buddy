@@ -5140,7 +5140,7 @@ function applyTheme() {
   }
 
 function updateTabLabels() {
-  var labels = {home:'Atlas',reflect:'Journal',care:'Wellness',track:'History',more:'Tools'};
+  var labels = {home:'Home',reflect:'Journal',care:'Wellness',track:'History',more:'Tools'};
   [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
@@ -5202,7 +5202,7 @@ function seerTowerHTML() {
   else omens.push({type:'neutral', text: 'Your journey has not begun yet. Every journey starts with a single stride.'});
 
   // Relapse patterns
-  if (relapses >= 3) omens.push({type:'warning', text: 'You have experienced ' + relapses + ' relapses. Each fall is a teacher \u2014 what patterns do you see across them? Visit the Relapse Graveyard to honor the lessons.'});
+  if (relapses >= 3) omens.push({type:'warning', text: 'You have experienced ' + relapses + ' relapses. Each fall is a teacher \u2014 what patterns do you see across them? Name one lesson from each and carry it forward.'});
   else if (relapses >= 1) omens.push({type:'warning', text: 'A single fall does not undo your growth. What did that moment teach you? The lesson is worth more than the stumble.'});
   else omens.push({type:'good', text: 'No falls recorded. Your resolve holds strong. Stay vigilant \u2014 awareness is your best guard.'});
 
@@ -5259,7 +5259,7 @@ function seerTowerHTML() {
   }
 
   h += '<div class="card" style="text-align:center;padding:12px;margin-top:8px">';
-  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">"The stars do not decide your fate \u2014 they merely illuminate the path you are already walking."</div>';
+  h += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px">"The path is made by walking \u2014 one grounded step at a time."</div>';
   h += '<div style="font-size:11px;font-style:italic;color:var(--muted)">Your progress, at a glance.</div></div>';
 
   return h;
