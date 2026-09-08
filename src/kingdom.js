@@ -119,6 +119,8 @@ function kingdomHTML() {
   h += '<radialGradient id="kd-molten" cx="42%" cy="36%" r="70%"><stop offset="0%" stop-color="#ffe9a8"/><stop offset="38%" stop-color="#ffac3d"/><stop offset="72%" stop-color="#d94f0a"/><stop offset="100%" stop-color="#5a1a00"/></radialGradient>';
   h += '<radialGradient id="kd-ocean" cx="40%" cy="34%" r="75%"><stop offset="0%" stop-color="#a8ddff"/><stop offset="45%" stop-color="#3a8fd4"/><stop offset="80%" stop-color="#16527a"/><stop offset="100%" stop-color="#0a2a4a"/></radialGradient>';
   h += '<radialGradient id="kd-atmo" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(130,200,255,0)"/><stop offset="72%" stop-color="rgba(130,200,255,.14)"/><stop offset="100%" stop-color="rgba(130,200,255,.3)"/></radialGradient>';
+  h += '<radialGradient id="kd-core" cx="50%" cy="50%" r="58%"><stop offset="0%" stop-color="#fff6da"/><stop offset="42%" stop-color="#ffd27a"/><stop offset="82%" stop-color="#ff8c2e"/><stop offset="100%" stop-color="#cc5a12"/></radialGradient>';
+  h += '<radialGradient id="kd-limb" cx="42%" cy="50%" r="130%"><stop offset="0%" stop-color="rgba(4,10,26,0)"/><stop offset="70%" stop-color="rgba(4,10,26,0)"/><stop offset="100%" stop-color="rgba(4,10,26,.5)"/></radialGradient>';
   h += '</defs>';
   h += '<rect width="500" height="280" class="k-sky"/>';
   // Stars — brighter and denser as your world grows
@@ -150,6 +152,20 @@ function kingdomHTML() {
       var rad2 = pr + 20 + (pu % 4) * 10;
       h += '<circle cx="' + (250 + Math.cos(ang * Math.PI / 180) * rad2) + '" cy="' + (150 + Math.sin(ang * Math.PI / 180) * rad2 * 0.32) + '" r="1.3" fill="#ffcc88" opacity="' + (0.3 + (pu % 3) * 0.2) + '"/>';
     }
+    // Fine debris sprinkled throughout the disk
+    for (var du2 = 0; du2 < 32; du2++) {
+      var dia = (du2 * 47.6) * Math.PI / 180;
+      var diRad = pr + 12 + (du2 % 6) * 7;
+      h += '<circle cx="' + (250 + Math.cos(dia) * diRad) + '" cy="' + (150 + Math.sin(dia) * diRad * 0.32) + '" r="' + (0.5 + (du2 % 3) * 0.45) + '" fill="#ffcc88" opacity="' + (0.16 + (du2 % 4) * 0.12) + '" style="animation:starTwinkle ' + (2 + du2 % 4) + 's ease-in-out infinite alternate;animation-delay:-' + ((du2 % 5) * 0.4) + 's"/>';
+    }
+    // Counter-rotating inner band of dust
+    h += '<g style="animation:diskSpin 24s linear infinite reverse;transform-origin:250px 150px">';
+    for (var du3 = 0; du3 < 3; du3++) {
+      var duA = (120 + du3 * 120) * Math.PI / 180;
+      h += '<ellipse cx="250" cy="150" rx="' + (pr + du3 * 7) + '" ry="' + (pr + du3 * 7) * 0.9 + '" fill="none" stroke="rgba(255,204,136,' + (0.26 - du3 * 0.06) + ')" stroke-width="1" opacity=".35"/>';
+      h += '<circle cx="' + (250 + Math.cos(duA) * (pr + du3 * 7)) + '" cy="' + (150 + Math.sin(duA) * (pr + du3 * 7) * 0.32) + '" r="1.2" fill="#ffd9a0"/>';
+    }
+    h += '</g>';
   }
 
   // Planet sphere
@@ -157,6 +173,18 @@ function kingdomHTML() {
   h += '<circle cx="250" cy="150" r="' + (pr + 4) + '" fill="none" stroke="rgba(255,170,80,.5)" stroke-width="2" style="animation:planetPulse 3.6s ease-in-out infinite"/>';
 
   if (forming) {
+    // Inner molten core shining through the crust
+    h += '<circle cx="250" cy="150" r="' + (pr * 0.5) + '" fill="url(#kd-core)"/>';
+    // Convection currents in the magma
+    h += '<g style="animation:diskSpin 16s linear infinite;transform-origin:250px 150px">';
+    h += '<ellipse cx="250" cy="150" rx="' + (pr * 0.72) + '" ry="' + (pr * 0.3) + '" fill="none" stroke="rgba(255,226,160,.18)" stroke-width="1.5"/>';
+    h += '<ellipse cx="250" cy="150" rx="' + (pr * 0.5) + '" ry="' + (pr * 0.2) + '" fill="none" stroke="rgba(255,240,200,.28)" stroke-width="1"/>';
+    h += '<ellipse cx="250" cy="150" rx="' + (pr * 0.3) + '" ry="' + (pr * 0.12) + '" fill="none" stroke="rgba(255,226,160,.2)" stroke-width="1"/>';
+    h += '</g>';
+    // Cooling cracks crawling across the crust
+    h += '<path d="M ' + (250 - pr * 0.62) + ',' + (150 + pr * 0.3) + ' Q ' + (250 - pr * 0.3) + ',' + (150 + pr * 0.62) + ' ' + (250 + pr * 0.16) + ',' + (150 + pr * 0.62) + '" stroke="#ffbb66" stroke-width="1.4" fill="none" opacity=".5"/>';
+    h += '<path d="M ' + (250 + pr * 0.3) + ',' + (150 - pr * 0.6) + ' Q ' + (250 + pr * 0.55) + ',' + (150 - pr * 0.24) + ' ' + (250 + pr * 0.6) + ',' + (150 + pr * 0.14) + '" stroke="#ffbb66" stroke-width="1.4" fill="none" opacity=".45"/>';
+    h += '<path d="M ' + (250 - pr * 0.38) + ',' + (150 - pr * 0.42) + ' Q ' + (250 - pr * 0.15) + ',' + (150 - pr * 0.2) + ' ' + (250 - pr * 0.3) + ',' + (150 + pr * 0.06) + '" stroke="#ffdd88" stroke-width="1.1" fill="none" opacity=".6" style="animation:planetPulse 3s ease-in-out infinite"/>';
     // Molten impact pools and cooling cracks
     h += '<ellipse cx="238" cy="132" rx="' + (pr * 0.26) + '" ry="' + (pr * 0.16) + '" fill="#ffe3a8" opacity=".5"/>';
     h += '<ellipse cx="262" cy="168" rx="' + (pr * 0.18) + '" ry="' + (pr * 0.11) + '" fill="#ffe3a8" opacity=".35"/>';
@@ -238,12 +266,32 @@ function kingdomHTML() {
       h += '<circle cx="' + (tx + 1) + '" cy="' + (ty + 5) + '" r=".9" fill="#d6a878"/>';
     }
     h += '</g>';
+    // Soft limb shading for a rounded, solid look
+    h += '<ellipse cx="250" cy="150" r="' + pr + '" fill="url(#kd-limb)"/>';
+    // Polar ice caps that form as the world matures
+    if (days >= 45) {
+      var capW = pr * 0.34, capH = pr * 0.13;
+      h += '<ellipse cx="250" cy="' + (150 - pr * 0.78) + '" rx="' + capW + '" ry="' + capH + '" fill="rgba(236,242,248,.85)"/>';
+      h += '<ellipse cx="250" cy="' + (150 + pr * 0.76) + '" rx="' + (capW * 0.9) + '" ry="' + (capH * 0.85) + '" fill="rgba(236,242,248,.7)"/>';
+      if (days >= 180) {
+        h += '<path d="M ' + (250 - pr * 0.42) + ',' + (150 - pr * 0.72) + ' Q ' + (250 - pr * 0.2) + ',' + (150 - pr * 0.6) + ' ' + (250 - pr * 0.36) + ',' + (150 - pr * 0.5) + '" stroke="rgba(240,246,252,.9)" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>';
+        h += '<path d="M ' + (250 + pr * 0.3) + ',' + (150 + pr * 0.7) + ' Q ' + (250 + pr * 0.12) + ',' + (150 + pr * 0.58) + ' ' + (250 + pr * 0.3) + ',' + (150 + pr * 0.52) + '" stroke="rgba(240,246,252,.8)" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>';
+      }
+    }
     // Clouds — slowly drifting
-    var cloudN = Math.min(4, Math.floor(days / 45));
-    var cps = [[-0.22, -0.3, 0.2, 0.09], [0.2, -0.05, 0.16, 0.08], [-0.05, 0.28, 0.18, 0.09], [0.28, 0.3, 0.14, 0.07]];
+    var cloudN = Math.min(6, Math.floor(days / 40));
+    var cps = [[-0.22,-0.3,0.2,0.09],[0.2,-0.05,0.16,0.08],[-0.05,0.28,0.18,0.09],[0.28,0.3,0.14,0.07],[0.02,-0.16,0.11,0.05],[-0.3,0.08,0.13,0.05]];
     for (var ci2 = 0; ci2 < cloudN; ci2++) {
       var C = cps[ci2];
       h += '<ellipse class="k-clouds" cx="' + (250 + C[0] * pr * 1.5) + '" cy="' + (150 + C[1] * pr * 1.5) + '" rx="' + (C[2] * pr) + '" ry="' + (C[3] * pr) + '" fill="#ffffff" opacity=".55"/>';
+    }
+    // High, thin wisps drifting over the world
+    h += '<path d="M ' + (250 - pr * 0.95) + ',' + (150 - pr * 0.26) + ' Q ' + (250 - pr * 0.1) + ',' + (150 - pr * 0.4) + ' ' + (250 + pr * 0.95) + ',' + (150 - pr * 0.22) + '" stroke="#ffffff" stroke-width="2.5" fill="none" opacity=".18" class="k-clouds"/>';
+    h += '<path d="M ' + (250 - pr * 0.8) + ',' + (150 + pr * 0.3) + ' Q ' + (250 + pr * 0.1) + ',' + (150 + pr * 0.22) + ' ' + (250 + pr * 0.8) + ',' + (150 + pr * 0.34) + '" stroke="#ffffff" stroke-width="1.8" fill="none" opacity=".12" class="k-clouds"/>';
+    if (days >= 120) {
+      // A cyclonic storm brewing on a seasoned world
+      h += '<ellipse cx="' + (250 + pr * 0.18) + '" cy="' + (150 - pr * 0.34) + '" rx="' + (pr * 0.2) + '" ry="' + (pr * 0.11) + '" fill="rgba(255,255,255,.22)" style="animation:auroraPlanet 6s ease-in-out infinite alternate"/>';
+      h += '<ellipse cx="' + (250 + pr * 0.18) + '" cy="' + (150 - pr * 0.34) + '" rx="' + (pr * 0.09) + '" ry="' + (pr * 0.05) + '" fill="rgba(200,230,255,.35)" style="animation:auroraPlanet 6s ease-in-out infinite alternate-reverse"/>';
     }
     // Lighting highlight
     h += '<ellipse cx="218" cy="114" rx="24" ry="13" fill="#ffffff" opacity=".16" transform="rotate(-28 218 114)"/>';
@@ -438,6 +486,9 @@ function homeHTML() {
 
   // Atlas � the central hub
   h += homePageHTML();
+
+  // Install prompt card — inviting the user to add the app to their home screen
+  h += installCardHTML();
 
   // Crisis widget � always visible on home
   h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS � crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
