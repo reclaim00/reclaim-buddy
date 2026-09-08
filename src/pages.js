@@ -67,6 +67,29 @@ function screenerSeverityGAD(score) {
   return { label: 'Severe', color: 'var(--danger)' };
 }
 
+function screenerRiskLevel(key, result) {
+  if (!result || typeof result.total !== 'number') return 0;
+  var total = result.total;
+  if (key === 'phq9') {
+    if (result.answers && result.answers[8] > 0) return 2;
+    if (total >= 15) return 2;
+    if (total >= 10) return 1;
+    return 0;
+  }
+  if (total >= 15) return 2;
+  if (total >= 10) return 1;
+  return 0;
+}
+
+function crisisBannerHTML(reason) {
+  return '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div style="font-size:26px;line-height:1">&#128222;</div><div style="flex:1;min-width:170px"><div style="font-weight:700;font-size:13px;color:var(--danger)">'+t('Please reach out for support right now.')+'</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px">'+reason+' '+t('Trained people are available 24/7 and you deserve help.')+'</div></div></div>' +
+    '<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">' +
+    '<button class="btn btn-danger btn-sm" onclick="showSOS()" style="flex:1">'+t('Open SOS')+'</button>' +
+    '<a class="btn btn-outline btn-sm" href="tel:988" style="flex:1;text-decoration:none;text-align:center">988 '+t('Crisis Line')+'</a>' +
+    '<a class="btn btn-outline btn-sm" href="tel:911" style="flex:1;text-decoration:none;text-align:center">911</a>' +
+    '</div>';
+}
+
 function quizOptionsHTML(name, savedVal) {
   var opts = [
     {val:0, label:'Never', color:'var(--primary)', bg:'var(--primary-light)'},
@@ -347,6 +370,15 @@ function screenerHTML() {
 
   h += screenerCard('phq9', 'PHQ-9', '&#128555;', SCREENER_PHQ, D.screenerPHQ9);
   h += screenerCard('gad7', 'GAD-7', '&#128534;', SCREENER_GAD7, D.screenerGAD7);
+  var phqRisk = D.screenerPHQ9 ? screenerRiskLevel('phq9', D.screenerPHQ9.result) : 0;
+  var gadRisk = D.screenerGAD7 ? screenerRiskLevel('gad7', D.screenerGAD7.result) : 0;
+  if (phqRisk >= 2) {
+    h += '<div class="card" style="border-left:4px solid var(--danger);padding:14px;background:linear-gradient(135deg,rgba(220,38,38,.08),var(--card))">' + crisisBannerHTML(t('Your last PHQ-9 responses suggest you may be in significant distress.')) + '</div>';
+  } else if (gadRisk >= 2) {
+    h += '<div class="card" style="border-left:4px solid var(--danger);padding:14px;background:linear-gradient(135deg,rgba(220,38,38,.08),var(--card))">' + crisisBannerHTML(t('Your last GAD-7 responses suggest significant anxiety.')) + '</div>';
+  } else if (phqRisk === 1 || gadRisk === 1) {
+    h += '<div class="card" style="border-left:3px solid #f59e0b;padding:12px;font-size:12px;color:var(--muted);line-height:1.6">' + t('Your recent scores suggest things have felt heavy. Consider talking with someone you trust or a professional \u2014 and know that you are not alone.') + '</div>';
+  }
   h += '<div class="card" style="background:var(--primary-light);border:none;text-align:center;font-size:12px;color:var(--muted)"><strong>Important:</strong> These are self-checks only, not a diagnosis. If you are in crisis, use <strong>SOS</strong> or call <strong>988</strong> (Suicide &amp; Crisis Lifeline).</div>';
   return h;
 }
@@ -432,6 +464,8 @@ function screenerSubmit() {
   data.progress = null;
   screenerActive = null;
   saveData();
+  delete _pageCache['screener'];
+  render();
 }
 
 function screenerRenderItem(idx) {
@@ -3113,14 +3147,56 @@ function pendingFollowUpHTML() {
 
 
 // ====== BREATHING ======
+var breatheIdx = 0;
+var BREATHING_EXERCISES = [
+  {id:'box', name:'Box', emoji:'\u25A2', steps:['Inhale','Hold','Exhale','Hold'], durations:[4000,4000,4000,4000], scales:['scale(1.3)','scale(1.3)','scale(0.8)','scale(0.8)'], colors:['#059669','#f59e0b','#3b82f6','#f59e0b'], desc:'Inhale 4, hold 4, exhale 4, hold 4 \u2014 balances the nervous system.'},
+  {id:'relax', name:'4-7-8', emoji:'\u25C8', steps:['Inhale','Hold','Exhale'], durations:[4000,7000,8000], scales:['scale(1.3)','scale(1.3)','scale(0.75)'], colors:['#059669','#f59e0b','#3b82f6'], desc:'Inhale 4, hold 7, exhale 8 \u2014 deep calm before sleep or a tough moment.'},
+  {id:'long', name:'Long Exhale', emoji:'\u25B3', steps:['Inhale','Exhale','Hold'], durations:[4000,6000,2000], scales:['scale(1.3)','scale(0.78)','scale(0.78)'], colors:['#059669','#3b82f6','#f59e0b'], desc:'A long out-breath steadies the body into a recovery rhythm.'},
+  {id:'energize', name:'Energize', emoji:'\u2606', steps:['Inhale','Hold','Exhale'], durations:[4000,2000,4000], scales:['scale(1.3)','scale(1.3)','scale(0.8)'], colors:['#059669','#3b82f6','#f59e0b'], desc:'Bright and quick \u2014 useful for steadying a craving or low energy.'}
+];
+
+function breathePickerHTML() {
+  var h = '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:6px">';
+  for (var i=0;i<BREATHING_EXERCISES.length;i++) {
+    var ex = BREATHING_EXERCISES[i];
+    var sel = i === breatheIdx ? 'background:var(--primary);color:#fff;border-color:var(--primary)' : '';
+    h += '<button class="btn btn-sm" onclick="pickBreathe(' + i + ')" style="border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:12px;width:auto;box-shadow:none;' + sel + '">' + ex.emoji + ' ' + ex.name + '</button>';
+  }
+  h += '</div>';
+  return h;
+}
+
+function pickBreathe(i) {
+  breatheIdx = i;
+  var pk = document.getElementById('breathe-picker');
+  if (pk) {
+    pk.innerHTML = breathePickerHTML();
+    var desc = document.getElementById('breathe-desc');
+    if (desc) desc.textContent = BREATHING_EXERCISES[i].desc;
+  }
+}
+
+function breatheShellHTML() {
+  return '<h3 style="font-size:18px;font-weight:700">'+t('Breathe')+'</h3>' +
+    '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Follow the circle. Inhale, hold, exhale.')+'</p>' +
+    '<div id="breathe-picker">' + breathePickerHTML() + '</div>' +
+    '<div id="breathe-desc" style="font-size:12px;color:var(--muted);margin-bottom:8px">' + BREATHING_EXERCISES[breatheIdx].desc + '</div>' +
+    '<div class="breath-circle" id="breath-circle">'+t('Breathe')+'</div>' +
+    '<button class="btn btn-primary" onclick="startBreathing(this)" id="breathe-start">'+t('Start')+'</button>' +
+    '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button>';
+}
+
 function startBreathe() {
+  breatheIdx = 0;
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700">'+t('Breathe')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Follow the circle. Inhale, hold, exhale.')+'</p><div class="breath-circle" id="breath-circle">'+t('Breathe')+'</div><button class="btn btn-primary" onclick="startBreathing(this)" id="breathe-start">'+t('Start')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Close')+'</button></div>';
+  overlay.id = 'breathe-overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center" id="breathe-overlay-content">' + breatheShellHTML() + '</div>';
   document.body.appendChild(overlay);
 }
 
 function startBreathing(btn) {
+  var ex = BREATHING_EXERCISES[breatheIdx] || BREATHING_EXERCISES[0];
   btn.disabled = true;
   btn.textContent = 'Inhale...';
   var circle = document.getElementById('breath-circle');
@@ -3132,10 +3208,10 @@ function startBreathing(btn) {
   roundDisplay.style.cssText = 'font-size:12px;color:var(--muted);margin-bottom:4px';
   roundDisplay.textContent = 'Round 1 of 3';
   btn.parentNode.insertBefore(roundDisplay, btn);
-  var steps = ['Inhale', 'Hold', 'Exhale', 'Hold'];
-  var durations = [4000, 4000, 4000, 4000];
-  var scales = ['scale(1.3)', 'scale(1.3)', 'scale(0.8)', 'scale(0.8)'];
-  var colors = ['#059669', '#f59e0b', '#3b82f6', '#f59e0b'];
+  var steps = ex.steps;
+  var durations = ex.durations;
+  function scaleFor(i) { return ex.scales[i % ex.scales.length]; }
+  function colorFor(i) { return ex.colors[i % ex.colors.length]; }
   var step = 0;
   var totalRounds = 0;
   var remaining = 0;
@@ -3154,15 +3230,43 @@ function startBreathing(btn) {
   function next() {
     if (step >= steps.length) { step = 0; totalRounds++; roundDisplay.textContent = 'Round ' + (totalRounds+1) + ' of 3'; }
     btn.textContent = steps[step] + '...';
-    circle.style.transform = scales[step];
-    circle.style.borderColor = colors[step];
-    if (totalRounds >= 3) { clearTimer(); timerDisplay.textContent = '0'; btn.textContent = 'Done!'; D.breatheCount++; D.lastBreatheDate = new Date().toDateString(); saveData(); setTimeout(function(){btn.closest('.overlay').remove()},1000); return; }
-    var dur = durations[step];
+    circle.style.transform = scaleFor(step);
+    circle.style.borderColor = colorFor(step);
+    if (totalRounds >= 3) {
+      clearTimer(); timerDisplay.textContent = '0';
+      D.breatheCount = (D.breatheCount || 0) + 1;
+      D.lastBreatheDate = new Date().toDateString();
+      saveData();
+      setTimeout(function(){ breatheDone(ex); }, 900);
+      return;
+    }
+    var dur = durations[step % durations.length];
     startStepTimer(dur);
     step++;
     setTimeout(next, dur);
   }
   next();
+}
+
+function breatheDone(ex) {
+  var content = document.getElementById('breathe-overlay-content');
+  if (!content) { var ov = document.getElementById('breathe-overlay'); content = ov && ov.querySelector('.overlay-content'); }
+  if (!content) return;
+  content.innerHTML = '<h3 style="font-size:18px;font-weight:700">'+t('Breathe')+'</h3>' +
+    '<div class="breath-circle" style="border-color:var(--primary);transform:scale(1);background:var(--primary-light)">&#10003;</div>' +
+    '<p style="font-size:14px;font-weight:700;margin:10px 0 2px">'+t('Good work \u2014 3 rounds of')+' '+ex.name+'</p>' +
+    '<p style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('You have completed')+' <b>'+(D.breatheCount||0)+'</b> '+(D.breatheCount===1?t('breathing session'):t('breathing sessions'))+'.</p>' +
+    '<button class="btn btn-primary" onclick="repeatBreathe(true)" style="width:100%">&#8634; '+t('Same exercise again')+'</button>' +
+    '<button class="btn btn-outline" onclick="repeatBreathe(false)" style="width:100%;margin-top:6px">&#8644; '+t('Try another exercise')+'</button>' +
+    '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="width:100%;margin-top:6px">'+t('Close')+'</button>';
+}
+
+function repeatBreathe(same) {
+  var overlay = document.getElementById('breathe-overlay');
+  if (!overlay) { startBreathe(); return; }
+  if (!same) breatheIdx = (breatheIdx + 1) % BREATHING_EXERCISES.length;
+  var content = document.getElementById('breathe-overlay-content');
+  if (content) content.innerHTML = breatheShellHTML();
 }
 
 // ====== AFFIRMATIONS ======
@@ -4251,10 +4355,11 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">'+t('Import Data')+'</button>';
   if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">'+t('Sign Out')+'</button>';
   if (AUTH_USER && firebase && firebase.auth().currentUser) h += '<button class="btn btn-danger btn-sm" onclick="deleteAccount()" style="margin-top:6px">Delete Account</button>';
+  if (!AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="eraseLocalData()" style="margin-top:6px">'+t('Erase my data')+'</button>';
   h += '</div>';
   h += emergencyContactsSettingsHTML();
   h += '<div class="card" style="border-left:3px solid #8a7a6a"><h3>'+t('Help Improve Re.Claim')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">'+t('Optionally share anonymous usage data to help us understand recovery patterns and improve the app. No personal information, journal text, or identifying data is ever collected.')+'</p><div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--primary-light);border-radius:10px"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+t('Share anonymous data')+'</div><div style="font-size:11px;color:var(--muted)">'+t('Anonymized mood trends, streak lengths, tool usage counts')+'</div></div><input type="checkbox" onchange="D.researchOptIn=this.checked;saveData();if(this.checked)collectResearchData()" '+(D.researchOptIn?'checked':'')+' style="width:auto;transform:scale(1.2)"></div></div>';
-  h += '<div class="card" style="border-left:3px solid #f59e0b"><h3>'+t('Privacy & Security')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">'+t('All your journal entries, moods, habits, cravings, goals, and pledges are stored only on this device (localStorage). Nothing is sent to any server. Your password is hashed with SHA-256 and a random salt. Partner features (pairing, messaging) sync through Firebase Firestore with encrypted transmission.')+'</p></div>';
+  h += '<div class="card" style="border-left:3px solid #f59e0b"><h3>'+t('Privacy & Security')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">'+t('All your journal entries, moods, habits, cravings, goals, and pledges are stored only on this device (localStorage). Nothing is sent to any server. Your password is hashed with SHA-256 and a random salt. Partner features (pairing, messaging) sync through Firebase Firestore with encrypted transmission.')+'</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><a class="btn btn-outline btn-sm" href="privacy.html" target="_blank" rel="noopener" style="width:auto">'+t('Privacy Policy')+'</a><a class="btn btn-outline btn-sm" href="terms.html" target="_blank" rel="noopener" style="width:auto">'+t('Terms & Conditions')+'</a></div></div>';
   return h;
 }
 
@@ -4527,6 +4632,12 @@ function clearLocalData() {
   AUTH_EMAIL = '';
   D = defaultData();
   location.reload();
+}
+
+function eraseLocalData() {
+  if (!confirm(t('Erase ALL data stored on this device? This cannot be undone.'))) return;
+  if (!confirm(t('Are you absolutely sure? Your journal, streak, habits, and settings will be permanently removed from this device.'))) return;
+  clearLocalData();
 }
 
 function showShareQR() {
