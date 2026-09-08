@@ -1,6 +1,7 @@
 {
   "name": "Re.Claim",
   "short_name": "Re.Claim",
+  "id": "./app.html",
   "start_url": "./app.html",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "fullscreen"],
@@ -14,9 +15,8 @@
   "scope": "./",
   "launch_handler": { "client_mode": "focus-existing" },
   "icons": [
-    { "src": "globe-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any maskable" },
-    { "src": "globe-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "globe-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "shortcuts": [
     { "name": "New Journal Entry", "short_name": "Journal", "description": "Write a new journal entry", "url": "./?action=journal", "icons": [{ "src": "globe-icon.png", "sizes": "192x192", "type": "image/png" }] },
