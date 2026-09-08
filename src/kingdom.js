@@ -363,8 +363,8 @@ function kingdomTrackerHTML() {
   var days = soberDays();
   var level = kingdomLevel(days);
   var isActive = D.sobriety.startDate ? true : false;
-  var levelNames = ['Seed','Root','Sprout','Grove','Garden','Town','Borough','City','Region','Nation','World'];
-  var levelDescs = ['A new beginning','First land forms','Taking shape','Land is rising','Growing settlement','A proper town','Fields are farmed','Thriving city','A proud region','A mighty nation','A legendary world'];
+  var levelNames = ['Seed','Root','Sprout','Grove','Garden','Meadow','Forest','River','Mountain','Ocean','World'];
+  var levelDescs = ['A new beginning','Roots reach the soil','New shoots follow the light','The land takes shape','A garden takes hold','Open meadow, tall grass','Deep green forest','A steady, flowing river','High mountain air','The wide blue ocean','A whole world, in bloom'];
   var h = kingdomHTML();
   h += '<div class="card" style="text-align:center;margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:10px 14px 12px">';
   if (isActive) {
