@@ -528,7 +528,7 @@ var RECOVERY_PROGRAMS = {
       'Week 2: Tools — Try the grounding exercise: name 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.',
       'Week 2: Tools — Review your week. What coping tools worked best for you?',
       'Week 3: Connection — Reach out to your partner or accountability partner.',
-      'Week 3: Connection — Read a recovery story from the Library. Let their journey inspire yours.',
+      'Week 3: Connection — Share a piece of your story with someone you trust. Let that opening build a bridge.',
       'Week 3: Connection — Write a journal entry about someone who helped you.',
       'Week 3: Connection — Explore the meetings page. Find a meeting you could attend.',
       'Week 3: Connection — Send an encouraging message to someone in recovery.',
@@ -1141,152 +1141,6 @@ function deleteAllJournalEntries() {
 }
 
 
-// ====== REFLECT WITH ART ======
-// Song recommendations by emotional tone
-var REFLECT_SONGS = {};
-var SONG_POOL_GENERATED = false;
-var ITUNES_CACHE = {};
-function fetchItunesSongs(mood) {
-  var keywords = {
-    sad:'sad+healing+recovery',angry:'angry+rock+energy',anxious:'calm+peaceful+relaxing',
-    happy:'happy+uplifting+positive',grateful:'grateful+blessed+thankful',
-    reflective:'reflective+thoughtful+acoustic',hopeful:'hopeful+inspirational+strength'
-  };
-  fetch('https://itunes.apple.com/search?term=' + (keywords[mood]||mood) + '&limit=25&entity=song').then(function(r){return r.json()}).then(function(data){
-    ITUNES_CACHE[mood] = (data.results||[]).map(function(item){
-      return {
-        title:item.trackName, artist:item.artistName,
-        url_apple:item.trackViewUrl,
-        url_spotify:'https://open.spotify.com/search/' + encodeURIComponent(item.trackName + ' ' + item.artistName),
-        url_youtube:'https://www.youtube.com/results?search_query=' + (item.trackName + ' ' + item.artistName).toLowerCase().replace(/[^a-z0-9]/g,'+')
-      };
-    });
-  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
-}
-var SONGS_BY_MOOD = {
-  sad: [
-    {t:'Fix You',a:'Coldplay'},{t:'Hurt',a:'Johnny Cash'},{t:'Someone Like You',a:'Adele'},{t:'Creep',a:'Radiohead'},{t:'When the Party\'s Over',a:'Billie Eilish'},{t:'The Sound of Silence',a:'Simon & Garfunkel'},{t:'Everybody Hurts',a:'R.E.M.'},{t:'Nothing Compares 2 U',a:'Sinead O\'Connor'},{t:'Tears in Heaven',a:'Eric Clapton'},{t:'Yesterday',a:'The Beatles'},{t:'Boulevard of Broken Dreams',a:'Green Day'},{t:'Skinny Love',a:'Bon Iver'},{t:'Hallelujah',a:'Jeff Buckley'},{t:'Mad World',a:'Gary Jules'},{t:'Liability',a:'Lorde'},{t:'Cancer',a:'My Chemical Romance'},{t:'Snuff',a:'Slipknot'},{t:'Black',a:'Pearl Jam'},{t:'Nutshell',a:'Alice In Chains'},{t:'Tears Don\'t Fall',a:'Bullet for My Valentine'},{t:'The Drugs Don\'t Work',a:'The Verve'},{t:'Shallow',a:'Lady Gaga & Bradley Cooper'},{t:'Grenade',a:'Bruno Mars'},{t:'No Ordinary Love',a:'Sade'},{t:'Alone',a:'Masayoshi Takanaka'},{t:'Gold Dust Woman',a:'Fleetwood Mac'},{t:'Something About Us',a:'Daft Punk'},{t:'Bohemian Rhapsody',a:'Queen'},{t:'Smooth Operator',a:'Sade'},{t:'Flashing Lights',a:'Kanye West'},{t:'I Wonder',a:'Kanye West'},{t:'Everything I Am',a:'Kanye West'},{t:'The Scientist',a:'Coldplay'},{t:'She Will Be Loved',a:'Maroon 5'},{t:'Won\'t Go Home Without You',a:'Maroon 5'},{t:'Badfish',a:'Sublime'},{t:'Operator',a:'Jim Croce'},{t:'Photographs and Memories',a:'Jim Croce'},{t:'Lonesome Loser',a:'Little River Band'},{t:'Take It Easy on Me',a:'Little River Band'},    {t:'While My Guitar Gently Weeps',a:'The Beatles'},{t:'Time in a Bottle',a:'Jim Croce'},{t:'Let Her Cry',a:'Hootie & the Blowfish'},{t:'Anti-Hero',a:'Taylor Swift'},{t:'All Too Well',a:'Taylor Swift'},{t:'Cardigan',a:'Taylor Swift'},{t:'Just Give Me a Reason',a:'P!nk'},{t:'I Will Always Love You',a:'Whitney Houston'},{t:'Saving All My Love for You',a:'Whitney Houston'},{t:'Everything I Wanted',a:'Billie Eilish'},    {t:'Ocean Eyes',a:'Billie Eilish'},{t:'Lovely',a:'Billie Eilish'},{t:'Leaving on a Jet Plane',a:'John Denver'},{t:'Nothing Else Matters',a:'Metallica'},{t:'Fade to Black',a:'Metallica'},{t:'How You Remind Me',a:'Nickelback'},{t:'Far Away',a:'Nickelback'},{t:'Stranger in Moscow',a:'Michael Jackson'}
-  ],
-  angry: [
-    {t:'Killing in the Name',a:'Rage Against The Machine'},{t:'Break Stuff',a:'Limp Bizkit'},{t:'Enter Sandman',a:'Metallica'},{t:'Smells Like Teen Spirit',a:'Nirvana'},{t:'Du Hast',a:'Rammstein'},{t:'Chop Suey!',a:'System of a Down'},{t:'Freak on a Leash',a:'Korn'},{t:'Down with the Sickness',a:'Disturbed'},{t:'Bodies',a:'Drowning Pool'},{t:'The Pretender',a:'Foo Fighters'},{t:'Given Up',a:'Linkin Park'},{t:'Numb',a:'Linkin Park'},{t:'Last Resort',a:'Papa Roach'},{t:'Walk',a:'Pantera'},{t:'One Step Closer',a:'Linkin Park'},{t:'Beat It',a:'Michael Jackson'},{t:'We Will Rock You',a:'Queen'},{t:'Go Your Own Way',a:'Fleetwood Mac'},{t:'The Chain',a:'Fleetwood Mac'},{t:'Deeper Underground',a:'Jamiroquai'},{t:'Can\'t Tell Me Nothing',a:'Kanye West'},{t:'Harder Better Faster Stronger',a:'Daft Punk'},    {t:'Come Together',a:'The Beatles'},{t:'China Grove',a:'Doobie Brothers'},{t:'You Don\'t Mess Around with Jim',a:'Jim Croce'},{t:'Bad Blood',a:'Taylor Swift'},{t:'Irreplaceable',a:'Beyonc'},{t:'Formation',a:'Beyonc'},{t:'So What',a:'P!nk'},{t:'Bad Guy',a:'Billie Eilish'},    {t:'Happier Than Ever',a:'Billie Eilish'},{t:'Therefore I Am',a:'Billie Eilish'},{t:'Master of Puppets',a:'Metallica'},{t:'For Whom the Bell Tolls',a:'Metallica'},{t:'Back in Black',a:'AC/DC'},{t:'Thunderstruck',a:'AC/DC'},{t:'Highway to Hell',a:'AC/DC'},{t:'TNT',a:'AC/DC'},{t:'Pour Some Sugar on Me',a:'Def Leppard'},{t:'Burn It to the Ground',a:'Nickelback'},{t:'Dirty Diana',a:'Michael Jackson'},{t:'They Don\'t Care About Us',a:'Michael Jackson'}
-  ],
-  anxious: [
-    {t:'Breathe Me',a:'Sia'},{t:'Teardrop',a:'Massive Attack'},{t:'Comfortably Numb',a:'Pink Floyd'},{t:'Let It Be',a:'The Beatles'},{t:'Weightless',a:'Marconi Union'},{t:'Intro',a:'The xx'},{t:'Holocene',a:'Bon Iver'},{t:'Svefn-g-englar',a:'Sigur Rs'},{t:'An Ending (Ascent)',a:'Brian Eno'},{t:'Clair de Lune',a:'Claude Debussy'},{t:'On the Nature of Daylight',a:'Max Richter'},{t:'Experience',a:'Ludovico Einaudi'},{t:'Avril 14th',a:'Aphex Twin'},{t:'Roygbiv',a:'Boards of Canada'},{t:'Porcelain',a:'Moby'},{t:'Hide and Seek',a:'Imogen Heap'},    {t:'Daydreaming',a:'Radiohead'},{t:'In the Air Tonight',a:'Phil Collins'},{t:'Clocks',a:'Coldplay'},{t:'Cruel Summer',a:'Taylor Swift'}
-  ],
-  happy: [
-    {t:'Don\'t Stop Believin\'',a:'Journey'},{t:'Happy',a:'Pharrell Williams'},{t:'Uptown Funk',a:'Mark Ronson ft. Bruno Mars'},{t:'I Wanna Dance with Somebody',a:'Whitney Houston'},{t:'Walking on Sunshine',a:'Katrina & The Waves'},{t:'Here Comes the Sun',a:'The Beatles'},{t:'Good Vibrations',a:'The Beach Boys'},{t:'Shake It Off',a:'Taylor Swift'},{t:'Can\'t Stop the Feeling!',a:'Justin Timberlake'},{t:'Blinding Lights',a:'The Weeknd'},{t:'Levitating',a:'Dua Lipa'},{t:'Feeling Good',a:'Nina Simone'},{t:'September',a:'Earth, Wind & Fire'},{t:'Treasure',a:'Bruno Mars'},{t:'Shut Up and Dance',a:'Walk the Moon'},{t:'Mr. Blue Sky',a:'Electric Light Orchestra'},{t:'Lovely Day',a:'Bill Withers'},{t:'Billie Jean',a:'Michael Jackson'},{t:'Don\'t Stop \'Til You Get Enough',a:'Michael Jackson'},{t:'The Way You Make Me Feel',a:'Michael Jackson'},{t:'Thriller',a:'Michael Jackson'},{t:'Bad Romance',a:'Lady Gaga'},{t:'Poker Face',a:'Lady Gaga'},{t:'Just Dance',a:'Lady Gaga'},{t:'One More Time',a:'Daft Punk'},{t:'Get Lucky',a:'Daft Punk'},{t:'Around the World',a:'Daft Punk'},{t:'Teenage Dream',a:'Katy Perry'},{t:'California Gurls',a:'Katy Perry'},{t:'Virtual Insanity',a:'Jamiroquai'},{t:'Canned Heat',a:'Jamiroquai'},{t:'Cosmic Girl',a:'Jamiroquai'},{t:'Love Foolosophy',a:'Jamiroquai'},{t:'Bamboo Vendor',a:'Masayoshi Takanaka'},{t:'SEXY DANCE',a:'Masayoshi Takanaka'},{t:'OH! TENGOKU',a:'Masayoshi Takanaka'},{t:'Kiss of Life',a:'Sade'},{t:'Paradise',a:'Sade'},{t:'Locked Out of Heaven',a:'Bruno Mars'},{t:'24K Magic',a:'Bruno Mars'},{t:'That\'s What I Like',a:'Bruno Mars'},{t:'Good Morning',a:'Kanye West'},{t:'Good Life',a:'Kanye West'},{t:'Drunk and Hot Girls',a:'Kanye West'},{t:'Dreams',a:'Fleetwood Mac'},{t:'The Sweetest Taboo',a:'Sade'},{t:'Dark Horse',a:'Katy Perry'},{t:'Listen to the Music',a:'Doobie Brothers'},{t:'What a Fool Believes',a:'Doobie Brothers'},{t:'Long Train Runnin\'',a:'Doobie Brothers'},{t:'China Grove',a:'Doobie Brothers'},{t:'The Night Owls',a:'Little River Band'},{t:'Bad Bad Leroy Brown',a:'Jim Croce'},{t:'You Don\'t Mess Around with Jim',a:'Jim Croce'},{t:'What I Got',a:'Sublime'},{t:'Santeria',a:'Sublime'},{t:'Doin\' Time',a:'Sublime'},{t:'Summertime',a:'Sublime'},{t:'Scarlet Begonias',a:'Sublime'},{t:'A Sky Full of Stars',a:'Coldplay'},{t:'Adventure of a Lifetime',a:'Coldplay'},{t:'This Love',a:'Maroon 5'},{t:'Sunday Morning',a:'Maroon 5'},{t:'Sugar',a:'Maroon 5'},{t:'From Me to You',a:'The Beatles'},{t:'Come Together',a:'The Beatles'},{t:'Cherish the Day',a:'Sade'},    {t:'Payphone',a:'Maroon 5'},{t:'Makes Me Wonder',a:'Maroon 5'},{t:'Hold My Hand',a:'Hootie & the Blowfish'},{t:'Only Wanna Be with You',a:'Hootie & the Blowfish'},{t:'I Go Blind',a:'Hootie & the Blowfish'},{t:'Love Story',a:'Taylor Swift'},{t:'You Belong with Me',a:'Taylor Swift'},{t:'Blank Space',a:'Taylor Swift'},{t:'Cruel Summer',a:'Taylor Swift'},{t:'Single Ladies',a:'Beyonc'},{t:'Crazy in Love',a:'Beyonc'},{t:'Love on Top',a:'Beyonc'},{t:'Formation',a:'Beyonc'},{t:'Break My Soul',a:'Beyonc'},{t:'Sunshine on My Shoulders',a:'John Denver'},{t:'Thank God I\'m a Country Boy',a:'John Denver'},{t:'So What',a:'P!nk'},{t:'Raise Your Glass',a:'P!nk'},{t:'Get the Party Started',a:'P!nk'},{t:'How Will I Know',a:'Whitney Houston'},{t:'So Emotional',a:'Whitney Houston'},{t:'I\'m Every Woman',a:'Whitney Houston'},{t:'Like a Virgin',a:'Madonna'},{t:'Material Girl',a:'Madonna'},{t:'Vogue',a:'Madonna'},{t:'Into the Groove',a:'Madonna'},{t:'Ray of Light',a:'Madonna'},{t:'Hung Up',a:'Madonna'},{t:'Holiday',a:'Madonna'},    {t:'Bad Guy',a:'Billie Eilish'},{t:'Therefore I Am',a:'Billie Eilish'},{t:'Birds of a Feather',a:'Billie Eilish'},{t:'Keep On Loving You',a:'REO Speedwagon'},{t:'Roll with the Changes',a:'REO Speedwagon'},{t:'You Shook Me All Night Long',a:'AC/DC'},{t:'Hysteria',a:'Def Leppard'},{t:'Photograph',a:'Def Leppard'},{t:'Rockstar',a:'Nickelback'},{t:'West End Girls',a:'Pet Shop Boys'},{t:'Opportunities (Let\'s Make Lots of Money)',a:'Pet Shop Boys'},{t:'Smooth Criminal',a:'Michael Jackson'},{t:'Bad',a:'Michael Jackson'},{t:'Remember the Time',a:'Michael Jackson'},{t:'Black or White',a:'Michael Jackson'}
-  ],
-  grateful: [
-    {t:'What a Wonderful World',a:'Louis Armstrong'},{t:'Lean on Me',a:'Bill Withers'},{t:'Three Little Birds',a:'Bob Marley'},{t:'Stand By Me',a:'Ben E. King'},{t:'Over the Rainbow',a:'Israel Kamakawiwo\'ole'},{t:'Count on Me',a:'Bruno Mars'},{t:'Thank You',a:'Dido'},{t:'Unwritten',a:'Natasha Bedingfield'},{t:'Best Day of My Life',a:'American Authors'},{t:'I\'m Yours',a:'Jason Mraz'},{t:'Better Together',a:'Jack Johnson'},{t:'Put Your Records On',a:'Corinne Bailey Rae'},{t:'One Love',a:'Bob Marley'},{t:'Redemption Song',a:'Bob Marley'},{t:'Man in the Mirror',a:'Michael Jackson'},{t:'Somebody to Love',a:'Queen'},{t:'Just the Way You Are',a:'Bruno Mars'},{t:'Brasilian Skies',a:'Masayoshi Takanaka'},{t:'Homecoming',a:'Kanye West'},{t:'By Your Side',a:'Sade'},{t:'Listen to the Music',a:'Doobie Brothers'},{t:'Black Water',a:'Doobie Brothers'},{t:'Reminiscing',a:'Little River Band'},{t:'Cool Change',a:'Little River Band'},{t:'I\'ll Have to Say I Love You in a Song',a:'Jim Croce'},{t:'Hey Jude',a:'The Beatles'},{t:'Something',a:'The Beatles'},{t:'What I Got',a:'Sublime'},{t:'Yellow',a:'Coldplay'},{t:'Sunday Morning',a:'Maroon 5'},    {t:'Cherish the Day',a:'Sade'},{t:'In My Life',a:'The Beatles'},{t:'Hold My Hand',a:'Hootie & the Blowfish'},{t:'Only Wanna Be with You',a:'Hootie & the Blowfish'},{t:'Love Story',a:'Taylor Swift'},{t:'Halo',a:'Beyonc'},{t:'Love on Top',a:'Beyonc'},{t:'Annie\'s Song',a:'John Denver'},{t:'Sunshine on My Shoulders',a:'John Denver'},{t:'Take Me Home Country Roads',a:'John Denver'},{t:'Fuckin\' Perfect',a:'P!nk'},{t:'Greatest Love of All',a:'Whitney Houston'},{t:'Like a Prayer',a:'Madonna'},    {t:'Birds of a Feather',a:'Billie Eilish'},{t:'Can\'t Fight This Feeling',a:'REO Speedwagon'},{t:'If Everyone Cared',a:'Nickelback'},{t:'Far Away',a:'Nickelback'},{t:'Heal the World',a:'Michael Jackson'},{t:'Human Nature',a:'Michael Jackson'},{t:'Always on My Mind',a:'Pet Shop Boys'}
-  ],
-  reflective: [
-    {t:'Landslide',a:'Fleetwood Mac'},{t:'Fast Car',a:'Tracy Chapman'},{t:'Imagine',a:'John Lennon'},{t:'Under the Bridge',a:'Red Hot Chili Peppers'},{t:'Wish You Were Here',a:'Pink Floyd'},{t:'Time',a:'Pink Floyd'},{t:'Vienna',a:'Billy Joel'},{t:'The Boxer',a:'Simon & Garfunkel'},{t:'Hallelujah',a:'Leonard Cohen'},{t:'River',a:'Joni Mitchell'},{t:'The Only Exception',a:'Paramore'},{t:'Chasing Cars',a:'Snow Patrol'},{t:'Come Away with Me',a:'Norah Jones'},{t:'Rivers and Roads',a:'The Head and the Heart'},{t:'Wake Up',a:'Arcade Fire'},{t:'Man in the Mirror',a:'Michael Jackson'},{t:'Bohemian Rhapsody',a:'Queen'},{t:'Under Pressure',a:'Queen'},{t:'Rhiannon',a:'Fleetwood Mac'},{t:'Dreams',a:'Fleetwood Mac'},{t:'Alejandro',a:'Lady Gaga'},{t:'Smooth Operator',a:'Sade'},{t:'Heritage',a:'Masayoshi Takanaka'},{t:'I Wonder',a:'Kanye West'},{t:'Everything I Am',a:'Kanye West'},{t:'Flashing Lights',a:'Kanye West'},{t:'What a Fool Believes',a:'Doobie Brothers'},{t:'Black Water',a:'Doobie Brothers'},{t:'Reminiscing',a:'Little River Band'},{t:'Cool Change',a:'Little River Band'},{t:'Time in a Bottle',a:'Jim Croce'},{t:'Operator',a:'Jim Croce'},{t:'Photographs and Memories',a:'Jim Croce'},{t:'Never as Good as First Time',a:'Sade'},{t:'Hey Jude',a:'The Beatles'},{t:'Something',a:'The Beatles'},{t:'In My Life',a:'The Beatles'},{t:'Across the Universe',a:'The Beatles'},{t:'A Day in the Life',a:'The Beatles'},{t:'Santeria',a:'Sublime'},{t:'Badfish',a:'Sublime'},{t:'Yellow',a:'Coldplay'},{t:'The Scientist',a:'Coldplay'},{t:'Clocks',a:'Coldplay'},    {t:'She Will Be Loved',a:'Maroon 5'},{t:'Makes Me Wonder',a:'Maroon 5'},{t:'Payphone',a:'Maroon 5'},{t:'Let Her Cry',a:'Hootie & the Blowfish'},{t:'Time',a:'Hootie & the Blowfish'},{t:'You Belong with Me',a:'Taylor Swift'},{t:'Blank Space',a:'Taylor Swift'},{t:'Anti-Hero',a:'Taylor Swift'},{t:'All Too Well',a:'Taylor Swift'},{t:'Cardigan',a:'Taylor Swift'},{t:'Willow',a:'Taylor Swift'},{t:'Irreplaceable',a:'Beyonc'},{t:'Take Me Home Country Roads',a:'John Denver'},{t:'Rocky Mountain High',a:'John Denver'},{t:'Leaving on a Jet Plane',a:'John Denver'},{t:'Just Give Me a Reason',a:'P!nk'},{t:'Try',a:'P!nk'},{t:'What About Us',a:'P!nk'},{t:'I Will Always Love You',a:'Whitney Houston'},{t:'Saving All My Love for You',a:'Whitney Houston'},{t:'Material Girl',a:'Madonna'},{t:'Everything I Wanted',a:'Billie Eilish'},{t:'Ocean Eyes',a:'Billie Eilish'},    {t:'Happier Than Ever',a:'Billie Eilish'},{t:'Owner of a Lonely Heart',a:'Yes'},{t:'Nothing Else Matters',a:'Metallica'},{t:'One',a:'Metallica'},{t:'How You Remind Me',a:'Nickelback'},{t:'Photograph',a:'Nickelback'},{t:'Someday',a:'Nickelback'},{t:'Love Bites',a:'Def Leppard'},{t:'What Have I Done to Deserve This?',a:'Pet Shop Boys'}
-  ],
-  hopeful: [
-    {t:'Rise Up',a:'Andra Day'},{t:'Brave',a:'Sara Bareilles'},{t:'Fight Song',a:'Rachel Platten'},{t:'Roar',a:'Katy Perry'},{t:'Stronger (What Doesn\'t Kill You)',a:'Kelly Clarkson'},{t:'Eye of the Tiger',a:'Survivor'},{t:'Lose Yourself',a:'Eminem'},{t:'Not Afraid',a:'Eminem'},{t:'Beautiful Day',a:'U2'},{t:'Viva la Vida',a:'Coldplay'},{t:'Titanium',a:'David Guetta ft. Sia'},{t:'Counting Stars',a:'OneRepublic'},{t:'Whatever It Takes',a:'Imagine Dragons'},{t:'Centuries',a:'Fall Out Boy'},{t:'Don\'t Stop Me Now',a:'Queen'},{t:'Firework',a:'Katy Perry'},{t:'Born This Way',a:'Lady Gaga'},{t:'We Are the Champions',a:'Queen'},{t:'Go Your Own Way',a:'Fleetwood Mac'},{t:'Ready to Fly',a:'Masayoshi Takanaka'},{t:'By Your Side',a:'Sade'},{t:'Champion',a:'Kanye West'},{t:'Can\'t Tell Me Nothing',a:'Kanye West'},{t:'Takin\' It to the Streets',a:'Doobie Brothers'},{t:'Help Is on Its Way',a:'Little River Band'},{t:'Hey Jude',a:'The Beatles'},{t:'Paradise',a:'Coldplay'},{t:'A Sky Full of Stars',a:'Coldplay'},    {t:'Love Is Stronger Than Pride',a:'Sade'},{t:'Willow',a:'Taylor Swift'},{t:'Halo',a:'Beyonc'},{t:'Break My Soul',a:'Beyonc'},{t:'Rocky Mountain High',a:'John Denver'},{t:'Try',a:'P!nk'},{t:'Fuckin\' Perfect',a:'P!nk'},{t:'Greatest Love of All',a:'Whitney Houston'},{t:'Like a Prayer',a:'Madonna'},    {t:'Ray of Light',a:'Madonna'},{t:'Roll with the Changes',a:'REO Speedwagon'},{t:'Take It on the Run',a:'REO Speedwagon'},{t:'For Those About to Rock (We Salute You)',a:'AC/DC'},{t:'Let\'s Get Rocked',a:'Def Leppard'},{t:'If Everyone Cared',a:'Nickelback'},{t:'West End Girls',a:'Pet Shop Boys'},{t:'Heal the World',a:'Michael Jackson'},{t:'Black or White',a:'Michael Jackson'}
-  ]
-};
-
-function generateSong(title, artist) {
-  var q = title + ' ' + artist;
-  var a = q.toLowerCase().replace(/[^a-z0-9]/g,'+');
-  return { title: title, artist: artist, url_spotify: 'https://open.spotify.com/search/' + encodeURIComponent(q), url_youtube: 'https://www.youtube.com/results?search_query=' + a, url_apple: 'https://music.apple.com/search?term=' + encodeURIComponent(q) };
-}
-
-function populateSongPool() {
-  if (SONG_POOL_GENERATED) return;
-  var moods = ['sad','angry','anxious','happy','grateful','reflective','hopeful'];
-  for (var mi=0;mi<moods.length;mi++) {
-    var mood = moods[mi];
-    if (!REFLECT_SONGS[mood]) REFLECT_SONGS[mood] = [];
-    var songs = SONGS_BY_MOOD[mood] || [];
-    for (var si=0;si<songs.length;si++) {
-      var song = generateSong(songs[si].t, songs[si].a);
-      REFLECT_SONGS[mood].push(song);
-    }
-    // Fire iTunes fetch for live songs
-    fetchItunesSongs(mood);
-  }
-  SONG_POOL_GENERATED = true;
-}
-
-var SONG_KEYWORDS = {
-  rise: [{t:'Rise Up',a:'Andra Day'},{t:'Eye of the Tiger',a:'Survivor'}],
-  stronger: [{t:'Stronger',a:'Kanye West'},{t:'Stronger (What Doesn\'t Kill You)',a:'Kelly Clarkson'}],
-  fight: [{t:'Fight Song',a:'Rachel Platten'},{t:'My Shot',a:'Lin-Manuel Miranda'},{t:'The Pretender',a:'Foo Fighters'}],
-  hope: [{t:'Hopeful',a:'Bars and Melody'},{t:'Don\'t Stop Me Now',a:'Queen'},{t:'Viva la Vida',a:'Coldplay'}],
-  break: [{t:'Breakeven',a:'The Script'},{t:'Break Stuff',a:'Limp Bizkit'}],
-  free: [{t:'Free Fallin\'',a:'Tom Petty'},{t:'Brave',a:'Sara Bareilles'}],
-  home: [{t:'Home',a:'Phillip Phillips'},{t:'Coming Home',a:'Leon Bridges'}],
-  light: [{t:'Light',a:'San Holo'},{t:'The Light',a:'Disturbed'},{t:'Shine',a:'Collective Soul'},{t:'Lights',a:'Ellie Goulding'}],
-  run: [{t:'Run',a:'Snow Patrol'},{t:'Fast Car',a:'Tracy Chapman'}],
-  rain: [{t:'Rainbow',a:'Kacey Musgraves'},{t:'Here Comes the Sun',a:'The Beatles'}],
-  fire: [{t:'Firework',a:'Katy Perry'},{t:'Set Fire to the Rain',a:'Adele'},{t:'We Didn\'t Start the Fire',a:'Billy Joel'}],
-  breathe: [{t:'Breathe Me',a:'Sia'},{t:'Just Breathe',a:'Pearl Jam'}],
-
-  lonely: [{t:'Lonely',a:'Akon'},{t:'All by Myself',a:'Eric Carmen'},{t:'Eleanor Rigby',a:'The Beatles'}],
-  lose: [{t:'Lose Yourself',a:'Eminem'},{t:'Don\'t Lose Hope',a:'Someone'}],
-  saved: [{t:'Save Me',a:'Jelly Roll'},{t:'Saving Grace',a:'Tom Petty'}],
-  save: [{t:'Save Me',a:'Jelly Roll'},{t:'Rescue',a:'Echo Smith'}],
-  miracle: [{t:'Miracle',a:'Carrie Underwood'},{t:'Miracles',a:'Insane Clown Posse'}],
-  angel: [{t:'Angel',a:'Sarah McLachlan'},{t:'Tears in Heaven',a:'Eric Clapton'}],
-  survive: [{t:'Survivor',a:'Destiny\'s Child'},{t:'I Will Survive',a:'Gloria Gaynor'},{t:'Alive',a:'Sia'}],
-  drown: [{t:'Drown',a:'Bring Me the Horizon'},{t:'Someone Like You',a:'Adele'}],
-  sky: [{t:'Mr. Blue Sky',a:'Electric Light Orchestra'},{t:'Purple Rain',a:'Prince'}],
-  afraid: [{t:'Not Afraid',a:'Eminem'},{t:'Fear',a:'Blue October'}],
-  dream: [{t:'Dream On',a:'Aerosmith'},{t:'Dreams',a:'Fleetwood Mac'}],
-  change: [{t:'Changes',a:'2Pac'},{t:'Man in the Mirror',a:'Michael Jackson'}],
-  brave: [{t:'Brave',a:'Sara Bareilles'},{t:'The Climb',a:'Miley Cyrus'}],
-  broken: [{t:'Fix You',a:'Coldplay'},{t:'Broken',a:'Seether'},{t:'Hurt',a:'Johnny Cash'}],
-  heal: [{t:'Heal the World',a:'Michael Jackson'},{t:'The Drugs Don\'t Work',a:'The Verve'}],
-  sorry: [{t:'Sorry Seems to Be the Hardest Word',a:'Elton John'}],
-  believe: [{t:'I Believe I Can Fly',a:'R. Kelly'},{t:'Believer',a:'Imagine Dragons'}],
-  thunder: [{t:'Thunder',a:'Imagine Dragons'},{t:'Thunderstruck',a:'AC/DC'}],
-  fall: [{t:'I Fall Apart',a:'Post Malone'},{t:'Boulevard of Broken Dreams',a:'Green Day'}],
-  yesterday: [{t:'Yesterday',a:'The Beatles'}],
-  today: [{t:'One Day',a:'Matisyahu'},{t:'The Best Day',a:'Taylor Swift'}],
-  tomorrow: [{t:'Tomorrow',a:'Silverchair'},{t:'Wake Me Up When September Ends',a:'Green Day'}],
-  mistake: [{t:'Mistake',a:'NF'},{t:'Everybody Hurts',a:'R.E.M.'}],
-  sorry: [{t:'Sorry',a:'Justin Bieber'},{t:'Apologize',a:'OneRepublic'},{t:'Sorry',a:'Beyonc'}],
-  alone: [{t:'Alone',a:'Heart'},{t:'All by Myself',a:'Eric Carmen'}],
-  war: [{t:'War Pigs',a:'Black Sabbath'},{t:'Gimme Shelter',a:'The Rolling Stones'}],
-  faith: [{t:'Faith',a:'George Michael'},{t:'I Believe',a:'Fantasia'}],
-  stand: [{t:'Stand By Me',a:'Ben E. King'},{t:'I Stand Alone',a:'Godsmack'}],
-  numb: [{t:'Numb',a:'Linkin Park'},{t:'Comfortably Numb',a:'Pink Floyd'}],
-  crawl: [{t:'Crawling',a:'Linkin Park'},{t:'Creep',a:'Radiohead'}],
-  monster: [{t:'Monster',a:'Skillet'},{t:'Monster',a:'Imagine Dragons'}],
-  help: [{t:'Help!',a:'The Beatles'},{t:'Helplessly Hoping',a:'Crosby, Stills & Nash'}],
-  learn: [{t:'Try',a:'Colbie Caillat'},{t:'What I\'ve Done',a:'Linkin Park'}],
-  silence: [{t:'The Sound of Silence',a:'Simon & Garfunkel'},{t:'Silence',a:'Marshmello ft. Khalid'}],
-  courage: [{t:'Courage',a:'P!nk'},{t:'Brave',a:'Sara Bareilles'}],
-  woke: [{t:'Wake Up',a:'Arcade Fire'},{t:'Waking Up',a:'OneRepublic'}],
-  tired: [{t:'Tired',a:'Alan Walker'},{t:'Fix You',a:'Coldplay'}]
-};
-
-function getSong(entryText, mood) {
-  // Keyword match (takes priority regardless of cache)
-  if (entryText) {
-    var t = entryText.toLowerCase();
-    for (var key in SONG_KEYWORDS) {
-      if (t.indexOf(key) !== -1) {
-        var match = SONG_KEYWORDS[key];
-        var pick = match[Math.floor(Math.random() * match.length)];
-        return generateSong(pick.t, pick.a);
-      }
-    }
-  }
-  // Try live iTunes cache first
-  var cached = ITUNES_CACHE[mood];
-  if (cached && cached.length) return cached[Math.floor(Math.random() * cached.length)];
-  // Fallback to hardcoded pool
-  if (!SONG_POOL_GENERATED) {
-    if (!window._songPoolLoading) { window._songPoolLoading = true; setTimeout(function(){ populateSongPool(); window._songPoolLoading = false; }, 100); }
-    return null;
-  }
-  var pool = REFLECT_SONGS[mood] || REFLECT_SONGS.reflective;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
 function detectMood(text) {
   var t = text.toLowerCase();
   var scores = {sad:0, angry:0, anxious:0, happy:0, grateful:0, reflective:0, hopeful:0};
@@ -1541,7 +1395,7 @@ var DAILY_SPARKS = [
   {type:'tip', text:'Tip: If you\'re feeling a strong emotion, name it out loud. "I feel angry." Naming reduces its power over you.', c:'Tip'},
   {type:'affirmation', text:'My cravings do not control me. I acknowledge them, I breathe through them, and I let them go.', c:'Affirmation'},
   {type:'challenge', text:'Challenge: Close your eyes and take 5 deep breaths. In through the nose, out through the mouth. That\'s it.', c:'Challenge'},
-  {type:'tip', text:'Tip: Music changes mood instantly. Make a playlist of songs that make you feel calm and powerful. Play it when you need a lift.', c:'Tip'},
+  {type:'tip', text:'Tip: Cold water on your wrists or face can reset a racing nervous system in seconds.', c:'Tip'},
   {type:'affirmation', text:'I am more than my addiction. I am a person with hopes, dreams, and a future.', c:'Affirmation'},
   {type:'challenge', text:'Challenge: Delete one thing from your phone that doesn\'t serve your recovery. A number, an app, a bookmark.', c:'Challenge'},
   {type:'tip', text:'Tip: Sunlight in the morning helps regulate dopamine and improves mood. Try 5 minutes outside before noon.', c:'Tip'},
@@ -1981,12 +1835,10 @@ function reflectHTML() {
   h += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:2px 0 6px" id="word-count-row"><span id="word-count">0 '+t('words')+'</span><span>'+t('Goal:')+' ' + goal + ' '+t('words')+'</span></div>';
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
   h += '</div>';
-  // My Values section
-  h += chivalryCodeHTML();
   h += journalInsightsHTML();
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">Journal Reflections</div>';
-  h += '<p style="font-size:12px;color:var(--muted)">Tap any entry below for a reflection summary, suggestions, and a song recommendation.</p></div>';
+  h += '<p style="font-size:12px;color:var(--muted)">Tap any entry below for a reflection summary and gentle suggestions.</p></div>';
   if (!D.journal.length) {
     h += '<div class="card"><div class="empty-state">No entries yet. Write something above to see reflections here.</div></div>';
   } else {
@@ -2163,7 +2015,6 @@ function showJournalLetter(idx) {
   var mood = result.primary;
   var scores = result.scores;
   var suggestions = buildSuggestions(entry, mood, D.journal, idx);
-  var song = getSong(entryText, mood);
   var dayCount = soberDays();
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   var totalEntries = D.journal.length;
@@ -2176,7 +2027,6 @@ function showJournalLetter(idx) {
   var entryNum = idx + 1;
   var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour);
   var mot = getMotivation(mood);
-  var songDesc = {sad:'A song that understands', angry:'A track to match the fire', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space'};
 
   var now = new Date();
   var dateStr = now.toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
@@ -2213,19 +2063,6 @@ function showJournalLetter(idx) {
   if (mot) {
     h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">' + safe(mot.c) + '</div><div style="font-style:italic;font-size:13px;line-height:1.5;margin-top:4px">"' + safe(mot.q) + '"</div><details style="margin-top:4px"><summary style="font-size:11px;cursor:pointer;color:var(--muted)">Why this matters</summary><p style="font-size:12px;line-height:1.5;color:var(--text-light);margin-top:2px">' + safe(mot.t) + '</p></details></div>';
   }
-  // Song
-  h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">' + (songDesc[mood] || 'A song for you') + '</div>';
-  if (song) {
-    h += '<div style="font-size:13px;margin-top:4px">' + safe(song.title) + ' <span style="font-weight:400;color:var(--muted)">' + safe(song.artist) + '</span></div>';
-    h += '<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">';
-    h += '<a href="' + song.url_spotify + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Spotify</a>';
-    h += '<a href="' + song.url_youtube + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; YouTube</a>';
-    h += '<a href="' + song.url_apple + '" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a>';
-    h += '<button class="btn btn-sm btn-primary" onclick="saveToPlaylist({title:\'' + song.title.replace(/'/g,"\\'") + '\',artist:\'' + song.artist.replace(/'/g,"\\'") + '\',url_spotify:\'' + song.url_spotify.replace(/'/g,"\\'") + '\',url_youtube:\'' + song.url_youtube.replace(/'/g,"\\'") + '\',url_apple:\'' + song.url_apple.replace(/'/g,"\\'") + '\'})" style="width:auto;font-size:9px;padding:4px 8px">+ Save</button></div>';
-  } else {
-    h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">Finding the perfect song...</div>';
-  }
-  h += '</div>';
   // Closing
   h += '<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:12px"><span>' + safe(D.name || 'Me') + '</span></div>';
   h += '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()" style="width:100%">&#10003; Close</button>';
@@ -2249,7 +2086,6 @@ function showReflection(idx) {
   var mood = result.primary;
   var scores = result.scores;
   var suggestions = buildSuggestions(entry, mood, D.journal, idx);
-  var song = getSong(entryText, mood);
   var dayCount = soberDays();
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   var totalEntries = D.journal.length;
@@ -2279,7 +2115,6 @@ function showReflection(idx) {
   var entryNum = idx + 1;
   var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour);
   var mot = getMotivation(mood);
-  var songDesc = {sad:'A song that understands', angry:'A track to match the fire', anxious:'A song to help you breathe', happy:'A tune that matches your light', grateful:'A song for counting blessings', reflective:'Something for these quiet moments', hopeful:'A track to lift you higher', mixed:'A song that holds space'};
 
   // Build overlay
   var overlay = document.createElement('div');
@@ -2316,19 +2151,6 @@ function showReflection(idx) {
   if (mot) {
     h += '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.05)"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:4px">'+mot.c+'</div><div style="font-size:13px;font-style:italic;line-height:1.5;color:rgba(255,255,255,.7)">'+mot.q+'</div><details style="margin-top:3px"><summary style="font-size:8px;color:rgba(255,255,255,.3);cursor:pointer;letter-spacing:1px">WHY THIS MATTERS</summary><p style="font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;line-height:1.5">'+mot.t+'</p></details></div>';
   }
-  // Song
-  h += '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,.05);text-align:center"><div style="font-size:8px;color:rgba(255,255,255,.3);letter-spacing:3px;margin-bottom:5px">'+(songDesc[mood]||'A song for you')+'</div>';
-  if (song) {
-    h += '<div style="font-weight:700;font-size:13px;color:rgba(255,255,255,.8)">'+song.title.replace(/&/g,'&amp;').replace(/</g,'&lt;')+' <span style="font-weight:400;color:rgba(255,255,255,.4)"> '+song.artist.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span></div>';
-    h += '<div style="display:flex;gap:5px;justify-content:center;margin-top:5px;flex-wrap:wrap">';
-    h += '<a href="'+song.url_spotify+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Spotify</a>';
-    h += '<a href="'+song.url_youtube+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; YouTube</a>';
-    h += '<a href="'+song.url_apple+'" target="_blank" class="btn btn-sm btn-outline" style="width:auto;text-decoration:none;font-size:9px;padding:4px 8px">&#9654; Apple Music</a>';
-    h += '<button class="btn btn-sm btn-primary" onclick="saveToPlaylist({title:\''+song.title.replace(/'/g,"\\'")+'\',artist:\''+song.artist.replace(/'/g,"\\'")+'\',url_spotify:\''+song.url_spotify.replace(/'/g,"\\'")+'\',url_youtube:\''+song.url_youtube.replace(/'/g,"\\'")+'\',url_apple:\''+song.url_apple.replace(/'/g,"\\'")+'\'})" style="width:auto;font-size:9px;padding:4px 8px">+ Save</button></div>';
-  } else {
-    h += '<div style="font-size:11px;color:rgba(255,255,255,.4);padding:3px 0">Finding the perfect song...</div>';
-  }
-  h += '</div>';
   // Original entry
   h += '<details style="padding:6px 0;border-top:1px solid rgba(255,255,255,.05)"><summary style="font-size:9px;font-weight:600;cursor:pointer;color:rgba(255,255,255,.4);letter-spacing:1px;padding:2px 0">READ YOUR ENTRY</summary>';
   h += '<p style="font-size:12px;color:rgba(255,255,255,.6);line-height:1.6;white-space:pre-wrap;margin-top:4px;padding:4px 0">'+(entryText||getEntryText(entry)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</p>'+'</details>';
@@ -3427,130 +3249,6 @@ function todayPrompt() {
 }
 
 
-// ====== LIBRARY ======
-var LIB_ARTICLES = [
-  {title:'The Science of Habit Formation', desc:'James Clear guide on building lasting habits', url:'https://jamesclear.com/habit-guide'},
-  {title:'Understanding Addiction & the Brain', desc:'NIH neuroscience of addiction and recovery', url:'https://nida.nih.gov/publications/drugs-brains-behavior-science-addiction'},
-  {title:'5 Types of Self-Care for Recovery', desc:'Holistic healing approaches from Psychology Today', url:'https://www.psychologytoday.com/us/blog/click-help/202101/5-types-self-care-recovery'},
-  {title:'Mindfulness for Beginners', desc:'Start your meditation practice', url:'https://www.mindful.org/meditation/mindfulness-getting-started/'},
-  {title:'The Neuroscience of Addiction Recovery', desc:'Harvard Health on how the brain heals', url:'https://www.health.harvard.edu/blog/the-neuroscience-of-addiction-recovery-202410183157'},
-  {title:'Why Willpower Isnt Enough', desc:'Psychology Today on real change strategies', url:'https://www.psychologytoday.com/us/blog/the-mindful-self/202304/why-willpower-isnt-enough-to-change'},
-  {title:'The Benefits of Journaling for Mental Health', desc:'Research-backed writing practices', url:'https://positivepsychology.com/benefits-of-journaling/'},
-  {title:'Understanding Triggers and Cravings', desc:'Recovery Research Institute guide', url:'https://www.recoveryanswers.org/resource/understanding-triggers-and-cravings/'},
-  {title:'The Role of Exercise in Recovery', desc:'Healthline on movement and healing', url:'https://www.healthline.com/health/exercise-and-addiction-recovery'},
-  {title:'Self-Compassion in Recovery', desc:'Why being kind to yourself matters', url:'https://self-compassion.org/the-role-of-self-compassion-in-addiction-recovery/'},
-  {title:'Building a Support Network', desc:'SAMHSA guide to recovery support', url:'https://www.samhsa.gov/find-help/recovery-support-tools'},
-  {title:'Gratitude Practice and Mental Health', desc:'UC Berkeley Greater Good Science Center', url:'https://greatergood.berkeley.edu/article/item/how_gratitude_changes_you_and_your_brain'}
-];
-var LIB_BOOKS = [
-  {title:'The Body Keeps the Score', desc:'Bessel van der Kolk', url:'https://www.amazon.com/s?k=The+Body+Keeps+the+Score+Bessel+van+der+Kolk', alt:'https://www.barnesandnoble.com/s/The+Body+Keeps+the+Score'},
-  {title:'Atomic Habits', desc:'James Clear', url:'https://www.amazon.com/s?k=Atomic+Habits+James+Clear', alt:'https://www.barnesandnoble.com/s/Atomic+Habits'},
-  {title:'In the Realm of Hungry Ghosts', desc:'Gabor Mat', url:'https://www.amazon.com/s?k=In+the+Realm+of+Hungry+Ghosts+Gabor+Mate', alt:'https://www.barnesandnoble.com/s/In+the+Realm+of+Hungry+Ghosts'},
-  {title:'Daring Greatly', desc:'Bren Brown', url:'https://www.amazon.com/s?k=Daring+Greatly+Brene+Brown', alt:'https://www.barnesandnoble.com/s/Daring+Greatly'},
-  {title:'The Power of Habit', desc:'Charles Duhigg', url:'https://www.amazon.com/s?k=The+Power+of+Habit+Charles+Duhigg', alt:'https://www.barnesandnoble.com/s/The+Power+of+Habit'},
-  {title:'The Gifts of Imperfection', desc:'Bren Brown', url:'https://www.amazon.com/s?k=The+Gifts+of+Imperfection+Brene+Brown', alt:'https://www.barnesandnoble.com/s/The+Gifts+of+Imperfection'},
-  {title:'Feeling Good', desc:'David D. Burns', url:'https://www.amazon.com/s?k=Feeling+Good+David+Burns', alt:'https://www.barnesandnoble.com/s/Feeling+Good+David+Burns'},
-  {title:'Mans Search for Meaning', desc:'Viktor Frankl', url:'https://www.amazon.com/s?k=Mans+Search+for+Meaning+Viktor+Frankl', alt:'https://www.barnesandnoble.com/s/Man%27s+Search+for+Meaning'},
-  {title:'Dopamine Nation', desc:'Anna Lembke on pleasure and pain', url:'https://www.amazon.com/s?k=Dopamine+Nation+Anna+Lembke', alt:'https://www.barnesandnoble.com/s/Dopamine+Nation'},
-  {title:'Unwinding Anxiety', desc:'Judson Brewer on habit change', url:'https://www.amazon.com/s?k=Unwinding+Anxiety+Judson+Brewer', alt:'https://www.barnesandnoble.com/s/Unwinding+Anxiety'},
-  {title:'The Craving Mind', desc:'Judson Brewer on addiction and mindfulness', url:'https://www.amazon.com/s?k=The+Craving+Mind+Judson+Brewer', alt:'https://www.barnesandnoble.com/s/The+Craving+Mind'},
-  {title:'Recovery The Sacred Art', desc:'Rami Shapiro on spiritual recovery', url:'https://www.amazon.com/s?k=Recovery+The+Sacred+Art+Rami+Shapiro', alt:'https://www.barnesandnoble.com/s/Recovery+The+Sacred+Art'},
-  {title:'Clean', desc:'David Sheff on overcoming addiction', url:'https://www.amazon.com/s?k=Clean+Overcoming+Addiction+David+Sheff', alt:'https://www.barnesandnoble.com/s/Clean+David+Sheff'},
-  {title:'Never Enough', desc:'Judith Grisel on the neuroscience of addiction', url:'https://www.amazon.com/s?k=Never+Enough+Judith+Grisel', alt:'https://www.barnesandnoble.com/s/Never+Enough+Judith+Grisel'},
-  {title:'The Recovery Book', desc:'Al J. Mooney - a practical recovery guide', url:'https://www.amazon.com/s?k=The+Recovery+Book+Al+Mooney', alt:'https://www.barnesandnoble.com/s/The+Recovery+Book+Mooney'},
-  {title:'Breaking the Cycle', desc:'George T. Collins on addiction recovery', url:'https://www.amazon.com/s?k=Breaking+the+Cycle+George+Collins', alt:'https://www.barnesandnoble.com/s/Breaking+the+Cycle+Collins+addiction'},
-  {title:'Addiction and Grace', desc:'Gerald May on spiritual healing', url:'https://www.amazon.com/s?k=Addiction+and+Grace+Gerald+May', alt:'https://www.barnesandnoble.com/s/Addiction+and+Grace+Gerald+May'}
-];
-var LIB_PODCASTS = [
-  {title:'The Recovery Show', desc:'12-step based recovery stories and discussion', url:'https://www.recoveryshow.com/'},
-  {title:'The Happiness Lab', desc:'Dr. Laurie Santos on the science of wellbeing', url:'https://www.happinesslab.fm/'},
-  {title:'Recovery Happy Hour', desc:'Interviews with people in recovery', url:'https://www.recoveryhappyhour.com/'},
-  {title:'The SHAIR Recovery Podcast', desc:'Shair Lott shares addiction recovery stories', url:'https://shairpodcast.com/'},
-  {title:'Recovery Elevator', desc:'Sobriety, recovery and personal growth', url:'https://recoveryelevator.com/'},
-  {title:'The One You Feed', desc:'Eric Zimmer on habits and mental health', url:'https://www.oneyoufeed.net/'},
-  {title:'The Addiction Podcast', desc:'Clinical insights on substance use recovery', url:'https://theaddictionpodcast.com/'},
-  {title:'Sober Cast', desc:'12-step AA speaker meetings on demand', url:'https://sobercast.com/'},
-  {title:'The Life You Want', desc:'Glennon Doyle on brave living and recovery', url:'https://www.glennondoyle.com/podcast/'},
-  {title:'Being Well with Rick Hanson', desc:'Neuroscience-based wellbeing strategies', url:'https://www.rickhanson.com/podcast/'}
-];
-var LIB_VIDEOS = [
-  {title:'The Power of Vulnerability', desc:'Bren Brown TED Talk on connection', url:'https://www.ted.com/talks/brene_brown_the_power_of_vulnerability'},
-  {title:'Understanding Addiction', desc:'Kurzgesagt animated explainer', url:'https://youtu.be/ao8L-6nDixg'},
-  {title:'Everything You Think You Know About Addiction Is Wrong', desc:'Johann Hari TED Talk', url:'https://www.ted.com/talks/johann_hari_everything_you_think_you_know_about_addiction_is_wrong'},
-  {title:'How Childhood Trauma Affects Health', desc:'Dr. Nadine Burke Harris TED Talk', url:'https://www.ted.com/talks/nadine_burke_harris_how_childhood_trauma_affects_health_across_a_lifetime'},
-  {title:'Why You Need to Stop Chasing Happiness', desc:'Pursuit of Wonder on fulfillment', url:'https://youtu.be/B2Gk12WbgNc'},
-  {title:'How to Practice Mindfulness', desc:'Jon Kabat-Zinn on mindfulness basics', url:'https://youtu.be/3nwwKbM_vJc'},
-  {title:'The Science of Habits', desc:'Atomic Habits summary and insights', url:'https://youtu.be/PZ7lDrwYdZc'},
-  {title:'How to Heal from Trauma', desc:'Tim Fletcher recovery series', url:'https://youtu.be/BGUy7FEgz3w'},
-  {title:'The Wall', desc:'A short film on resilience and not giving up', url:'https://youtu.be/ORn3E4WfgMQ'}
-];
-
-function libraryHTML() {
-  var h = '<h2 class="page-title">Library</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Curated resources to support your recovery journey.</p>';
-h += '<div class="card"><h3>'+t('Articles')+'</h3>';
-  for (var i=0;i<LIB_ARTICLES.length;i++) {
-    h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_ARTICLES[i].title+'</div><div class="desc">'+LIB_ARTICLES[i].desc+'</div><a class="link" href="'+LIB_ARTICLES[i].url+'" target="_blank">Read</a></div></div>';
-  }
-  h += '</div><div class="card"><h3>'+t('Books')+'</h3>';
-  for (var i=0;i<LIB_BOOKS.length;i++) {
-    h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_BOOKS[i].title+'</div><div class="desc">'+LIB_BOOKS[i].desc+'</div><a class="link" href="'+LIB_BOOKS[i].url+'" target="_blank">Amazon</a>';
-    if (LIB_BOOKS[i].alt) h += ' <span style="color:var(--muted);font-size:10px">|</span> <a class="link" href="'+LIB_BOOKS[i].alt+'" target="_blank">Barnes &amp; Noble</a>';
-    h += '</div></div>';
-  }
-  h += '</div><div class="card"><h3>'+t('Podcasts')+'</h3>';
-  for (var i=0;i<LIB_PODCASTS.length;i++) {
-    h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_PODCASTS[i].title+'</div><div class="desc">'+LIB_PODCASTS[i].desc+'</div><a class="link" href="'+LIB_PODCASTS[i].url+'" target="_blank">Listen</a></div></div>';
-  }
-  h += '</div><div class="card"><h3>'+t('Videos')+'</h3>';
-  for (var i=0;i<LIB_VIDEOS.length;i++) {
-    h += '<div class="lib-item"><div class="info"><div class="title">'+LIB_VIDEOS[i].title+'</div><div class="desc">'+LIB_VIDEOS[i].desc+'</div><a class="link" href="'+LIB_VIDEOS[i].url+'" target="_blank">Watch</a></div></div>';
-  }
-  h += '</div>';
-  return h;
-}
-
-// ====== MUSIC ======
-var MUSIC_SUGGESTIONS = [
-  {mood:'Calm & Relaxed', desc:'Unwind and de-stress', platforms:[{name:'Spotify',url:'https://open.spotify.com/search/calm%20relaxing%20music'},{name:'YouTube',url:'https://www.youtube.com/results?search_query=calm+relaxing+music'},{name:'Apple Music',url:'https://music.apple.com/search?term=calm%20music'}]},
-  {mood:'Uplifting & Happy', desc:'Boost your mood', platforms:[{name:'Spotify',url:'https://open.spotify.com/search/uplifting%20happy%20music'},{name:'YouTube',url:'https://www.youtube.com/results?query=uplifting+music'},{name:'Apple Music',url:'https://music.apple.com/search?term=uplifting%20music'}]},
-  {mood:'Focus & Flow', desc:'Deep concentration', platforms:[{name:'Spotify',url:'https://open.spotify.com/search/focus%20music'},{name:'YouTube',url:'https://www.youtube.com/results?search_query=focus+music'},{name:'Apple Music',url:'https://music.apple.com/search?term=focus%20music'}]},
-  {mood:'Energetic & Motivated', desc:'Get moving and inspired', platforms:[{name:'Spotify',url:'https://open.spotify.com/search/workout%20motivation%20music'},{name:'YouTube',url:'https://www.youtube.com/results?search_query=workout+motivation+music'},{name:'Apple Music',url:'https://music.apple.com/search?term=workout%20music'}]},
-  {mood:'Sad & Reflective', desc:'Let it out', platforms:[{name:'Spotify',url:'https://open.spotify.com/search/sad%20music'},{name:'YouTube',url:'https://www.youtube.com/results?search_query=sad+music'},{name:'Apple Music',url:'https://music.apple.com/search?term=sad%20music'}]},
-  {mood:'Meditation & Sleep', desc:'Rest and restore', platforms:[{name:'Spotify',url:'https://open.spotify.com/search/sleep%20meditation%20music'},{name:'YouTube',url:'https://www.youtube.com/results?search_query=sleep+meditation+music'},{name:'Apple Music',url:'https://music.apple.com/search?term=sleep%20music'}]}
-];
-
-function saveToPlaylist(song) {
-  if (!D.playlist) D.playlist = [];
-  if (D.playlist.some(function(s){return s.title === song.title && s.artist === song.artist})) { showToast('Already in your playlist','info'); return; }
-  D.playlist.push({ title: song.title, artist: song.artist, url_spotify: song.url_spotify, url_apple: song.url_apple, url_youtube: song.url_youtube, dateAdded: new Date().toDateString() });
-  saveData();
-  showToast('Saved to your Recovery Playlist!','success');
-}
-
-function musicHTML() {
-  var h = '<h2 class="page-title">Music for Your Mood</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Curated suggestions to match how you\'re feeling. Open in your favorite platform.</p>';
-  // Recovery playlist
-  if (D.playlist && D.playlist.length) {
-    h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#9835;</div><h3 style="margin:0">My Recovery Playlist</h3></div><p style="font-size:12px;color:var(--muted);margin-bottom:6px">Songs suggested from your journal reflections.</p>';
-    for (var pi=0;pi<D.playlist.length;pi++) {
-      var s = D.playlist[pi];
-      h += '<div class="music-item" style="padding:8px"><div class="info"><div class="mood">' + safe(s.title) + '</div><div class="desc">' + safe(s.artist) + ' &middot; ' + safe(s.dateAdded) + '</div><div class="platforms"><a href="' + safe(s.url_spotify) + '" target="_blank">Spotify</a>' + (s.url_youtube ? '<a href="' + safe(s.url_youtube) + '" target="_blank">YouTube</a>' : '') + (s.url_apple ? '<a href="' + safe(s.url_apple) + '" target="_blank">Apple Music</a>' : '') + '</div></div></div>';
-    }
-    h += '</div>';
-  }
-  for (var i=0;i<MUSIC_SUGGESTIONS.length;i++) {
-    var m = MUSIC_SUGGESTIONS[i];
-    h += '<div class="music-item"><div class="info"><div class="mood">'+m.mood+'</div><div class="desc">'+m.desc+'</div><div class="platforms">';
-    for (var p=0;p<m.platforms.length;p++) {
-      h += '<a href="'+m.platforms[p].url+'" target="_blank">'+m.platforms[p].name+'</a>';
-    }
-    h += '</div></div></div>';
-  }
-  return h;
-}
-
 // ====== REPORTS ======
 var REPORT_PERIOD = 'week';
 function reportsHTML() {
@@ -4333,8 +4031,6 @@ function moreHTML() {
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Resources')+'</h3>';
   h += '<div class="sub-grid">';
-  h += '<div class="sub-item" onclick="goTo(\'library\')">'+t('Library')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'music\')">'+t('Music')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'meetings\')">'+t('Meetings')+'</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Settings')+'</h3>';
