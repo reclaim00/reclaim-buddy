@@ -1398,12 +1398,12 @@ var ONBOARDING_STEPS = [
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What would you like to change? Choose the challenge you\'re ready to take on.</div><div id="onboarding-addiction" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0">'+ADDICTION_TYPES.map(function(at){return'<button data-v="'+at+'" class="btn btn-sm btn-outline" onclick="document.querySelectorAll(\'#onboarding-addiction button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--primary-dark)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';D.addictionType=this.getAttribute(\'data-v\')" style="width:auto;font-size:11px;padding:6px 14px;border-radius:20px;margin:0">'+at+'</button>';}).join('')+'</div>'},
   {icon:'\u2727',title:'Your Goals',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What do you want to achieve? Write down your goals.</div><textarea id="onboarding-goals" placeholder="e.g. Be sober for 30 days, rebuild trust with my family, find healthy hobbies..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
-  {icon:'\u265C',title:'Your Journey',
+  {icon:'\uD83C\uDF31',title:'Your Journey',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Choose a theme that fits your world.</div><div id="onboarding-theme" style="display:flex;gap:12px;justify-content:center;margin:16px 0">'+
-     '<button class="btn" onclick="selectOnboardingTheme(\'gothic\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Gothic</span><span style="font-size:11px;color:var(--muted)">Dark stone, candlelight, shadows</span></button>'+
-     '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u265B</span><span style="font-weight:700;font-size:15px">Fantasy</span><span style="font-size:11px;color:var(--muted)">Bright banners, green hills, golden light</span></button>'+
+     '<button class="btn" onclick="selectOnboardingTheme(\'gothic\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Woodland</span><span style="font-size:11px;color:var(--muted)">Deep shade, cool air, quiet forest</span></button>'+
+     '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2600</span><span style="font-weight:700;font-size:15px">Meadow</span><span style="font-size:11px;color:var(--muted)">Open sky, tall grass, morning light</span></button>'+
    '</div>'},
-  {icon:'\u2727',title:'Begin Operation Re.Claim',
+  {icon:'\u2727',title:'Your Journey Begins',
     desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your path, set your goals, and begun your journey. Your space is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The road is long, but you were made for this. Every day you show up, your foundation grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Your journey starts now.</div>'},
 ];
 var ONBOARDING_STEP = 0;
@@ -1450,7 +1450,7 @@ function renderOnboardingStep() {
     '</div>' +
     '<div style="display:flex;gap:8px">' +
       (ONBOARDING_STEP > 0 ? '<button class="btn btn-sm btn-outline" onclick="ONBOARDING_STEP--;renderOnboardingStep()" style="flex:1">\u2190 Back</button>' : '') +
-      '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1">'+ (isLast ? '\u2727 Begin Operation Re.Claim' : 'Next \u2192') +'</button>' +
+      '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1">'+ (isLast ? '\u2727 Begin' : 'Next \u2192') +'</button>' +
     '</div>' +
     '<button onclick="closeOnboarding()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);font-family:serif">\u2715</button>' +
     '</div>';
@@ -1510,8 +1510,15 @@ function render() {
     applyTheme();
     updateTabLabels();
     // Update date in header
-    var rh = document.getElementById('regnal-header');
-    if (rh) rh.textContent = D.sobriety.startDate ? regnalDate() : 'Begin your journey';
+    var rh = document.getElementById('journey-header');
+    if (rh) {
+      if (D.sobriety.startDate) {
+        var _jtStage = plantStageInfo()[plantStage()] || {name:'Growing'};
+        rh.textContent = 'Day ' + soberDays() + ' \u00b7 ' + _jtStage.name;
+      } else {
+        rh.textContent = 'Begin your journey';
+      }
+    }
     var tbEl = document.getElementById('tools-badge');
     if (tbEl && D.timeCapsules) {
       var ready = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked}).length;
