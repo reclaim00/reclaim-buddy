@@ -53,7 +53,10 @@ function showToast(text, type) {
   }, 3200);
 }
 function swNotify(title, body, icon, tag) {
-  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  if (!("Notification" in window) || Notification.permission !== "granted") {
+    showToast(title + (body ? ' \u2014 ' + body : ''), 'info');
+    return;
+  }
   if (navigator.serviceWorker) {
     navigator.serviceWorker.ready.then(function(reg) {
       reg.showNotification(title, {body:body, icon:icon || 'icon-192.png', tag:tag || 'reclaim-notification'});
@@ -81,7 +84,9 @@ function checkNotifications() {
     if (D['_notified'+key.charAt(0).toUpperCase()+key.slice(1)]) return false;
     var parts = timeStr.split(':');
     var targetMin = parseInt(parts[0])*60 + parseInt(parts[1]);
-    return hmNum >= targetMin && hmNum < targetMin + 3;
+    var graceByKey = {morning:300, evening:180, craving:180, journal:240, breathe:180};
+    var grace = graceByKey[key] !== undefined ? graceByKey[key] : 180;
+    return hmNum >= targetMin && hmNum <= targetMin + grace;
   }
   if (notifDue('morning', n.morningTime)) {
     swNotify('Re.Claim Morning', s > 0 ? 'Day ' + s + '! Log your mood and set your intention.' : 'Log your mood and set your intention for today.', 'icon-192.png', 'reclaim-morning');
@@ -1209,7 +1214,6 @@ function timeCapsuleHTML() {
         h += '</div></div>';
       }
     }
-    // Daily Quests (rendered once)
     if (opened.length) {
       h += '<h3 style="font-size:14px;font-weight:700;color:var(--muted);margin:12px 0 4px">&#128220; Opened (' + opened.length + ')</h3>';
       for (var i=0;i<D.timeCapsules.length;i++) {
@@ -1618,6 +1622,50 @@ function dismissInstallCard() {
   localStorage.setItem('rc_install_dismissed', '1');
   var card = document.getElementById('install-card');
   if (card) card.remove();
+}
+function consentCardHTML() {
+  if (D._consentAcked || D._consentDismissed) return '';
+  return '<div id="consent-card" class="card" style="border-left:4px solid var(--accent);padding:14px;margin-bottom:8px">' +
+    '<div style="font-weight:800;font-size:14px;margin-bottom:6px">'+t('Welcome to Re.Claim')+'</div>' +
+    '<p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px">'+t('By continuing you confirm you are 18 or older and agree to our')+' <a href="terms.html" target="_blank" rel="noopener" style="color:var(--primary)">'+t('Terms')+'</a> '+t('and')+' <a href="privacy.html" target="_blank" rel="noopener" style="color:var(--primary)">'+t('Privacy Policy')+'</a>. '+t('Re.Claim is a support tool, not a substitute for professional medical care. If you are experiencing a crisis, use SOS or call 988.')+'</p>' +
+    '<button class="btn btn-primary btn-sm" onclick="acceptConsent()" style="width:100%">'+t('I\u2019m 18+ and I agree')+'</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="declineConsent()" style="width:100%;margin-top:6px">'+t('Remind me later')+'</button>' +
+    '</div>';
+}
+function acceptConsent() {
+  D._consentAcked = true;
+  saveData();
+  delete _pageCache['home'];
+  render();
+}
+function declineConsent() {
+  D._consentDismissed = true;
+  saveData();
+  delete _pageCache['home'];
+  render();
+}
+function backupCardHTML() {
+  if (AUTH_USER) return '';
+  if (D._backupPromptDismissed) return '';
+  var days = soberDays();
+  if (!days || days < 14) return '';
+  var last = D._lastBackupPrompt || 0;
+  if (D._backupPromptSeenAt && (Date.now() - D._backupPromptSeenAt < 3 * 86400000)) return '';
+  return '<div id="backup-card" class="card" style="border-left:4px solid #8a7a6a;padding:14px;margin-bottom:8px">' +
+    '<div style="font-weight:800;font-size:14px;margin-bottom:4px">'+t('Back up your journey')+'</div>' +
+    '<p style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:10px">'+t('Day')+' '+days+' '+t('in \u2014 nice work. So far your data lives only on this device. Export a copy, or sign in for automatic cloud sync, so your streak and journal are never lost.')+'</p>' +
+    '<button class="btn btn-primary btn-sm" onclick="backupCTA(\'export\')" style="width:100%">'+t('Export my data')+'</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="backupCTA(\'sync\')" style="width:100%;margin-top:6px">'+t('Sign in for cloud sync')+'</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="backupCTA(\'later\')" style="width:100%;margin-top:6px">'+t('Not now')+'</button>' +
+    '</div>';
+}
+function backupCTA(kind) {
+  D._lastBackupPrompt = Date.now();
+  D._backupPromptSeenAt = Date.now();
+  saveData();
+  if (kind === 'export') { exportData(); delete _pageCache['home']; render(); }
+  else if (kind === 'sync') { showSignIn(); }
+  else { delete _pageCache['home']; render(); }
 }
 // ====== INIT ======
 applyTheme();
