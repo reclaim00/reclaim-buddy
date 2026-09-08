@@ -1284,7 +1284,7 @@ var _appInstalled = window.matchMedia('(display-mode: standalone)').matches || n
 window.addEventListener('beforeinstallprompt', function(e) {
   e.preventDefault();
   _deferredInstallPrompt = e;
-  if (!_appInstalled && AUTH_USER && !localStorage.getItem('rc_install_dismissed')) {
+  if (!_appInstalled && !localStorage.getItem('rc_install_dismissed')) {
     showInstallBanner();
   }
 });
