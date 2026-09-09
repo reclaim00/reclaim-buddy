@@ -218,6 +218,7 @@ function defaultData() {
     version: 1,
     name: '', phoneNumber: '', avatar: '', joinDate: Date.now(), theme: 'green', darkMode: false,
     language: 'English',
+    hopes: '', triggerSituations: '', stayOnTrack: '', fightingFor: '',
     moods: [],
     journal: [],
     habits: [], // [{id, name, logs: ['date strings']}]
