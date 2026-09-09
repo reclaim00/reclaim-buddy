@@ -496,8 +496,8 @@ function homeHTML() {
   // Backup safety net for non-account users
   h += backupCardHTML();
 
-  // Tools widget � always visible on home
-  h += '<div class="card" style="border-left:4px solid var(--primary);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(42,90,30,.05),var(--card));position:relative" onclick="goTo(\'more\')"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128220;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--primary-dark)">'+t('Tools')+'</div><div style="font-size:12px;color:var(--muted)">'+t('Your toolkit for the journey \u2014 journal, calendar, reports, and more')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span><span id="tools-badge" style="display:none;position:absolute;top:8px;right:8px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;clip-path:polygon(10% 0%,90% 0%,50% 100%,90% 100%,100% 50%,0% 50%);min-width:8px;text-align:center;line-height:1.4" aria-hidden="true">1</span></div></div>';
+  // Crisis widget � always visible on home
+  h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS � crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
 
   h += pledgeHTML();
 
