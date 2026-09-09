@@ -226,8 +226,6 @@ function defaultData() {
     targetAddictions: [],
     buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [], competitions: [],
     assessmentTaken: false, assessmentResult: null,
-    screenerPHQ9: { taken: false, result: null, progress: null },
-    screenerGAD7: { taken: false, result: null, progress: null },
     sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '', spendingOn: '', weeklyIncome: 0 },
     // Pre-populated coping cards displayed from defaults; user can add custom
     customCopingCards: [],
@@ -238,7 +236,6 @@ function defaultData() {
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
     encryption: { enabled: false, salt: null, keyCheck: null },
     timeCapsules: [],
-    recoveryPrograms: { active: null, programs: {} },
     relapseRescue: { logs: [] },
     emergencyContacts: [],
     _postCrisisPending: false,
@@ -720,7 +717,6 @@ function validateData(d) {
   }
   if (d.version < 3) {
     if (!d.timeCapsules) d.timeCapsules = [];
-    if (!d.recoveryPrograms) d.recoveryPrograms = { active: null, programs: {} };
     if (!d.relapseRescue) d.relapseRescue = { logs: [] };
     if (!d.emergencyContacts) d.emergencyContacts = [];
     if (!d.royalPardons) d.royalPardons = [];
@@ -1353,11 +1349,8 @@ function collectResearchData() {
     buddyPaired: !!D.buddy,
     hasSafetyPlan: !!(D.relapsePlan && D.relapsePlan.statement),
     hasSOS: D.sosUsed || false,
-    phq9Score: D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result.total : null,
-    gad7Score: D.screenerGAD7 && D.screenerGAD7.result ? D.screenerGAD7.result.total : null,
     achievementsCount: (D.achievements||[]).length,
-    encrypted: D.encryption && D.encryption.enabled || false,
-    programActive: !!D.recoveryPrograms && !!D.recoveryPrograms.active
+    encrypted: D.encryption && D.encryption.enabled || false
   };
   // Store latest anonymized snapshot
   D._researchSnapshot = data;
