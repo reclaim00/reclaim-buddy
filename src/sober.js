@@ -198,7 +198,7 @@ function soberTimerHTML() {
     + '<div class="vigil-units" id="vigil-units">' + vigilUnitsHTML() + '</div>'
     + '<div class="vigil-actions">'
     + '<button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer">&#8635; Reset</button>'
-    + '<span onclick="goTo(\'royalpardon\')" title="Fresh Start">&#127793; Fresh Start</span>'
+    + '<span onclick="showFreshStartOverlay()" title="Fresh Start">&#127793; Fresh Start</span>'
     + '</div></div>';
 }
 
@@ -417,9 +417,11 @@ function doResetTimer() {
   D.sobriety.startDate = Date.now();
   saveData();
   render();
+  // Fresh Start is now part of the reset flow
   setTimeout(function(){
     showToast('&#128081; A new chapter begins. The community stands with you.','success');
-  }, 300);
+    showFreshStartOverlay();
+  }, 400);
 }
 
 function showResetAlternatives() {
