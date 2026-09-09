@@ -498,7 +498,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','screener','programs','royalpardon','achievements','mywhy'];
+var MORE_SUB_PAGES = ['journal','calendar','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','achievements','mywhy'];
 var REFLECT_SUB_PAGES = [];
 var CARE_SUB_PAGES = ['relapseplan','relapserescue'];
 
@@ -770,70 +770,44 @@ function relapsePlanHTML() {
   return h;
 }
 
-// ====== ROYAL PARDON (Fresh Start) ======
-function royalPardonHTML() {
-  var pardons = D.royalPardons || [];
-  var h = '';
-  h += '<h2 class="page-title">&#127793; Fresh Start</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(255,215,0,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-heroguide);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px;font-weight:800;color:#fff">&#9813;</div><div style="font-size:12px;color:var(--muted)"><em>"By the path we are building — you are forgiven. Rise and begin again."</em></div></div></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">A relapse is not a verdict. It is a detour. Grant yourself a Fresh Start — not to erase what happened, but to honor your new beginning. This is your certificate of renewal.</p>';
-
-  // Grant a new pardon
+// ====== FRESH START (granted on timer reset) ======
+function showFreshStartOverlay() {
   var lastRelapseDate = D.sobriety && D.sobriety.relapseDates && D.sobriety.relapseDates.length ? new Date(D.sobriety.relapseDates[D.sobriety.relapseDates.length-1]).toISOString().split('T')[0] : '';
-  h += '<div class="card" style="border:2px solid var(--primary);background:var(--primary-light)"><h3 style="font-size:14px;margin-bottom:6px;text-align:center">&#127793; Grant a New Pardon</h3>';
-  h += '<p style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:8px">After a relapse, accept this pardon and begin again with honor.</p>';
-  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">Date of relapse</label>';
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.style.background = 'rgba(0,0,0,.45)';
+  var h = '<div class="overlay-content" style="text-align:center;max-width:400px;padding:20px;border-radius:20px">';
+  h += '<div style="font-size:40px;margin-bottom:4px">&#127793;</div>';
+  h += '<h3 style="font-size:19px;font-weight:700;color:var(--primary-dark);margin-bottom:2px">'+t('A Fresh Start')+'</h3>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">'+t('A relapse is not a verdict. Grant yourself a fresh start \u2014 not to erase what happened, but to honor your new beginning.')+'</p>';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;text-align:left;margin-bottom:2px">'+t('Date of relapse')+'</label>';
   h += '<input type="date" id="pardon-date" value="' + lastRelapseDate + '" style="margin-bottom:6px">';
-  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What do you forgive yourself for?</label>';
-  h += '<textarea id="pardon-forgive" placeholder="e.g. I forgive myself for giving in to the craving. I forgive myself for the shame I carried after." style="min-height:50px;margin-bottom:6px"></textarea>';
-  h += '<label style="font-size:11px;color:var(--muted);display:block;margin-bottom:2px">What do you commit to going forward?</label>';
-  h += '<textarea id="pardon-commit" placeholder="e.g. I commit to reaching out before the urge wins. I commit to showing up for myself tomorrow." style="min-height:50px;margin-bottom:6px"></textarea>';
-  h += '<button class="btn btn-primary btn-sm" onclick="pardonGrant(this)" style="width:100%">&#127793; Accept Fresh Start</button>';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;text-align:left;margin-bottom:2px">'+t('What do you forgive yourself for?')+'</label>';
+  h += '<textarea id="pardon-forgive" placeholder="'+t('e.g. I forgive myself for giving in to the craving. I forgive myself for the shame I carried after.')+'" style="min-height:50px;margin-bottom:6px"></textarea>';
+  h += '<label style="font-size:11px;color:var(--muted);display:block;text-align:left;margin-bottom:2px">'+t('What do you commit to going forward?')+'</label>';
+  h += '<textarea id="pardon-commit" placeholder="'+t('e.g. I commit to reaching out before the urge wins. I commit to showing up for myself tomorrow.')+'" style="min-height:50px;margin-bottom:6px"></textarea>';
+  h += '<button class="btn btn-primary btn-sm" onclick="grantFreshStart(this)" style="width:100%">&#127793; '+t('Accept Fresh Start')+'</button>';
+  h += '<button class="btn btn-sm" onclick="closeOverlay(this)" style="background:transparent;color:var(--muted);border:none;font-size:12px;margin-top:4px">'+t('Not now')+'</button>';
   h += '</div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+}
 
-  // Existing pardons
-  if (pardons.length) {
-    h += '<h3 style="font-size:15px;font-weight:700;margin:12px 0 6px">&#128220; Pardon Records</h3>';
-    for (var pi=pardons.length-1;pi>=0;pi--) {
-      var p = pardons[pi];
-      h += pardonCertificateHTML(p);
-    }
-  }
-  return h;
-}
-function pardonCertificateHTML(p) {
-  var dateStr = p.date ? new Date(p.date).toLocaleDateString() : 'Unknown';
-  var grantedStr = p.grantedAt ? new Date(p.grantedAt).toLocaleDateString() : dateStr;
-  return '<div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:16px;margin-bottom:10px;text-align:center;position:relative;box-shadow:0 2px 12px rgba(138,122,106,.15)">' +
-    '<div style="position:absolute;top:8px;left:12px;font-size:18px;opacity:.3">&#9734;</div>' +
-    '<div style="position:absolute;top:8px;right:12px;font-size:18px;opacity:.3">&#9734;</div>' +
-    '<div style="font-size:32px;margin-bottom:2px">&#127793;</div>' +
-    '<div style="font-size:14px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Fresh Start</div>' +
-    '<div style="font-size:10px;color:var(--gold);margin-bottom:8px;font-style:italic">Know all who read these words...</div>' +
-    '<div style="border-top:1px solid var(--gold);border-bottom:1px solid var(--gold);padding:8px 4px;margin-bottom:6px">' +
-    (p.forgive ? '<div style="font-size:12px;line-height:1.5;margin-bottom:4px"><em>"' + p.forgive + '"</em></div>' : '') +
-    (p.commit ? '<div style="font-size:11px;color:var(--text-light)">&#10024; <strong>Vow:</strong> ' + p.commit + '</div>' : '') +
-    '</div>' +
-    '<div style="display:flex;justify-content:center;gap:12px;font-size:10px;color:var(--muted)">' +
-    '<span>Relapse: ' + dateStr + '</span>' +
-    '<span>Forgiven: ' + grantedStr + '</span>' +
-    '</div>' +
-    '<div style="margin-top:6px">' + waxSealSVG(36) + '</div>' +
-    '<div style="font-size:9px;color:var(--muted);letter-spacing:2px;margin-top:2px">SEAL OF THE FRESH START</div>' +
-    '</div>';
-}
-function pardonGrant(btn) {
+function grantFreshStart(btn) {
   var dateEl = document.getElementById('pardon-date');
   var forgiveEl = document.getElementById('pardon-forgive');
   var commitEl = document.getElementById('pardon-commit');
-  if (!dateEl || !dateEl.value) { showToast('Please select a date.', 'error'); return; }
-  if (!forgiveEl || !forgiveEl.value.trim()) { showToast('What do you forgive yourself for?', 'error'); return; }
+  if (!dateEl || !dateEl.value) { showToast(t('Please select a date.'), 'error'); return; }
+  if (!forgiveEl || !forgiveEl.value.trim()) { showToast(t('What do you forgive yourself for?'), 'error'); return; }
   if (!D.royalPardons) D.royalPardons = [];
-  var forgive = forgiveEl.value.trim();
-  var commit = (commitEl ? commitEl.value.trim() : '');
-  D.royalPardons.push({ date: dateEl.value, forgive: forgive, commit: commit, grantedAt: Date.now() });
-  saveData(); render();
+  D.royalPardons.push({ date: dateEl.value, forgive: forgiveEl.value.trim(), commit: (commitEl ? commitEl.value.trim() : ''), grantedAt: Date.now() });
+  saveData();
+  var overlay = btn.closest('.overlay');
+  if (overlay) overlay.remove();
+  showPardonCeremony();
+}
 
+function showPardonCeremony() {
   // ===== FRESH START CEREMONY - Seal Scene =====
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -940,7 +914,7 @@ function pardonGrant(btn) {
 
   // ---- Phase 3: Button (appears after animation) ----
   h += '<div id="pardon-accept-btn" style="opacity:0;margin-top:8px">';
-  h += '<button class="btn btn-primary" onclick="document.getElementById(\'pardon-ceremony\').remove();goTo(\'royalpardon\')">&#128081; I Accept This Fresh Start</button>';
+  h += '<button class="btn btn-primary" onclick="document.getElementById(\'pardon-ceremony\').remove();render()">&#128081; '+t('I Accept This Fresh Start')+'</button>';
   h += '</div>';
 
   overlay.innerHTML = h;
@@ -1527,10 +1501,10 @@ function render() {
     home: homeHTML, track: trackHTML, care: careHTML, reflect: reflectHTML,
     more: moreHTML, journal: journalHTML,
     reports: reportsHTML, buddy: buddyHTML, coping: copingHTML,
-    programs: programsHTML, screener: screenerHTML, assessment: assessmentHTML, profile: profileHTML,
+    assessment: assessmentHTML, profile: profileHTML,
     calendar: calendarHTML, safety: safetyHTML, seer: seerTowerHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
-    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, royalpardon: royalPardonHTML, achievements: achievementsHTML, mywhy: myWhyHTML,
+    insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, achievements: achievementsHTML, mywhy: myWhyHTML,
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
@@ -1596,6 +1570,7 @@ function goTo(p) {
 document.getElementById('tabs').addEventListener('click', function(e) {
   var tab = e.target.closest('.tab');
   if (tab) {
+    if (tab.getAttribute('data-action') === 'sos') { showSOS(); return; }
     [].forEach.call(document.querySelectorAll('.overlay'),function(el){animateCloseOverlay(el)});
     var tp = tab.getAttribute('data-page');
     subPg = '';
