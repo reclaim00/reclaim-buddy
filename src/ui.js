@@ -1570,7 +1570,6 @@ function goTo(p) {
 document.getElementById('tabs').addEventListener('click', function(e) {
   var tab = e.target.closest('.tab');
   if (tab) {
-    if (tab.getAttribute('data-action') === 'sos') { showSOS(); return; }
     [].forEach.call(document.querySelectorAll('.overlay'),function(el){animateCloseOverlay(el)});
     var tp = tab.getAttribute('data-page');
     subPg = '';
