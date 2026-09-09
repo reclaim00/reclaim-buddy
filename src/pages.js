@@ -22,74 +22,6 @@ var ASSESS_QUESTIONS = [
   'I find myself needing more of a substance to achieve the desired effect.'
 ];
 
-var SCREENER_PHQ = [
-  'Little interest or pleasure in doing things',
-  'Feeling down, depressed, or hopeless',
-  'Trouble falling or staying asleep, or sleeping too much',
-  'Feeling tired or having little energy',
-  'Poor appetite or overeating',
-  'Feeling bad about yourself  or that you are a failure or have let yourself or your family down',
-  'Trouble concentrating on things, such as reading the newspaper or watching television',
-  'Moving or speaking so slowly that other people could have noticed? Or the opposite  being so fidgety or restless that you have been moving around a lot more than usual',
-  'Thoughts that you would be better off dead, or of hurting yourself'
-];
-
-var SCREENER_GAD7 = [
-  'Feeling nervous, anxious, or on edge',
-  'Not being able to stop or control worrying',
-  'Worrying too much about different things',
-  'Trouble relaxing',
-  'Being so restless that it is hard to sit still',
-  'Becoming easily annoyed or irritable',
-  'Feeling afraid, as if something awful might happen'
-];
-
-function screenerScore(questions, answers) {
-  var total = 0, count = 0;
-  for (var i=0;i<answers.length;i++) {
-    if (answers[i] !== null && answers[i] !== undefined) { total += answers[i]; count++; }
-  }
-  return { total: total, count: count };
-}
-
-function screenerSeverityPHQ(score) {
-  if (score <= 4) return { label: 'Minimal', color: 'var(--primary)' };
-  if (score <= 9) return { label: 'Mild', color: 'var(--accent)' };
-  if (score <= 14) return { label: 'Moderate', color: '#f97316' };
-  if (score <= 19) return { label: 'Moderately Severe', color: 'var(--danger)' };
-  return { label: 'Severe', color: '#7c3aed' };
-}
-
-function screenerSeverityGAD(score) {
-  if (score <= 4) return { label: 'Minimal', color: 'var(--primary)' };
-  if (score <= 9) return { label: 'Mild', color: 'var(--accent)' };
-  if (score <= 14) return { label: 'Moderate', color: '#f97316' };
-  return { label: 'Severe', color: 'var(--danger)' };
-}
-
-function screenerRiskLevel(key, result) {
-  if (!result || typeof result.total !== 'number') return 0;
-  var total = result.total;
-  if (key === 'phq9') {
-    if (result.answers && result.answers[8] > 0) return 2;
-    if (total >= 15) return 2;
-    if (total >= 10) return 1;
-    return 0;
-  }
-  if (total >= 15) return 2;
-  if (total >= 10) return 1;
-  return 0;
-}
-
-function crisisBannerHTML(reason) {
-  return '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div style="font-size:26px;line-height:1">&#128222;</div><div style="flex:1;min-width:170px"><div style="font-weight:700;font-size:13px;color:var(--danger)">'+t('Please reach out for support right now.')+'</div><div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px">'+reason+' '+t('Trained people are available 24/7 and you deserve help.')+'</div></div></div>' +
-    '<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">' +
-    '<button class="btn btn-danger btn-sm" onclick="showSOS()" style="flex:1">'+t('Open SOS')+'</button>' +
-    '<a class="btn btn-outline btn-sm" href="tel:988" style="flex:1;text-decoration:none;text-align:center">988 '+t('Crisis Line')+'</a>' +
-    '<a class="btn btn-outline btn-sm" href="tel:911" style="flex:1;text-decoration:none;text-align:center">911</a>' +
-    '</div>';
-}
-
 function quizOptionsHTML(name, savedVal) {
   var opts = [
     {val:0, label:'Never', color:'var(--primary)', bg:'var(--primary-light)'},
@@ -319,446 +251,6 @@ function osiSubmit(btn) {
   var overlay = btn.closest('.overlay');
   overlay.remove();
   showAssessmentAfterSignIn();
-}
-
-// ====== SELF-CHECK SCREENERS ======
-var SCREENER_OPTS = [
-  { val: 0, label: 'Not at all', color: 'var(--primary)', bg: 'var(--primary-light)' },
-  { val: 1, label: 'Several days', color: 'var(--accent)', bg: '#f5efe6' },
-  { val: 2, label: 'More than half the days', color: '#f97316', bg: '#fff7ed' },
-  { val: 3, label: 'Nearly every day', color: 'var(--danger)', bg: 'var(--danger-bg)' }
-];
-
-var screenerActive = null; // 'phq9' or 'gad7'
-
-function screenerOptionsHTML(name, savedVal) {
-  var h = '<div class="quiz-opts" data-name="' + name + '" style="display:flex;gap:6px;margin:6px 0;flex-wrap:wrap">';
-  for (var i = 0; i < SCREENER_OPTS.length; i++) {
-    var isSel = (savedVal !== undefined && savedVal !== null && savedVal == SCREENER_OPTS[i].val);
-    h += '<label class="quiz-label" style="flex:1;text-align:center;padding:10px 4px;border-radius:10px;border:2px solid ' + (isSel ? SCREENER_OPTS[i].color : 'var(--border)') + ';background:' + (isSel ? SCREENER_OPTS[i].bg : 'var(--card)') + ';cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:2px">';
-    h += '<input type="radio" name="' + name + '" value="' + SCREENER_OPTS[i].val + '"' + (isSel ? ' checked' : '') + ' style="display:none">';
-    h += '<span style="font-size:12px;font-weight:' + (isSel ? '700' : '500') + ';color:' + (isSel ? SCREENER_OPTS[i].color : 'var(--text)') + '">' + SCREENER_OPTS[i].label + '</span>';
-    h += '</label>';
-  }
-  h += '</div>';
-  return h;
-}
-
-function screenerHTML() {
-  if (!D.screenerPHQ9) { D.screenerPHQ9 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){ console.warn('screenerPHQ9 sync failed:', e); } }
-  if (!D.screenerGAD7) { D.screenerGAD7 = { taken: false, result: null, progress: null }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){ console.warn('screenerGAD7 sync failed:', e); } }
-  var h = '<h2 class="page-title">Self-Check Screeners</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">These brief questionnaires can help you check in on your well-being. Results are private and not a diagnosis.</p>';
-
-  function screenerCard(key, title, icon, questions, data) {
-    var card = '<div class="card" style="border-left:3px solid var(--primary);margin-bottom:10px">';
-    card += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:24px">' + icon + '</span><div><div style="font-weight:700;font-size:15px">' + title + '</div><div style="font-size:12px;color:var(--muted)">' + questions.length + ' questions, 2&ndash;3 minutes</div></div></div>';
-    if (data.taken && data.result) {
-      var r = data.result;
-      var sev = key === 'phq9' ? screenerSeverityPHQ(r.total) : screenerSeverityGAD(r.total);
-      card += '<div style="text-align:center;padding:10px;background:' + sev.color.replace('var(', '').replace(')', '') + '15;border-radius:10px;border:1px solid ' + sev.color + '">';
-      card += '<div style="font-size:32px;font-weight:900;color:' + sev.color + '">' + r.total + '/' + (key === 'phq9' ? 27 : 21) + '</div>';
-      card += '<div style="font-size:14px;font-weight:700;color:' + sev.color + '">' + sev.label + '</div>';
-      card += '<div style="font-size:11px;color:var(--muted);margin-top:2px">Taken ' + new Date(r.date).toLocaleDateString() + '</div>';
-      card += '<button class="btn btn-outline btn-sm" onclick="screenerRetake(\'' + key + '\')" style="margin-top:6px">Retake</button></div>';
-    } else {
-      card += '<button class="btn btn-primary btn-sm" onclick="screenerStart(\'' + key + '\')" style="width:100%">Start ' + title + '</button>';
-    }
-    card += '</div>';
-    return card;
-  }
-
-  h += screenerCard('phq9', 'PHQ-9', '&#128555;', SCREENER_PHQ, D.screenerPHQ9);
-  h += screenerCard('gad7', 'GAD-7', '&#128534;', SCREENER_GAD7, D.screenerGAD7);
-  var phqRisk = D.screenerPHQ9 ? screenerRiskLevel('phq9', D.screenerPHQ9.result) : 0;
-  var gadRisk = D.screenerGAD7 ? screenerRiskLevel('gad7', D.screenerGAD7.result) : 0;
-  if (phqRisk >= 2) {
-    h += '<div class="card" style="border-left:4px solid var(--danger);padding:14px;background:linear-gradient(135deg,rgba(220,38,38,.08),var(--card))">' + crisisBannerHTML(t('Your last PHQ-9 responses suggest you may be in significant distress.')) + '</div>';
-  } else if (gadRisk >= 2) {
-    h += '<div class="card" style="border-left:4px solid var(--danger);padding:14px;background:linear-gradient(135deg,rgba(220,38,38,.08),var(--card))">' + crisisBannerHTML(t('Your last GAD-7 responses suggest significant anxiety.')) + '</div>';
-  } else if (phqRisk === 1 || gadRisk === 1) {
-    h += '<div class="card" style="border-left:3px solid #f59e0b;padding:12px;font-size:12px;color:var(--muted);line-height:1.6">' + t('Your recent scores suggest things have felt heavy. Consider talking with someone you trust or a professional \u2014 and know that you are not alone.') + '</div>';
-  }
-  h += '<div class="card" style="background:var(--primary-light);border:none;text-align:center;font-size:12px;color:var(--muted)"><strong>Important:</strong> These are self-checks only, not a diagnosis. If you are in crisis, use <strong>SOS</strong> or call <strong>988</strong> (Suicide &amp; Crisis Lifeline).</div>';
-  return h;
-}
-
-function screenerStart(type) {
-  screenerActive = type;
-  var questions = type === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
-  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
-  data.progress = new Array(questions.length).fill(null);
-  data.taken = false;
-  data.result = null;
-  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('screenerStart: localStorage write failed', e); }
-  syncToFirestore();
-  screenerRenderQuiz();
-}
-
-function screenerRetake(type) {
-  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
-  data.taken = false;
-  data.result = null;
-  screenerStart(type);
-}
-
-function screenerRenderQuiz() {
-  var questions = screenerActive === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
-  var data = screenerActive === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
-  var total = questions.length;
-  var title = screenerActive === 'phq9' ? 'PHQ-9' : 'GAD-7';
-  var h = '<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><button class="btn btn-sm btn-outline" onclick="screenerCancel()" style="width:auto">&#8592; Back</button><h2 class="page-title" style="margin:0;flex:1;border:none;background:none;text-align:left">' + title + '</h2></div>';
-  h += '<div class="card" id="squiz" data-type="' + screenerActive + '" data-idx="0">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span class="sq-step" style="font-size:12px;color:var(--muted);font-weight:600">Question 1 of ' + total + '</span><span class="sq-pct" style="font-size:12px;color:var(--muted)">0%</span></div>';
-  h += '<div class="progress-bar" style="margin-bottom:10px"><div class="fill sq-bar" style="width:0%"></div></div>';
-  h += '<div class="sq-body"></div>';
-  h += '<div style="display:flex;gap:8px;margin-top:10px">';
-  h += '<button class="btn btn-outline btn-sm sq-prev" onclick="screenerNav(-1)" style="flex:1;display:none">&#8592; Previous</button>';
-  h += '<button class="btn btn-primary btn-sm sq-next" onclick="screenerNav(1)" style="flex:1">Next &#8594;</button>';
-  h += '<button class="btn btn-primary btn-sm sq-submit" onclick="screenerSubmit()" style="flex:1;display:none">See Results</button>';
-  h += '</div></div>';
-  var app = document.getElementById('app');
-  if (app) app.innerHTML = h;
-  screenerRenderItem(0);
-}
-
-function screenerCancel() {
-  screenerActive = null;
-  render();
-}
-
-function screenerNav(dir) {
-  var quiz = document.getElementById('squiz');
-  if (!quiz) return;
-  var idx = parseInt(quiz.getAttribute('data-idx'));
-  var type = quiz.getAttribute('data-type');
-  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
-  var sel = document.querySelector('.sq-body input[type=radio]:checked');
-  if (sel) data.progress[idx] = parseInt(sel.value);
-  var next = idx + dir;
-  var questions = type === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
-  if (next < 0 || next >= questions.length) return;
-  quiz.setAttribute('data-idx', next);
-  screenerRenderItem(next);
-  try { localStorage.setItem(dataKey(), JSON.stringify(D)); } catch(e) { console.warn('screenerNav: localStorage write failed', e); }
-  syncToFirestore();
-}
-
-function screenerSubmit() {
-  var quiz = document.getElementById('squiz');
-  if (!quiz) return;
-  var idx = parseInt(quiz.getAttribute('data-idx'));
-  var type = quiz.getAttribute('data-type');
-  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
-  var questions = type === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
-  var sel = document.querySelector('.sq-body input[type=radio]:checked');
-  if (sel) data.progress[idx] = parseInt(sel.value);
-  var result = screenerScore(questions, data.progress);
-  // Archive previous result to history
-  if (data.result && data.result.date) {
-    if (!data._history) data._history = [];
-    data._history.push({ total: data.result.total, date: data.result.date, answers: data.result.answers });
-  }
-  data.taken = true;
-  data.result = { total: result.total, date: Date.now(), answers: data.progress.slice() };
-  data.progress = null;
-  screenerActive = null;
-  saveData();
-  delete _pageCache['screener'];
-  render();
-}
-
-function screenerRenderItem(idx) {
-  var quiz = document.getElementById('squiz');
-  if (!quiz) return;
-  var type = quiz.getAttribute('data-type');
-  var questions = type === 'phq9' ? SCREENER_PHQ : SCREENER_GAD7;
-  var data = type === 'phq9' ? D.screenerPHQ9 : D.screenerGAD7;
-  var savedVal = data.progress && data.progress.length === questions.length ? data.progress[idx] : null;
-  var total = questions.length;
-  quiz.querySelector('.sq-body').innerHTML = '<div><p style="font-weight:600;font-size:15px;margin-bottom:8px">Over the last <strong>2 weeks</strong>, how often have you been bothered by:</p><p style="font-weight:600;font-size:15px;margin-bottom:8px">' + (idx+1) + '. ' + questions[idx] + '</p>' + screenerOptionsHTML('sq' + idx, savedVal) + '</div>';
-  var step = quiz.querySelector('.sq-step');
-  var bar = quiz.querySelector('.sq-bar');
-  var pct = quiz.querySelector('.sq-pct');
-  var prev = quiz.querySelector('.sq-prev');
-  var next = quiz.querySelector('.sq-next');
-  var submit = quiz.querySelector('.sq-submit');
-  if (step) step.textContent = 'Question ' + (idx+1) + ' of ' + total;
-  var pp = Math.round(((idx+1) / total) * 100);
-  if (bar) bar.style.width = pp + '%';
-  if (pct) pct.textContent = pp + '%';
-  if (prev) prev.style.display = idx === 0 ? 'none' : 'block';
-  if (next) next.style.display = idx >= total - 1 ? 'none' : 'block';
-  if (submit) submit.style.display = idx >= total - 1 ? 'inline-block' : 'none';
-}
-
-// ====== RECOVERY PROGRAMS ======
-var RECOVERY_PROGRAMS = {
-  '12step': {
-    id: '12step', name: '12-Step Program', icon: '&#10022;', color: 'var(--primary)',
-    minDaysPerStep: 2,
-    steps: [
-      'We admitted we were powerless over our addiction  that our lives had become unmanageable.',
-      'Came to believe that a Power greater than ourselves could restore us to sanity.',
-      'Made a decision to turn our will and our lives over to the care of God as we understood Him.',
-      'Made a searching and fearless moral inventory of ourselves.',
-      'Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.',
-      'Were entirely ready to have God remove all these defects of character.',
-      'Humbly asked Him to remove our shortcomings.',
-      'Made a list of all persons we had harmed, and became willing to make amends to them all.',
-      'Made direct amends to such people wherever possible, except when to do so would injure them or others.',
-      'Continued to take personal inventory and when we were wrong promptly admitted it.',
-      'Sought through prayer and meditation to improve our conscious contact with God as we understood Him, praying only for knowledge of His will for us and the power to carry that out.',
-      'Having had a spiritual awakening as the result of these steps, we tried to carry this message to others and to practice these principles in all our affairs.'
-    ]
-  },
-  smart: {
-    id: 'smart', name: 'SMART Recovery', icon: '&#9881;', color: 'var(--accent)',
-    steps: [
-      'Building and Maintaining Motivation  Find your reasons to change and stay committed.',
-      'Coping with Urges  Recognize and manage cravings and urges without acting on them.',
-      'Managing Thoughts, Feelings, and Behaviors  Identify and change unhealthy thinking patterns.',
-      'Living a Balanced Life  Build sustainable habits and a fulfilling life beyond addiction.'
-    ]
-  },
-  dharma: {
-    id: 'dharma', name: 'Recovery Dharma', icon: '&#9783;', color: '#a78bfa',
-    steps: [
-      'Embracing the Present  Face this moment with kindness, curiosity, and compassion.',
-      'Investigating Suffering  Look honestly at the causes of your suffering and addictive patterns.',
-      'Letting Go  Practice release  of cravings, shame, and the stories that keep you stuck.',
-      'Living in Harmony  Bring your practice into daily life and support others on the path.'
-    ]
-  },
-  celebrate: {
-    id: 'celebrate', name: 'Celebrate Recovery', icon: '&#10017;', color: '#f97316',
-    steps: [
-      'Admit I am powerless  I cannot control my addictive behavior; my life is unmanageable.',
-      'Believe God exists  I matter to Him and He has the power to help me recover.',
-      'Commit my life to Christ  Consciously choose to follow His care and control.',
-      'Openly examine my life  Confess my faults to myself, God, and someone I trust.',
-      'Submit to change  Voluntarily let God remove my character defects.',
-      'Evaluate relationships  Offer forgiveness and make amends for harm I\'ve caused.',
-      'Reserve daily time with God  Self-examination, prayer, and reading to know His will.',
-      'Yield to serve  Share this Good News with others by example and by words.'
-    ]
-  },
-  journey: {
-    id: 'journey', name: "Re.Claim Journey", icon: '&#128154;', color: '#2d6a4f',
-    minDaysPerStep: 1,
-    steps: [
-      'Week 1: Foundation — Journal for 5 minutes about why you started this journey. What matters most to you?',
-      'Week 1: Foundation — Log your mood 3 times today. Notice how it shifts throughout the day.',
-      'Week 1: Foundation — Practice the breathing exercise for 2 minutes. Just focus on the air moving in and out.',
-      'Week 1: Foundation — Identify one trigger from your past. Write it down without judgment.',
-      'Week 1: Foundation — Read your safety plan or create one if you haven\'t yet.',
-      'Week 1: Foundation — Call or text someone who supports your recovery. Connection matters.',
-      'Week 1: Foundation — Write down one thing you accomplished this week. Celebrate it.',
-      'Week 2: Tools — Create a coping card for a situation that challenges you.',
-      'Week 2: Tools — Practice urge surfing: notice a craving, describe it, watch it pass.',
-      'Week 2: Tools — Use the SOS helplines page. Save a number to your phone.',
-      'Week 2: Tools — Log your mood each day. What was your win today?',
-      'Week 2: Tools — Write a commitment statement to yourself. Read it aloud.',
-      'Week 2: Tools — Try the grounding exercise: name 5 things you see, 4 you touch, 3 you hear, 2 you smell, 1 you taste.',
-      'Week 2: Tools — Review your week. What coping tools worked best for you?',
-      'Week 3: Connection — Reach out to your partner or accountability partner.',
-      'Week 3: Connection — Share a piece of your story with someone you trust. Let that opening build a bridge.',
-      'Week 3: Connection — Write a journal entry about someone who helped you.',
-      'Week 3: Connection — Explore the meetings page. Find a meeting you could attend.',
-      'Week 3: Connection — Send an encouraging message to someone in recovery.',
-      'Week 3: Connection — Review your relapse prevention plan. Update it if needed.',
-      'Week 3: Connection — Reflect on how connection has helped your recovery this week.',
-      'Week 4: Growth — Take the PHQ-9 or GAD-7 screening. Compare to your last result.',
-      'Week 4: Growth — Write a letter to your future self. It will be kept as a time capsule.',
-      'Week 4: Growth — Review your insights page. What patterns do you see?',
-      'Week 4: Growth — Set one recovery goal for the next month. Make it specific.',
-      'Week 4: Growth — Share your progress with someone you trust.',
-      'Week 4: Growth — Plan a small reward for reaching a milestone. You deserve it.',
-      'Week 4: Growth — Write a final journal entry reflecting on your 4-week journey.'
-    ]
-  }
-};
-
-var PROGRAMS_IDS = ['12step', 'smart', 'dharma', 'celebrate', 'journey'];
-
-
-function programData(pid) {
-  if (!D.recoveryPrograms) D.recoveryPrograms = { active: null, programs: {} };
-  if (!D.recoveryPrograms.programs) D.recoveryPrograms.programs = {};
-  if (!D.recoveryPrograms.programs[pid]) {
-    var prog = RECOVERY_PROGRAMS[pid];
-    D.recoveryPrograms.programs[pid] = { started: null, completed: null, steps: new Array(prog.steps.length).fill(false), notes: [], dates: [] };
-  }
-  return D.recoveryPrograms.programs[pid];
-}
-
-function programsHTML() {
-  var h = '<h2 class="page-title">&#127891; '+t('Recovery Programs')+'</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Follow a structured program to guide your recovery journey step by step.</p>';
-  if (!D.recoveryPrograms) { D.recoveryPrograms = { active: null, programs: {} }; localStorage.setItem(dataKey(), JSON.stringify(D)); try { syncToFirestore(); } catch(e){ console.warn('recoveryPrograms sync failed:', e); } }
-  var active = D.recoveryPrograms.active;
-  if (active && RECOVERY_PROGRAMS[active]) {
-    h += programActiveHTML(active);
-  } else {
-    h += '<div class="sub-grid">';
-    for (var pi=0;pi<PROGRAMS_IDS.length;pi++) {
-      var pid = PROGRAMS_IDS[pi];
-      var p = RECOVERY_PROGRAMS[pid];
-      var data = programData(pid);
-      var count = data.steps ? data.steps.filter(function(s){return s}).length : 0;
-      h += '<div class="card" style="border-left:3px solid '+p.color+';cursor:pointer;text-align:center" onclick="programStart(\''+pid+'\')">';
-      h += '<div style="font-size:28px;margin-bottom:4px">'+p.icon+'</div>';
-      h += '<div style="font-weight:700;font-size:14px">'+p.name+'</div>';
-      h += '<div style="font-size:12px;color:var(--muted)">'+p.steps.length+' steps</div>';
-      if (count > 0) {
-        h += '<div class="progress-bar" style="margin:6px auto;max-width:120px"><div class="fill" style="width:'+Math.round(count/p.steps.length*100)+'%"></div></div>';
-        h += '<div style="font-size:11px;color:var(--muted)">'+count+'/'+p.steps.length+' completed</div>';
-      }
-      h += '</div>';
-    }
-    h += '</div>';
-  }
-  return h;
-}
-
-function programStart(pid) {
-  D.recoveryPrograms.active = pid;
-  saveData();
-  render();
-}
-
-function programReset(pid) {
-  if (!confirm('Reset all progress for '+RECOVERY_PROGRAMS[pid].name+'?')) return;
-  delete D.recoveryPrograms.programs[pid];
-  D.recoveryPrograms.active = null;
-  saveData();
-  render();
-}
-
-function programActiveHTML(pid) {
-  var p = RECOVERY_PROGRAMS[pid];
-  var data = programData(pid);
-  var completed = data.steps ? data.steps.filter(function(s){return s}).length : 0;
-  var total = p.steps.length;
-  var pct = Math.round(completed/total*100);
-  var done = completed === total;
-  var h = '<div style="display:flex;align-items:center;gap:8px;margin:8px 0">';
-  h += '<button class="btn btn-sm btn-outline" onclick="programClearActive()">&#8592; All Programs</button>';
-  h += '</div>';
-  h += '<div class="card" style="border-left:3px solid '+p.color+'">';
-  h += '<div style="display:flex;align-items:center;gap:10px"><span style="font-size:28px">'+p.icon+'</span><div><div style="font-weight:700;font-size:16px">'+p.name+'</div>';
-  if (data.started) h += '<div style="font-size:11px;color:var(--muted)">Started '+new Date(data.started).toLocaleDateString()+'</div>';
-  h += '</div></div>';
-  h += '<div class="progress-bar" style="margin:10px 0"><div class="fill" style="width:'+pct+'%"></div></div>';
-  h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>'+completed+'/'+total+' steps</span><span>'+pct+'%</span></div>';
-  if (done) {
-    h += '<div style="text-align:center;padding:14px;background:var(--primary-light);border-radius:10px;margin-top:8px">';
-    h += '<span style="font-size:32px">&#x265B;</span>';
-    h += '<div style="font-weight:700;font-size:15px;color:var(--primary);margin:4px 0">Program Completed!</div>';
-    h += '<div style="font-size:11px;color:var(--muted)">You worked through all '+total+' steps with reflection and intention.</div>';
-    h += '<div style="font-size:11px;color:var(--muted)">Finished '+new Date(data.completed).toLocaleDateString()+'</div>';
-    h += '<div style="font-size:11px;color:var(--muted);margin-top:4px;font-style:italic">Recovery is not a destination  it\'s a daily practice. Keep showing up.</div>';
-    h += '</div>';
-  }
-  h += '</div>';
-  for (var si=0;si<total;si++) {
-    var stepDone = data.steps[si];
-    h += '<div class="card" style="border-left:3px solid '+(stepDone ? 'var(--primary)' : 'var(--border)')+';padding:14px">';
-    h += '<div style="display:flex;align-items:flex-start;gap:10px">';
-    h += '<div style="flex-shrink:0;width:28px;height:28px;border-radius:14px;border:2px solid '+(stepDone ? 'var(--primary)' : 'var(--border)')+';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:'+(stepDone ? 'var(--primary)' : 'var(--muted)')+';background:'+(stepDone ? 'var(--primary-light)' : 'transparent')+';cursor:pointer" onclick="programToggleStep(\''+pid+'\','+si+')">'+(stepDone ? '&#10003;' : (si+1))+'</div>';
-    h += '<div style="flex:1">';
-    h += '<div style="font-weight:600;font-size:13px;margin-bottom:4px">Step '+(si+1)+'</div>';
-    h += '<div style="font-size:12px;color:var(--text)">'+p.steps[si]+'</div>';
-    if (data.notes && data.notes[si]) {
-      h += '<div style="font-size:11px;color:var(--muted);font-style:italic;margin-top:4px;padding:8px;background:var(--primary-light);border-radius:6px;line-height:1.4">&#128221; "'+data.notes[si]+'"</div>';
-    }
-    if (!stepDone) {
-      var canComplete = true;
-      var prevIdx = si - 1;
-      if (prevIdx >= 0 && data.steps[prevIdx] && data.dates && data.dates[prevIdx]) {
-        var daysSince = Math.round((Date.now() - data.dates[prevIdx]) / 86400000);
-        var minDays = p.minDaysPerStep || 1;
-        if (daysSince < minDays) {
-          canComplete = false;
-          h += '<div style="font-size:11px;color:var(--accent);margin-top:4px">&#128337; Available in '+ (minDays - daysSince) +' day' + ((minDays - daysSince) > 1 ? 's' : '') +' (reflect on Step '+ (prevIdx+1) +' in the meantime)</div>';
-        }
-      }
-      if (canComplete) {
-        h += '<button class="btn btn-sm btn-primary" onclick="programToggleStep(\''+pid+'\','+si+')" style="margin-top:6px;font-size:11px">&#10003; Mark Complete</button>';
-      } else {
-        h += '<button class="btn btn-sm btn-outline" disabled style="margin-top:6px;font-size:11px;opacity:0.5">&#128337; Locked</button>';
-      }
-    } else {
-      h += '<div style="display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap">';
-      h += '<span style="font-size:11px;color:var(--primary);font-weight:600">&#10003; Completed '+new Date(data.dates[si]).toLocaleDateString()+'</span>';
-      h += '<button class="btn btn-sm btn-outline" onclick="programToggleStep(\''+pid+'\','+si+')" style="font-size:11px">Undo</button>';
-      h += '</div>';
-    }
-    h += '</div></div></div>';
-  }
-  h += '<button class="btn btn-outline btn-sm" onclick="programReset(\''+pid+'\')" style="margin-top:8px;width:100%;color:var(--danger)">Reset Program</button>';
-  return h;
-}
-
-function programClearActive() {
-  D.recoveryPrograms.active = null;
-  saveData();
-  render();
-}
-
-function programToggleStep(pid, idx) {
-  var data = programData(pid);
-  var p = RECOVERY_PROGRAMS[pid];
-
-  // If marking complete, require reflection and check time buffer
-  if (!data.steps[idx]) {
-    // Check minimum days since last step
-    var prevIdx = idx - 1;
-    if (prevIdx >= 0 && data.steps[prevIdx] && data.dates && data.dates[prevIdx]) {
-      var daysSince = Math.round((Date.now() - data.dates[prevIdx]) / 86400000);
-      var minDays = p.minDaysPerStep || 1;
-      if (daysSince < minDays) {
-        alert('\u23F1\uFE0F Take your time with Step ' + (prevIdx + 1) + '. Wait at least ' + minDays + ' day' + (minDays > 1 ? 's' : '') + ' before moving to Step ' + (idx + 1) + '. Recovery is not a race \u2014 reflect deeply on each step.\n\nYou can reflect on Step ' + (idx + 1) + ' in your journal in the meantime.');
-        return;
-      }
-    }
-
-    // Require a written reflection
-    var reflection = prompt('\u270D\uFE0F Step ' + (idx + 1) + ': What did you do to work on this step? How does it apply to your recovery?');
-    if (reflection === null || reflection.trim() === '') {
-      alert('Writing a brief reflection helps solidify what you\u2019ve learned. Try just one or two sentences.');
-      return;
-    }
-    reflection = reflection.trim();
-
-    data.steps[idx] = true;
-    if (!data.notes) data.notes = [];
-    if (!data.dates) data.dates = [];
-    data.notes[idx] = reflection;
-    data.dates[idx] = Date.now();
-    if (!data.started) data.started = Date.now();
-  } else {
-    // Unmarking  only allow if no time buffer concern
-    data.steps[idx] = false;
-    if (data.dates) data.dates[idx] = null;
-    if (data.notes) data.notes[idx] = '';
-  }
-  var allDone = data.steps.every(function(s){return s});
-  if (allDone && !data.completed) data.completed = Date.now();
-  else if (!allDone) data.completed = null;
-  saveData();
-  render();
-}
-
-function programAddNote(pid, idx) {
-  var data = programData(pid);
-  var current = (data.notes && data.notes[idx]) || '';
-  var note = prompt('Reflection on Step '+(idx+1)+':', current);
-  if (note === null) return;
-  if (!data.notes) data.notes = [];
-  data.notes[idx] = note;
-  saveData();
-  render();
 }
 
 // ====== HABITS ======
@@ -2609,7 +2101,7 @@ function rescueRecommit() {
   saveData();
   setTimeout(kingdomDamage, 150);
 
-  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();goTo(\'royalpardon\')">&#128081; Fresh Start</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
+  document.getElementById('rescue-ov').innerHTML = '<div class="overlay-content" style="max-width:420px;text-align:center"><div style="font-size:56px;margin:8px 0">&#128154;</div><h3 style="font-size:20px;font-weight:700;color:var(--primary)">You re-committed.</h3><p style="font-size:13px;color:var(--muted);margin:6px 0">Your ' + prevDays + ' day' + (prevDays !== 1 ? 's' : '') + ' of growth isn\'t lost  it\'s part of your journey. Day 1 starts now, and you showed up.</p><div style="background:var(--primary-light);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--muted);line-height:1.5">&#128161; Most people have multiple attempts before long-term recovery. Each attempt teaches you something. Write down what you learned this time.</div><div style="display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="this.closest(\'#rescue-ov\').remove();showFreshStartOverlay()">&#128081; Fresh Start</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'#rescue-ov\').remove()">Keep going</button></div></div>';
 }
 
 function rescueSkip() {
@@ -2990,18 +2482,6 @@ function buildHeroGuideInsights() {
   if (D.sobriety && D.sobriety.startDate) {
     var currentStreak = soberDays();
     if (currentStreak > 0) insights.push({ icon: '&#128154;', text: 'You are <strong>' + currentStreak + ' day' + (currentStreak !== 1 ? 's' : '') + ' sober</strong>. Every day is a victory  and the data shows consistency builds on itself.', severity: 'positive' });
-  }
-
-  // Program progress
-  if (D.recoveryPrograms && D.recoveryPrograms.active) {
-    var pid = D.recoveryPrograms.active;
-    if (RECOVERY_PROGRAMS[pid]) {
-      var pData = D.recoveryPrograms.programs[pid];
-      if (pData && pData.steps) {
-        var done = pData.steps.filter(function(s){return s}).length;
-        if (done > 0 && done < pData.steps.length) insights.push({ icon: '&#127891;', text: 'You\'re <strong>' + Math.round(done/pData.steps.length*100) + '%</strong> through the ' + RECOVERY_PROGRAMS[pid].name + '. Step ' + (done + 1) + ' is next.', severity: 'positive' });
-      }
-    }
   }
 
   // Mood-topic correlation analysis
@@ -4125,12 +3605,9 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'royalpardon\')" style="border-color:#ffd700">&#127793; '+t('Fresh Start')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#6b4a2e">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
-  h += '<div class="sub-item" onclick="goTo(\'programs\')" style="border-color:#a78bfa">&#127891; '+t('Programs')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'screener\')" style="border-color:var(--accent)">&#128200; '+t('Screeners')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Resources')+'</h3>';
@@ -4464,24 +3941,7 @@ function showProgressReport() {
   var moodAvg = (D.moods||[]).length ? Math.round((D.moods||[]).reduce(function(s,m){return s+m.mood},0) / (D.moods||[]).length * 10) / 10 : 'N/A';
   var journalCount = (D.journal||[]).length;
   var cravingCount = (D.cravings||[]).length;
-  var phq = D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result : null;
-  var gad = D.screenerGAD7 && D.screenerGAD7.result ? D.screenerGAD7.result : null;
-  var phqHistory = (D.screenerPHQ9 && D.screenerPHQ9._history) || [];
-  var gadHistory = (D.screenerGAD7 && D.screenerGAD7._history) || [];
 
-  function severityLabelPHQ(s) {
-    if (s <= 4) return {label:'Minimal', color:'var(--primary)'};
-    if (s <= 9) return {label:'Mild', color:'#ca8a04'};
-    if (s <= 14) return {label:'Moderate', color:'#ea580c'};
-    if (s <= 19) return {label:'Moderately Severe', color:'#dc2626'};
-    return {label:'Severe', color:'#991b1b'};
-  }
-  function severityLabelGAD(s) {
-    if (s <= 4) return {label:'Minimal', color:'var(--primary)'};
-    if (s <= 9) return {label:'Mild', color:'#ca8a04'};
-    if (s <= 14) return {label:'Moderate', color:'#ea580c'};
-    return {label:'Severe', color:'#dc2626'};
-  }
 
   var h = '<div class="overlay-content" style="max-width:500px"><div style="text-align:center;margin-bottom:8px"><div style="font-size:32px;margin-bottom:4px">&#128202;</div><h3 style="font-size:20px;font-weight:700">'+t('Your Progress Report')+'</h3><p style="font-size:12px;color:var(--muted)">Generated ' + today.toLocaleDateString() + '</p></div>';
 
@@ -4493,54 +3953,6 @@ function showProgressReport() {
   h += '<div><span style="color:var(--muted)">'+t('Cravings logged')+':</span> <strong>' + cravingCount + '</strong></div>';
   h += '</div></div>';
 
-  // PHQ-9
-  h += '<div class="card" style="padding:12px;margin-bottom:6px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128555; PHQ-9 '+t('Depression Screening')+'</div>';
-  if (phq) {
-    var sev = severityLabelPHQ(phq.total);
-    h += '<div style="font-size:13px"><span style="color:var(--muted)">'+t('Latest')+':</span> <strong style="color:'+sev.color+'">'+phq.total+'/27 ('+sev.label+')</strong> <span style="font-size:11px;color:var(--muted)">'+new Date(phq.date).toLocaleDateString()+'</span></div>';
-    // Trend
-    var allPHQ = phqHistory.concat([{total:phq.total,date:phq.date}]);
-    if (allPHQ.length >= 2) {
-      var first = allPHQ[0].total, lastPHQ = allPHQ[allPHQ.length-1].total;
-      var dir = lastPHQ < first ? '&#8595; '+t('improving') : lastPHQ > first ? '&#8593; '+t('worsening') : '&#8594; '+t('stable');
-      var change = Math.abs(lastPHQ - first);
-      h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+t('Trend over')+' '+allPHQ.length+' '+t('sessions')+': '+dir+' ('+change+' '+t('point change')+')</div>';
-    }
-    if (allPHQ.length > 1) {
-      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">'+t('History')+': ';
-      for (var pi=0;pi<allPHQ.length;pi++) {
-        h += '<span style="margin-right:4px">'+allPHQ[pi].total+'/'+27+' <span style="font-size:9px">'+new Date(allPHQ[pi].date).toLocaleDateString()+'</span></span>';
-      }
-      h += '</div>';
-    }
-  } else {
-    h += '<p style="font-size:12px;color:var(--muted);font-style:italic">'+t('Take the PHQ-9 screening to see results here.')+'</p>';
-  }
-  h += '</div>';
-
-  // GAD-7
-  h += '<div class="card" style="padding:12px;margin-bottom:6px"><div style="font-weight:700;font-size:14px;margin-bottom:4px">&#128534; GAD-7 '+t('Anxiety Screening')+'</div>';
-  if (gad) {
-    var sev2 = severityLabelGAD(gad.total);
-    h += '<div style="font-size:13px"><span style="color:var(--muted)">'+t('Latest')+':</span> <strong style="color:'+sev2.color+'">'+gad.total+'/21 ('+sev2.label+')</strong> <span style="font-size:11px;color:var(--muted)">'+new Date(gad.date).toLocaleDateString()+'</span></div>';
-    var allGAD = gadHistory.concat([{total:gad.total,date:gad.date}]);
-    if (allGAD.length >= 2) {
-      var firstG = allGAD[0].total, lastG = allGAD[allGAD.length-1].total;
-      var dirG = lastG < firstG ? '&#8595; '+t('improving') : lastG > firstG ? '&#8593; '+t('worsening') : '&#8594; '+t('stable');
-      var changeG = Math.abs(lastG - firstG);
-      h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">'+t('Trend over')+' '+allGAD.length+' '+t('sessions')+': '+dirG+' ('+changeG+' '+t('point change')+')</div>';
-    }
-    if (allGAD.length > 1) {
-      h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">'+t('History')+': ';
-      for (var gi=0;gi<allGAD.length;gi++) {
-        h += '<span style="margin-right:4px">'+allGAD[gi].total+'/'+21+' <span style="font-size:9px">'+new Date(allGAD[gi].date).toLocaleDateString()+'</span></span>';
-      }
-      h += '</div>';
-    }
-  } else {
-    h += '<p style="font-size:12px;color:var(--muted);font-style:italic">'+t('Take the GAD-7 screening to see results here.')+'</p>';
-  }
-  h += '</div>';
 
   // Recent achievements
   if ((D.achievements||[]).length) {
@@ -4573,28 +3985,6 @@ function exportProgressReport() {
   lines.push('Moods logged: ' + (D.moods||[]).length);
   lines.push('Cravings logged: ' + (D.cravings||[]).length);
 
-  var phq = D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result : null;
-  var gad = D.screenerGAD7 && D.screenerGAD7.result ? D.screenerGAD7.result : null;
-  if (phq) {
-    lines.push('');
-    lines.push('--- PHQ-9 Depression Screening ---');
-    lines.push('Latest score: ' + phq.total + '/27 on ' + new Date(phq.date).toLocaleDateString());
-    var hist = (D.screenerPHQ9 && D.screenerPHQ9._history) || [];
-    if (hist.length) {
-      lines.push('History:');
-      for (var hpi=0;hpi<hist.length;hpi++) lines.push('  ' + hist[hpi].total + '/27 on ' + new Date(hist[hpi].date).toLocaleDateString());
-    }
-  }
-  if (gad) {
-    lines.push('');
-    lines.push('--- GAD-7 Anxiety Screening ---');
-    lines.push('Latest score: ' + gad.total + '/21 on ' + new Date(gad.date).toLocaleDateString());
-    var histG = (D.screenerGAD7 && D.screenerGAD7._history) || [];
-    if (histG.length) {
-      lines.push('History:');
-      for (var hgi=0;hgi<histG.length;hgi++) lines.push('  ' + histG[hgi].total + '/21 on ' + new Date(histG[hgi].date).toLocaleDateString());
-    }
-  }
   lines.push('');
   lines.push('=== END REPORT ===');
   var blob = new Blob([lines.join('\n')], {type:'text/plain'});
@@ -5294,7 +4684,6 @@ function seerTowerHTML() {
   var sosUsed = D.sosUsed || false;
   var planExists = !!(D.relapsePlan && D.relapsePlan.statement);
   var buddyExists = !!D.buddy;
-  var phqScore = D.screenerPHQ9 && D.screenerPHQ9.result ? D.screenerPHQ9.result.total : null;
   var achCount = (D.achievements||[]).length;
 
   var omens = [];
@@ -5333,13 +4722,6 @@ function seerTowerHTML() {
   // SOS used
   if (sosUsed) omens.push({type:'good', text: 'You have reached out for help before. That is not weakness \u2014 it is the highest form of courage.'});
 
-  // PHQ-9
-  if (phqScore !== null) {
-    if (phqScore <= 4) omens.push({type:'good', text: 'Your PHQ-9 signals minimal depression. Things look clear.'});
-    else if (phqScore <= 9) omens.push({type:'neutral', text: 'Your PHQ-9 shows mild signs. Nothing a steady routine cannot address.'});
-    else if (phqScore <= 14) omens.push({type:'warning', text: 'Your PHQ-9 suggests moderate distress. Consider speaking with a professional.'});
-    else omens.push({type:'danger', text: 'Your PHQ-9 signals significant distress. Please seek help \u2014 you need not face this alone.'});
-  }
 
   // Achievements
   if (achCount >= 10) omens.push({type:'good', text: achCount + ' achievements earned! Your dedication is building momentum.'});
