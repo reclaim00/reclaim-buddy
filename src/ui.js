@@ -1402,13 +1402,21 @@ var ONBOARDING_STEPS = [
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What would you like to change? Choose the challenge you\'re ready to take on.</div><div id="onboarding-addiction" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0">'+ADDICTION_TYPES.map(function(at){return'<button data-v="'+at+'" class="btn btn-sm btn-outline" onclick="document.querySelectorAll(\'#onboarding-addiction button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--primary-dark)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';D.addictionType=this.getAttribute(\'data-v\')" style="width:auto;font-size:11px;padding:6px 14px;border-radius:20px;margin:0">'+at+'</button>';}).join('')+'</div>'},
   {icon:'\u2727',title:'Your Goals',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What do you want to achieve? Write down your goals.</div><textarea id="onboarding-goals" placeholder="e.g. Be sober for 30 days, rebuild trust with my family, find healthy hobbies..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
+  {icon:'\uD83C\uDF3F',title:'What Are You Hoping For?',
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Hope keeps the path lit. Picture yourself further along \u2014 what do you hope your life looks like?</div><textarea id="onboarding-hopes" placeholder="e.g. Clear-headed mornings, a proud family, freedom from cravings, energy for the things I love..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
+  {icon:'\uD83C\uDF0A',title:'What Makes It Hardest?',
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Knowing your triggers steadies your footing. What situations make it hardest to stay sober?</div><textarea id="onboarding-triggers" placeholder="e.g. Friday nights out, stress at work, arguments, being around old friends who still drink..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
+  {icon:'\u2693',title:'What Helps You Stay On Track?',
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Share the tools and people that keep you steady. These become your coping kit.</div><textarea id="onboarding-track" placeholder="e.g. Morning walks, journaling, my partner, a run or a phone call when urges hit..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
+  {icon:'\u2764',title:'What Are You Fighting For?',
+   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Your reasons are your anchor when the road gets dark. What are you fighting for?</div><textarea id="onboarding-why" placeholder="e.g. My kids, my health, my peace of mind, a future I can be proud of..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
   {icon:'\uD83C\uDF31',title:'Your Journey',
    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Choose a theme that fits your world.</div><div id="onboarding-theme" style="display:flex;gap:12px;justify-content:center;margin:16px 0">'+
      '<button class="btn" onclick="selectOnboardingTheme(\'gothic\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Woodland</span><span style="font-size:11px;color:var(--muted)">Deep shade, cool air, quiet forest</span></button>'+
      '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2600</span><span style="font-weight:700;font-size:15px">Meadow</span><span style="font-size:11px;color:var(--muted)">Open sky, tall grass, morning light</span></button>'+
    '</div>'},
-  {icon:'\u2727',title:'Your Journey Begins',
-    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You\'ve chosen your path, set your goals, and begun your journey. Your space is ready for you.</div><div style="margin-top:16px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:12px;color:var(--text);line-height:1.6">"The road is long, but you were made for this. Every day you show up, your foundation grows stronger. Let\u2019s begin."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Your journey starts now.</div>'},
+  {icon:'\u2728',title:'You\u2019ve Got This',
+    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You just built the foundation of your recovery: your goals, your hopes, the situations to watch for, your coping kit, and what you\u2019re fighting for.</div><div style="margin-top:14px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:13px;color:var(--text);line-height:1.6">"You\u2019ve got this. One grounded step at a time."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Your journey starts now.</div>'},
 ];
 var ONBOARDING_STEP = 0;
 function showOnboarding() {
@@ -1430,12 +1438,7 @@ function renderOnboardingStep() {
   if (existing) existing.remove();
   var s = ONBOARDING_STEPS[ONBOARDING_STEP];
   if (!s) {
-    D._onboardingDone = true;
-    D.sobriety.addictionType = D.addictionType || 'Other';
-    D.sobriety.startDate = Date.now();
-    pg = 'home'; _pageCache = {};
-    saveData(); render();
-    setTimeout(startSoberTimer, 200);
+    finalizeOnboarding();
     return;
   }
   var isLast = ONBOARDING_STEP >= ONBOARDING_STEPS.length - 1;
@@ -1467,18 +1470,52 @@ function closeOnboarding() {
   if (!D.sobriety.startDate) { pg = 'home'; _pageCache = {}; render(); }
 }
 
+var ONBOARDING_FIELDS = {1:'goals',2:'hopes',3:'triggers',4:'track',5:'why'};
+var ONBOARDING_IDS = {1:'onboarding-goals',2:'onboarding-hopes',3:'onboarding-triggers',4:'onboarding-track',5:'onboarding-why'};
 function advanceOnboarding() {
   if (ONBOARDING_STEP === 0 && !D.addictionType) { alert('Pick an addiction to conquer.'); return; }
-  if (ONBOARDING_STEP === 1) {
-    var goalsEl = document.getElementById('onboarding-goals');
-    D.goals = (goalsEl ? goalsEl.value : '').trim();
-    if (!D.goals) { alert('Set at least one goal to focus on.'); return; }
+  if (ONBOARDING_STEP === 6 && !D.theme) { alert('Choose a theme.'); return; }
+  var field = ONBOARDING_FIELDS[ONBOARDING_STEP];
+  if (field) {
+    var el = document.getElementById(ONBOARDING_IDS[ONBOARDING_STEP]);
+    var val = el ? el.value : '';
+    if (!val.trim()) { alert('This matters \u2014 take a moment to write it down.'); if (el) el.focus(); return; }
+    D[field] = val.trim();
   }
-  if (ONBOARDING_STEP === 2) {
-    if (!D.theme) { alert('Choose a theme.'); return; }
+  if (ONBOARDING_STEP >= ONBOARDING_STEPS.length - 1) {
+    finalizeOnboarding();
+    return;
   }
   ONBOARDING_STEP++;
   renderOnboardingStep();
+}
+function finalizeOnboarding() {
+  seedOnboardingAnswers();
+  D._onboardingDone = true;
+  D.sobriety.addictionType = D.addictionType || 'Other';
+  D.sobriety.startDate = Date.now();
+  pg = 'home'; _pageCache = {};
+  saveData(); render();
+  setTimeout(startSoberTimer, 200);
+}
+function seedOnboardingAnswers() {
+  if (!D.myWhy) D.myWhy = { reasons: [], createdAt: null };
+  if (!D.myWhy.reasons) D.myWhy.reasons = [];
+  if (!D.myWhy.createdAt) D.myWhy.createdAt = Date.now();
+  if (!D.myWhy.reasons.length) {
+    if (D.fightingFor) D.myWhy.reasons.push({ text: D.fightingFor, icon: '\u2764', createdAt: Date.now() });
+    if (D.hopes) D.myWhy.reasons.push({ text: 'Hope: ' + D.hopes, icon: '\uD83C\uDF3F', createdAt: Date.now() });
+  }
+  if (D.relapsePlan && !D.relapsePlan.statement) {
+    function list(v) {
+      if (!v) return [];
+      return v.split(/[\n,;]+/).map(function(x){return x.trim()}).filter(Boolean);
+    }
+    var trigs = list(D.triggerSituations);
+    var cope = list(D.stayOnTrack);
+    if (trigs.length) D.relapsePlan.triggers = trigs.slice(0, 10);
+    if (cope.length) D.relapsePlan.coping = cope.slice(0, 10);
+  }
 }
 function render() {
   if (LOCK_ENABLED) return;
