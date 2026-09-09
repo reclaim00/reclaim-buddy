@@ -1336,20 +1336,7 @@ function reflectHTML() {
   h += '<div class="card">';
   h += '<h3>'+t('Write in Your Journal')+'</h3>';
   h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;border-left:3px solid var(--primary)"><strong>'+t("Today's Prompt:")+'</strong> ' + todayPrompt() + '</div>';
-  // Type panel (Free Write / Quick Mood selector)
-  h += '<div id="j-type-panel">';
-  var types = [
-    {id:'free', label:'Free Write', icon:'&#128221;', desc:'Write whatever is on your mind'},
-    {id:'quick', label:'Quick Mood', icon:'&#9889;', desc:'Just log your mood'}
-  ];
-  h += '<div style="display:flex;gap:6px;margin:8px 0" id="journal-types">';
-  for (var ti=0;ti<types.length;ti++) {
-    h += '<button class="btn btn-sm ' + (ti===0?'btn-primary':'btn-outline') + '" onclick="pickJournalType(this,\'' + types[ti].id + '\')" data-type="' + types[ti].id + '" data-ph="' + types[ti].desc + '" style="flex:1;font-size:11px">' + types[ti].icon + ' ' + types[ti].label + '</button>';
-  }
-  h += '</div>';
-  h += '<div id="quick-mood-area" style="display:none;text-align:center;padding:16px 0"><div style="font-size:13px;color:var(--muted);margin-bottom:10px">'+t('Tap your mood above, then save:')+'</div><button class="btn btn-primary" onclick="saveQuickMood()" style="width:100%">&#9889; '+t('Log Quick Mood')+'</button></div>';
-  h += '</div>';
-  // Mood row (shared by both modes)
+  // Optional mood for your entry
   h += '<div class="mood-row" id="ref-moods">';
   var moodEmojis = ['&#128542;','&#128533;','&#128528;','&#128578;','&#128513;'];
   var labels = [t('Terrible'),t('Bad'),t('Okay'),t('Good'),t('Great')];
@@ -1877,50 +1864,26 @@ function careHTML() {
   h += '<div class="sub-item" onclick="goTo(\'assessment\')">'+t('Assessment')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapseplan\')" style="border-color:var(--accent)">'+t('Relapse Plan')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'relapserescue\')" style="border-color:var(--danger)">&#129309; '+t('Relapse Rescue')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Safety Plans')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; Your View</div>';
   h += '</div>';
+
+  // Quick Mood (moved from Journal)
+  h += '<div class="card"><h3>&#9889; '+t('Quick Mood')+'</h3>';
+  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">'+t('Log your mood in a moment. No writing needed.')+'</p>';
+  h += '<div class="mood-row" id="ref-moods">';
+  var qmEmojis = ['&#128542;','&#128533;','&#128528;','&#128578;','&#128513;'];
+  var qmLabels = [t('Terrible'),t('Bad'),t('Okay'),t('Good'),t('Great')];
+  for (var qmi=0;qmi<5;qmi++) {
+    h += '<button class="mood-btn" data-val="'+(qmi+1)+'" onclick="pickRefMood(this)"><span style="font-size:18px;display:block">'+qmEmojis[qmi]+'</span>'+qmLabels[qmi]+'</button>';
+  }
+  h += '</div>';
+  h += '<button class="btn btn-primary btn-sm" onclick="saveQuickMood()" style="width:100%">&#9889; '+t('Log Quick Mood')+'</button></div>';
 
   // Journal-based insights
   h += journalInsightsHTML();
 
-  // Helplines
-  var helplines = [
-    {name:'988 Suicide & Crisis Lifeline',num:'988',desc:'Call or text 988'},
-    {name:'Crisis Text Line',num:'741741',desc:'Text HOME to 741741'},
-    {name:'SAMHSA National Helpline',num:'1-800-662-4357',desc:'24/7 treatment referral'},
-    {name:'National Suicide Prevention Lifeline',num:'1-800-273-8255',desc:'24/7 confidential support'},
-    {name:'National Hopeline Network',num:'1-800-442-4673',desc:'Crisis intervention & suicide prevention'},
-    {name:'Veterans Crisis Line',num:'1-800-273-8255',desc:'Press 1 for veterans'},
-    {name:'Trans Lifeline',num:'1-877-565-8860',desc:'Peer support for trans community'},
-    {name:'The Trevor Project',num:'1-866-488-7386',desc:'LGBTQ+ youth crisis support'},
-    {name:'National Domestic Violence Hotline',num:'1-800-799-7233',desc:'Support for domestic violence'},
-    {name:'National Child Abuse Hotline',num:'1-800-422-4453',desc:'Child abuse reporting & support'},
-    {name:'RAINN Sexual Assault Hotline',num:'1-800-656-4673',desc:'Sexual assault support'},
-    {name:'NAMI Helpline',num:'1-800-950-6264',desc:'Mental health support & resources'},
-    {name:'Eating Disorders Helpline',num:'1-800-931-2237',desc:'Support for eating disorders'},
-    {name:'Substance Abuse Helpline',num:'1-800-327-5050',desc:'24/7 substance abuse support'},
-    {name:'Gambling Problem Helpline',num:'1-800-522-4700',desc:'Problem gambling support'},
-    {name:'Self-Harm Hotline',num:'1-800-366-8288',desc:'Self-harm crisis support'},
-    {name:'Warmline (Non-crisis)',num:'1-888-448-9777',desc:'Peer support for non-crisis moments'}
-  ];
-  var showCount = 4;
-  h += '<div class="card"><h3>'+t('Helplines')+' <span style="font-size:12px;color:var(--muted);font-weight:400">(' + helplines.length + ' '+t('available')+')</span></h3>';
-  for (var i=0;i<Math.min(showCount, helplines.length);i++) {
-    h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+helplines[i].name+'</div><div style="font-size:11px;color:var(--muted)">'+helplines[i].desc+'</div></div><a href="tel:'+helplines[i].num+'" style="font-size:16px;font-weight:700;color:var(--primary);text-decoration:none">'+helplines[i].num+'</a></div>';
-  }
-  h += '<div id="more-helplines" style="display:none">';
-  for (var i=showCount;i<helplines.length;i++) {
-    h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:'+(i<helplines.length-1?'1px solid var(--border)':'none')+'"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+helplines[i].name+'</div><div style="font-size:11px;color:var(--muted)">'+helplines[i].desc+'</div></div><a href="tel:'+helplines[i].num+'" style="font-size:16px;font-weight:700;color:var(--primary);text-decoration:none">'+helplines[i].num+'</a></div>';
-  }
-  h += '</div>';
-  h += '<button class="btn btn-sm btn-outline" onclick="var el=document.getElementById(\'more-helplines\');var btn=this;if(el.style.display===\'none\'){el.style.display=\'block\';btn.textContent=\''+t('Show Less')+'\';}else{el.style.display=\'none\';btn.textContent=\''+t('Show All Helplines').replace(/'/g,"\\'")+' ' + helplines.length + '\';}" style="margin-top:6px;width:auto">'+t('Show All Helplines')+' '+helplines.length+'</button>';
-  h += '</div>';
 
   h += '<div class="card"><h3>'+t('Addiction Assessment')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Check in with yourself about your substance use.')+'</p><button class="btn btn-outline btn-sm" onclick="goTo(\'assessment\')">'+t('Take Assessment')+'</button></div>';
 
-  // HeroGuide's Safety Plan
-  h += safetyPlanHTML();
 
   return h;
 }
@@ -3440,7 +3403,7 @@ function showAddictionPrompt() {
   var addictions = D.targetAddictions || [];
   var h = '<div class="overlay-content" style="max-width:420px;text-align:center">';
   h += '<div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:8px"><div style="width:36px;height:36px;border-radius:18px;background:linear-gradient(135deg,var(--primary),#34d399);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700">A</div><h3 style="font-size:18px;font-weight:700;margin:0">What Are You Working On?</h3></div>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you want to overcome. Safety plans are built for each one.</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you want to overcome.</p>';
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">';
   for (var i=0;i<ADDICTION_TYPES.length;i++) {
     var sel = addictions.indexOf(ADDICTION_TYPES[i]) >= 0;
@@ -3604,7 +3567,7 @@ function moreHTML() {
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'safety\')">'+t('Addiction Targets')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; Your View</div>';
   h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#6b4a2e">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
@@ -3766,7 +3729,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   }
   h += '</div></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Dark Mode')+'</span><input type="checkbox" onchange="D.darkMode=this.checked;saveDataSilent();applyTheme();delete _pageCache[pg];render()" '+(D.darkMode?'checked':'')+' style="width:auto"></div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Your Quests')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. Safety plans will be built based on these.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Your Quests')+'</h3><p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Select what you are working on. These will guide your journey.')+'</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">';
   var addictions = D.targetAddictions || [];
   for (var ati=0;ati<ADDICTION_TYPES.length;ati++) {
     var sel = addictions.indexOf(ADDICTION_TYPES[ati]) >= 0;
@@ -4711,9 +4674,9 @@ function seerTowerHTML() {
   else if (breatheCount >= 5) omens.push({type:'good', text: 'You have turned to the breath ' + breatheCount + ' times. This is a powerful tool \u2014 keep it honed.'});
   else omens.push({type:'neutral', text: 'Breathing exercises are a quiet refuge. Try one today and feel the difference.'});
 
-  // Safety plan
-  if (planExists) omens.push({type:'good', text: 'Your safety plan is ready. In the chaos of a craving, it will be your guide.'});
-  else omens.push({type:'warning', text: 'You have no safety plan yet. Build one before you need it.'});
+  // Relapse plan readiness
+  if (planExists) omens.push({type:'good', text: 'Your relapse plan is ready. In the chaos of a craving, it will be your guide.'});
+  else omens.push({type:'warning', text: 'You have no relapse plan yet. Build one in Wellness before you need it.'});
 
   // Buddy
   if (buddyExists) omens.push({type:'good', text: 'A partner walks beside you. The road is lighter with another set of footsteps.'});
