@@ -498,7 +498,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','reports','buddy','coping','assessment','profile','safety','reminders','meetings','timecapsule','achievements','mywhy'];
+var MORE_SUB_PAGES = ['journal','calendar','reports','buddy','coping','assessment','profile','reminders','meetings','timecapsule','achievements','mywhy'];
 var REFLECT_SUB_PAGES = [];
 var CARE_SUB_PAGES = ['relapseplan','relapserescue'];
 
@@ -1267,109 +1267,6 @@ function openCapsuleAnimation(idx) {
 }
 
 
-var GUARDIAN_QUESTIONS = [
-  {q:'What situations or environments make you feel most at risk?',pl:'e.g. parties, certain people, times of day, stress at work'},
-  {q:'Who is in your support network that you can reach out to?',pl:'e.g. sponsor, therapist, family member, close friend'},
-  {q:'What healthy activities or coping strategies work best for you?',pl:'e.g. exercise, meditation, journaling, calling a friend'},
-  {q:'What early warning signs tell you a relapse might be near?',pl:'e.g. irritability, isolation, cravings, sleep changes'},
-  {q:'What is your deepest motivation for staying in recovery?',pl:'e.g. family, health, self-respect, future goals'}
-];
-var GUARDIAN_Q_STEP = 0;
-var GUARDIAN_Q_ANSWERS = [];
-function startGuardianQuestions() {
-  GUARDIAN_Q_STEP = 0;
-  GUARDIAN_Q_ANSWERS = D.safetyAnswers || ['','','','',''];
-  renderGuardianQuestion();
-}
-function renderGuardianQuestion() {
-  var step = GUARDIAN_Q_STEP;
-  if (step >= GUARDIAN_QUESTIONS.length) {
-    D.safetyAnswers = GUARDIAN_Q_ANSWERS;
-    D._safetyQuestionsDone = true;
-    saveData();
-    var ov = document.getElementById('guardian-q-ov');
-    if (ov) ov.remove();
-    render();
-    return;
-  }
-  var q = GUARDIAN_QUESTIONS[step];
-  var overlay = document.createElement('div');
-  overlay.className = 'overlay';
-  overlay.id = 'guardian-q-ov';
-  overlay.style.background = 'rgba(0,0,0,0.6)';
-  overlay.innerHTML =
-    '<div style="background:var(--card);max-width:380px;width:90%;margin:0 auto;border-radius:20px;padding:28px 20px 20px;text-align:center;animation:siFade .3s ease;position:relative;max-height:85vh;overflow-y:auto">' +
-    '<div style="font-size:40px;margin-bottom:4px">&#128105;</div>' +
-    '<div style="font-size:13px;font-weight:700;color:var(--rose);margin-bottom:2px">Consider:</div>' +
-    '<div style="font-size:14px;color:var(--text);margin-bottom:14px;line-height:1.5">' + q.q + '</div>' +
-    '<textarea id="guardian-q-input" placeholder="' + q.pl + '" style="min-height:80px">' + (GUARDIAN_Q_ANSWERS[step] || '') + '</textarea>' +
-    '<div style="display:flex;gap:6px;justify-content:center;margin:14px 0 10px">' +
-    GUARDIAN_QUESTIONS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:4px;background:'+(i===step?'#ec4899':'var(--border)')+';transition:.2s"></div>'; }).join('') +
-    '</div>' +
-    '<div style="display:flex;gap:8px">' +
-    (step > 0 ? '<button class="btn btn-sm btn-outline" onclick="GUARDIAN_Q_ANSWERS[GUARDIAN_Q_STEP]=document.getElementById(\'guardian-q-input\').value;GUARDIAN_Q_STEP--;renderGuardianQuestion()" style="flex:1">Back</button>' : '') +
-    '<button class="btn btn-sm btn-primary" onclick="GUARDIAN_Q_ANSWERS[GUARDIAN_Q_STEP]=document.getElementById(\'guardian-q-input\').value;GUARDIAN_Q_STEP++;renderGuardianQuestion()" style="flex:1">' + (step < GUARDIAN_QUESTIONS.length-1 ? 'Next' : 'Done') + '</button>' +
-    '</div>' +
-    '<button onclick="document.getElementById(\'guardian-q-ov\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">?</button>' +
-    '</div>';
-  var existing = document.getElementById('guardian-q-ov');
-  if (existing) existing.remove();
-  document.body.appendChild(overlay);
-}
-function safetyHTML() {
-  var h = '';
-  if (!D._safetyQuestionsDone) {
-    h += '<h2 class="page-title">Safety Plan</h2>';
-    h += '<div class="card" style="text-align:center;padding:24px">';
-    h += '<div style="font-size:48px;margin-bottom:8px">&#128105;</div>';
-    h += '<div style="font-weight:700;font-size:16px;margin-bottom:4px">Build Your Safety Plan</div>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">Answer a few questions to build a personalized safety plan.</p>';
-    h += '<button class="btn btn-primary" onclick="startGuardianQuestions()" style="margin-top:8px">Get Started</button>';
-    h += '</div>';
-    return h;
-  }
-  h += '<h2 class="page-title">My Addiction Targets</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Select what you are working on. You\'ll get a personalized safety plan for each one.</p>';
-  h += '<div class="card" style="border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><div style="width:36px;height:36px;border-radius:18px;background:var(--avatar-guardian);display:flex;align-items:center;justify-content:center;color:#fff"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M8 1L3 3.5v5c0 3.5 2 5.5 5 6.5 3-1 5-3 5-6.5v-5z"/><rect x="5" y="6" width="6" height="1" rx=".2"/><line x1="8" y1="6" x2="8" y2="4" stroke="#fff" stroke-width=".8"/></svg></div><div><h3 style="margin:0;font-size:15px">Safety Plans</h3></div></div>';
-  var addictions = D.targetAddictions || [];
-  if (!addictions.length) {
-    h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Choose one or more addictions you want to work on:</p>';
-  }
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">';
-  for (var i=0;i<ADDICTION_TYPES.length;i++) {
-    var selected = addictions.indexOf(ADDICTION_TYPES[i]) >= 0;
-    h += '<button class="btn btn-sm ' + (selected ? 'btn-primary' : 'btn-outline') + '" onclick="toggleTargetAddiction(\''+ADDICTION_TYPES[i]+'\')" style="font-size:11px;padding:8px">' + (selected ? '&#10003; ' : '') + ADDICTION_TYPES[i] + '</button>';
-  }
-  h += '</div>';
-  if (addictions.length) {
-    h += '<button class="btn btn-sm btn-outline" onclick="D.targetAddictions=[];saveData()" style="margin-bottom:8px;width:auto">Clear All</button>';
-    for (var a=0;a<addictions.length;a++) {
-      var type = addictions[a];
-      var sp = SAFETY_PLANS[type] || SAFETY_PLANS['Other'];
-      h += '<div style="background:var(--primary-light);padding:14px;border-radius:10px;margin-bottom:10px">';
-      h += '<div style="font-weight:700;font-size:14px;margin-bottom:6px">' + type + '</div>';
-      h += '<p style="font-size:12px;line-height:1.5;margin-bottom:10px;color:var(--text-light)">' + sp.plan + '</p>';
-      if (sp.sections) {
-        for (var sec=0;sec<sp.sections.length;sec++) {
-          var section = sp.sections[sec];
-          h += '<div style="margin-bottom:10px">';
-          h += '<div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid rgba(0,0,0,.08)">' + (sec+1) + '. ' + section.title + '</div>';
-          for (var it=0;it<section.items.length;it++) {
-            h += '<div style="display:flex;align-items:flex-start;gap:6px;padding:3px 0;font-size:12px;line-height:1.4"><span style="color:var(--primary);flex-shrink:0;margin-top:1px">*</span><span>' + section.items[it] + '</span></div>';
-          }
-          h += '</div>';
-        }
-      }
-      h += '<div style="font-size:11px;font-weight:600;color:var(--muted);margin:6px 0 3px">Quick Steps:</div>';
-      for (var s=0;s<sp.steps.length;s++) {
-        h += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px"><span style="width:18px;height:18px;border-radius:9px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0">' + (s+1) + '</span>' + sp.steps[s] + '</div>';
-      }
-      h += '</div>';
-    }
-  }
-  h += '</div>';
-  return h;
-}
 // ====== ONBOARDING TUTORIAL ======
 var ONBOARDING_STEPS = [
   {icon:'\u2694',title:'Your Challenge',
@@ -1502,7 +1399,7 @@ function render() {
     more: moreHTML, journal: journalHTML,
     reports: reportsHTML, buddy: buddyHTML, coping: copingHTML,
     assessment: assessmentHTML, profile: profileHTML,
-    calendar: calendarHTML, safety: safetyHTML, seer: seerTowerHTML,
+    calendar: calendarHTML, seer: seerTowerHTML,
     reminders: remindersHTML, meetings: meetingsHTML,
     insights: insightsHTML, accountability: accountabilityHTML, relapseplan: relapsePlanHTML, relapserescue: relapseRescueHTML, timecapsule: timeCapsuleHTML, achievements: achievementsHTML, mywhy: myWhyHTML,
   };
