@@ -1,39 +1,44 @@
 rules_version = '2';
 service cloud.firestore {
-  match /databases/{database}/documents {
-    match /appData/{userId} {
-      allow read, update, delete: if request.auth != null
-        && request.auth.token.email == userId;
-      allow create: if request.auth != null
-        && request.auth.token.email == userId;
+  match /databases/{db}/documents {
+    // App data (full D snapshot) — each user only their own doc
+    match /appData/{email} {
+      allow read, write: if request.auth != null && request.auth.token.email == email;
     }
-    match /pushSubscriptions/{userId} {
-      allow read, delete: if request.auth != null
-        && request.auth.token.email == userId;
-      allow create, update: if request.auth != null
-        && request.auth.token.email == userId
-        && request.resource.data.token is string;
+    // Push subscriptions — private to the owner; the scheduled function uses the Admin SDK
+    match /pushSubscriptions/{email} {
+      allow read, write: if request.auth != null && request.auth.token.email == email;
     }
-    match /users/{userId} {
+    // User profiles: readable for pairing/leaderboards, writable only by the owner
+    match /users/{email} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.email == userId;
+      allow write: if request.auth != null && request.auth.token.email == email;
     }
-    match /pairingCodes/{userId} {
+    // Buddy pairing codes: queryable to find a buddy, own code writable only by owner
+    match /pairingCodes/{email} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.email == userId;
+      allow write: if request.auth != null && request.auth.token.email == email;
     }
-    match /progress/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.email == userId;
+    // Buddy progress shares: readable only to the owner and the partners they explicitly share with
+    match /progress/{email} {
+      allow read: if request.auth != null && (request.auth.token.email == email || (resource.data is map && resource.data.participants is list && request.auth.token.email in resource.data.participants));
+      allow write: if request.auth != null && request.auth.token.email == email;
     }
-    match /messages/{messageId} {
-      allow read: if request.auth != null;
-      allow create: if request.auth != null
-        && (request.resource.data.from == request.auth.token.email
-            || request.resource.data.from == request.auth.uid
-            || request.resource.data.fromUid == request.auth.uid);
-      allow delete: if request.auth != null
-        && (resource.data.from == request.auth.token.email || resource.data.fromUid == request.auth.uid);
+    // Buddy messages: a user can read only conversations they are part of
+    match /messages/{message} {
+      allow read: if request.auth != null && (resource.data.from == request.auth.token.email || resource.data.to == request.auth.token.email);
+      allow create: if request.auth != null && request.resource.data.from == request.auth.token.email;
+      allow update, delete: if false;
+    }
+    // Recommendations/feedback: create only under your own email, read only your own submissions
+    match /recommendations/{id} {
+      allow create: if request.auth != null && request.resource.data.email == request.auth.token.email;
+      allow read: if request.auth != null && resource.data.email == request.auth.token.email;
+      allow update, delete: if false;
+    }
+    // Everything else is locked down
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
