@@ -128,11 +128,8 @@ body.dark .card::before{background:linear-gradient(135deg,transparent,rgba(138,1
 body.dark .card::after{opacity:.5}
 .card h3{font-size:15px;font-weight:700;margin-bottom:8px;color:var(--primary-dark)}
 body.dark .card h3{color:var(--primary-dark)}
-.page-title{font-size:var(--fs-xl);font-weight:700;margin:8px 0 12px;text-align:center;position:relative;padding:12px 16px;font-family:'Inter',sans-serif;letter-spacing:.5px;color:var(--primary-dark);background:linear-gradient(90deg,transparent,var(--primary-light),transparent);border-top:1.5px solid var(--primary);border-bottom:1.5px solid var(--primary);overflow:hidden}
-.page-title::before{content:'\269C \00A0 \2767 \00A0';margin-right:6px;font-size:var(--fs-sm);opacity:.35;display:inline-block}
-.page-title::after{content:'\00A0 \2767 \00A0 \269C';margin-left:6px;font-size:var(--fs-sm);opacity:.35;display:inline-block}
-body.dark .page-title{color:var(--primary-dark);border-top-color:var(--gold);border-bottom-color:var(--gold);background:linear-gradient(90deg,transparent,rgba(138,122,154,.08),transparent)}
-body.dark .page-title::before,body.dark .page-title::after{color:var(--gold)}
+.page-title{font-size:var(--fs-xl);font-weight:700;margin:8px 0 12px;text-align:center;position:relative;padding:12px 16px;font-family:'Inter',sans-serif;letter-spacing:.5px;color:var(--primary-dark);background:linear-gradient(90deg,transparent,rgba(107,74,46,.12),transparent);border-top:1.5px solid var(--accent);border-bottom:1.5px solid var(--accent);overflow:hidden}
+body.dark .page-title{color:var(--primary-dark);border-top-color:#a58560;border-bottom-color:#a58560;background:linear-gradient(90deg,transparent,rgba(165,133,96,.10),transparent)}
 .btn{display:flex;align-items:center;justify-content:center;gap:var(--space-sm);padding:var(--space-lg);border-radius:var(--radius-md);border:none;font-size:var(--fs-base);font-weight:600;cursor:pointer;width:100%;position:relative;letter-spacing:.5px;transition:all .2s;box-shadow:0 1px 0 rgba(255,255,255,.12) inset,-1px -1px 3px rgba(0,0,0,.08) inset,0 1px 3px rgba(0,0,0,.08);font-family:'Inter',sans-serif}
 .btn::after{content:'\u269C';position:absolute;top:2px;right:6px;font-size:6px;opacity:.2;pointer-events:none}
 .btn::before{content:'\u269C';position:absolute;top:2px;left:6px;font-size:6px;opacity:.2;pointer-events:none}
