@@ -3587,34 +3587,61 @@ function exportReminderICS(id) {
 function moreHTML() {
   var h = '';
   h += '<h2 class="page-title">'+t('Tools')+'</h2>';
-  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Tracking')+'</h3>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Track')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'calendar\')">'+t('Calendar')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'reminders\')">'+t('Reminders')+'</div>';
   h += '</div>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Partner')+'</h3>';
+  h += '<div class="sub-grid">';
+  h += '<div class="sub-item" onclick="goTo(\'buddy\')">&#129309; '+t('Partner')+'</div>';
+  h += '<div class="sub-item" onclick="showPastPartners()">&#128101; '+t('All Partners')+'</div>';
+  h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Recovery')+'</h3>';
   h += '<div class="sub-grid">';
+  h += '<div class="sub-item" onclick="goTo(\'coping\')">&#129504; '+t('Coping Cards')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'reports\')">'+t('Reports')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'buddy\')">'+t('Partner')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; Your View</div>';
-  h += '<div class="sub-item" onclick="goTo(\'mywhy\')" style="border-color:#6b4a2e">&#10084; '+t('My Why')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; Achievements</div>';
-  h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; Addiction Assessment</div>';
+  h += '<div class="sub-item" onclick="goTo(\'insights\')">&#128209; '+t('Insights')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; '+t('Addiction Assessment')+'</div>';
   h += '</div>';
-  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Resources')+'</h3>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Grow & Celebrate')+'</h3>';
+  h += '<div class="sub-grid">';
+  h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; '+t('Achievements')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; '+t('Your View')+'</div>';
+  h += '</div>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Support')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'meetings\')">'+t('Meetings')+'</div>';
   h += '</div>';
-  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Settings')+'</h3>';
+  h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('App & Settings')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'profile\')">'+t('Profile')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'mywhy\')">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="showRecommendations()">'+t('Recommendations')+'</div>';
   h += '<div class="sub-item" onclick="showShareQR()" style="border-color:var(--primary)">'+t('Share App')+'</div>';
-  h += '<div class="sub-item" onclick="promptInstall()" style="border-color:var(--accent)">&#128230; '+t('Install App')+'</div>';
+  h += '<div class="sub-item" onclick="promptInstall()" style="border-color:var(--accent)">'+t('Install App')+'</div>';
   h += '</div>';
   return h;
+}
+
+function showPastPartners() {
+  var cur = D.buddy || null;
+  var past = D.pairedBuddies || [];
+  var rows = '';
+  if (cur && cur.name) {
+    rows += '<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border)"><span style="flex:1;font-size:13px">'+safe(cur.name)+'</span><span style="font-size:11px;color:var(--accent);font-weight:600;border:1px solid var(--accent);border-radius:999px;padding:2px 8px">'+t('Current')+'</span></div>';
+  }
+  for (var pi=0;pi<past.length;pi++) {
+    if (cur && past[pi].email && past[pi].email === cur.contact) continue;
+    rows += '<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--border)"><span style="flex:1;font-size:13px">'+safe(past[pi].name)+'</span><span style="font-size:11px;color:var(--muted)">'+(past[pi].language || '')+'</span></div>';
+  }
+  if (!rows) rows = '<div class="empty-state">'+t('No partners yet. Find one in the Partner page.')+'</div>';
+  var ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = '<div class="overlay-content" style="max-width:380px;padding:20px 16px"><h3 style="text-align:center;margin-bottom:4px">&#128101; '+t('All Partners')+'</h3><p style="font-size:11px;color:var(--muted);text-align:center;margin-bottom:8px">'+t('Everyone you have walked this road with.')+'</p>'+rows+'<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%;margin-top:8px">'+t('Close')+'</button></div>';
+  document.body.appendChild(ov);
 }
 
 
