@@ -3337,6 +3337,8 @@ function progressSnapshot() {
 
 function shareProgressWithBuddy(quiet) {
   var progress = progressSnapshot();
+  progress.participants = [AUTH_EMAIL];
+  if (D.buddy && D.buddy.contact) progress.participants.push(D.buddy.contact);
   DB.collection('progress').doc(AUTH_EMAIL).set(progress).then(function(){
     var btn = document.getElementById('share-progress-btn');
     if (btn) { btn.textContent = '? Shared! (' + progress.updated + ')'; btn.style.background = 'var(--primary-light)'; btn.style.color = 'var(--primary-dark)'; }
