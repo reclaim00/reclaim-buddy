@@ -2260,6 +2260,11 @@ function accPendingHTML() {
   return h;
 }
 
+function userList(v) {
+  if (!v) return [];
+  if (Array.isArray(v)) return v.slice();
+  return v.split(/[\n,;]+/).map(function(x){return x.trim()}).filter(Boolean);
+}
 function relapseRescueHTML() {
   if (!D.relapseRescue) D.relapseRescue = { logs: [] };
   var logs = D.relapseRescue.logs || [];
@@ -2270,6 +2275,22 @@ function relapseRescueHTML() {
   h += '<div style="font-size:14px;margin-bottom:8px">If you\'ve had a slip, let\'s work through it together.</div>';
   h += '<button class="btn btn-primary btn-sm" onclick="showRelapseRescue()" style="width:100%">&#129309; Start Rescue Guide</button>';
   h += '</div>';
+
+  var myTrigs = userList((D.relapsePlan && D.relapsePlan.triggers) || D.triggers);
+  var myCope = userList((D.relapsePlan && D.relapsePlan.coping) || D.track);
+  if (myTrigs.length || myCope.length) {
+    h += '<h3 style="font-size:14px;font-weight:700;margin:12px 0 6px">&#128227; '+t('Your playbook')+'</h3>';
+    if (myTrigs.length) {
+      h += '<div class="card"><div style="font-weight:700;font-size:13px;margin-bottom:6px">&#128680; '+t('Early-warning signs')+'</div><div style="display:flex;flex-wrap:wrap;gap:5px">';
+      for (var pt=0;pt<myTrigs.length;pt++) h += '<span style="background:var(--primary-light);border:1px solid var(--border);border-radius:999px;padding:3px 10px;font-size:12px">'+safe(myTrigs[pt])+'</span>';
+      h += '</div></div>';
+    }
+    if (myCope.length) {
+      h += '<div class="card"><div style="font-weight:700;font-size:13px;margin-bottom:6px">&#129504; '+t('When the urge hits, do one of these')+'</div><div style="display:flex;flex-wrap:wrap;gap:5px">';
+      for (var pc=0;pc<myCope.length;pc++) h += '<span style="background:rgba(16,185,129,.1);border:1px solid var(--accent);border-radius:999px;padding:3px 10px;font-size:12px">'+safe(myCope[pc])+'</span>';
+      h += '</div></div>';
+    }
+  }
 
   if (logs.length > 0) {
     h += '<h3 style="font-size:14px;font-weight:700;margin:12px 0 6px">Past Entries</h3>';
@@ -2788,6 +2809,15 @@ function todayPrompt() {
     if (last.match(/alone|lonely|isolat|miss|nobody|no one|empty|numb/)) return 'You were feeling isolated last time. I want you to know you\'re not alone in this. What would make you feel even 1% more connected today?';
     if (last.match(/doctor|therapist|appointment|medication|therapy|counsel/)) return 'You mentioned your health journey last time. How did that appointment go? How are you feeling about your treatment?';
     if (last.match(/sober.*day|day.*sober|clean|recover|heal|stronger|growth|progress/)) return 'You\'re building real momentum. What\'s working for you right now that you want to keep doing? Let\'s lock in those habits.';
+  }
+  var dayOfMonth = new Date().getDate();
+  if (D.goals) {
+    var gList = userList(D.goals);
+    if (gList.length && dayOfMonth % 3 === 1) return "One of your goals: \u201C" + gList[0] + "\u201D. What did you do today that moved you toward it, even by a single step?";
+  }
+  if (D.triggers) {
+    var tList = userList(D.triggers);
+    if (tList.length && dayOfMonth % 3 === 2) return "You told us \u201C" + tList[0] + "\u201D can trip you up. Did it show up today? If it did, what helped you handle it \u2014 if not, how will you prepare?";
   }
   var now = new Date();
   var start = new Date(now.getFullYear(), 0, 0);
@@ -3653,6 +3683,13 @@ function myWhyHTML() {
   h += '<div class="stat-card"><div class="num">' + (w.createdAt ? (function(){var d=new Date(w.createdAt);var now=new Date();return Math.floor((now-d)/86400000)+'d'})() : '-') + '</div><div class="label">'+t('Since started')+'</div></div>';
   h += '</div>';
 
+  var goalLines = userList(D.goals);
+  if (goalLines.length) {
+    h += '<div class="card"><h3 style="font-size:14px;margin-bottom:6px">&#127919; '+t('Your Goals')+'</h3>';
+    for (var gi=0;gi<goalLines.length;gi++) h += '<div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;font-size:13px"><span style="color:var(--primary);flex-shrink:0">&#10003;</span><span>'+safe(goalLines[gi])+'</span></div>';
+    h += '</div>';
+  }
+
   // Add reason
   h += '<div class="card"><h3 style="font-size:14px;margin-bottom:6px">&#10133; '+t('Add Reason')+'</h3>';
   h += '<div style="display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap" id="why-icon-picker">';
@@ -4086,7 +4123,10 @@ function showCravingBreaker() {
         '<button class="btn btn-outline btn-sm" onclick="document.getElementById(\'craving-breaker-ov\').remove();logCraving()" style="width:100%;margin-top:6px;font-size:11px">\u2712 Just log it instead</button></div>';
     } else if (s.step === 1) {
       var m = Math.floor(s.seconds / 60), sec = s.seconds % 60;
-      var pick = _CRAVING_DISTRACT[Math.floor(Math.random() * _CRAVING_DISTRACT.length)];
+      var pool = _CRAVING_DISTRACT.slice();
+      var myCope = userList((D.relapsePlan && D.relapsePlan.coping) || D.track);
+      if (myCope.length) pool = pool.concat(myCope);
+      var pick = pool[Math.floor(Math.random() * pool.length)];
       ov.innerHTML = '<div class="overlay-content" style="max-width:400px;text-align:center;animation:siFade .3s ease;padding:24px">' +
         '<div style="font-size:11px;color:var(--primary);font-family:Georgia,serif;letter-spacing:1px;margin-bottom:2px">\u269C The Craving Breaker \u269C</div>' +
         '<div style="font-size:46px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:2px;color:var(--primary);margin:6px 0 2px;font-family:monospace">' + String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0') + '</div>' +
