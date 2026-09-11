@@ -25,8 +25,9 @@ function notifToggleHTML(key, emoji, label, desc) {
   return '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;margin-top:4px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+emoji+'</span><div><div style="font-size:13px;font-weight:600">'+label+'</div><div style="font-size:11px;color:var(--muted)">'+desc+'</div></div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.'+key+'=this.checked;if(this.checked)requestNotif();saveDataSilent()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div>';
 }
 function pushToggleRowHTML() {
-  var enabled = D.notifications && D.notifications.push;
-  return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;margin-bottom:4px;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">&#128276;</span><div><div style="font-size:13px;font-weight:600">Push Notifications</div><div style="font-size:11px;color:var(--muted)">Receive alerts on this device</div></div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.push=this.checked;if(this.checked)requestNotif();else unsubscribePush();saveDataSilent()" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div>';
+  var n = D.notifications || {};
+  var enabled = n.push !== false;
+  return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;margin-bottom:4px;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">&#128276;</span><div><div style="font-size:13px;font-weight:600">Push Notifications</div><div style="font-size:11px;color:var(--muted)">Receive alerts on this device</div></div></div><label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer"><input type="checkbox" '+(enabled?'checked':'')+' onchange="D.notifications.push=this.checked;if(this.checked)requestNotif();else unsubscribePush();saveDataSilent();showToast(this.checked?\'Push notifications enabled.\':\'Push notifications turned off.\')" style="opacity:0;width:0;height:0"><span style="position:absolute;inset:0;background:'+(enabled?'var(--primary)':'var(--border)')+';border-radius:12px;transition:.2s"><span style="position:absolute;top:3px;left:'+(enabled?'23':'3')+'px;width:18px;height:18px;border-radius:9px;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)"></span></span></label></div>';
 }
   function requestNotif() {
   if (!("Notification" in window)) return;
@@ -70,6 +71,7 @@ function swNotify(title, body, icon, tag) {
 function checkNotifications() {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
   var n = D.notifications || {morning:false,evening:false,morningTime:'08:00',eveningTime:'20:00',craving:false,journal:false,breathe:false,cravingTime:'14:00',journalTime:'12:00',breatheTime:'10:00',buddyCheckin:false};
+  if (n.push === false) return;
   var now = new Date();
   var hm = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   var hmNum = now.getHours() * 60 + now.getMinutes();
@@ -78,6 +80,10 @@ function checkNotifications() {
   if (D._notifiedDate !== todayStr) {
     D._notifiedMorning = false; D._notifiedEvening = false; D._notifiedCraving = false; D._notifiedJournal = false; D._notifiedBreathe = false;
     D._notifiedDate = todayStr;
+  }
+  if (n.streakMilestone && s > 0 && s % 30 === 0 && D._notifiedMilestone !== todayStr) {
+    swNotify('Milestone Reached', 'Day ' + s + '! Your consistency is shaping your world.', 'icon-192.png', 'reclaim-milestone');
+    D._notifiedMilestone = todayStr; saveData();
   }
   function notifDue(key, timeStr) {
     if (!n[key]) return false;
@@ -115,6 +121,15 @@ function checkNotifications() {
     if (now >= buddyNextDue) {
       swNotify('Partner check-in', 'Time to check in with ' + D.buddy.name + '! Reach out and stay connected.', 'icon-192.png', 'reclaim-buddy');
       D._notifiedBuddyCheckin = todayStr; saveData();
+    }
+  }
+  // Presence reminder � nudge if no check-in (mood or journal) yet today
+  if (n.checkinReminder && notifDue('checkinReminder', n.checkinReminderTime || '18:00')) {
+    var hasJournalToday = (D.journal || []).some(function(j){ var jd = j.date || j.timestamp; if (typeof jd === 'number') jd = new Date(jd); return String(jd).indexOf(todayStr) === 0; });
+    var hasMoodToday = (D.moods || []).some(function(mc){ return (mc.date || '').indexOf(todayStr) === 0 || (mc.timestamp && new Date(mc.timestamp).toISOString().indexOf(todayStr) === 0); });
+    if (!hasJournalToday && !hasMoodToday) {
+      swNotify('Presence Reminder', 'You haven\'t checked in yet today. Take one minute to log a mood or jot a line about your day.', 'icon-192.png', 'reclaim-presence');
+      D._notifiedCheckinReminder = todayStr; saveData();
     }
   }
   // Check due reminders
