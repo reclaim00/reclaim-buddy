@@ -1,11 +1,12 @@
-var CACHE = 'reclaim-20260909p';
+var CACHE = 'reclaim-20260909q';
 var BASE = self.registration.scope;
 function baseUrl(p) { return new URL(p, BASE).href; }
 var SHELL = [
   baseUrl(''), baseUrl('app.html'), baseUrl('manifest.json'),
   baseUrl('icon-192.png'), baseUrl('icon-512.png'), baseUrl('icon.svg'),
   baseUrl('src/style.css'), baseUrl('src/data.js'), baseUrl('src/buddy.js'),
-  baseUrl('src/sober.js'), baseUrl('src/pages.js'), baseUrl('src/kingdom.js'), baseUrl('src/ui.js')
+  baseUrl('src/sober.js'), baseUrl('src/pages.js'), baseUrl('src/kingdom.js'), baseUrl('src/ui.js'),
+  baseUrl('src/mfa.js')
 ];
 
 self.addEventListener('install', function(e) {
