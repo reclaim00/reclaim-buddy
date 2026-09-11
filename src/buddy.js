@@ -30,7 +30,7 @@ function syncToGlobal(entry) {
 function registerCurrentUser() {
   var list = getRegisteredBuddies();
   var idx = list.findIndex(function(b){return b.email === AUTH_EMAIL});
-  var entry = { name: D.name || AUTH_USER, email: AUTH_EMAIL, phoneNumber: D.phoneNumber || '', language: D.language || 'English', joinDate: Date.now() };
+  var entry = { name: D.name || AUTH_USER, email: AUTH_EMAIL, language: D.language || 'English', joinDate: Date.now() };
   if (idx >= 0) list[idx] = entry;
   else list.push(entry);
   saveRegisteredBuddies(list);
