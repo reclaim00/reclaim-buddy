@@ -3618,7 +3618,6 @@ function moreHTML() {
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('App & Settings')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'profile\')">'+t('Profile')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'mywhy\')">&#10084; '+t('My Why')+'</div>';
   h += '<div class="sub-item" onclick="showRecommendations()">'+t('Recommendations')+'</div>';
   h += '<div class="sub-item" onclick="showShareQR()" style="border-color:var(--primary)">'+t('Share App')+'</div>';
   h += '<div class="sub-item" onclick="promptInstall()" style="border-color:var(--accent)">'+t('Install App')+'</div>';
