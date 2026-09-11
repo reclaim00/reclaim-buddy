@@ -3850,6 +3850,20 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
     }
   }
   h += '</div>';
+  var mfaEnrolled = (typeof mfaEnrolledHints === 'function') ? mfaEnrolledHints() : [];
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px">&#128241; '+t('Two-Step Login')+'</h3>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('A security code is texted to your phone when you sign in with your password.')+'</p>';
+  if ((typeof mfaSupported === 'function') && mfaSupported()) {
+    if (mfaEnrolled.length) {
+      h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span style="color:var(--primary);font-weight:600">&#9989; '+t('Two-step login active')+'</span><span style="font-size:12px;color:var(--muted)">'+esc(mfaPhoneDisplay(mfaEnrolled[0]))+'</span></div>';
+      h += '<button class="btn btn-sm btn-danger" onclick="disableMfaEnrollment()">'+t('Remove Two-Step Login')+'</button>';
+    } else {
+      h += '<button class="btn btn-sm btn-primary" onclick="setupMfaOverlay()">'+t('Set Up Two-Step Login')+'</button>';
+    }
+  } else {
+    h += '<p style="font-size:11px;color:var(--muted)">'+t('Two-step login needs the Phone sign-in provider enabled on this project first.')+'</p>';
+  }
+  h += '</div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Cloud Sync')+'</h3>';
   h += '<p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Your data syncs automatically to the cloud when you\'re signed in.')+'</p>';
   h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:12px;color:var(--muted)">'+t('Last sync')+':</span><span id="sync-time-display" style="font-size:12px;font-weight:600">'+(_lastSyncTime||t('Never'))+'</span></div>';
