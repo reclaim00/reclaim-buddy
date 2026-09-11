@@ -611,3 +611,14 @@ input:hover,textarea:hover,select:not(:disabled):hover{border-color:var(--primar
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+/* ===== POLISH 2: DEPTH, MOTION, MOBILE ===== */
+.overlay{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+input,textarea{caret-color:var(--primary)}
+#app-splash img{animation:siFade .6s ease both}
+#app-splash > div:nth-child(2){animation:siFade .6s ease .12s both}
+.habit-item .check:active{transform:scale(.85)}
+.tab:active svg{transform:scale(.82)}
+@keyframes progressStripes{0%{background-position:0 0}100%{background-position:15px 0}}
+.progress-bar .fill::before{animation:progressStripes .5s linear infinite}
+.overlay-content{padding-bottom:calc(var(--space-3xl) + env(safe-area-inset-bottom,0px))}
+.tabs{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
