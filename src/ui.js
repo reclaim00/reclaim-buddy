@@ -461,7 +461,7 @@ function setupEncryption(passphrase) {
       ENC_KEY = key;
       return encryptAllEntries(key);
     });
-  }).then(function() { saveData(); return decryptAllEntries(); });
+  }).then(function() { saveData(); if (typeof syncToFirestore === 'function') syncToFirestore(); return decryptAllEntries(); });
 }
 function verifyEncryptionPassphrase(passphrase) {
   if (!isEncryptionEnabled()) return Promise.reject('Encryption not enabled');
@@ -478,7 +478,16 @@ function unlockEncryption(passphrase) {
 }
 function changeEncryptionPassphrase(oldPass, newPass) {
   if (!isEncryptionEnabled() || !ENC_KEY) return Promise.reject('Not unlocked');
-  return setupEncryption(newPass);
+  // Decrypt the current ciphertext back to plaintext with the existing key first,
+  // otherwise entries stay locked under the old key and become unreadable.
+  return Promise.all(D.journal.map(function(entry, i) {
+    if (entry.text && typeof entry.text === 'object' && entry.text.enc) {
+      return decryptText(entry.text, ENC_KEY).then(function(text) { D.journal[i].text = text; });
+    }
+  })).then(function() {
+    D.encryption = { enabled: false, salt: null, keyCheck: null };
+    return setupEncryption(newPass);
+  });
 }
 function disableEncryption() {
   if (!isEncryptionEnabled()) return Promise.resolve();
@@ -491,6 +500,7 @@ function disableEncryption() {
     D.encryption = { enabled: false, salt: null, keyCheck: null };
     ENC_KEY = null; ENC_CACHE = {};
     saveData();
+    if (typeof syncToFirestore === 'function') syncToFirestore();
   });
 }
 
@@ -517,6 +527,14 @@ function doUnlockEncryption(btn) {
   }).catch(function() {
     p.disabled = false; btn.disabled = false;
     e.style.display = 'block'; p.value = ''; p.focus();
+  });
+}
+
+// Fresh device: the cloud copy is sealed, so resume decryption after the passphrase unlock.
+function promptSealedCloudUnlock() {
+  promptEncryptionPassphrase(function(){
+    var resume = _sealedCloudResume; _sealedCloudResume = null;
+    if (resume) resume();
   });
 }
 
