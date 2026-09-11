@@ -497,43 +497,70 @@ function missionTrunc(s) {
   var x = String(s || '').trim();
   return x.length > 42 ? x.slice(0, 42) + '\u2026' : x;
 }
-function buildMissionPool() {
-  var pool = [];
+function composeMissionPrompt(seed) {
   var gL = userList(D.goals);
   var cL = userList((D.relapsePlan && D.relapsePlan.coping) || D.track);
   var tL = userList((D.relapsePlan && D.relapsePlan.triggers) || D.triggers);
-  var dn = missionDayNumber();
-  if (gL.length) pool.push({ type: 'goal', label: 'Take one small step toward: "' + missionTrunc(gL[dn % gL.length]) + '"' });
-  if (cL.length) pool.push({ type: 'cope', label: 'Practice a tool from your coping kit: "' + missionTrunc(cL[dn % cL.length]) + '"' });
-  if (tL.length) pool.push({ type: 'watch', label: 'Keep watch for "' + missionTrunc(tL[dn % tL.length]) + '". If it shows up, name it and reach for your coping kit.' });
-  pool.push({ type: 'stay', label: 'Choose recovery today, one day at a time. When the day is done, reflect on why you started.' });
-  pool.push({ type: 'grate', label: 'Log three things you are grateful for today. Gratitude builds resilience.' });
-  return pool;
+  var foci = [];
+  if (gL.length) foci.push('the goal "' + missionTrunc(gL[seed % gL.length]) + '"');
+  if (tL.length) foci.push('a trigger like "' + missionTrunc(tL[seed % tL.length]) + '"');
+  if (cL.length) foci.push('your coping tool "' + missionTrunc(cL[seed % cL.length]) + '"');
+  foci.push('someone who believes in you');
+  foci.push('a win from the last 24 hours, however small');
+  foci.push('a moment you almost slipped, and what held you back');
+  var openers = ['Reflect on', 'Look back at', 'Think about', 'Revisit', 'Sit with'];
+  var angles = [
+    'One small step will you take today?',
+    'What were you feeling in that moment?',
+    'What did it teach you about yourself?',
+    'Write one sentence you need to hear today.',
+    'What changed inside you because of it?',
+    'Who could you tell about it?',
+    'What would you say to a friend in the same spot?',
+    'Name three things it gave you.'
+  ];
+  var o = seed % openers.length;
+  var rest = Math.floor(seed / openers.length);
+  var f = rest % foci.length;
+  var a = Math.floor(rest / foci.length) % angles.length;
+  return openers[o] + ' ' + foci[f] + '. ' + angles[a];
 }
 function getDailyMission() {
   var today = new Date().toDateString();
   if (D._missionCache && D._missionCache.date === today) return D._missionCache;
-  var pool = buildMissionPool();
-  var m = pool[missionDayNumber() % pool.length];
-  var entry = { date: today, type: m.type, label: m.label, done: false };
+  var prompt = composeMissionPrompt(missionDayNumber());
+  var entry = { date: today, label: prompt, done: false, reflection: '' };
   var log = (D.missionLog || []);
   for (var i = 0; i < log.length; i++) {
-    if (log[i].date === today && log[i].done) { entry.done = true; break; }
+    if (log[i].date === today && log[i].done) { entry.done = true; entry.reflection = log[i].reflection || ''; break; }
   }
   D._missionCache = entry;
   return entry;
 }
-function completeDailyMission() {
+function saveMissionReflection(text) {
   var m = getDailyMission();
+  var el = document.getElementById('mission-entry');
+  var value = (arguments.length > 0 && text !== undefined && text !== null) ? text : (el ? el.value.trim() : '');
+  if (!value) {
+    if (typeof showToast === 'function') showToast('Write a short reflection first.', 'warning');
+    return;
+  }
   var today = new Date().toDateString();
+  var reflection = String(value).slice(0, 2800);
+  if (!D.journal) D.journal = [];
+  var maxId = 0;
+  for (var j = 0; j < D.journal.length; j++) if (D.journal[j].id > maxId) maxId = D.journal[j].id;
+  D.journal.push({ id: maxId + 1, date: today, text: reflection, mood: -1, type: 'mission', prompt: m.label, createdAt: Date.now() });
   if (!D.missionLog) D.missionLog = [];
   var found = false;
   for (var i = 0; i < D.missionLog.length; i++) {
-    if (D.missionLog[i].date === today) { D.missionLog[i].done = true; D.missionLog[i].doneAt = Date.now(); found = true; break; }
+    if (D.missionLog[i].date === today) {
+      D.missionLog[i].done = true; D.missionLog[i].doneAt = Date.now(); D.missionLog[i].prompt = m.label; D.missionLog[i].reflection = reflection; found = true; break;
+    }
   }
-  if (!found) D.missionLog.push({ date: today, label: m.label, done: true, doneAt: Date.now() });
+  if (!found) D.missionLog.push({ date: today, label: m.label, done: true, doneAt: Date.now(), prompt: m.label, reflection: reflection });
   D.missionLog = D.missionLog.slice(-120);
-  if (D._missionCache) D._missionCache.done = true;
+  if (D._missionCache) { D._missionCache.done = true; D._missionCache.reflection = reflection; }
   saveData();
   try { playSound('quest'); } catch(e) {}
   render();
@@ -575,11 +602,16 @@ function missionHTML() {
   else if (week >= 4) { stageIcon = '\uD83C\uDF38'; stageText = 'Your world is blooming.'; }
   else if (week >= 3) { stageIcon = '\uD83C\uDF31'; stageText = 'Seeds are sprouting in your world.'; }
   var h = '<div class="card" id="mission-card" style="border-left:3px solid var(--accent);background:linear-gradient(135deg,rgba(16,185,129,.08),var(--card))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="font-size:14px;margin:0">\uD83D\uDDD3 ' + t('Today\'s Mission') + '</h3><span class="btn btn-sm" style="width:auto;font-size:11px;padding:3px 10px;background:rgba(16,185,129,.12);color:var(--accent);border:1px solid var(--accent)">' + streak + ' day streak \uD83D\uDD25</span></div>';
-  h += '<div style="font-size:13px;font-weight:600;line-height:1.55;margin-bottom:8px">' + safe(m.label) + '</div>';
+  h += '<div style="font-size:13px;font-weight:600;line-height:1.55;margin-bottom:8px;padding:9px;border-radius:8px;border:1px dashed var(--accent);background:rgba(16,185,129,.05)">\uD83C\uDF1F ' + safe(m.label) + '</div>';
   if (m.done) {
-    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(16,185,129,.14);margin-bottom:6px"><span style="font-size:18px">\u2705</span><div style="font-size:12px;font-weight:600;color:var(--accent)">' + t('Completed today') + ' \u2014 your world feels brighter.</div></div>';
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(16,185,129,.14);margin-bottom:6px"><span style="font-size:18px">\u2705</span><div style="font-size:12px;font-weight:600;color:var(--accent)">' + t('Completed today') + ' \u2014 your reflection is saved in your journal.</div></div>';
+    if (m.reflection) {
+      var prev = m.reflection.length > 140 ? m.reflection.slice(0, 140) + '\u2026' : m.reflection;
+      h += '<div style="margin-top:6px;padding:8px;border-radius:8px;background:var(--card);border:1px solid var(--border);font-size:12px;color:var(--muted);font-style:italic">"' + safe(prev) + '"</div>';
+    }
   } else {
-    h += '<button class="btn btn-primary" onclick="completeDailyMission()" style="width:100%">\u2713 ' + t('Mark Mission Complete') + '</button>';
+    h += '<textarea id="mission-entry" placeholder="' + t('Write a short reflection in response to the prompt...') + '" style="min-height:64px;margin-bottom:6px"></textarea>';
+    h += '<button class="btn btn-primary" onclick="saveMissionReflection()" style="width:100%">\u2713 ' + t('Submit Reflection & Complete') + '</button>';
   }
   h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:9px"><div style="display:flex;gap:4px;align-items:center">' + dots + '</div><div style="text-align:right"><div style="font-size:10px;color:var(--muted)">' + week + '/7 this week</div><div style="font-size:10px;color:var(--muted)">' + stageIcon + ' ' + safe(stageText) + '</div></div></div>';
   h += '</div>';
