@@ -304,15 +304,17 @@ function kingdomHTML() {
     }
     // Lighting highlight
     h += '<ellipse cx="218" cy="114" rx="24" ry="13" fill="#ffffff" opacity=".16" transform="rotate(-28 218 114)"/>';
-    // Moons
-    if (days >= 90) {
-      h += '<g><animateTransform attributeName="transform" type="rotate" from="0 250 150" to="360 250 150" dur="24s" repeatCount="indefinite"/><circle cx="' + (250 + pr + 34) + '" cy="150" r="9" fill="#d6d9d6"/><circle cx="' + (250 + pr + 36) + '" cy="147" r="2.4" fill="#9aa0a0"/></g>';
-      if (days >= 365) {
+    // Moons — companions earned the longer you stay
+    if (days >= 100) {
+      // First moon: the 100-day reward
+      h += '<g><animateTransform attributeName="transform" type="rotate" from="0 250 150" to="360 250 150" dur="24s" repeatCount="indefinite"/><circle cx="' + (250 + pr + 34) + '" cy="150" r="9" fill="#d6d9d6"/><circle cx="' + (250 + pr + 36) + '" cy="147" r="2.4" fill="#9aa0a0"/><circle cx="' + (250 + pr + 30) + '" cy="152" r="1.6" fill="#9aa0a0"/></g>';
+      if (days >= 200) {
         h += '<g><animateTransform attributeName="transform" type="rotate" from="360 250 150" to="0 250 150" dur="38s" repeatCount="indefinite"/><circle cx="' + (250 - pr - 30) + '" cy="140" r="5" fill="#c2c8c6"/></g>';
       }
     }
-    // Rings
+    // Rings — the one-year coronation
     if (days >= 365) {
+      h += '<ellipse cx="250" cy="150" rx="' + (pr + 30) + '" ry="' + (pr + 30) * 0.3 + '" fill="none" stroke="rgba(230,210,180,.35)" stroke-width="5" opacity=".45" transform="rotate(-12 250 150)"/>';
       h += '<ellipse cx="250" cy="150" rx="' + (pr + 26) + '" ry="' + (pr + 26) * 0.32 + '" fill="none" stroke="rgba(230,210,180,.8)" stroke-width="3" opacity=".7" transform="rotate(-12 250 150)"/>';
       h += '<ellipse cx="250" cy="150" rx="' + (pr + 17) + '" ry="' + (pr + 17) * 0.3 + '" fill="none" stroke="rgba(230,210,180,.5)" stroke-width="2" opacity=".5" transform="rotate(-12 250 150)"/>';
     }
