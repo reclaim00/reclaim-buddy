@@ -3828,17 +3828,17 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '</div>';
   // Encryption settings
   var enc = D.encryption || {};
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+t('Encrypted Journal')+'</h3></div>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3 style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+t('Encryption')+'</h3></div>';
   h += '<div style="background:var(--primary-light);border-radius:12px;padding:12px;margin:6px 0;font-size:13px;line-height:1.5">';
   if (!enc.enabled) {
-    h += '<p style="color:var(--muted);margin-bottom:8px">'+t('Encrypt your journal entries with a passphrase. Your data is encrypted before being saved.')+'</p>';
+    h += '<p style="color:var(--muted);margin-bottom:8px">'+t('Encrypt your data with a passphrase. Journal entries are sealed on this device and your whole cloud copy is sealed so nothing is readable without it.')+'</p>';
     h += '<input type="password" id="enc-setup-pass" placeholder="'+t('Create a passphrase (min 4 chars)')+'" style="font-size:16px;text-align:center;margin-bottom:6px;letter-spacing:2px">';
     h += '<input type="password" id="enc-setup-confirm" placeholder="'+t('Confirm passphrase')+'" style="font-size:16px;text-align:center;margin-bottom:8px;letter-spacing:2px">';
     h += '<button class="btn btn-sm btn-primary" onclick="var p=document.getElementById(\'enc-setup-pass\');var c=document.getElementById(\'enc-setup-confirm\');if(!p||!p.value.trim()||p.value.length<4){alert(\''+t('Passphrase must be at least 4 characters.')+'\');return}if(p.value!==c.value){alert(\''+t('Passphrases do not match.')+'\');return}this.disabled=true;setupEncryption(p.value).then(function(){p.value=\'\';c.value=\'\';render();alert(\''+t('Encryption enabled! All journal entries are now encrypted.')+'\');}).catch(function(){this.disabled=false})">'+t('Enable Encryption')+'</button>';
   } else {
     if (ENC_KEY) {
       h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span style="color:var(--primary);font-weight:600">&#128274; '+t('Encryption active')+'</span><span class="badge badge-green">'+t('Unlocked')+'</span></div>';
-      h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">'+t('Journal entries are encrypted with AES-256-GCM before saving.')+'</p>';
+      h += '<p style="font-size:11px;color:var(--muted);margin-bottom:8px">'+t('Everything is sealed with AES-256-GCM before it is saved, and the cloud copy is only readable after unlocking with your passphrase.')+'</p>';
       h += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
       h += '<button class="btn btn-sm btn-outline" onclick="var np=prompt(\''+t('Enter new passphrase (min 4 chars):')+'\');if(!np||np.length<4){alert(\''+t('Passphrase must be at least 4 characters.')+'\');return}var cp=prompt(\''+t('Confirm new passphrase:')+'\');if(np!==cp){alert(\''+t('Passphrases do not match.')+'\');return}changeEncryptionPassphrase(\'\',np).then(function(){alert(\''+t('Passphrase changed!')+'\');}).catch(function(){alert(\''+t('Failed to change passphrase.')+'\')})">'+t('Change Passphrase')+'</button>';
       h += '<button class="btn btn-sm btn-danger" onclick="if(!confirm(\''+t('This will decrypt all journal entries. Are you sure?')+'\'))return;disableEncryption().then(function(){render();alert(\''+t('Encryption disabled. All entries have been decrypted.')+'\');}).catch(function(e){ console.warn(e) })">'+t('Disable Encryption')+'</button>';
