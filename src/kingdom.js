@@ -535,6 +535,7 @@ function completeDailyMission() {
   D.missionLog = D.missionLog.slice(-120);
   if (D._missionCache) D._missionCache.done = true;
   saveData();
+  try { playSound('quest'); } catch(e) {}
   render();
 }
 function missionStreak() {
