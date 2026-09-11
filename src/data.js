@@ -18,10 +18,16 @@ var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHO
 
 function subscribePush() {
   if (!MESSAGING || !AUTH_EMAIL || VAPID_KEY === 'REPLACE_WITH_YOUR_VAPID_KEY') return;
-  MESSAGING.getToken({vapidKey: VAPID_KEY}).then(function(token) {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.ready.then(function(reg) {
+    return MESSAGING.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+  }).then(function(token) {
+    if (!token) return;
     if (DB) DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({
       token: token,
+      timezone: (typeof Intl !== 'undefined' && Intl.DateTimeFormat && Intl.DateTimeFormat().resolvedOptions) ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '',
       prefs: (D.notifications && D.notifications.push !== false) ? JSON.stringify(D.notifications) : '{}',
+      lastSent: {},
       updated: firebase.firestore.FieldValue.serverTimestamp()
     }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
   }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
