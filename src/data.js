@@ -19,7 +19,11 @@ var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHO
 function subscribePush() {
   if (!MESSAGING || !AUTH_EMAIL || VAPID_KEY === 'REPLACE_WITH_YOUR_VAPID_KEY') return;
   MESSAGING.getToken({vapidKey: VAPID_KEY}).then(function(token) {
-    if (DB) DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({token: token, updated: firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+    if (DB) DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({
+      token: token,
+      prefs: (D.notifications && D.notifications.push !== false) ? JSON.stringify(D.notifications) : '{}',
+      updated: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
   }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
@@ -231,7 +235,7 @@ function defaultData() {
     customCopingCards: [],
     savedArticles: [], savedBooks: [], savedPodcasts: [], savedVideos: [],
     lastReportDate: null,
-    notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true },
+    notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true, push: true, checkinReminder: false, checkinReminderTime: '18:00', buddyCheckin: false, streakMilestone: false },
     chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], journalWordGoal: 50, reminders: [],
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
     encryption: { enabled: false, salt: null, keyCheck: null },
