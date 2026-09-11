@@ -1374,18 +1374,19 @@ function seedOnboardingAnswers() {
   if (!D.myWhy.reasons) D.myWhy.reasons = [];
   if (!D.myWhy.createdAt) D.myWhy.createdAt = Date.now();
   if (!D.myWhy.reasons.length) {
-    if (D.fightingFor) D.myWhy.reasons.push({ text: D.fightingFor, icon: '\u2764', createdAt: Date.now() });
+    var whyText = D.why || D.fightingFor;
+    if (whyText) D.myWhy.reasons.push({ text: whyText, icon: '\u2764', createdAt: Date.now() });
     if (D.hopes) D.myWhy.reasons.push({ text: 'Hope: ' + D.hopes, icon: '\uD83C\uDF3F', createdAt: Date.now() });
   }
-  if (D.relapsePlan && !D.relapsePlan.statement) {
+  if (D.relapsePlan) {
     function list(v) {
       if (!v) return [];
       return v.split(/[\n,;]+/).map(function(x){return x.trim()}).filter(Boolean);
     }
-    var trigs = list(D.triggerSituations);
-    var cope = list(D.stayOnTrack);
-    if (trigs.length) D.relapsePlan.triggers = trigs.slice(0, 10);
-    if (cope.length) D.relapsePlan.coping = cope.slice(0, 10);
+    var trigs = list(D.triggers || D.triggerSituations);
+    var cope = list(D.track || D.stayOnTrack);
+    if (!(D.relapsePlan.triggers && D.relapsePlan.triggers.length) && trigs.length) D.relapsePlan.triggers = trigs.slice(0, 10);
+    if (!(D.relapsePlan.coping && D.relapsePlan.coping.length) && cope.length) D.relapsePlan.coping = cope.slice(0, 10);
   }
 }
 function render() {
