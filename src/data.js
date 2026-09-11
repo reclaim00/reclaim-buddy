@@ -244,7 +244,8 @@ function defaultData() {
     researchLastSubmitted: null,
     meetingLog: [],
     myWhy: { reasons: [], createdAt: null },
-    achievements: []
+    achievements: [],
+    missionLog: []
   };
 }
 
