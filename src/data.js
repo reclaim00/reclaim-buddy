@@ -47,6 +47,8 @@ function unsubscribePush() {
 function syncToFirestore(retries) {
   if (!AUTH_EMAIL) { syncStatusOffline(); return; }
   if (!firebase || !firebase.auth().currentUser) { syncStatusOffline(); return; }
+  // While encryption is enabled but locked, never write the plaintext snapshot to the cloud.
+  if (isEncryptionEnabled() && !ENC_KEY) { syncStatusOffline(); return; }
   D._lastSync = Date.now();
   if (retries === undefined) retries = 0;
   syncStatusSyncing();
@@ -54,16 +56,17 @@ function syncToFirestore(retries) {
   if (window._syncTimer) clearTimeout(window._syncTimer);
   window._syncTimer = setTimeout(function(){
     firebase.auth().currentUser.getIdToken(true).then(function(){
-      DB.collection('appData').doc(AUTH_EMAIL).set({
-        data: JSON.parse(JSON.stringify(D)),
-        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(function(){
-        syncStatusSynced();
-      }).catch(function(e){
-        console.warn(e);
-        if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1); }, 1000 * (retries + 1));
-        else syncStatusError();
-      });
+      if (isEncryptionEnabled()) {
+        // Seal the whole snapshot with the in-memory key: the cloud copy stays unreadable without the passphrase.
+        return encryptText(JSON.stringify(D), ENC_KEY).then(function(seal){
+          return { data: seal, enc: { salt: D.encryption.salt, keyCheck: D.encryption.keyCheck }, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() };
+        });
+      }
+      return { data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() };
+    }).then(function(body){
+      return DB.collection('appData').doc(AUTH_EMAIL).set(body);
+    }).then(function(){
+      syncStatusSynced();
     }).catch(function(e){
       console.warn(e);
       if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1); }, 1000 * (retries + 1));
@@ -76,28 +79,51 @@ function loadFromFirestore(callback) {
   if (!AUTH_EMAIL) { if (callback) callback(null); syncStatusOffline(); return; }
   syncStatusSyncing();
   DB.collection('appData').doc(AUTH_EMAIL).get().then(function(doc) {
-    if (doc.exists && doc.data().data && doc.data().data.joinDate) {
-      var cloudData = validateData(doc.data().data);
-      var cloudTime = doc.data().lastUpdated ? doc.data().lastUpdated.toMillis() : 0;
-      var localTime = D._lastSync || 0;
-      // Only merge cloud data if it's newer than local to prevent overwrites
-      if (cloudTime >= localTime) {
-        for (var k in cloudData) D[k] = cloudData[k];
-        D._lastSync = cloudTime;
-        saveData();
+    if (!(doc.exists && doc.data().data)) { syncStatusSynced(); if (callback) callback(null); return; }
+    var raw = doc.data();
+    var sealed = raw.enc && raw.data && raw.data.enc;
+    var finish = function(cloudData) {
+      if (cloudData) {
+        var cloudTime = raw.lastUpdated ? raw.lastUpdated.toMillis() : 0;
+        var localTime = D._lastSync || 0;
+        // Only merge cloud data if it's newer than local to prevent overwrites
+        if (cloudTime >= localTime) {
+          for (var k in cloudData) D[k] = cloudData[k];
+          D._lastSync = cloudTime;
+          saveData();
+        }
+        if (cloudTime > 0 && AUTH_EMAIL && !localStorage.getItem('rc_welcome_sync_'+AUTH_EMAIL)) {
+          localStorage.setItem('rc_welcome_sync_'+AUTH_EMAIL, '1');
+          setTimeout(function(){ showToast('Cloud data restored. Your progress is safe.', 'info'); }, 1000);
+        }
       }
       syncStatusSynced();
-      if (callback) callback(cloudData);
-      // First sync welcome
-      if (cloudTime > 0 && AUTH_EMAIL && !localStorage.getItem('rc_welcome_sync_'+AUTH_EMAIL)) {
-        localStorage.setItem('rc_welcome_sync_'+AUTH_EMAIL, '1');
-        setTimeout(function(){ showToast('Cloud data restored. Your progress is safe.', 'info'); }, 1000);
-      }
-    } else {
-      syncStatusSynced();
-      if (callback) callback(null);
-    }
+      if (callback) callback(cloudData || null);
+    };
+    if (sealed) { handleSealedCloud(finish, raw); return; }
+    finish(raw.data && raw.data.joinDate ? validateData(raw.data) : null);
   }).catch(function(e){ console.warn(e); syncStatusError(); if (callback) callback(null); });
+}
+
+var _sealedCloudResume = null;
+function handleSealedCloud(finish, raw) {
+  // Cloud copy is encrypted; decrypt it with the in-memory key when available.
+  if (ENC_KEY) {
+    decryptText(raw.data, ENC_KEY).then(function(plain){
+      finish(validateData(JSON.parse(plain)));
+    }).catch(function(e){ console.warn('cloud decrypt failed', e); syncStatusError(); if (finish) finish(null); });
+    return;
+  }
+  // This device already holds the data; the cloud copy waits until the passphrase unlocks it.
+  if (D.joinDate) {
+    syncStatusSynced();
+    if (finish) finish(null);
+    return;
+  }
+  // Fresh device with an encrypted cloud copy: ask for the passphrase to decrypt it.
+  D.encryption = { enabled: true, salt: raw.enc.salt, keyCheck: raw.enc.keyCheck };
+  _sealedCloudResume = function(){ loadFromFirestore(finish); };
+  if (typeof promptSealedCloudUnlock === 'function') promptSealedCloudUnlock();
 }
 
 // ====== AUTH ======
@@ -141,7 +167,15 @@ function onAuthReady(email, isNew) {
   }, 120000);
   // Sync on page unload
   window.addEventListener('beforeunload', function(){
-    if (AUTH_EMAIL && firebase && firebase.auth().currentUser) { DB.collection('appData').doc(AUTH_EMAIL).set({ data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(e){ console.warn('beforeunload save failed:', e); }); }
+    if (!(AUTH_EMAIL && firebase && firebase.auth().currentUser)) return;
+    if (isEncryptionEnabled() && !ENC_KEY) return;
+    if (isEncryptionEnabled()) {
+      encryptText(JSON.stringify(D), ENC_KEY).then(function(seal){
+        DB.collection('appData').doc(AUTH_EMAIL).set({ data: seal, enc: { salt: D.encryption.salt, keyCheck: D.encryption.keyCheck }, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(e){ console.warn('beforeunload save failed:', e); });
+      }).catch(function(e){ console.warn(e); });
+      return;
+    }
+    DB.collection('appData').doc(AUTH_EMAIL).set({ data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(e){ console.warn('beforeunload save failed:', e); });
   });
 }
 
