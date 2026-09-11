@@ -97,8 +97,8 @@ function getKingdomWeather() {
   var isMilestone=days>0&&(days%30===0||days%90===0||days%365===0);
   if(relapsedToday)return'storm';if(isMilestone&&days>=30)return'rainbow';
   if(isNight&&days>=100)return'aurora';if(streak>=30)return'clear';
-  if(streak>=7)return'clear';if(cravedToday&&streak<3)return'rain';
-  if(streak>=3)return'cloudy';if(days>=1)return'fog';return'mist';
+  if(streak>=7||missionWeekCount()>=5)return'clear';if(cravedToday&&streak<3)return'rain';
+  if(streak>=3||missionWeekCount()>=3)return'cloudy';if(days>=1)return'fog';return'mist';
 }
 function formR(days) {
   if (days <= 0) return 20;
@@ -171,6 +171,15 @@ function kingdomHTML() {
   // Planet sphere
   h += '<circle cx="250" cy="150" r="' + pr + '" fill="url(#kd-molten)"/>';
   h += '<circle cx="250" cy="150" r="' + (pr + 4) + '" fill="none" stroke="rgba(255,170,80,.5)" stroke-width="2" style="animation:planetPulse 3.6s ease-in-out infinite"/>';
+  // Life motes � tiny green sparks that appear once mission momentum feeds the world
+  if (missionWeekCount() >= 3) {
+    var lseed = [[250,142],[231,168],[269,170],[245,184],[258,121],[214,150],[286,150]];
+    h += '<g class="k-life">';
+    for (var li = 0; li < lseed.length; li++) {
+      h += '<circle cx="' + lseed[li][0] + '" cy="' + lseed[li][1] + '" r="2.6" fill="#7ef0a2" opacity=".85" style="animation:starTwinkle ' + (1.6 + li * 0.3) + 's ease-in-out infinite alternate;animation-delay:-' + (li * 0.5) + 's"/>';
+    }
+    h += '</g>';
+  }
 
   if (forming) {
     // Inner molten core shining through the crust
@@ -481,6 +490,100 @@ return h;
   return h;
 }
 
+function missionDayNumber() {
+  return Math.floor(Date.parse(new Date().toDateString()) / 86400000);
+}
+function missionTrunc(s) {
+  var x = String(s || '').trim();
+  return x.length > 42 ? x.slice(0, 42) + '\u2026' : x;
+}
+function buildMissionPool() {
+  var pool = [];
+  var gL = userList(D.goals);
+  var cL = userList((D.relapsePlan && D.relapsePlan.coping) || D.track);
+  var tL = userList((D.relapsePlan && D.relapsePlan.triggers) || D.triggers);
+  var dn = missionDayNumber();
+  if (gL.length) pool.push({ type: 'goal', label: 'Take one small step toward: "' + missionTrunc(gL[dn % gL.length]) + '"' });
+  if (cL.length) pool.push({ type: 'cope', label: 'Practice a tool from your coping kit: "' + missionTrunc(cL[dn % cL.length]) + '"' });
+  if (tL.length) pool.push({ type: 'watch', label: 'Keep watch for "' + missionTrunc(tL[dn % tL.length]) + '". If it shows up, name it and reach for your coping kit.' });
+  pool.push({ type: 'stay', label: 'Choose recovery today, one day at a time. When the day is done, reflect on why you started.' });
+  pool.push({ type: 'grate', label: 'Log three things you are grateful for today. Gratitude builds resilience.' });
+  return pool;
+}
+function getDailyMission() {
+  var today = new Date().toDateString();
+  if (D._missionCache && D._missionCache.date === today) return D._missionCache;
+  var pool = buildMissionPool();
+  var m = pool[missionDayNumber() % pool.length];
+  var entry = { date: today, type: m.type, label: m.label, done: false };
+  var log = (D.missionLog || []);
+  for (var i = 0; i < log.length; i++) {
+    if (log[i].date === today && log[i].done) { entry.done = true; break; }
+  }
+  D._missionCache = entry;
+  return entry;
+}
+function completeDailyMission() {
+  var m = getDailyMission();
+  var today = new Date().toDateString();
+  if (!D.missionLog) D.missionLog = [];
+  var found = false;
+  for (var i = 0; i < D.missionLog.length; i++) {
+    if (D.missionLog[i].date === today) { D.missionLog[i].done = true; D.missionLog[i].doneAt = Date.now(); found = true; break; }
+  }
+  if (!found) D.missionLog.push({ date: today, label: m.label, done: true, doneAt: Date.now() });
+  D.missionLog = D.missionLog.slice(-120);
+  if (D._missionCache) D._missionCache.done = true;
+  saveData();
+  render();
+}
+function missionStreak() {
+  var log = (D.missionLog || []).slice();
+  var s = 0, d = new Date();
+  for (var i = 0; i < 730; i++) {
+    var ds = d.toDateString();
+    var hit = log.some(function(e) { return e.date === ds && e.done; });
+    if (!hit) break;
+    s++; d.setDate(d.getDate() - 1);
+  }
+  return s;
+}
+function missionWeekCount() {
+  var log = (D.missionLog || []).slice();
+  var n = 0;
+  for (var k = 0; k < 7; k++) {
+    var d = new Date(); d.setDate(d.getDate() - k);
+    var ds = d.toDateString();
+    if (log.some(function(e) { return e.date === ds && e.done; })) n++;
+  }
+  return n;
+}
+function missionHTML() {
+  var m = getDailyMission();
+  var streak = missionStreak();
+  var week = missionWeekCount();
+  var dots = '';
+  for (var i = 6; i >= 0; i--) {
+    var d = new Date(); d.setDate(d.getDate() - i);
+    var ds = d.toDateString();
+    var hit = (D.missionLog || []).some(function(e) { return e.date === ds && e.done; });
+    dots += '<span style="width:13px;height:13px;border-radius:7px;background:' + (hit ? 'var(--accent)' : 'var(--border)') + ';display:inline-block"></span>';
+  }
+  var stageIcon = '\uD83D\uDCA7', stageText = 'Complete missions to feed your world.';
+  if (week >= 6) { stageIcon = '\uD83C\uDF43'; stageText = 'Your world is lush. Keep the streak alive.'; }
+  else if (week >= 4) { stageIcon = '\uD83C\uDF38'; stageText = 'Your world is blooming.'; }
+  else if (week >= 3) { stageIcon = '\uD83C\uDF31'; stageText = 'Seeds are sprouting in your world.'; }
+  var h = '<div class="card" id="mission-card" style="border-left:3px solid var(--accent);background:linear-gradient(135deg,rgba(16,185,129,.08),var(--card))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="font-size:14px;margin:0">\uD83D\uDDD3 ' + t('Today\'s Mission') + '</h3><span class="btn btn-sm" style="width:auto;font-size:11px;padding:3px 10px;background:rgba(16,185,129,.12);color:var(--accent);border:1px solid var(--accent)">' + streak + ' day streak \uD83D\uDD25</span></div>';
+  h += '<div style="font-size:13px;font-weight:600;line-height:1.55;margin-bottom:8px">' + safe(m.label) + '</div>';
+  if (m.done) {
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(16,185,129,.14);margin-bottom:6px"><span style="font-size:18px">\u2705</span><div style="font-size:12px;font-weight:600;color:var(--accent)">' + t('Completed today') + ' \u2014 your world feels brighter.</div></div>';
+  } else {
+    h += '<button class="btn btn-primary" onclick="completeDailyMission()" style="width:100%">\u2713 ' + t('Mark Mission Complete') + '</button>';
+  }
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:9px"><div style="display:flex;gap:4px;align-items:center">' + dots + '</div><div style="text-align:right"><div style="font-size:10px;color:var(--muted)">' + week + '/7 this week</div><div style="font-size:10px;color:var(--muted)">' + stageIcon + ' ' + safe(stageText) + '</div></div></div>';
+  h += '</div>';
+  return h;
+}
 function homeHTML() {
   var h = '';
 
@@ -489,6 +592,7 @@ function homeHTML() {
 
   // Atlas � the central hub
   h += homePageHTML();
+  h += missionHTML();
 
   // Install prompt card — inviting the user to add the app to their home screen
   h += installCardHTML();
