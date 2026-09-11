@@ -999,6 +999,13 @@ function handleAuth() {
       }).catch(function(e) { console.warn('Welcome email failed:', e); });
     }
   }).catch(function(err) {
+    if (err && err.code === 'auth/multi-factor-auth-required' && err.resolver && typeof handleMfaSignIn === 'function') {
+      if (error) error.textContent = '';
+      handleMfaSignIn(err);
+      if (btn) btn.disabled = false;
+      if (btnLabel) btnLabel.textContent = isSignUp ? t('Sign Up') : t('Sign In');
+      return;
+    }
     if (error) {
       var msg = err.message || 'Authentication failed.';
       if (msg.indexOf('auth/user-not-found') !== -1) msg = t('No account found with this email. Try Sign Up.');
