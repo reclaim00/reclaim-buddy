@@ -596,3 +596,21 @@ body.dark .toast-danger{color:#c86a6a;border-color:#5a2a2a}
 .vigil-actions button,.vigil-actions span{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.85);font-size:10.5px;padding:5px 9px;border-radius:999px;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:background .2s,border-color .2s,color .2s}
 .vigil-actions button:hover,.vigil-actions span:hover{background:rgba(100,160,80,.25);border-color:rgba(100,160,80,.5);color:#b8e09c}
 body.dark .vigil-timer{box-shadow:0 2px 14px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.05)}
+/* ===== POLISH: TRANSITIONS, CONSISTENCY, MICRO-INTERACTIONS ===== */
+html{-webkit-tap-highlight-color:transparent}
+::selection{background:var(--primary);color:#fff}
+:focus-visible{transition:box-shadow .18s ease,border-color .18s ease}
+.btn:active{transform:translateY(1px)}
+input:hover,textarea:hover,select:not(:disabled):hover{border-color:var(--primary);border-bottom-color:var(--primary-dark)}
+.theme-dot{transition:transform .2s,border-color .2s}
+.theme-dot:hover{transform:scale(1.12)}
+.theme-dot:active{transform:scale(.95)}
+@keyframes tabPop{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-2px) scale(1.18)}100%{transform:translateY(0) scale(1)}}
+.tab.active svg{animation:tabPop .28s ease}
+.coping-card.open .text{animation:fadeIn .25s ease}
+.cal-day:not(.future):not(.other-month):not(.today):hover{transform:scale(1.08);background:var(--primary-light);box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.page-title{animation:cardIn .4s ease both}
+.app.suppress-anim .card,.app.suppress-anim .buddy-card,.app.suppress-anim .milestone,.app.suppress-anim .coping-card,.app.suppress-anim .music-item{animation:none}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
