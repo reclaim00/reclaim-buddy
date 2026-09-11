@@ -521,7 +521,7 @@ function doUnlockEncryption(btn) {
 }
 
 // ====== RENDER & NAV ======
-var MORE_SUB_PAGES = ['journal','calendar','reports','buddy','coping','assessment','profile','reminders','meetings','timecapsule','achievements','mywhy'];
+var MORE_SUB_PAGES = ['journal','calendar','reports','buddy','coping','assessment','profile','reminders','meetings','timecapsule','achievements','mywhy','insights','seer'];
 var REFLECT_SUB_PAGES = [];
 var CARE_SUB_PAGES = ['relapseplan','relapserescue'];
 
