@@ -1351,6 +1351,7 @@ function reflectHTML() {
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">Journal Reflections</div>';
   h += '<p style="font-size:12px;color:var(--muted)">Tap any entry below for a reflection summary and gentle suggestions.</p></div>';
+  h += journalInsightsHTML();
   if (!D.journal.length) {
     h += '<div class="card"><div class="empty-state">No entries yet. Write something above to see reflections here.</div></div>';
   } else {
@@ -1878,7 +1879,7 @@ function careHTML() {
   h += '<button class="btn btn-primary btn-sm" onclick="saveQuickMood()" style="width:100%">&#9889; '+t('Log Quick Mood')+'</button></div>';
 
   // Journal-based insights
-  h += journalInsightsHTML();
+  // insights now render on the Journal page only
 
 
   h += '<div class="card"><h3>'+t('Addiction Assessment')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Check in with yourself about your substance use.')+'</p><button class="btn btn-outline btn-sm" onclick="goTo(\'assessment\')">'+t('Take Assessment')+'</button></div>';
