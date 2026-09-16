@@ -482,12 +482,7 @@ return h;
   // 3. Sobriety timer (right under planet)
   h += soberTimerHTML();
 
-  // 4. Quick actions
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0">';
-  h += '<button class="btn btn-primary btn-sm" onclick="goTo(\'journal\')" style="background:linear-gradient(135deg,#5a3a1a,#7a5a3a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2726</span> Journal</button>';
-  h += '<button class="btn btn-primary btn-sm" onclick="showCravingBreaker()" style="background:linear-gradient(135deg,#5a2a2a,#7a4a4a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2694</span> Craving</button>';
-  h += '<button class="btn btn-primary btn-sm" onclick="startBreathe()" style="background:linear-gradient(135deg,#2a4a5a,#4a6a7a);border:none;flex-direction:column;gap:2px;padding:10px 8px;font-size:12px;line-height:1.3"><span style="font-size:16px">\u2766</span> Breathe</button>';
-  h += '</div>';
+  // 4. (quick actions removed — cleaner home)
 
   return h;
 }
@@ -639,10 +634,6 @@ function homeHTML() {
   h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS � crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
 
   h += pledgeHTML();
-
-  h += dailyQuote();
-
-  h += recoveryGoalsHTML();
 
   // Time capsule ready notification
   if (D.timeCapsules) {
