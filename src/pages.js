@@ -1348,7 +1348,6 @@ function reflectHTML() {
   h += '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin:2px 0 6px" id="word-count-row"><span id="word-count">0 '+t('words')+'</span><span>'+t('Goal:')+' ' + goal + ' '+t('words')+'</span></div>';
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
   h += '</div>';
-  h += journalInsightsHTML();
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
   h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">Journal Reflections</div>';
   h += '<p style="font-size:12px;color:var(--muted)">Tap any entry below for a reflection summary and gentle suggestions.</p></div>';
@@ -3607,6 +3606,8 @@ function moreHTML() {
   h += '<div class="sub-item" onclick="goTo(\'insights\')">&#128209; '+t('Insights')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'assessment\')" style="border-color:var(--rose)">&#128202; '+t('Addiction Assessment')+'</div>';
   h += '</div>';
+  h += recoveryGoalsHTML();
+
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Grow & Celebrate')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; '+t('Achievements')+'</div>';
@@ -4046,6 +4047,7 @@ function deleteAccount() {
   batch.delete(DB.collection('users').doc(uid));
   batch.delete(DB.collection('pairingCodes').doc(uid));
   batch.delete(DB.collection('pushSubscriptions').doc(uid));
+  batch.delete(DB.collection('progress').doc(uid));
   batch.commit().catch(function(e){ console.warn(e); }).then(function(){
     firebase.auth().currentUser.delete().catch(function(e){ console.warn(e); }).then(function(){
       clearLocalData();
