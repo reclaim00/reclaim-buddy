@@ -1,4 +1,4 @@
-var CACHE = 'reclaim-20260909r';
+var CACHE = 'reclaim-20260909s';
 var BASE = self.registration.scope;
 function baseUrl(p) { return new URL(p, BASE).href; }
 var SHELL = [
