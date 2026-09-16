@@ -613,3 +613,41 @@ input,textarea{caret-color:var(--primary)}
 .progress-bar .fill::before{animation:progressStripes .5s linear infinite}
 .overlay-content{padding-bottom:calc(var(--space-3xl) + env(safe-area-inset-bottom,0px))}
 .tabs{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+
+/* =====================================================================
+   ELEVATED — premium layer (additive; extends parchment, any palette,
+   light+dark). Adds depth/hierarchy/micro-motion without altering any
+   existing rule. Toggle via Settings → "Elevated look".
+   ===================================================================== */
+/* 1) DEEPER, LAYERED CARD SHADOWS */
+body.elevated .card{box-shadow:0 2px 4px rgba(30,26,20,.05),0 8px 28px rgba(30,26,20,.09),0 24px 60px -20px rgba(30,26,20,.16)}
+body.elevated.dark .card{box-shadow:0 2px 4px rgba(0,0,0,.35),0 10px 32px rgba(0,0,0,.35),0 28px 64px -20px rgba(0,0,0,.4)}
+
+/* 2) REFINED HOVER LIFT on interactive cards */
+body.elevated .card:hover{transform:translateY(-2px)}
+
+/* 3) SMALL ACTION BUTTONS: richer hover + press-down for tactile feel */
+body.elevated .btn:active{transform:translateY(1px)}
+
+/* 4) SOFTER, MORE DEFINED BORDERS — parchment ink line */
+body.elevated .card{border:1px solid color-mix(in srgb,var(--border) 82%,transparent)}
+body.elevated.dark .card{border-color:color-mix(in srgb,var(--border) 60%,transparent)}
+
+/* 5) GENTLE PLACEHOLDER + TYPOGRAPHIC TEXTURE */
+body.elevated textarea,body.elevated input{background:color-mix(in srgb,var(--card) 82%,var(--bg))}
+
+/* 6) ELEVATED FOCUS RING — prominent but soft */
+body.elevated :focus-visible{box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 35%,transparent)}
+
+/* 7) TITLE REFINEMENT — subtle underline shine */
+body.elevated .section-title{border-top-color:color-mix(in srgb,var(--primary) 40%,transparent);border-bottom-color:color-mix(in srgb,var(--primary) 40%,transparent)}
+
+/* 8) TAB ACTIVE — deeper, tactile */
+body.elevated .tab.active{box-shadow:0 -3px 0 var(--primary) inset,0 2px 8px rgba(30,26,20,.08)}
+
+/* 9) EMPTY STATES — warmer, more inviting */
+body.elevated .empty-state{background:color-mix(in srgb,var(--card) 60%,transparent);border-radius:12px}
+
+/* 10) SMOOTH THEME TRANSITION */
+body.elevated{transition:background .35s ease,color .35s ease}
+body.elevated .card,body.elevated .btn,body.elevated .breadcrumb{transition:transform .15s ease,box-shadow .2s ease,background .25s ease}
