@@ -845,12 +845,38 @@ function showLockScreenSOS() {
 async function unlockApp() {
   var pin = document.getElementById('lock-pin-input');
   if (!pin || !pin.value.trim()) return;
+  // brute-force throttle: back off after repeated wrong passcodes
+  var fails = parseInt(localStorage.getItem('rc_lock_fails') || '0', 10);
+  var firstFail = parseInt(localStorage.getItem('rc_lock_firstfail') || '0', 10);
+  var now = Date.now();
+  if (fails >= 4 && now - firstFail < 10 * 60 * 1000) {
+    var waited = Math.floor((now - firstFail) / 1000);
+    var need = Math.min(30 * Math.pow(2, fails - 4), 1800) - waited; // 30s, 1m, 2m, 4m... cap 30m
+    if (need > 0) {
+      var el = document.getElementById('lock-error');
+      if (el) el.textContent = t('Too many attempts. Try again in ') + Math.ceil(need / 60) + t(' min.');
+      pin.value = '';
+      return;
+    }
+    localStorage.removeItem('rc_lock_fails');
+    localStorage.removeItem('rc_lock_firstfail');
+  }
   var valid = await checkPin(pin.value.trim());
   if (!valid) {
-    document.getElementById('lock-error').textContent = 'Incorrect passcode';
+    var newFails = (fails >= 4 && now - firstFail >= 10 * 60 * 1000) ? 1 : fails + 1;
+    if (firstFail === 0 || (now - firstFail) > 10 * 60 * 1000) firstFail = now;
+    localStorage.setItem('rc_lock_fails', String(newFails));
+    localStorage.setItem('rc_lock_firstfail', String(firstFail));
+    var el2 = document.getElementById('lock-error');
+    if (el2) {
+      if (newFails >= 4) el2.textContent = t('Too many attempts. Lockout is getting longer.');
+      else el2.textContent = t('Incorrect passcode. ') + (4 - newFails) + t(' attempts before lockout.');
+    }
     pin.value = '';
     return;
   }
+  localStorage.removeItem('rc_lock_fails');
+  localStorage.removeItem('rc_lock_firstfail');
   LOCK_ENABLED = false;
   D = loadData();
   document.body.classList.add('logged-in');
