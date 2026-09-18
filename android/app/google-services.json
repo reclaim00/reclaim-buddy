@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "252489457973",
+    "project_id": "reclaim-buddy-2",
+    "storage_bucket": "reclaim-buddy-2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252489457973:android:578f846b43ea8aff4c2c7c",
+        "android_client_info": {
+          "package_name": "com.reclaim00.reclaimbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFz2H23P_B6M2He6A8DcGo8Lg87ZGM-44"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
