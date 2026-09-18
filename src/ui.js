@@ -299,7 +299,7 @@ function partyConfetti() {
   canvas.style.cssText = 'position:absolute;inset:0;pointer-events:none;z-index:10;overflow:hidden';
   overlay.style.position = 'relative';
   overlay.appendChild(canvas);
-  var colors = ['#ff6b35','#f7931e','#34d399','#60a5fa','#a78bfa','#f472b6','#fbbf24','#ffd700'];
+  var colors = ['#ff6b35','#f7931e','#34d399','#7ba05b','#4a8a63','#f472b6','#fbbf24','#ffd700'];
   for (var i=0;i<50;i++) {
     (function(){
       var c = document.createElement('div');

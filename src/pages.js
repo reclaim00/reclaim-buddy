@@ -28,7 +28,7 @@ function quizOptionsHTML(name, savedVal) {
     {val:25, label:'Rarely', color:'var(--accent)', bg:'#f8fafc'},
     {val:50, label:'Sometimes', color:'#f97316', bg:'#fff7ed'},
     {val:75, label:'Often', color:'var(--danger)', bg:'var(--danger-bg)'},
-    {val:100, label:'Always', color:'#7c3aed', bg:'#f3e8ff'}
+    {val:100, label:'Always', color:'#2d6a4f', bg:'#e9f2ea'}
   ];
   var h = '<div class="quiz-opts" data-name="' + name + '" style="display:flex;gap:6px;margin:6px 0;flex-wrap:wrap">';
   for (var oi=0;oi<opts.length;oi++) {
@@ -52,7 +52,7 @@ document.addEventListener('change', function(e){
       {color:'var(--accent)', bg:'#f8fafc'},
       {color:'#f97316', bg:'#fff7ed'},
       {color:'var(--danger)', bg:'var(--danger-bg)'},
-      {color:'#7c3aed', bg:'#f3e8ff'}
+      {color:'#2d6a4f', bg:'#e9f2ea'}
     ];
     labels.forEach(function(lbl, idx){
       var radio = lbl.querySelector('input[type=radio]');
@@ -76,7 +76,7 @@ function assessmentHTML() {
   if (D.assessmentTaken && D.assessmentResult) {
     var r = D.assessmentResult;
     var sev = r.score <= 20 ? 'Low Risk' : r.score <= 40 ? 'Moderate' : r.score <= 60 ? 'Substantial' : r.score <= 80 ? 'Severe' : 'Critical';
-    var sevColor = r.score <= 20 ? 'var(--primary)' : r.score <= 40 ? 'var(--accent)' : r.score <= 60 ? '#f97316' : r.score <= 80 ? 'var(--danger)' : '#7c3aed';
+    var sevColor = r.score <= 20 ? 'var(--primary)' : r.score <= 40 ? 'var(--accent)' : r.score <= 60 ? '#f97316' : r.score <= 80 ? 'var(--danger)' : '#1d4a35';
     h += '<div class="card" style="text-align:center;border:2px solid '+sevColor+'">';
     h += '<div style="font-size:48px;font-weight:900;color:'+sevColor+'">'+r.score+'/100</div>';
     h += '<div style="font-size:18px;font-weight:700;color:'+sevColor+'">'+sev+'</div>';
@@ -161,7 +161,7 @@ function showAssessmentAfterSignIn() {
   if (D.assessmentTaken && D.assessmentResult) {
     var r = D.assessmentResult;
     var sevLbl = r.score <= 20 ? 'Low Risk' : r.score <= 40 ? 'Moderate' : r.score <= 60 ? 'Substantial' : r.score <= 80 ? 'Severe' : 'Critical';
-    var sevColor = r.score <= 20 ? 'var(--primary)' : r.score <= 40 ? 'var(--accent)' : r.score <= 60 ? '#f97316' : r.score <= 80 ? 'var(--danger)' : '#7c3aed';
+    var sevColor = r.score <= 20 ? 'var(--primary)' : r.score <= 40 ? 'var(--accent)' : r.score <= 60 ? '#f97316' : r.score <= 80 ? 'var(--danger)' : '#1d4a35';
     sev = '<div class="card" style="text-align:center;border:2px solid '+sevColor+';margin-bottom:12px">';
     sev += '<div style="font-size:36px;font-weight:900;color:'+sevColor+'">'+r.score+'/100</div>';
     sev += '<div style="font-size:16px;font-weight:700;color:'+sevColor+'">'+sevLbl+'</div>';
@@ -357,7 +357,7 @@ function timelineHTML() {
   // Sort by date (oldest first)
   events.sort(function(a,b){return a.date - b.date});
   if (!events.length) return '<div class="card"><div class="empty-state">No events yet. Start tracking to see your timeline.</div></div>';
-  var colors = {start:'var(--primary)', relapse:'var(--danger)', journal:'var(--blue)', mood:'var(--accent)', buddy:'var(--rose)'};
+  var colors = {start:'var(--primary)', relapse:'var(--danger)', journal:'#4a8a63', mood:'var(--accent)', buddy:'var(--rose)'};
   var icons = {start:'&#x2726;', relapse:'&#x2628;', journal:'&#x2712;', mood:'&#x2766;', buddy:'&#x2618;'};
   var h = '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="var el=document.getElementById(\'timeline-body\');var btn=document.getElementById(\'timeline-toggle\');if(el.style.display===\'none\'){el.style.display=\'block\';btn.textContent=\'&#9650; '+t('Hide Timeline')+'\'}else{el.style.display=\'none\';btn.textContent=\'&#9660; '+t('Show Timeline')+'\'}">';
   h += '<div style="display:flex;align-items:center;gap:8px"><div style="font-size:20px">&#x2726;</div><div><h3 style="margin:0;font-size:14px">'+t('Recovery Timeline')+'</h3></div></div>';
@@ -1532,7 +1532,7 @@ function showJournalLetter(idx) {
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   var totalEntries = D.journal.length;
   var streak = calcJournalStreak();
-  var moodColors = {sad:'#60a5fa',angry:'#ef4444',anxious:'#f59e0b',happy:'#34d399',grateful:'#a78bfa',reflective:'#818cf8',hopeful:'#fbbf24',mixed:'#94a3b8'};
+  var moodColors = {sad:'#7ba05b',angry:'#ef4444',anxious:'#f59e0b',happy:'#34d399',grateful:'#4a8a63',reflective:'#2d6a4f',hopeful:'#fbbf24',mixed:'#94a3b8'};
   var moodLabels = {sad:'Sad',angry:'Angry',anxious:'Anxious',happy:'Happy',grateful:'Grateful',reflective:'Reflective',hopeful:'Hopeful',mixed:'Mixed'};
   var mc = moodColors[mood] || '#94a3b8';
 
@@ -1603,7 +1603,7 @@ function showReflection(idx) {
   var hasCravings = D.cravings && D.cravings.length > 0 && (Date.now() - D.cravings[D.cravings.length-1].timestamp) < 86400000;
   var totalEntries = D.journal.length;
   var streak = calcJournalStreak();
-  var moodColors = {sad:'#60a5fa',angry:'#ef4444',anxious:'#f59e0b',happy:'#34d399',grateful:'#a78bfa',reflective:'#818cf8',hopeful:'#fbbf24',mixed:'#94a3b8'};
+  var moodColors = {sad:'#7ba05b',angry:'#ef4444',anxious:'#f59e0b',happy:'#34d399',grateful:'#4a8a63',reflective:'#2d6a4f',hopeful:'#fbbf24',mixed:'#94a3b8'};
   var moodLabels = {sad:'Sad',angry:'Angry',anxious:'Anxious',happy:'Happy',grateful:'Grateful',reflective:'Reflective',hopeful:'Hopeful',mixed:'Mixed'};
   var mc = moodColors[mood] || '#94a3b8';
   var sorted = Object.keys(scores).sort(function(a,b){return scores[b]-scores[a]}).filter(function(k){return scores[k]>0});
@@ -2613,10 +2613,10 @@ function pendingFollowUpHTML() {
 // ====== BREATHING ======
 var breatheIdx = 0;
 var BREATHING_EXERCISES = [
-  {id:'box', name:'Box', emoji:'\u25A2', steps:['Inhale','Hold','Exhale','Hold'], durations:[4000,4000,4000,4000], scales:['scale(1.3)','scale(1.3)','scale(0.8)','scale(0.8)'], colors:['#059669','#f59e0b','#3b82f6','#f59e0b'], desc:'Inhale 4, hold 4, exhale 4, hold 4 \u2014 balances the nervous system.'},
-  {id:'relax', name:'4-7-8', emoji:'\u25C8', steps:['Inhale','Hold','Exhale'], durations:[4000,7000,8000], scales:['scale(1.3)','scale(1.3)','scale(0.75)'], colors:['#059669','#f59e0b','#3b82f6'], desc:'Inhale 4, hold 7, exhale 8 \u2014 deep calm before sleep or a tough moment.'},
-  {id:'long', name:'Long Exhale', emoji:'\u25B3', steps:['Inhale','Exhale','Hold'], durations:[4000,6000,2000], scales:['scale(1.3)','scale(0.78)','scale(0.78)'], colors:['#059669','#3b82f6','#f59e0b'], desc:'A long out-breath steadies the body into a recovery rhythm.'},
-  {id:'energize', name:'Energize', emoji:'\u2606', steps:['Inhale','Hold','Exhale'], durations:[4000,2000,4000], scales:['scale(1.3)','scale(1.3)','scale(0.8)'], colors:['#059669','#3b82f6','#f59e0b'], desc:'Bright and quick \u2014 useful for steadying a craving or low energy.'}
+  {id:'box', name:'Box', emoji:'\u25A2', steps:['Inhale','Hold','Exhale','Hold'], durations:[4000,4000,4000,4000], scales:['scale(1.3)','scale(1.3)','scale(0.8)','scale(0.8)'], colors:['#2d6a4f','#f59e0b','#7fb069','#f59e0b'], desc:'Inhale 4, hold 4, exhale 4, hold 4 \u2014 balances the nervous system.'},
+  {id:'relax', name:'4-7-8', emoji:'\u25C8', steps:['Inhale','Hold','Exhale'], durations:[4000,7000,8000], scales:['scale(1.3)','scale(1.3)','scale(0.75)'], colors:['#2d6a4f','#f59e0b','#7fb069'], desc:'Inhale 4, hold 7, exhale 8 \u2014 deep calm before sleep or a tough moment.'},
+  {id:'long', name:'Long Exhale', emoji:'\u25B3', steps:['Inhale','Exhale','Hold'], durations:[4000,6000,2000], scales:['scale(1.3)','scale(0.78)','scale(0.78)'], colors:['#2d6a4f','#7fb069','#f59e0b'], desc:'A long out-breath steadies the body into a recovery rhythm.'},
+  {id:'energize', name:'Energize', emoji:'\u2606', steps:['Inhale','Hold','Exhale'], durations:[4000,2000,4000], scales:['scale(1.3)','scale(1.3)','scale(0.8)'], colors:['#2d6a4f','#7fb069','#f59e0b'], desc:'Bright and quick \u2014 useful for steadying a craving or low energy.'}
 ];
 
 function breathePickerHTML() {
@@ -3404,7 +3404,7 @@ function calendarHTML() {
     var hasJournal = D.journal.some(function(j){return j.date===dateStr});
     if (!isFuture) {
       if (hasMood && habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--primary);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
-      else if (hasMood && hasJournal) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:#3b82f6;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      else if (hasMood && hasJournal) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:#2d6a4f;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
       else if (hasMood) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:#22c55e;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
       else if (habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--accent);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
       else { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--border);color:var(--muted)" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
@@ -3415,7 +3415,7 @@ function calendarHTML() {
   var rem = 7 - ((firstDay + daysInMonth) % 7);
   if (rem < 7) { for (var i=1;i<=rem;i++) { h += '<div class="cal-day other-month" style="background:transparent;cursor:default">'+i+'</div>'; } }
   h += '</div>';
-  h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#3b82f6"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#22c55e"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span></div>';
+  h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#2d6a4f"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#4a8a63"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span></div>';
   h += '<button class="btn btn-outline btn-sm" onclick="CAL_MONTH_OFFSET=0;render()" style="margin-top:8px">'+t('Jump to Today')+'</button>';
   h += '</div>';
   return h;
@@ -3623,7 +3623,7 @@ function moreHTML() {
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'achievements\')" style="border-color:#d4a017">&#127942; '+t('Achievements')+'</div>';
   h += '<div class="sub-item" onclick="goTo(\'timecapsule\')" style="border-color:var(--primary)">&#128230; '+t('Time Capsule')+'</div>';
-  h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:#4338ca">&#127987; '+t('Your View')+'</div>';
+  h += '<div class="sub-item" onclick="goTo(\'seer\')" style="border-color:var(--primary)">&#127987; '+t('Your View')+'</div>';
   h += '</div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Support')+'</h3>';
   h += '<div class="sub-grid">';
@@ -3800,7 +3800,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Accent Colour')+'</span><div style="display:flex;gap:4px">';
-  var colorOpts = {green:'#34d399',blue:'#60a5fa',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
+  var colorOpts = {green:'#2d6a4f',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
   for (var co in colorOpts) {
     h += '<div style="width:28px;height:28px;border-radius:14px;background:'+colorOpts[co]+';cursor:pointer;border:'+(D.accentColor===co?'3px solid var(--text)':'2px solid transparent')+'" onclick="D.accentColor=\''+co+'\';saveDataSilent();applyTheme();render()"></div>';
   }
@@ -4354,7 +4354,7 @@ function showMilestoneCelebration(days) {
 function startConfetti() {
   var canvas = document.getElementById('confetti-canvas');
   if (!canvas) return;
-  var colors = ['#ff6b35','#f7931e','#34d399','#60a5fa','#a78bfa','#f472b6','#fbbf24'];
+  var colors = ['#ff6b35','#f7931e','#34d399','#7ba05b','#4a8a63','#f472b6','#fbbf24'];
   for (var i=0;i<60;i++) {
     (function(){
       var c = document.createElement('div');
@@ -4595,7 +4595,7 @@ function shareCardImage() {
 function applyTheme() {
   var pal = {
     green:{primary:'#2d6a4f',dark:'#1d4a35',light:'#e9f2ea',lightDark:'rgba(45,106,79,0.14)',dp:'#7fb069',dDark:'#bfd9c2'},
-    blue:{primary:'#3b82f6',dark:'#1d4ed8',light:'#dbeafe',lightDark:'rgba(59,130,246,0.14)',dp:'#93c5fd',dDark:'#bfdbfe'},
+    
     purple:{primary:'#8b5cf6',dark:'#6d28d9',light:'#ede9fe',lightDark:'rgba(139,92,246,0.14)',dp:'#c4b5fd',dDark:'#ddd6fe'},
     pink:{primary:'#ec4899',dark:'#be185d',light:'#fce7f3',lightDark:'rgba(236,72,153,0.14)',dp:'#f9a8d4',dDark:'#fbcfe8'},
     orange:{primary:'#f97316',dark:'#c2410c',light:'#fed7aa',lightDark:'rgba(249,115,22,0.14)',dp:'#fdba74',dDark:'#fed7aa'},
