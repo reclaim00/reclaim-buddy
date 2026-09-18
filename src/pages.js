@@ -4594,20 +4594,18 @@ function shareCardImage() {
 
 function applyTheme() {
   var pal = {
-    green:{primary:'#0f766e',dark:'#134e4a',light:'#ccfbf1',lightDark:'rgba(15,118,110,0.14)'},
-    blue:{primary:'#3b82f6',dark:'#1d4ed8',light:'#dbeafe',lightDark:'rgba(59,130,246,0.14)'},
-    purple:{primary:'#8b5cf6',dark:'#6d28d9',light:'#ede9fe',lightDark:'rgba(139,92,246,0.14)'},
-    pink:{primary:'#ec4899',dark:'#be185d',light:'#fce7f3',lightDark:'rgba(236,72,153,0.14)'},
-    orange:{primary:'#f97316',dark:'#c2410c',light:'#fed7aa',lightDark:'rgba(249,115,22,0.14)'},
-    red:{primary:'#ef4444',dark:'#b91c1c',light:'#fecaca',lightDark:'rgba(239,68,68,0.14)'},
+    green:{primary:'#2d6a4f',dark:'#1d4a35',light:'#e9f2ea',lightDark:'rgba(45,106,79,0.14)',dp:'#7fb069',dDark:'#bfd9c2'},
+    blue:{primary:'#3b82f6',dark:'#1d4ed8',light:'#dbeafe',lightDark:'rgba(59,130,246,0.14)',dp:'#93c5fd',dDark:'#bfdbfe'},
+    purple:{primary:'#8b5cf6',dark:'#6d28d9',light:'#ede9fe',lightDark:'rgba(139,92,246,0.14)',dp:'#c4b5fd',dDark:'#ddd6fe'},
+    pink:{primary:'#ec4899',dark:'#be185d',light:'#fce7f3',lightDark:'rgba(236,72,153,0.14)',dp:'#f9a8d4',dDark:'#fbcfe8'},
+    orange:{primary:'#f97316',dark:'#c2410c',light:'#fed7aa',lightDark:'rgba(249,115,22,0.14)',dp:'#fdba74',dDark:'#fed7aa'},
+    red:{primary:'#ef4444',dark:'#b91c1c',light:'#fecaca',lightDark:'rgba(239,68,68,0.14)',dp:'#fca5a5',dDark:'#fecaca'},
   };
   var c = pal[D.accentColor] || pal.green;
   var el = document.body, root = document.documentElement;
   if (!el) return;
-  el.style.setProperty('--primary', c.primary);
-  el.style.setProperty('--primary-dark', c.dark);
-  el.style.setProperty('--accent', c.primary);
   if (D.darkMode) {
+    var p = c.dp || c.primary, pd = c.dDark || c.dark;
     el.classList.add('dark');
     root.style.background = '#0b1220';
     el.style.setProperty('--bg','#0b1220');
@@ -4615,6 +4613,11 @@ function applyTheme() {
     el.style.setProperty('--text','#e2e8f0');
     el.style.setProperty('--muted','#94a3b8');
     el.style.setProperty('--border','#1f2a3d');
+    el.style.setProperty('--primary', p);
+    el.style.setProperty('--primary-dark', pd);
+    el.style.setProperty('--accent', p);
+    el.style.setProperty('--grad-primary','linear-gradient(135deg,'+c.primary+','+p+')');
+    el.style.setProperty('--grad-accent','linear-gradient(135deg,'+p+','+pd+')');
     el.style.setProperty('--primary-light', c.lightDark);
   } else {
     el.classList.remove('dark');
@@ -4624,6 +4627,11 @@ function applyTheme() {
     el.style.setProperty('--text','#0f172a');
     el.style.setProperty('--muted','#64748b');
     el.style.setProperty('--border','#e2e8f0');
+    el.style.setProperty('--primary', c.primary);
+    el.style.setProperty('--primary-dark', c.dark);
+    el.style.setProperty('--accent', c.primary);
+    el.style.setProperty('--grad-primary','linear-gradient(135deg,'+c.primary+','+c.dark+')');
+    el.style.setProperty('--grad-accent','linear-gradient(135deg,'+c.dark+','+c.primary+')');
     el.style.setProperty('--primary-light', c.light);
   }
   }
