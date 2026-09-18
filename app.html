@@ -4,8 +4,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#2a5a1e">
-<meta name="theme-color" content="#0f140e" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0f766e">
+<meta name="theme-color" content="#0b1220" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -14,136 +14,57 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" sizes="180x180" href="globe-icon.png">
 <link rel="apple-touch-startup-image" href="globe-icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Re.Claim</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://api.qrserver.com; connect-src 'self' https://api.qrserver.com https://*.firebaseio.com https://*.googleapis.com https://*.firestore.googleapis.com wss://*.firebaseio.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
-<link rel="stylesheet" href="src/style.css?v=20260909t">
+<link rel="stylesheet" href="src/style.css?v=20260918m">
 </head>
 <body>
-<div id="landscape-bg"><svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<div id="landscape-bg" aria-hidden="true">
+<svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5aa8e0"/><stop offset="40%" stop-color="#7ac0f0"/><stop offset="75%" stop-color="#a0d4f8"/><stop offset="100%" stop-color="#c8e8c0"/></linearGradient>
-    <radialGradient id="sunGlow"><stop offset="0%" stop-color="#fff8dc"/><stop offset="40%" stop-color="#ffd700" stop-opacity=".6"/><stop offset="100%" stop-color="#ffd700" stop-opacity="0"/></radialGradient>
-    <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-    
-    <path id="star4" d="M0,-1 Q0.25,-0.25 1,0 Q0.25,0.25 0,1 Q-0.25,0.25 -1,0 Q-0.25,-0.25 0,-1 Z"/>
-    <filter id="starGlow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a9c9ea"/><stop offset="45%" stop-color="#cddfef"/><stop offset="78%" stop-color="#e7eef2"/><stop offset="100%" stop-color="#eef2db"/></linearGradient>
+    <radialGradient id="sunGlow"><stop offset="0%" stop-color="#fff6cf"/><stop offset="45%" stop-color="#ffe7a3" stop-opacity=".5"/><stop offset="100%" stop-color="#ffe7a3" stop-opacity="0"/></radialGradient>
+    <linearGradient id="skyNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a1a2e"/><stop offset="55%" stop-color="#102c47"/><stop offset="100%" stop-color="#163a3c"/></linearGradient>
   </defs>
+
   <g class="day-scene">
     <rect width="1440" height="900" fill="url(#skyDay)"/>
-    <g transform="translate(180,140)"><use href="#star4" transform="scale(110)" fill="url(#sunGlow)"/></g>
-    <g transform="translate(180,140)"><use href="#star4" transform="scale(48)" fill="#ffe066"/></g>
-    <g transform="translate(180,140)"><use href="#star4" transform="scale(40)" fill="#fff8dc"/></g>
-    <g opacity=".6">
-      <ellipse cx="480" cy="115" rx="80" ry="22" fill="#fff"/>
-      <ellipse cx="500" cy="102" rx="60" ry="16" fill="#fff"/>
-      <ellipse cx="820" cy="165" rx="90" ry="20" fill="#fff" opacity=".8"/>
-      <ellipse cx="840" cy="150" rx="65" ry="14" fill="#fff" opacity=".9"/>
-      <ellipse cx="1130" cy="125" rx="70" ry="18" fill="#fff" opacity=".7"/>
-      <ellipse cx="1350" cy="160" rx="60" ry="14" fill="#fff" opacity=".5"/>
+    <circle cx="178" cy="150" r="130" fill="url(#sunGlow)"/>
+    <circle cx="178" cy="150" r="46" fill="#ffedb3"/>
+    <g fill="#ffffff" opacity=".55">
+      <ellipse cx="480" cy="122" rx="72" ry="15"/><ellipse cx="512" cy="110" rx="50" ry="11"/>
+      <ellipse cx="842" cy="162" rx="82" ry="14" opacity=".8"/><ellipse cx="874" cy="150" rx="54" ry="10"/>
+      <ellipse cx="1140" cy="130" rx="66" ry="13" opacity=".7"/><ellipse cx="1360" cy="152" rx="58" ry="12" opacity=".5"/>
     </g>
-    <g opacity=".08" fill="#fff">
-      <circle cx="200" cy="80" r="1.5"/><circle cx="350" cy="60" r="1"/><circle cx="600" cy="90" r="1.8"/><circle cx="750" cy="50" r=".8"/><circle cx="950" cy="100" r="1.5"/><circle cx="1100" cy="70" r="1"/><circle cx="1300" cy="85" r="1.3"/>
+    <path d="M0 560 Q180 505 360 540 Q540 572 720 535 Q900 502 1080 545 Q1260 580 1440 540 L1440 900 L0 900 Z" fill="#7fa25f" opacity=".30"/>
+    <path d="M0 600 Q220 560 420 588 Q640 616 860 578 Q1080 548 1260 590 Q1380 612 1440 596 L1440 900 L0 900 Z" fill="#6b9153" opacity=".32"/>
+    <path d="M0 640 Q200 605 400 630 Q620 656 840 622 Q1080 588 1260 636 Q1380 656 1440 640 L1440 900 L0 900 Z" fill="#5a8248" opacity=".38"/>
+    <path d="M0 585 L120 430 Q180 400 240 470 L330 520 Q260 560 200 575 Z" fill="#46663e" opacity=".18"/>
+    <path d="M1080 570 L1200 445 Q1260 425 1320 490 L1380 540 L1440 528 L1440 590 L1200 590 Z" fill="#46663e" opacity=".18"/>
+    <g>
+      <rect x="622" y="598" width="8" height="26" rx="3" fill="#4a4a3a"/><circle cx="628" cy="590" r="16" fill="#4d7a3f" opacity=".55"/><circle cx="625" cy="596" r="12" fill="#5c8a4b" opacity=".55"/>
+      <rect x="692" y="596" width="7" height="24" rx="3" fill="#4a4a3a"/><circle cx="697" cy="590" r="14" fill="#4d7a3f" opacity=".50"/><circle cx="694" cy="596" r="11" fill="#5c8a4b" opacity=".50"/>
+      <rect x="556" y="612" width="7" height="22" rx="3" fill="#4a4a3a"/><circle cx="560" cy="606" r="13" fill="#4d7a3f" opacity=".50"/><circle cx="558" cy="612" r="10" fill="#5c8a4b" opacity=".50"/>
     </g>
-    <g opacity=".12" fill="#4a6a3a">
-      <circle cx="140" cy="720" r="2"/><circle cx="280" cy="750" r="1.8"/><circle cx="420" cy="730" r="2.2"/><circle cx="580" cy="760" r="1.5"/><circle cx="720" cy="740" r="2"/><circle cx="860" cy="770" r="1.8"/><circle cx="1020" cy="730" r="2.2"/><circle cx="1160" cy="750" r="1.5"/><circle cx="1300" cy="760" r="2"/><circle cx="1400" cy="740" r="1.8"/><circle cx="180" cy="780" r="1.5"/><circle cx="520" cy="790" r="2"/><circle cx="900" cy="780" r="1.5"/>
-    </g>
-    <g opacity=".12" fill="#c94b4b">
-      <circle cx="160" cy="730" r="1.5"/><circle cx="340" cy="760" r="1.2"/><circle cx="500" cy="740" r="1.8"/><circle cx="660" cy="770" r="1.3"/><circle cx="800" cy="750" r="1.5"/><circle cx="960" cy="780" r="1.2"/><circle cx="1120" cy="740" r="1.8"/><circle cx="1280" cy="770" r="1.3"/><circle cx="1360" cy="750" r="1.5"/>
-    </g>
-    <path d="M0 520 Q150 480 280 500 Q400 520 500 490 Q580 470 650 500 Q750 540 900 490 Q1050 460 1200 500 Q1350 530 1440 490 L1440 900 L0 900 Z" fill="#3a7a2a" opacity=".25"/>
-    <path d="M0 550 Q200 520 380 540 Q500 555 620 530 Q750 510 880 540 Q1050 570 1200 530 Q1350 510 1440 550 L1440 900 L0 900 Z" fill="#2a6a1e" opacity=".30"/>
-    <path d="M0 580 Q180 550 340 565 Q500 580 650 560 Q800 540 950 570 Q1150 600 1300 560 Q1400 550 1440 570 L1440 900 L0 900 Z" fill="#1a5a12" opacity=".38"/>
-    <g class="mountains">
-      <path d="M0 620 L80 420 L160 480 L220 400 L300 460 L360 380 L440 440 L520 520 L400 580 L300 560 L200 590 L100 580 Z" fill="#2a5a2a" opacity=".55"/>
-      <path d="M50 580 L140 380 L220 440 L300 350 L380 420 L440 390 L500 470 L420 540 L300 520 L200 540 Z" fill="#1a4a1a" opacity=".50"/>
-      <path d="M-20 560 L60 340 L140 400 L200 320 L280 380 L340 340 L400 450 L300 500 L200 480 Z" fill="#0a3a0a" opacity=".45"/>
-    </g>
-    <g class="trees">
-      <rect x="620" y="550" width="8" height="30" fill="#3a2518"/><g transform="translate(624,540)"><use href="#star4" transform="scale(18)" fill="#3a6a2a"/></g><g transform="translate(624,530)"><use href="#star4" transform="scale(14)" fill="#4a7a3a"/></g>
-      <rect x="680" y="545" width="7" height="35" fill="#3a2518"/><g transform="translate(683,535)"><use href="#star4" transform="scale(15)" fill="#2a5a2a"/></g><g transform="translate(683,525)"><use href="#star4" transform="scale(12)" fill="#3a6a3a"/></g>
-      <rect x="740" y="555" width="6" height="25" fill="#3a2518"/><g transform="translate(743,545)"><use href="#star4" transform="scale(12)" fill="#3a6a2a"/></g>
-      <rect x="560" y="560" width="7" height="28" fill="#3a2518"/><g transform="translate(563,550)"><use href="#star4" transform="scale(14)" fill="#2a5a2a"/></g><g transform="translate(563,540)"><use href="#star4" transform="scale(10)" fill="#4a7a3a"/></g>
-    </g>
-    <!-- Dense forest right side -->
-    <g fill="#2a5a1e" opacity=".55">
-      <polygon points="1000,560 1040,420 1080,560"/><polygon points="1040,560 1090,400 1140,560"/><polygon points="1100,560 1140,430 1180,560"/>
-      <polygon points="1160,560 1200,410 1240,560"/><polygon points="1220,560 1260,440 1300,560"/><polygon points="1280,560 1320,420 1360,560"/>
-      <polygon points="1340,560 1380,430 1420,560"/><polygon points="1380,560 1420,400 1460,560"/>
-    </g>
-    <g fill="#1a4a10" opacity=".45">
-      <polygon points="1020,560 1060,440 1100,560"/><polygon points="1080,560 1120,420 1160,560"/><polygon points="1140,560 1180,450 1220,560"/>
-      <polygon points="1200,560 1240,430 1280,560"/><polygon points="1260,560 1300,460 1340,560"/><polygon points="1320,560 1360,440 1400,560"/>
-    </g>
-    <!-- Additional scattered trees across mid-ground -->
-    <g class="mid-trees" fill="none">
-      <rect x="200" y="520" width="6" height="25" fill="#3a2518"/><g transform="translate(203,512)"><use href="#star4" transform="scale(12)" fill="#3a6a2a"/></g>
-      <rect x="340" y="530" width="7" height="28" fill="#3a2518"/><g transform="translate(343,522)"><use href="#star4" transform="scale(14)" fill="#2a5a2a"/></g>
-      <rect x="480" y="515" width="6" height="22" fill="#3a2518"/><g transform="translate(483,508)"><use href="#star4" transform="scale(11)" fill="#3a6a2a"/></g>
-      <rect x="840" y="525" width="7" height="26" fill="#3a2518"/><g transform="translate(843,518)"><use href="#star4" transform="scale(13)" fill="#2a5a2a"/></g>
-      <rect x="940" y="540" width="5" height="20" fill="#3a2518"/><g transform="translate(942,534)"><use href="#star4" transform="scale(10)" fill="#3a6a2a"/></g>
-    </g>
-    <path d="M1000 540 Q1050 510 1100 530 Q1150 520 1200 530 Q1260 510 1320 530 Q1380 540 1440 520 L1440 900 L1000 900 Z" fill="#4a7a3a" opacity=".45"/>
   </g>
-  <g class="night-scene">
-    <rect width="1440" height="900" fill="none"/>
-    <!-- Stars -->
-    <g opacity="1">
-      <!-- Bright glowing stars at top -->
-      <g transform="translate(100,50)"><use href="#star4" transform="scale(6)" fill="#ffffff" filter="url(#starGlow)"/><use href="#star4" transform="scale(3)" fill="#ffffff"/></g>
-      <g transform="translate(300,30)"><use href="#star4" transform="scale(7)" fill="#f0e8ff" filter="url(#starGlow)"/><use href="#star4" transform="scale(3.5)" fill="#f0e8ff"/></g>
-      <g transform="translate(500,60)"><use href="#star4" transform="scale(5)" fill="#ffffff" filter="url(#starGlow)"/><use href="#star4" transform="scale(2.5)" fill="#ffffff"/></g>
-      <g transform="translate(700,40)"><use href="#star4" transform="scale(8)" fill="#e8f0ff" filter="url(#starGlow)"/><use href="#star4" transform="scale(4)" fill="#e8f0ff"/></g>
-      <g transform="translate(900,70)"><use href="#star4" transform="scale(6)" fill="#ffe8e8" filter="url(#starGlow)"/><use href="#star4" transform="scale(3)" fill="#ffe8e8"/></g>
-      <g transform="translate(1100,35)"><use href="#star4" transform="scale(7)" fill="#ffffff" filter="url(#starGlow)"/><use href="#star4" transform="scale(3.5)" fill="#ffffff"/></g>
-      <g transform="translate(1300,55)"><use href="#star4" transform="scale(6)" fill="#f0e8ff" filter="url(#starGlow)"/><use href="#star4" transform="scale(3)" fill="#f0e8ff"/></g>
-      <!-- Medium scattered stars -->
-      <g transform="translate(50,120)"><use href="#star4" transform="scale(4)" fill="#ffffff" filter="url(#starGlow)"/><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-      <g transform="translate(220,150)"><use href="#star4" transform="scale(3)" fill="#ffffff"/></g><g transform="translate(400,130)"><use href="#star4" transform="scale(4)" fill="#ffe8e8" filter="url(#starGlow)"/><use href="#star4" transform="scale(2)" fill="#ffe8e8"/></g>
-      <g transform="translate(600,110)"><use href="#star4" transform="scale(3)" fill="#ffffff"/></g><g transform="translate(800,150)"><use href="#star4" transform="scale(4)" fill="#ffffff" filter="url(#starGlow)"/><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-      <g transform="translate(1000,120)"><use href="#star4" transform="scale(3)" fill="#e8f0ff"/></g><g transform="translate(1200,100)"><use href="#star4" transform="scale(4)" fill="#ffffff" filter="url(#starGlow)"/><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-      <g transform="translate(1400,90)"><use href="#star4" transform="scale(3)" fill="#ffffff"/></g><g transform="translate(80,200)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(350,220)"><use href="#star4" transform="scale(3)" fill="#ffffff"/></g>
-      <g transform="translate(550,190)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(750,230)"><use href="#star4" transform="scale(3)" fill="#ffffff"/></g><g transform="translate(950,200)"><use href="#star4" transform="scale(2.5)" fill="#ffffff"/></g>
-      <g transform="translate(1150,240)"><use href="#star4" transform="scale(3)" fill="#ffffff"/></g><g transform="translate(1350,200)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(150,300)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-      <g transform="translate(450,310)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(650,280)"><use href="#star4" transform="scale(2.5)" fill="#ffffff"/></g><g transform="translate(850,320)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-      <g transform="translate(1050,290)"><use href="#star4" transform="scale(2.5)" fill="#ffffff"/></g><g transform="translate(1250,330)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(250,400)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-      <g transform="translate(550,420)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(750,390)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(1000,430)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-      <g transform="translate(1300,400)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(100,500)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(400,520)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-      <g transform="translate(700,510)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(1000,530)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g><g transform="translate(1300,500)"><use href="#star4" transform="scale(2)" fill="#ffffff"/></g>
-    </g>
 
-    <path d="M0 520 Q150 480 280 500 Q400 520 500 490 Q580 470 650 500 Q750 540 900 490 Q1050 460 1200 500 Q1350 530 1440 490 L1440 900 L0 900 Z" fill="#1a2a1a" opacity=".2"/>
-    <path d="M0 550 Q200 520 380 540 Q500 555 620 530 Q750 510 880 540 Q1050 570 1200 530 Q1350 510 1440 550 L1440 900 L0 900 Z" fill="#1a2a1a" opacity=".25"/>
-    <path d="M0 580 Q180 550 340 565 Q500 580 650 560 Q800 540 950 570 Q1150 600 1300 560 Q1400 550 1440 570 L1440 900 L0 900 Z" fill="#1a2a1a" opacity=".3"/>
-    <g class="mountains">
-      <path d="M0 620 L80 420 L160 480 L220 400 L300 460 L360 380 L440 440 L520 520 L400 580 L300 560 L200 590 L100 580 Z" fill="#0a1a0a" opacity=".4"/>
-      <path d="M50 580 L140 380 L220 440 L300 350 L380 420 L440 390 L500 470 L420 540 L300 520 L200 540 Z" fill="#0a1a0a" opacity=".35"/>
-      <path d="M-20 560 L60 340 L140 400 L200 320 L280 380 L340 340 L400 450 L300 500 L200 480 Z" fill="#0a1a0a" opacity=".3"/>
+  <g class="night-scene">
+    <rect width="1440" height="900" fill="url(#skyNight)"/>
+    <g fill="#ffffff">
+      <circle cx="140" cy="70" r="2"/><circle cx="320" cy="48" r="1.4"/><circle cx="560" cy="96" r="2.2"/><circle cx="780" cy="52" r="1.6"/><circle cx="980" cy="110" r="2"/><circle cx="1180" cy="60" r="1.5"/><circle cx="1340" cy="88" r="2"/>
+      <circle cx="80" cy="150" r="1.3"/><circle cx="240" cy="180" r="1"/><circle cx="420" cy="140" r="1.4"/><circle cx="660" cy="170" r="1"/><circle cx="880" cy="150" r="1.3"/><circle cx="1060" cy="180" r="1"/><circle cx="1240" cy="140" r="1.4"/>
     </g>
-    <g class="trees">
-      <rect x="620" y="550" width="8" height="30" fill="#1a0a00"/><g transform="translate(624,540)"><use href="#star4" transform="scale(18)" fill="#0a2a0a"/></g><g transform="translate(624,530)"><use href="#star4" transform="scale(14)" fill="#0a3a0a"/></g>
-      <rect x="680" y="545" width="7" height="35" fill="#1a0a00"/><g transform="translate(683,535)"><use href="#star4" transform="scale(15)" fill="#0a2a0a"/></g><g transform="translate(683,525)"><use href="#star4" transform="scale(12)" fill="#0a3a0a"/></g>
-      <rect x="740" y="555" width="6" height="25" fill="#1a0a00"/><g transform="translate(743,545)"><use href="#star4" transform="scale(12)" fill="#0a2a0a"/></g>
-      <rect x="560" y="560" width="7" height="28" fill="#1a0a00"/><g transform="translate(563,550)"><use href="#star4" transform="scale(14)" fill="#0a2a0a"/></g><g transform="translate(563,540)"><use href="#star4" transform="scale(10)" fill="#0a3a0a"/></g>
+    <g fill="#ffffff" opacity=".5">
+      <circle cx="200" cy="120" r=".8"/><circle cx="500" cy="140" r=".9"/><circle cx="700" cy="100" r=".8"/><circle cx="900" cy="90" r=".9"/><circle cx="1120" cy="120" r=".8"/><circle cx="1300" cy="100" r=".9"/><circle cx="360" cy="60" r=".8"/><circle cx="1020" cy="50" r=".8"/>
     </g>
-    <!-- Night forest right side -->
-    <g fill="#0a2a0a" opacity=".4">
-      <polygon points="1000,560 1040,420 1080,560"/><polygon points="1040,560 1090,400 1140,560"/><polygon points="1100,560 1140,430 1180,560"/>
-      <polygon points="1160,560 1200,410 1240,560"/><polygon points="1220,560 1260,440 1300,560"/><polygon points="1280,560 1320,420 1360,560"/>
-      <polygon points="1340,560 1380,430 1420,560"/><polygon points="1380,560 1420,400 1460,560"/>
+    <path d="M0 560 Q180 505 360 540 Q540 572 720 535 Q900 502 1080 545 Q1260 580 1440 540 L1440 900 L0 900 Z" fill="#122740" opacity=".8"/>
+    <path d="M0 600 Q220 560 420 588 Q640 616 860 578 Q1080 548 1260 590 Q1380 612 1440 596 L1440 900 L0 900 Z" fill="#0e2238" opacity=".85"/>
+    <path d="M0 640 Q200 605 400 630 Q620 656 840 622 Q1080 588 1260 636 Q1380 656 1440 640 L1440 900 L0 900 Z" fill="#0b1c30" opacity=".9"/>
+    <g>
+      <rect x="624" y="612" width="8" height="24" rx="3" fill="#0a1524"/><circle cx="630" cy="606" r="15" fill="#0d2032" opacity=".8"/>
+      <rect x="694" y="610" width="7" height="22" rx="3" fill="#0a1524"/><circle cx="698" cy="606" r="13" fill="#0d2032" opacity=".8"/>
     </g>
-    <g fill="#0a1a0a" opacity=".35">
-      <polygon points="1020,560 1060,440 1100,560"/><polygon points="1080,560 1120,420 1160,560"/><polygon points="1140,560 1180,450 1220,560"/>
-      <polygon points="1200,560 1240,430 1280,560"/><polygon points="1260,560 1300,460 1340,560"/><polygon points="1320,560 1360,440 1400,560"/>
-    </g>
-    <g class="mid-trees" fill="none">
-      <rect x="200" y="520" width="6" height="25" fill="#0a0a00"/><g transform="translate(203,512)"><use href="#star4" transform="scale(12)" fill="#0a1a0a"/></g>
-      <rect x="340" y="530" width="7" height="28" fill="#0a0a00"/><g transform="translate(343,522)"><use href="#star4" transform="scale(14)" fill="#0a1a0a"/></g>
-      <rect x="480" y="515" width="6" height="22" fill="#0a0a00"/><g transform="translate(483,508)"><use href="#star4" transform="scale(11)" fill="#0a2a0a"/></g>
-      <rect x="840" y="525" width="7" height="26" fill="#0a0a00"/><g transform="translate(843,518)"><use href="#star4" transform="scale(13)" fill="#0a1a0a"/></g>
-      <rect x="940" y="540" width="5" height="20" fill="#0a0a00"/><g transform="translate(942,534)"><use href="#star4" transform="scale(10)" fill="#0a2a0a"/></g>
-    </g>
-    <path d="M1000 540 Q1050 510 1100 530 Q1150 520 1200 530 Q1260 510 1320 530 Q1380 540 1440 520 L1440 900 L1000 900 Z" fill="#1a2a1a" opacity=".35"/>
   </g>
 </svg></div>
 <!-- Moon overlay (night only) -->
@@ -152,16 +73,20 @@
   <defs>
     <filter id="moonGlow"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
   </defs>
-  <circle cx="80" cy="80" r="70" fill="#fff8ee"/>
-  <circle cx="80" cy="80" r="60" fill="#fffef5"/>
-  <circle cx="66" cy="70" r="12" fill="#d8c8b0" opacity=".25"/>
-  <circle cx="96" cy="88" r="8" fill="#d8c8b0" opacity=".18"/>
-  <circle cx="72" cy="98" r="7" fill="#d8c8b0" opacity=".22"/>
-  <circle cx="102" cy="64" r="5" fill="#d8c8b0" opacity=".12"/>
-  <circle cx="56" cy="86" r="4" fill="#d8c8b0" opacity=".15"/>
-  <circle cx="90" cy="58" r="4" fill="#d8c8b0" opacity=".1"/>
+  <circle cx="80" cy="80" r="70" fill="#f6f4ee"/>
+  <circle cx="80" cy="80" r="58" fill="#fcfbf6"/>
+  <circle cx="66" cy="72" r="11" fill="#e4ded2" opacity=".30"/>
+  <circle cx="96" cy="90" r="8" fill="#e4ded2" opacity=".22"/>
+  <circle cx="74" cy="99" r="6" fill="#e4ded2" opacity=".26"/>
 </svg>
 </div>
+<!-- hidden defs referenced by in-app character SVGs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="star4" d="M0,-1 Q0.25,-0.25 1,0 Q0.25,0.25 0,1 Q-0.25,0.25 -1,0 Q-0.25,-0.25 0,-1 Z"/>
+    <filter id="starGlow"><feGaussianBlur stdDeviation="5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+</svg>
 <div id="toast-container" aria-live="polite" role="status"></div>
 <div id="conn-status" style="position:fixed;bottom:76px;left:50%;transform:translateX(-50%);z-index:199;pointer-events:none;display:none"><span style="display:inline-block;padding:4px 12px;border-radius:6px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;letter-spacing:.5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15)">&#x26A0; No connection</span></div>
 <div class="top-bar">
@@ -169,11 +94,11 @@
   <div style="display:flex;gap:6px;align-items:center">
     <span id="sync-indicator" class="sync-indicator" onclick="if(_syncStatus==='error'){syncToFirestore()}" style="display:none" title="Sync status" role="status" aria-live="polite">?</span>
     <button class="sos-btn-float" onclick="showSOS()" title="SOS - Get help now" aria-label="SOS - Get help now" style="font-size:12px;font-weight:900;letter-spacing:1px">SOS</button>
-    <button class="profile-btn-float" onclick="goTo('profile')" title="Profile" aria-label="Profile"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 1L3 5v6c0 6.5 4.5 10.5 9 12 4.5-1.5 9-5.5 9-12V5z"/><path d="M8 10c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4-4-1.8-4-4z"/><path d="M8 10c0 2.2 1.8 4 4 4s4-1.8 4-4"/></svg></button>
+    <button class="profile-btn-float" onclick="goTo('profile')" title="Profile" aria-label="Profile"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
   </div>
 </div>
 
-<div class="app" id="app"><div id="app-splash" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:20px"><img src="globe-icon.png" alt="Re.Claim" style="width:180px;height:180px;border-radius:50%;object-fit:cover;box-shadow:0 8px 32px rgba(42,90,30,.25);margin-bottom:24px"><div style="font-size:36px;font-weight:800;letter-spacing:-1.5px">Re.<span style="color:var(--primary)">Claim</span></div><div style="font-size:13px;color:var(--muted);margin-top:8px;animation:pulse 1.5s ease-in-out infinite">loading...</div></div></div>
+<div class="app" id="app"><div id="app-splash" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:20px"><img src="globe-icon.png" alt="Re.Claim" style="width:180px;height:180px;border-radius:50%;object-fit:cover;box-shadow:0 8px 32px rgba(15,118,110,.18);margin-bottom:24px"><div style="font-size:36px;font-weight:800;letter-spacing:-1.5px">Re.<span style="color:var(--primary)">Claim</span></div><div style="font-size:13px;color:var(--muted);margin-top:8px;animation:pulse 1.5s ease-in-out infinite">loading...</div></div></div>
 
 <div class="tabs" id="tabs">
     <button class="tab active" data-page="home" aria-label="Atlas">
@@ -189,7 +114,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg><span class="tab-label">History</span>
     </button>
     <button class="tab" data-page="more" aria-label="Tools">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg><span class="tab-label">Tools</span><span id="tools-badge" style="display:none;position:absolute;top:2px;right:50%;margin-right:-22px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;clip-path:polygon(10% 0%,90% 0%,50% 100%,90% 100%,100% 50%,0% 50%);min-width:8px;text-align:center;line-height:1.4" aria-hidden="true">1</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg><span class="tab-label">Tools</span><span id="tools-badge" style="display:none;position:absolute;top:2px;right:50%;margin-right:-22px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:999px;min-width:8px;text-align:center;line-height:1.4" aria-hidden="true">1</span>
     </button>
 </div>
 
@@ -197,13 +122,13 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
-<script src="src/data.js?v=20260909t"></script>
-<script src="src/buddy.js?v=20260909t"></script>
-<script src="src/sober.js?v=20260909t"></script>
-<script src="src/pages.js?v=20260909t"></script>
-<script src="src/kingdom.js?v=20260909t"></script>
-<script src="src/ui.js?v=20260909t"></script>
-<script src="src/mfa.js?v=20260909t"></script>
+<script src="src/data.js?v=20260918m"></script>
+<script src="src/buddy.js?v=20260918m"></script>
+<script src="src/sober.js?v=20260918m"></script>
+<script src="src/pages.js?v=20260918m"></script>
+<script src="src/kingdom.js?v=20260918m"></script>
+<script src="src/ui.js?v=20260918m"></script>
+<script src="src/mfa.js?v=20260918m"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW registration failed:',e)})}</script>
 </body>
 </html>

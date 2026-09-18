@@ -639,7 +639,7 @@ function homeHTML() {
   if (D.timeCapsules) {
     var tcReady = D.timeCapsules.filter(function(c){return Date.now() >= c.unlockAt && !c.unlocked});
     if (tcReady.length) {
-      h += '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#f5efe6,var(--card))" onclick="goTo(\'timecapsule\')">';
+      h += '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,var(--primary-light),var(--card))" onclick="goTo(\'timecapsule\')">';
       h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#9203;</div><div><div style="font-weight:700;font-size:15px">Time Capsule'+(tcReady.length>1?'s':'')+' Ready!</div><div style="font-size:12px;color:var(--muted)">You have '+tcReady.length+' message'+(tcReady.length>1?'s':'')+' waiting for you. Tap to open.</div></div></div></div>';
     }
   }

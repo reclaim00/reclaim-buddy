@@ -322,7 +322,7 @@ function showRelapseRecovery() {
   // Auto-pardon certificate
   if (D.royalPardons && D.royalPardons.length) {
     var lastPardon = D.royalPardons[D.royalPardons.length - 1];
-    h += '<div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:14px;margin-top:8px;text-align:center;box-shadow:0 2px 12px rgba(138,122,106,.15)">';
+    h += '<div style="background:var(--card);border:2px solid var(--gold);border-radius:16px;padding:14px;margin-top:8px;text-align:center;box-shadow:0 2px 12px rgba(15,23,42,.12)">';
     h += '<div style="font-size:28px;margin-bottom:2px">&#128081;</div>';
     h += '<div style="font-size:12px;font-weight:800;color:var(--primary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Fresh Start</div>';
     h += '<div style="font-size:9px;color:var(--gold);margin-bottom:6px;font-style:italic">"On the path I walk and the journey we are building — you are pardoned. Rise and begin again with my blessing."</div>';

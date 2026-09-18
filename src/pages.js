@@ -25,7 +25,7 @@ var ASSESS_QUESTIONS = [
 function quizOptionsHTML(name, savedVal) {
   var opts = [
     {val:0, label:'Never', color:'var(--primary)', bg:'var(--primary-light)'},
-    {val:25, label:'Rarely', color:'var(--accent)', bg:'#f5efe6'},
+    {val:25, label:'Rarely', color:'var(--accent)', bg:'#f8fafc'},
     {val:50, label:'Sometimes', color:'#f97316', bg:'#fff7ed'},
     {val:75, label:'Often', color:'var(--danger)', bg:'var(--danger-bg)'},
     {val:100, label:'Always', color:'#7c3aed', bg:'#f3e8ff'}
@@ -49,7 +49,7 @@ document.addEventListener('change', function(e){
     var labels = wrapper.querySelectorAll('.quiz-label');
     var optsData = [
       {color:'var(--primary)', bg:'var(--primary-light)'},
-      {color:'var(--accent)', bg:'#f5efe6'},
+      {color:'var(--accent)', bg:'#f8fafc'},
       {color:'#f97316', bg:'#fff7ed'},
       {color:'var(--danger)', bg:'var(--danger-bg)'},
       {color:'#7c3aed', bg:'#f3e8ff'}
@@ -2163,7 +2163,7 @@ function accountabilityHTML() {
   var hoursLeft = nextDue > now ? Math.round((nextDue - now) / 3600000) : 0;
 
   if (isDue) {
-    h += '<div class="card" style="border:2px solid var(--accent);background:#f5efe6;text-align:center">';
+    h += '<div class="card" style="border:2px solid var(--accent);background:var(--primary-light);text-align:center">';
     h += '<div style="font-size:24px;margin-bottom:4px">&#128170;</div>';
     h += '<div style="font-weight:700;font-size:15px;margin-bottom:4px">Time to Check in with ' + buddyName + '</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Reach out and see how they\'re doing. Accountability keeps you both strong.</div>';
@@ -2255,7 +2255,7 @@ function accPendingHTML() {
   if (D.accountability.lastCheckin && now < nextDue) return '';
   var buddyName = D.buddy.name;
   var daysSince = D.accountability.lastCheckin ? Math.round((now - D.accountability.lastCheckin) / 86400000) : 0;
-  var h = '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#f5efe6,var(--card))" onclick="accCheckin()">';
+  var h = '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,var(--primary-light),var(--card))" onclick="accCheckin()">';
   h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#128170;</div><div><div style="font-weight:700;font-size:14px">Accountability Check-In</div><div style="font-size:12px;color:var(--muted)">' + (daysSince > 0 ? daysSince + ' day' + (daysSince !== 1 ? 's' : '') + ' since last check-in' : 'Time to check in') + ' with ' + buddyName + '.</div></div></div></div>';
   return h;
 }
@@ -2512,7 +2512,7 @@ function insightsHTML() {
   for (var ii=0;ii<insights.length;ii++) {
     var ins = insights[ii];
     var borderColor = ins.severity === 'high' ? 'var(--danger)' : ins.severity === 'medium' ? '#f97316' : ins.severity === 'info' ? 'var(--accent)' : 'var(--primary)';
-    var bgColor = ins.severity === 'high' ? 'var(--danger-bg)' : ins.severity === 'medium' ? '#fff7ed' : ins.severity === 'info' ? '#f5efe6' : 'var(--primary-light)';
+    var bgColor = ins.severity === 'high' ? 'var(--danger-bg)' : ins.severity === 'medium' ? '#fff7ed' : ins.severity === 'info' ? '#f8fafc' : 'var(--primary-light)';
     h += '<div class="card" style="border-left:3px solid ' + borderColor + ';background:' + bgColor + ';padding:14px;margin-bottom:8px">';
     h += '<div style="display:flex;align-items:flex-start;gap:8px">';
     h += '<span style="font-size:20px;flex-shrink:0">' + ins.icon + '</span>';
@@ -2604,7 +2604,7 @@ function pendingFollowUpHTML() {
   }
   if (!pending) return '';
   var hrsAgo = Math.round((now - pending.scheduledAt) / 3600000);
-  var h = '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,#f5efe6,var(--card))" onclick="showFollowUp(' + pendingIdx + ')">';
+  var h = '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,var(--primary-light),var(--card))" onclick="showFollowUp(' + pendingIdx + ')">';
   h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#129309;</div><div><div style="font-weight:700;font-size:14px">A follow-up is waiting</div><div style="font-size:12px;color:var(--muted)">' + pending.label + ' follow-up (' + hrsAgo + ' hour' + (hrsAgo !== 1 ? 's' : '') + ' ago). Tap to respond.</div></div></div></div>';
   return h;
 }
@@ -4594,35 +4594,36 @@ function shareCardImage() {
 
 function applyTheme() {
   var pal = {
-    green:{primary:'#3a7a2e',dark:'#1a4a12',light:'#e4ebe0',lightDark:'rgba(58,122,46,0.15)'},
-    blue:{primary:'#60a5fa',dark:'#2563eb',light:'#dbeafe',lightDark:'rgba(96,165,250,0.15)'},
-    purple:{primary:'#a78bfa',dark:'#7c3aed',light:'#ede9fe',lightDark:'rgba(167,139,250,0.15)'},
-    pink:{primary:'#f472b6',dark:'#db2777',light:'#fce7f3',lightDark:'rgba(244,114,182,0.15)'},
-    orange:{primary:'#fb923c',dark:'#ea580c',light:'#fed7aa',lightDark:'rgba(251,146,60,0.15)'},
-    red:{primary:'#f87171',dark:'#dc2626',light:'#fecaca',lightDark:'rgba(248,113,113,0.15)'},
+    green:{primary:'#0f766e',dark:'#134e4a',light:'#ccfbf1',lightDark:'rgba(15,118,110,0.14)'},
+    blue:{primary:'#3b82f6',dark:'#1d4ed8',light:'#dbeafe',lightDark:'rgba(59,130,246,0.14)'},
+    purple:{primary:'#8b5cf6',dark:'#6d28d9',light:'#ede9fe',lightDark:'rgba(139,92,246,0.14)'},
+    pink:{primary:'#ec4899',dark:'#be185d',light:'#fce7f3',lightDark:'rgba(236,72,153,0.14)'},
+    orange:{primary:'#f97316',dark:'#c2410c',light:'#fed7aa',lightDark:'rgba(249,115,22,0.14)'},
+    red:{primary:'#ef4444',dark:'#b91c1c',light:'#fecaca',lightDark:'rgba(239,68,68,0.14)'},
   };
   var c = pal[D.accentColor] || pal.green;
   var el = document.body, root = document.documentElement;
   if (!el) return;
   el.style.setProperty('--primary', c.primary);
   el.style.setProperty('--primary-dark', c.dark);
+  el.style.setProperty('--accent', c.primary);
   if (D.darkMode) {
     el.classList.add('dark');
-    root.style.background = '#0f140e';
-    el.style.setProperty('--bg','#0f140e');
-    el.style.setProperty('--card','#181c16');
-    el.style.setProperty('--text','#e4e4e7');
-    el.style.setProperty('--muted','#8a8a9a');
-    el.style.setProperty('--border','#2a2a22');
+    root.style.background = '#0b1220';
+    el.style.setProperty('--bg','#0b1220');
+    el.style.setProperty('--card','#121a2b');
+    el.style.setProperty('--text','#e2e8f0');
+    el.style.setProperty('--muted','#94a3b8');
+    el.style.setProperty('--border','#1f2a3d');
     el.style.setProperty('--primary-light', c.lightDark);
   } else {
     el.classList.remove('dark');
-    root.style.background = '#dce3d4';
-    el.style.setProperty('--bg','#dce3d4');
-    el.style.setProperty('--card','#f0ede4');
-    el.style.setProperty('--text','#1e1a14');
-    el.style.setProperty('--muted','#7a7666');
-    el.style.setProperty('--border','#e5e7eb');
+    root.style.background = '#eef2f7';
+    el.style.setProperty('--bg','#eef2f7');
+    el.style.setProperty('--card','#ffffff');
+    el.style.setProperty('--text','#0f172a');
+    el.style.setProperty('--muted','#64748b');
+    el.style.setProperty('--border','#e2e8f0');
     el.style.setProperty('--primary-light', c.light);
   }
   }
