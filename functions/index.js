@@ -95,7 +95,7 @@ exports.checkNotifications = functions.pubsub.schedule('every 5 minutes').onRun(
         if (toNotify) {
           userData._notifiedDate = todayStr;
           db.collection('appData').doc(email).set({data: userData, lastUpdated: admin.firestore.FieldValue.serverTimestamp()}, {merge: true}).catch(function(){});
-          return admin.messaging().send({
+          var msg = {
             token: subData.token,
             data: {
               title: toNotify.title,
@@ -104,7 +104,12 @@ exports.checkNotifications = functions.pubsub.schedule('every 5 minutes').onRun(
               tag: toNotify.tag,
               url: 'app.html'
             }
-          }).catch(function(){});
+          };
+          if (subData.platform === 'mobile') {
+            msg.notification = { title: toNotify.title, body: toNotify.body };
+            msg.android = { channelId: 'reclaim' };
+          }
+          return admin.messaging().send(msg).catch(function(){});
         }
       }).catch(function(){})
     );
@@ -129,7 +134,7 @@ exports.onMessageCreate = functions.firestore.document('messages/{messageId}').o
   var name = d.fromName || sender.split('@')[0] || 'Your partner';
   var body = d.text.length > 120 ? d.text.slice(0, 120) + '…' : d.text;
 
-  return admin.messaging().send({
+  var msg = {
     token: subDoc.data().token,
     data: {
       title: 'New message from ' + name,
@@ -138,7 +143,12 @@ exports.onMessageCreate = functions.firestore.document('messages/{messageId}').o
       tag: 'reclaim-msg-' + snap.id,
       url: 'app.html?action=buddy'
     }
-  }).catch(function() {});
+  };
+  if (subDoc.data().platform === 'mobile') {
+    msg.notification = { title: 'New message from ' + name, body: body };
+    msg.android = { channelId: 'reclaim' };
+  }
+  return admin.messaging().send(msg).catch(function() {});
 });
 
 exports.onUserCreate = functions.auth.user().onCreate(async function(user) {

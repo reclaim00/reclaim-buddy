@@ -16,7 +16,12 @@ try { if (firebase) { MESSAGING = firebase.messaging(); } } catch(e) { console.w
 // Set your VAPID key below from Firebase Console > Cloud Messaging > Web Push certificates
 var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHOSCA7l4_ZUvy4RMvxDVaUFI84';
 
+function isNativeApp() {
+  return typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform && Capacitor.isNativePlatform();
+}
+
 function subscribePush() {
+  if (isNativeApp()) { registerNativePush(); return; }
   if (!MESSAGING || !AUTH_EMAIL || VAPID_KEY === 'REPLACE_WITH_YOUR_VAPID_KEY') return;
   if (!('serviceWorker' in navigator)) return;
   navigator.serviceWorker.ready.then(function(reg) {
@@ -25,6 +30,7 @@ function subscribePush() {
     if (!token) return;
     if (DB) DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({
       token: token,
+      platform: 'web',
       timezone: (typeof Intl !== 'undefined' && Intl.DateTimeFormat && Intl.DateTimeFormat().resolvedOptions) ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '',
       prefs: (D.notifications && D.notifications.push !== false) ? JSON.stringify(D.notifications) : '{}',
       lastSent: {},
@@ -34,6 +40,7 @@ function subscribePush() {
 }
 
 function unsubscribePush() {
+  if (isNativeApp()) { unregisterNativePush(); return; }
   if (!MESSAGING || !AUTH_EMAIL) return;
   MESSAGING.getToken({vapidKey: VAPID_KEY}).then(function(token) {
     if (token) {
@@ -41,6 +48,101 @@ function unsubscribePush() {
     }
   }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
   DB.collection('pushSubscriptions').doc(AUTH_EMAIL).delete().catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+}
+
+// ====== NATIVE PUSH (FCM via @capacitor-firebase/messaging) ======
+var _nativePushWired = false;
+
+function pushTokenToFirestore(token) {
+  if (!DB || !AUTH_EMAIL || !token) return;
+  DB.collection('pushSubscriptions').doc(AUTH_EMAIL).set({
+    token: token,
+    platform: 'mobile',
+    timezone: (typeof Intl !== 'undefined' && Intl.DateTimeFormat && Intl.DateTimeFormat().resolvedOptions) ? (Intl.DateTimeFormat().resolvedOptions().timeZone || '') : '',
+    prefs: (D.notifications && D.notifications.push !== false) ? JSON.stringify(D.notifications) : '{}',
+    lastSent: {},
+    updated: firebase.firestore.FieldValue.serverTimestamp()
+  }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+}
+
+function registerNativePush() {
+  if (!isNativeApp() || !AUTH_EMAIL) return;
+  var FM = Capacitor.Plugins && Capacitor.Plugins.FirebaseMessaging;
+  if (!FM) return;
+  try {
+    var LN = Capacitor.Plugins.LocalNotifications;
+    if (LN && LN.createChannel) {
+      LN.createChannel({ id: 'reclaim', name: 'Re.Claim Reminders', importance: 4, vibration: true, sound: '' }).catch(function(){});
+    }
+  } catch(e) {}
+
+  if (!_nativePushWired) {
+    _nativePushWired = true;
+    FM.addListener('tokenReceived', function(ev) {
+      if (ev && ev.token) pushTokenToFirestore(ev.token);
+    }).catch(function(){});
+    FM.addListener('notificationReceived', function(ev) {
+      var n = ev && ev.notification;
+      if (!n || !n.data) return;
+      // iOS foreground: presentationOptions already shows the banner (skip).
+      // Android foreground: display via LocalNotifications since the OS suppresses it.
+      if (Capacitor.platform === 'android' && !document.hidden) {
+        var d = n.data;
+        var LN2 = Capacitor.Plugins.LocalNotifications;
+        if (LN2) {
+          LN2.schedule({ notifications: [{
+            id: Math.floor(Math.random() * 9e8) + 1,
+            title: d.title || 'Re.Claim',
+            body: d.body || '',
+            smallIcon: 'ic_push_world',
+            channelId: 'reclaim',
+            schedule: { at: new Date(Date.now() + 400), allowWhileIdle: true },
+            data: { url: d.url || '' }
+          }] }).catch(function(){});
+        }
+      }
+    }).catch(function(){});
+    FM.addListener('notificationActionPerformed', function(ev) {
+      var n = ev && ev.notification;
+      if (!n) return;
+      var url = (n.data && n.data.url) || '';
+      var m = url.match(/[?&]action=([^&]+)/);
+      var action = m ? m[1] : '';
+      if (action) setTimeout(function(){ routeNativeAction(action); }, 700);
+    }).catch(function(){});
+  }
+
+  FM.checkPermissions().then(function(perm) {
+    if (perm && perm.receive === 'granted') return true;
+    return FM.requestPermissions().then(function(p2) { return p2 && p2.receive === 'granted'; });
+  }).then(function(granted) {
+    if (!granted) return;
+    return FM.getToken();
+  }).then(function(result) {
+    if (result && result.token) pushTokenToFirestore(result.token);
+  }).catch(function(e){
+    console.warn('native push register failed:', e);
+    showToast('Could not enable push notifications','error');
+  });
+}
+
+function unregisterNativePush() {
+  if (!isNativeApp()) return;
+  var FM = Capacitor.Plugins && Capacitor.Plugins.FirebaseMessaging;
+  if (FM && FM.deleteToken) FM.deleteToken().catch(function(){});
+  if (DB && AUTH_EMAIL) DB.collection('pushSubscriptions').doc(AUTH_EMAIL).delete().catch(function(e){ console.warn(e); });
+}
+
+function routeNativeAction(action) {
+  var check = function() {
+    if (typeof goTo !== 'function' || typeof startBreathe !== 'function' || typeof showSOS !== 'function') { setTimeout(check, 300); return; }
+    if (action === 'journal') goTo('journal');
+    else if (action === 'breathe') startBreathe();
+    else if (action === 'sos') showSOS();
+    else if (action === 'mood') goTo('track');
+    else if (action === 'buddy') goTo('buddy');
+  };
+  check();
 }
 
 // ====== CLOUD SYNC (Firestore cross-device) ======
@@ -139,7 +241,8 @@ function onAuthReady(email, isNew) {
   D = loadData();
   document.body.classList.add('logged-in');
   if (isNew) { D.joinDate = Date.now(); saveData(); }
-  if (window.Notification && Notification.permission === "granted") subscribePush();
+  if (isNativeApp()) { subscribePush(); }
+  else if (window.Notification && Notification.permission === "granted") subscribePush();
   if (typeof startBuddyMessaging === 'function') startBuddyMessaging();
   registerCurrentUser();
   if (firebase && firebase.auth().currentUser) {
