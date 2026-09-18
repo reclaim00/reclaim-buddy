@@ -17,52 +17,36 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Re.Claim</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://api.qrserver.com; connect-src 'self' https://api.qrserver.com https://*.firebaseio.com https://*.googleapis.com https://*.firestore.googleapis.com wss://*.firebaseio.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
-<link rel="stylesheet" href="src/style.css?v=20260918p">
+<link rel="stylesheet" href="src/style.css?v=20260918q">
 </head>
 <body>
 <div id="landscape-bg" aria-hidden="true">
 <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#b8d3ec"/><stop offset="48%" stop-color="#dbe6f1"/><stop offset="80%" stop-color="#eef0e6"/><stop offset="100%" stop-color="#f4f2e2"/></linearGradient>
-    <radialGradient id="sunGlow"><stop offset="0%" stop-color="#ffe9b0"/><stop offset="45%" stop-color="#ffe09a" stop-opacity=".45"/><stop offset="100%" stop-color="#ffe09a" stop-opacity="0"/></radialGradient>
-    <linearGradient id="skyNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a1b30"/><stop offset="55%" stop-color="#102a44"/><stop offset="100%" stop-color="#153a3d"/></linearGradient>
+    <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a9c9ea"/><stop offset="45%" stop-color="#cddfef"/><stop offset="78%" stop-color="#e7eef2"/><stop offset="100%" stop-color="#eef2db"/></linearGradient>
+    <radialGradient id="sunGlow"><stop offset="0%" stop-color="#fff6cf"/><stop offset="45%" stop-color="#ffe7a3" stop-opacity=".5"/><stop offset="100%" stop-color="#ffe7a3" stop-opacity="0"/></radialGradient>
+    <linearGradient id="skyNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a1a2e"/><stop offset="55%" stop-color="#102c47"/><stop offset="100%" stop-color="#163a3c"/></linearGradient>
   </defs>
 
   <g class="day-scene">
     <rect width="1440" height="900" fill="url(#skyDay)"/>
-    <circle cx="176" cy="148" r="150" fill="url(#sunGlow)"/>
-    <circle cx="176" cy="148" r="54" fill="#ffd27a"/>
-    <circle cx="176" cy="148" r="80" fill="none" stroke="#ffd27a" stroke-width="2" opacity=".28"/>
-    <g fill="#ffffff" opacity=".62">
-      <rect x="428" y="118" width="150" height="16" rx="8"/><rect x="474" y="102" width="98" height="12" rx="6" opacity=".9"/>
-      <rect x="816" y="160" width="168" height="14" rx="7" opacity=".7"/><rect x="856" y="145" width="112" height="11" rx="5.5" opacity=".9"/>
-      <rect x="1186" y="122" width="122" height="13" rx="6.5" opacity=".6"/>
-      <rect x="90" y="208" width="96" height="10" rx="5" opacity=".5"/><rect x="120" y="196" width="72" height="9" rx="4.5" opacity=".7"/>
+    <circle cx="178" cy="150" r="130" fill="url(#sunGlow)"/>
+    <circle cx="178" cy="150" r="46" fill="#ffedb3"/>
+    <g fill="#ffffff" opacity=".55">
+      <ellipse cx="480" cy="122" rx="72" ry="15"/><ellipse cx="512" cy="110" rx="50" ry="11"/>
+      <ellipse cx="842" cy="162" rx="82" ry="14" opacity=".8"/><ellipse cx="874" cy="150" rx="54" ry="10"/>
+      <ellipse cx="1140" cy="130" rx="66" ry="13" opacity=".7"/><ellipse cx="1360" cy="152" rx="58" ry="12" opacity=".5"/>
     </g>
-    <path d="M0 560 Q180 522 360 546 Q540 568 720 538 Q900 510 1080 548 Q1260 580 1440 544 L1440 900 L0 900 Z" fill="#c5d4b0" opacity=".38"/>
-    <g transform="translate(180 552)" fill="#6f915f" stroke="#6f915f" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -32 L20 -4 L-20 -4 Z"/><path d="M0 -12 L24 18 L-24 18 Z"/>
+    <path d="M0 560 Q180 505 360 540 Q540 572 720 535 Q900 502 1080 545 Q1260 580 1440 540 L1440 900 L0 900 Z" fill="#7fa25f" opacity=".30"/>
+    <path d="M0 600 Q220 560 420 588 Q640 616 860 578 Q1080 548 1260 590 Q1380 612 1440 596 L1440 900 L0 900 Z" fill="#6b9153" opacity=".32"/>
+    <path d="M0 640 Q200 605 400 630 Q620 656 840 622 Q1080 588 1260 636 Q1380 656 1440 640 L1440 900 L0 900 Z" fill="#5a8248" opacity=".38"/>
+    <path d="M0 585 L120 430 Q180 400 240 470 L330 520 Q260 560 200 575 Z" fill="#46663e" opacity=".18"/>
+    <path d="M1080 570 L1200 445 Q1260 425 1320 490 L1380 540 L1440 528 L1440 590 L1200 590 Z" fill="#46663e" opacity=".18"/>
+    <g>
+      <rect x="622" y="598" width="8" height="26" rx="3" fill="#4a4a3a"/><circle cx="628" cy="590" r="16" fill="#4d7a3f" opacity=".55"/><circle cx="625" cy="596" r="12" fill="#5c8a4b" opacity=".55"/>
+      <rect x="692" y="596" width="7" height="24" rx="3" fill="#4a4a3a"/><circle cx="697" cy="590" r="14" fill="#4d7a3f" opacity=".50"/><circle cx="694" cy="596" r="11" fill="#5c8a4b" opacity=".50"/>
+      <rect x="556" y="612" width="7" height="22" rx="3" fill="#4a4a3a"/><circle cx="560" cy="606" r="13" fill="#4d7a3f" opacity=".50"/><circle cx="558" cy="612" r="10" fill="#5c8a4b" opacity=".50"/>
     </g>
-    <g transform="translate(1240 548)" fill="#6f915f" stroke="#6f915f" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -30 L19 -3 L-19 -3 Z"/><path d="M0 -11 L23 16 L-23 16 Z"/>
-    </g>
-    <path d="M0 612 Q220 578 420 598 Q640 624 860 588 Q1080 558 1260 598 Q1380 618 1440 602 L1440 900 L0 900 Z" fill="#abcd96" opacity=".44"/>
-    <g transform="translate(680 560)" fill="#54805a" stroke="#54805a" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -38 L24 -8 L-24 -8 Z"/><path d="M0 -18 L28 14 L-28 14 Z"/>
-    </g>
-    <g transform="translate(1030 572)">
-      <rect x="-4" y="12" width="8" height="16" rx="4" fill="#5c4033"/>
-      <rect x="-20" y="0" width="40" height="26" rx="13" fill="#6f9a68"/>
-    </g>
-    <path d="M0 652 Q200 626 400 644 Q620 666 840 636 Q1080 608 1260 648 Q1380 666 1440 652 L1440 900 L0 900 Z" fill="#8fb27d" opacity=".5"/>
-    <g transform="translate(420 634)" fill="#427052" stroke="#427052" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -34 L22 -6 L-22 -6 Z"/><path d="M0 -14 L26 16 L-26 16 Z"/>
-    </g>
-    <g transform="translate(880 640)" fill="#427052" stroke="#427052" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -32 L21 -5 L-21 -5 Z"/><path d="M0 -12 L25 14 L-25 14 Z"/>
-    </g>
-    <g transform="translate(260 648)"><rect x="-26" y="-18" width="52" height="22" rx="11" fill="#6f9a68"/><rect x="-16" y="-26" width="34" height="18" rx="9" fill="#7aa76f"/></g>
-    <g transform="translate(1180 646)"><rect x="-24" y="-16" width="48" height="20" rx="10" fill="#6f9a68"/><rect x="-14" y="-24" width="30" height="16" rx="8" fill="#7aa76f"/></g>
   </g>
 
   <g class="night-scene">
@@ -74,38 +58,26 @@
     <g fill="#ffffff" opacity=".5">
       <circle cx="200" cy="120" r=".8"/><circle cx="500" cy="140" r=".9"/><circle cx="700" cy="100" r=".8"/><circle cx="900" cy="90" r=".9"/><circle cx="1120" cy="120" r=".8"/><circle cx="1300" cy="100" r=".9"/><circle cx="360" cy="60" r=".8"/><circle cx="1020" cy="50" r=".8"/>
     </g>
-    <path d="M0 560 Q180 522 360 546 Q540 568 720 538 Q900 510 1080 548 Q1260 580 1440 544 L1440 900 L0 900 Z" fill="#12253e" opacity=".85"/>
-    <g transform="translate(180 552)" fill="#0d2440" stroke="#0d2440" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -32 L20 -4 L-20 -4 Z"/><path d="M0 -12 L24 18 L-24 18 Z"/>
+    <path d="M0 560 Q180 505 360 540 Q540 572 720 535 Q900 502 1080 545 Q1260 580 1440 540 L1440 900 L0 900 Z" fill="#122740" opacity=".8"/>
+    <path d="M0 600 Q220 560 420 588 Q640 616 860 578 Q1080 548 1260 590 Q1380 612 1440 596 L1440 900 L0 900 Z" fill="#0e2238" opacity=".85"/>
+    <path d="M0 640 Q200 605 400 630 Q620 656 840 622 Q1080 588 1260 636 Q1380 656 1440 640 L1440 900 L0 900 Z" fill="#0b1c30" opacity=".9"/>
+    <g>
+      <rect x="624" y="612" width="8" height="24" rx="3" fill="#0a1524"/><circle cx="630" cy="606" r="15" fill="#0d2032" opacity=".8"/>
+      <rect x="694" y="610" width="7" height="22" rx="3" fill="#0a1524"/><circle cx="698" cy="606" r="13" fill="#0d2032" opacity=".8"/>
     </g>
-    <g transform="translate(1240 548)" fill="#0d2440" stroke="#0d2440" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -30 L19 -3 L-19 -3 Z"/><path d="M0 -11 L23 16 L-23 16 Z"/>
-    </g>
-    <path d="M0 612 Q220 578 420 598 Q640 624 860 588 Q1080 558 1260 598 Q1380 618 1440 602 L1440 900 L0 900 Z" fill="#0e2140" opacity=".9"/>
-    <g transform="translate(680 560)" fill="#0a1e38" stroke="#0a1e38" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -38 L24 -8 L-24 -8 Z"/><path d="M0 -18 L28 14 L-28 14 Z"/>
-    </g>
-    <g transform="translate(1030 572)">
-      <rect x="-4" y="12" width="8" height="16" rx="4" fill="#0a1624"/>
-      <rect x="-20" y="0" width="40" height="26" rx="13" fill="#0c1f36"/>
-    </g>
-    <path d="M0 652 Q200 626 400 644 Q620 666 840 636 Q1080 608 1260 648 Q1380 666 1440 652 L1440 900 L0 900 Z" fill="#0b1d38" opacity=".95"/>
-    <g transform="translate(420 634)" fill="#091a30" stroke="#091a30" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -34 L22 -6 L-22 -6 Z"/><path d="M0 -14 L26 16 L-26 16 Z"/>
-    </g>
-    <g transform="translate(880 640)" fill="#091a30" stroke="#091a30" stroke-width="6" stroke-linejoin="round">
-      <path d="M0 -32 L21 -5 L-21 -5 Z"/><path d="M0 -12 L25 14 L-25 14 Z"/>
-    </g>
-    <g transform="translate(260 648)"><rect x="-26" y="-18" width="52" height="22" rx="11" fill="#0c1f36"/><rect x="-16" y="-26" width="34" height="18" rx="9" fill="#10263f"/></g>
-    <g transform="translate(1180 646)"><rect x="-24" y="-16" width="48" height="20" rx="10" fill="#0c1f36"/><rect x="-14" y="-24" width="30" height="16" rx="8" fill="#10263f"/></g>
   </g>
 </svg></div>
 <!-- Moon overlay (night only) -->
 <div id="moon-overlay">
 <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="80" cy="80" r="70" fill="#edf0f5"/>
-  <circle cx="80" cy="80" r="56" fill="#f7f9fc"/>
-  <path d="M30 98 a58 58 0 0 0 100 0 a50 50 0 0 1 -100 0 Z" fill="#d6dce6" opacity=".6"/>
+  <defs>
+    <filter id="moonGlow"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <circle cx="80" cy="80" r="70" fill="#f6f4ee"/>
+  <circle cx="80" cy="80" r="58" fill="#fcfbf6"/>
+  <circle cx="66" cy="72" r="11" fill="#e4ded2" opacity=".30"/>
+  <circle cx="96" cy="90" r="8" fill="#e4ded2" opacity=".22"/>
+  <circle cx="74" cy="99" r="6" fill="#e4ded2" opacity=".26"/>
 </svg>
 </div>
 <!-- hidden defs referenced by in-app character SVGs -->
@@ -150,13 +122,13 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
-<script src="src/data.js?v=20260918p"></script>
-<script src="src/buddy.js?v=20260918p"></script>
-<script src="src/sober.js?v=20260918p"></script>
-<script src="src/pages.js?v=20260918p"></script>
-<script src="src/kingdom.js?v=20260918p"></script>
-<script src="src/ui.js?v=20260918p"></script>
-<script src="src/mfa.js?v=20260918p"></script>
+<script src="src/data.js?v=20260918q"></script>
+<script src="src/buddy.js?v=20260918q"></script>
+<script src="src/sober.js?v=20260918q"></script>
+<script src="src/pages.js?v=20260918q"></script>
+<script src="src/kingdom.js?v=20260918q"></script>
+<script src="src/ui.js?v=20260918q"></script>
+<script src="src/mfa.js?v=20260918q"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW registration failed:',e)})}</script>
 </body>
 </html>

@@ -8,7 +8,7 @@ html{scroll-behavior:smooth}
 body.dark #moon-overlay{opacity:1}
 #moon-overlay svg{width:clamp(60px,15vw,140px);height:auto;display:block;filter:drop-shadow(0 0 24px rgba(240,238,232,.45))}
 @media(max-width:600px){#moon-overlay{width:92vw;right:-6%;bottom:0}}@media(max-width:480px){#moon-overlay{left:2%;top:4px}}
-.day-scene{opacity:.5;transition:opacity .35s ease}
+.day-scene{opacity:.45;transition:opacity .35s ease}
 .night-scene{opacity:0;pointer-events:none;transition:opacity .35s ease}
 body.dark .day-scene{opacity:0}
 body.dark .night-scene{opacity:1}
