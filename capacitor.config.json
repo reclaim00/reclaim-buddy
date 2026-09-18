@@ -1,0 +1,26 @@
+{
+  "appId": "com.reclaim00.reclaimbuddy",
+  "appName": "Re.Claim",
+  "webDir": "www",
+  "backgroundColor": "#dce3d4",
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "https"
+  },
+  "ios": {
+    "contentInset": "automatic"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 900,
+      "launchAutoHide": true,
+      "backgroundColor": "#dce3d4",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": true
+    },
+    "StatusBar": {
+      "overlaysWebView": false
+    }
+  }
+}

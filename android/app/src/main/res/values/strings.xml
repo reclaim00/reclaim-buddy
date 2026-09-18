@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Re.Claim</string>
+    <string name="title_activity_main">Re.Claim</string>
+    <string name="package_name">com.reclaim00.reclaimbuddy</string>
+    <string name="custom_url_scheme">com.reclaim00.reclaimbuddy</string>
+</resources>

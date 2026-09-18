@@ -1,4 +1,23 @@
 /*
+!/package.json
+!/package-lock.json
+!/capacitor.config.json
+!/assets/
+!/www/
+!/ios/
+!/android/
+# Native build artifacts (inside the un-ignored ios/android dirs)
+node_modules/
+ios/App/Pods/
+ios/App/DerivedData/
+ios/App/build/
+ios/App/App.xcworkspace/xcuserdata/
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/capacitor-cordova-android-plugins/build/
+*.xcuserdatad/
 !/ReClaim.html
 !/index.html
 !/manifest.json

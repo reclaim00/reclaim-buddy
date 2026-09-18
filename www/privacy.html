@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy - Re.Claim</title>
+<style>
+  :root { --bg:#0f140e; --card:#18201a; --card2:#1d281f; --border:#2c3a2e; --text:#eceade; --muted:#a8b49f; --primary:#7ab25a; --accent:#d8a25a; --danger:#e05252; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }
+  .wrap { max-width:760px; margin:0 auto; padding:32px 20px 64px; }
+  .top { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+  .logo { width:42px; height:42px; border-radius:50%; object-fit:cover; }
+  h1 { font-size:26px; margin:4px 0 2px; }
+  .sub { color:var(--muted); font-size:13px; margin-bottom:24px; }
+  h2 { font-size:17px; margin:28px 0 8px; color:var(--primary); }
+  p { font-size:14px; margin:10px 0; color:var(--text); }
+  li { font-size:14px; margin:6px 0; color:var(--text); }
+  ul { padding-left:20px; }
+  .note { background:var(--card); border-left:4px solid var(--danger); padding:12px 14px; border-radius:0 10px 10px 0; font-size:13px; margin:16px 0; }
+  a { color:var(--accent); }
+  .risk { background:var(--card); border-left:4px solid var(--accent); padding:12px 14px; border-radius:0 10px 10px 0; font-size:13px; margin:16px 0; }
+  .back { display:inline-block; margin-top:28px; color:var(--muted); font-size:13px; text-decoration:none; }
+  .back:hover { color:var(--primary); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <img class="logo" src="globe-icon.png" alt="Re.Claim">
+    <div>
+      <h1>Re.Claim Privacy Policy</h1>
+      <div class="sub">Last updated: September 2026</div>
+    </div>
+  </div>
+
+  <p>This policy explains what information Re.Claim collects, how it is used, and how you can control it. You own your recovery data. We have designed Re.Claim so that most of it never leaves your device.</p>
+
+  <div class="note"><strong>Before anything else:</strong> Re.Claim is a support tool, not a medical device or a substitute for professional care. If you are in crisis, call or text <strong>988</strong> (Suicide &amp; Crisis Lifeline in the U.S.) or call <strong>911</strong> if you are in immediate danger.</div>
+
+  <h2>1. Data stored on your device</h2>
+  <p>When you use Re.Claim without signing in, everything you create is stored only in your browser's local storage on your device. This includes journal entries, mood and craving logs, your sobriety streak and start date, habits, goals, pledges, coping cards, reminders, safety-plan data, progress reports, and app settings. This data is not sent to any server, and nothing we run reads it.</p>
+
+  <h2>2. Optional cloud sync</h2>
+  <p>If you choose to create an account and sign in, your data is stored in <strong>Google Firebase</strong> (Authentication, Cloud Firestore, and Cloud Messaging) so it can sync across your devices and be recovered if you lose your phone. This includes the recovery data described above. You can delete your account and all synced data at any time from <em>Tools &rarr; Profile &rarr; Delete Account</em>.</p>
+
+  <h2>3. Partner (buddy) features</h2>
+  <p>If you use partner pairing, check-ins, or encrypted one-to-one messages, the minimum information needed to deliver those features (your pairing code, buddy handle, check-in status, and messages) is exchanged with your partner through Firebase Firestore. Transmissions are encrypted in transit. Partners never see your journal, screeners, or other private data.</p>
+
+  <h2>4. Push notifications</h2>
+  <p>If you enable notifications or reminders, we register your device for web push and use it only to deliver the reminders you request (for example, morning and evening check-ins, craving check-ins, or the reminder times you set). You can turn notifications off at any time in your device settings or in the app.</p>
+
+  <h2>5. Anonymous research data (optional)</h2>
+  <p>Nothing is collected unless you switch on "Share anonymous data" in <em>Profile</em>. If you opt in, we gather anonymized aggregate counts (for example, tool usage counts and mood trend patterns) to understand how people use Re.Claim. Journal text, names, email addresses, contacts, and anything identifying is never included. You can turn this off at any time.</p>
+
+  <h2>6. What we do not collect or do</h2>
+  <ul>
+    <li>No advertising, ad trackers, or analytics SDKs are included.</li>
+    <li>We do not sell, rent, or share your personal information.</li>
+    <li>We do not sell advertisements based on your data.</li>
+    <li>We do not store plaintext passwords. Account passwords are handled by Firebase Authentication, and device lock credentials are stored only as salted hashes.</li>
+  </ul>
+
+  <h2>7. Security</h2>
+  <p>Journaling can be protected with an optional device passphrase that encrypts your journal content before it is stored. All Firebase connections use HTTPS with encryption in transit. Sensitive content on your device is as secure as the operating system and browser that host it; for the strongest protection, enable the app's Privacy Lock and consider keeping your device locked when you use it away from home.</p>
+
+  <h2>8. Children</h2>
+  <p>Re.Claim is intended for adults 18 and older. We do not knowingly collect information from anyone under 18. If you believe a minor has been using the app, use the data deletion tools in Profile or the erasure option for local data.</p>
+
+  <h2>9. Your control and deletion</h2>
+  <ul>
+    <li><strong>Export:</strong> <em>Profile &rarr; Export My Data</em> downloads your full data as a JSON file and your journal as text.</li>
+    <li><strong>Erase local data:</strong> <em>Profile &rarr; Erase my data</em> permanently removes everything stored on the current device.</li>
+    <li><strong>Delete account:</strong> <em>Profile &rarr; Delete Account</em> removes your Firebase account and all synced data, then clears the local copy.</li>
+  </ul>
+
+  <h2>10. Third-party services</h2>
+  <p>Re.Claim uses Google Firebase (Authentication, Firestore, Cloud Messaging) for accounts, sync, and push. Optional QR-code previews are rendered by an image service on request only. Fonts are loaded from Google Fonts. Each of these services runs under its own privacy policy.</p>
+
+  <div class="risk"><strong>Remember:</strong> your progress is your own. Re.Claim works on your side, in your pocket. If your scores on a self-check feel like a lot to carry, please talk to a trusted person or a professional &mdash; you deserve help, and you are not alone.</div>
+
+  <p class="back"><a href="app.html">&larr; Back to Re.Claim</a></p>
+</div>
+</body>
+</html>
