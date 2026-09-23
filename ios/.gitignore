@@ -11,3 +11,7 @@ capacitor-cordova-ios-plugins
 # Generated Config files
 App/App/capacitor.config.json
 App/App/config.xml
+
+# SPM symlinks (auto-created by `npx cap sync`);
+# must not be committed — GitHub Pages rejects symlinked artifacts
+App/CapApp-SPM/symlinks/
