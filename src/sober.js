@@ -193,12 +193,12 @@ function vigilUnitsHTML() {
 function soberTimerHTML() {
   if (!soberElapsed()) return '';
   return '<div id="sober-timer" class="vigil-timer">'
-    + '<div class="vigil-title">Recovery Timer</div>'
-    + '<div class="vigil-sub">You have held for</div>'
+    + '<div class="vigil-title">' + t('Recovery Timer') + '</div>'
+    + '<div class="vigil-sub">' + t('You have held for') + '</div>'
     + '<div class="vigil-units" id="vigil-units">' + vigilUnitsHTML() + '</div>'
     + '<div class="vigil-actions">'
-    + '<button onclick="event.stopPropagation();resetSoberTimer()" title="Reset timer">&#8635; Reset</button>'
-    + '<span onclick="showFreshStartOverlay()" title="Fresh Start">&#127793; Fresh Start</span>'
+    + '<button onclick="event.stopPropagation();resetSoberTimer()" title="' + t('Reset timer') + '">&#8635; ' + t('Reset') + '</button>'
+    + '<span onclick="showFreshStartOverlay()" title="' + t('Fresh Start') + '">&#127793; ' + t('Fresh Start') + '</span>'
     + '</div></div>';
 }
 
@@ -271,8 +271,8 @@ function plantHTML() {
     h += '<button class="btn btn-primary btn-sm" onclick="showOnboarding()" style="margin-top:4px">Track Sobriety</button>';
   } else {
     h += '<div style="display:flex;gap:6px;margin-top:4px">';
-    h += '<button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1">Record Relapse</button>';
-    h += '<button class="btn btn-danger btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1">' + t('Record Relapse') + '</button>';
+    h += '<button class="btn btn-danger btn-sm" onclick="endSobriety()" style="flex:1">' + t('End Sobriety') + '</button>';
     h += '</div>';
   }
   h += '</div>';
