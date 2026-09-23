@@ -1526,9 +1526,9 @@ function render() {
     if (rh) {
       if (D.sobriety.startDate) {
         var _jtStage = plantStageInfo()[plantStage()] || {name:'Growing'};
-        rh.textContent = 'Day ' + soberDays() + ' \u00b7 ' + _jtStage.name;
+        rh.textContent = t('Day') + ' ' + soberDays() + ' \u00b7 ' + _jtStage.name;
       } else {
-        rh.textContent = 'Begin your journey';
+        rh.textContent = t('Begin your journey');
       }
     }
     var tbEl = document.getElementById('tools-badge');
@@ -1685,7 +1685,7 @@ function updateConnStatus() {
     try { DB.enableNetwork().then(function(){ if (navigator.onLine) connEl.style.display = 'none'; }).catch(function(){ if (navigator.onLine) connEl.style.display = 'block'; }); } catch(e) { connEl.style.display = 'block'; console.warn('enableNetwork threw:', e); }
   } else {
     connEl.style.display = 'block';
-    connEl.querySelector('span').textContent = '\u26A0 No database connection';
+    connEl.querySelector('span').textContent = '\u26A0 ' + t('No database connection');
   }
 }
 window.addEventListener('online', function() {
@@ -1695,7 +1695,7 @@ window.addEventListener('online', function() {
     syncToFirestore();
   }
 });
-window.addEventListener('offline', function(){ if (connEl) { connEl.style.display = 'block'; connEl.querySelector('span').textContent = '\u26A0 No connection — changes saved locally'; } });
+window.addEventListener('offline', function(){ if (connEl) { connEl.style.display = 'block'; connEl.querySelector('span').textContent = '\u26A0 ' + t('No connection — changes saved locally'); } });
 if (!navigator.onLine && connEl) connEl.style.display = 'block';
 setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
 if (AUTH_USER && !isLockSet()) {

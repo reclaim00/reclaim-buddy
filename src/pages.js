@@ -1325,7 +1325,7 @@ function reflectHTML() {
   var goal = D.journalWordGoal || 50;
   var jStreak = calcJournalStreak();
   var h = '<h2 class="page-title">'+t('Journal')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Reflecting on your entries helps you see patterns in your recovery.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">'+t('Reflecting on your entries helps you see patterns in your recovery.')+'</div></div></div>';
   if (jStreak > 0) {
     h += '<div style="text-align:center;padding:8px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px">';
     h += '<span style="font-size:28px">&#128293;</span><div><div style="font-weight:700;font-size:18px">' + jStreak + ' '+t('Day Journal Streak')+'</div><div style="font-size:11px;opacity:.9">'+t('Keep it going! Write today to maintain your streak.')+'</div></div></div>';
@@ -1349,8 +1349,8 @@ function reflectHTML() {
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
   h += '</div>';
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
-  h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">Journal Reflections</div>';
-  h += '<p style="font-size:12px;color:var(--muted)">Tap any entry below for a reflection summary and gentle suggestions.</p></div>';
+  h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">'+t('Journal Reflections')+'</div>';
+  h += '<p style="font-size:12px;color:var(--muted)">'+t('Tap any entry below for a reflection summary and gentle suggestions.')+'</p></div>';
   h += journalInsightsHTML();
   if (!D.journal.length) {
     h += '<div class="card"><div class="empty-state">No entries yet. Write something above to see reflections here.</div></div>';
@@ -3774,7 +3774,7 @@ function saveProfileField(prop, val) {
   showToast('Saved','success');
 }
 function profileHTML() {
-  var h = '<h2 class="page-title">Profile</h2>';
+  var h = '<h2 class="page-title">'+t('Profile')+'</h2>';
   h += '<div class="card" style="text-align:center;padding:24px">';
   h += '<div style="position:relative;display:inline-block">';
   if (D.avatar) {
@@ -3796,7 +3796,7 @@ function profileHTML() {
   h += '<div class="card"><h3>'+t('Profile')+'</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Name')+'</span><input type="text" value="'+esc(D.name||'')+'" onchange="saveProfileField(\'name\', this.value)" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Phone Number')+'</span><input type="tel" value="'+esc(D.phoneNumber||'')+'" onchange="saveProfileField(\'phoneNumber\', this.value)" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Language')+'</span><select onchange="saveProfileField(\'language\', this.value);delete _pageCache[pg];render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Language')+'</span><select onchange="changeLanguage(this.value)" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Accent Colour')+'</span><div style="display:flex;gap:4px">';
@@ -4637,7 +4637,7 @@ function applyTheme() {
   }
 
 function updateTabLabels() {
-  var labels = {home:'Home',reflect:'Journal',care:'Wellness',track:'History',more:'Tools'};
+  var labels = {home:t('Home'),reflect:t('Journal'),care:t('Wellness'),track:t('History'),more:t('Tools')};
   [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
