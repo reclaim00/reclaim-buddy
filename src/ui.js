@@ -1560,6 +1560,7 @@ function animateCloseOverlay(el) {
 
 function goTo(p) {
   [].forEach.call(document.querySelectorAll('[id$="-ov"],.overlay'),function(el){animateCloseOverlay(el)});
+  if (p !== pg) haptic('light');
   pg = p;
   render();
 }
@@ -1567,6 +1568,7 @@ function goTo(p) {
 document.getElementById('tabs').addEventListener('click', function(e) {
   var tab = e.target.closest('.tab');
   if (tab) {
+    haptic('light');
     [].forEach.call(document.querySelectorAll('.overlay'),function(el){animateCloseOverlay(el)});
     var tp = tab.getAttribute('data-page');
     subPg = '';

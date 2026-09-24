@@ -397,11 +397,11 @@ function ordinal(n) {
 }
 function journeyDate() {
   var raw = D.joinDate || (D.sobriety && D.sobriety.startDate);
-  if (!raw) return 'Your journey awaits';
+  if (!raw) return t('Your journey awaits');
   var start = new Date(raw);
   var startLabel = start.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   var elapsed = journeyElapsed(start);
-  return 'Started ' + startLabel + ' \u2022 ' + elapsed;
+  return t('Started') + ' ' + startLabel + ' \u2022 ' + elapsed;
 }
 function journeyElapsed(start) {
   var now = new Date();
@@ -411,11 +411,17 @@ function journeyElapsed(start) {
   if (days < 0) { months--; days += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
   if (months < 0) { years--; months += 12; }
   var totalDays = daysBetween(start, now);
-  if (years > 0) return years + ' year' + (years !== 1 ? 's' : '') + (months > 0 ? ', ' + months + ' month' + (months !== 1 ? 's' : '') : '');
-  if (months > 0) return months + ' month' + (months !== 1 ? 's' : '') + (days > 0 ? ', ' + days + ' day' + (days !== 1 ? 's' : '') : '');
-  if (totalDays >= 7) return Math.floor(totalDays / 7) + ' week' + (Math.floor(totalDays / 7) !== 1 ? 's' : '') + (totalDays % 7 ? ', ' + (totalDays % 7) + ' day' + (totalDays % 7 !== 1 ? 's' : '') : '');
-  if (totalDays > 0) return totalDays + ' day' + (totalDays !== 1 ? 's' : '');
-  return 'today';
+  var wCount = Math.floor(totalDays / 7), wRem = totalDays % 7;
+  var yLbl = years + ' ' + t(years !== 1 ? 'years' : 'year');
+  var mLbl = months + ' ' + t(months !== 1 ? 'months' : 'month');
+  var dLbl = days + ' ' + t(days !== 1 ? 'days' : 'day');
+  var wLbl = wCount + ' ' + t(wCount !== 1 ? 'weeks' : 'week');
+  var wRemLbl = wRem + ' ' + t(wRem !== 1 ? 'days' : 'day');
+  if (years > 0) return yLbl + (months > 0 ? ', ' + mLbl : '');
+  if (months > 0) return mLbl + (days > 0 ? ', ' + dLbl : '');
+  if (totalDays >= 7) return wLbl + (wRem ? ', ' + wRemLbl : '');
+  if (totalDays > 0) return dLbl;
+  return t('today');
 }
 
 function kingdomTrackerHTML() {
@@ -427,14 +433,14 @@ function kingdomTrackerHTML() {
   var h = kingdomHTML();
   h += '<div class="card" style="text-align:center;margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:10px 14px 12px">';
   if (isActive) {
-    h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:6px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">days sober</span></div>';
-    h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + levelNames[Math.min(level,10)] + ' &mdash; ' + (levelDescs[Math.min(level,10)]||'') + '</div>';
+    h += '<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;margin-bottom:6px"><strong style="font-size:28px;color:var(--primary)">' + days + '</strong><span style="font-size:13px;color:var(--text-light)">' + t('days sober') + '</span></div>';
+    h += '<div style="font-size:11px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">' + t(levelNames[Math.min(level,10)]) + ' &mdash; ' + t(levelDescs[Math.min(level,10)]||'') + '</div>';
     h += soberTimerHTML();
-    h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">Record Relapse</button>';
-    h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">End Sobriety</button></div>';
+    h += '<div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-outline btn-sm" onclick="recordRelapse()" style="flex:1;border-color:var(--danger);color:var(--danger)">' + t('Record Relapse') + '</button>';
+    h += '<button class="btn btn-outline btn-sm" onclick="endSobriety()" style="flex:1">' + t('End Sobriety') + '</button></div>';
   } else {
-    h += '<div style="font-size:14px;color:var(--muted);margin-bottom:6px">Your space awaits</div>';
-    h += '<button class="btn btn-primary btn-sm" onclick="showOnboarding()">Begin Your Journey</button>';
+    h += '<div style="font-size:14px;color:var(--muted);margin-bottom:6px">' + t('Your space awaits') + '</div>';
+    h += '<button class="btn btn-primary btn-sm" onclick="showOnboarding()">' + t('Begin Your Journey') + '</button>';
   }
   h += '</div>';
   return h;
@@ -452,9 +458,9 @@ function homePageHTML() {
     h += '<div class="card" style="padding:0;overflow:hidden">';
     h += kingdomHTML();
     h += '<div style="padding:24px 20px;text-align:center">';
-    h += '<div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px">Your Journey Awaits</div>';
-    h += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">The path is open \u2014 and it\u2019s waiting for you.<br>Start your journey and build something real.</div>';
-    h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">Start Your Journey</button>';
+    h += '<div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px">' + t('Your Journey Awaits') + '</div>';
+    h += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">' + t('The path is open \u2014 and it\u2019s waiting for you.<br>Start your journey and build something real.') + '</div>';
+    h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">' + t('Start Your Journey') + '</button>';
     h += '</div></div>';
 return h;
 }
@@ -474,8 +480,8 @@ return h;
   // 2. Stats bar
   h += '<div class="card" style="margin-top:-4px;border-top-left-radius:0;border-top-right-radius:0;padding:12px 10px 10px">';
   h += '<div style="display:flex;justify-content:space-around;align-items:center">';
-  h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--primary)">' + days + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">DAYS</div></div>';
-  h += '<div style="text-align:center;flex:1"><div style="font-size:22px;font-weight:700;color:#8a6a4a">' + kingdomPopulation(days) + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">COMMUNITY</div></div>';
+  h += '<div style="text-align:center;flex:1"><div style="font-size:24px;font-weight:800;color:var(--primary)">' + days + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">' + t('DAYS') + '</div></div>';
+  h += '<div style="text-align:center;flex:1"><div style="font-size:22px;font-weight:700;color:#8a6a4a">' + kingdomPopulation(days) + '</div><div style="font-size:9px;color:var(--muted);letter-spacing:1px">' + t('COMMUNITY') + '</div></div>';
   h += '</div>';
   h += '</div>';
 
@@ -499,22 +505,22 @@ function composeMissionPrompt(seed) {
   var cL = userList((D.relapsePlan && D.relapsePlan.coping) || D.track);
   var tL = userList((D.relapsePlan && D.relapsePlan.triggers) || D.triggers);
   var foci = [];
-  if (gL.length) foci.push('the goal "' + missionTrunc(gL[seed % gL.length]) + '"');
-  if (tL.length) foci.push('a trigger like "' + missionTrunc(tL[seed % tL.length]) + '"');
-  if (cL.length) foci.push('your coping tool "' + missionTrunc(cL[seed % cL.length]) + '"');
-  foci.push('someone who believes in you');
-  foci.push('a win from the last 24 hours, however small');
-  foci.push('a moment you almost slipped, and what held you back');
-  var openers = ['Reflect on', 'Look back at', 'Think about', 'Revisit', 'Sit with'];
+  if (gL.length) foci.push(t('the goal ') + '"' + missionTrunc(gL[seed % gL.length]) + '"');
+  if (tL.length) foci.push(t('a trigger like ') + '"' + missionTrunc(tL[seed % tL.length]) + '"');
+  if (cL.length) foci.push(t('your coping tool ') + '"' + missionTrunc(cL[seed % cL.length]) + '"');
+  foci.push(t('someone who believes in you'));
+  foci.push(t('a win from the last 24 hours, however small'));
+  foci.push(t('a moment you almost slipped, and what held you back'));
+  var openers = [t('Reflect on'), t('Look back at'), t('Think about'), t('Revisit'), t('Sit with')];
   var angles = [
-    'One small step will you take today?',
-    'What were you feeling in that moment?',
-    'What did it teach you about yourself?',
-    'Write one sentence you need to hear today.',
-    'What changed inside you because of it?',
-    'Who could you tell about it?',
-    'What would you say to a friend in the same spot?',
-    'Name three things it gave you.'
+    t('One small step will you take today?'),
+    t('What were you feeling in that moment?'),
+    t('What did it teach you about yourself?'),
+    t('Write one sentence you need to hear today.'),
+    t('What changed inside you because of it?'),
+    t('Who could you tell about it?'),
+    t('What would you say to a friend in the same spot?'),
+    t('Name three things it gave you.')
   ];
   var o = seed % openers.length;
   var rest = Math.floor(seed / openers.length);
@@ -539,7 +545,7 @@ function saveMissionReflection(text) {
   var el = document.getElementById('mission-entry');
   var value = (arguments.length > 0 && text !== undefined && text !== null) ? text : (el ? el.value.trim() : '');
   if (!value) {
-    if (typeof showToast === 'function') showToast('Write a short reflection first.', 'warning');
+    if (typeof showToast === 'function') showToast(t('Write a short reflection first.'), 'warning');
     return;
   }
   var today = new Date().toDateString();
@@ -594,14 +600,14 @@ function missionHTML() {
     var hit = (D.missionLog || []).some(function(e) { return e.date === ds && e.done; });
     dots += '<span style="width:13px;height:13px;border-radius:7px;background:' + (hit ? 'var(--accent)' : 'var(--border)') + ';display:inline-block"></span>';
   }
-  var stageIcon = '\uD83D\uDCA7', stageText = 'Complete missions to feed your world.';
-  if (week >= 6) { stageIcon = '\uD83C\uDF43'; stageText = 'Your world is lush. Keep the streak alive.'; }
-  else if (week >= 4) { stageIcon = '\uD83C\uDF38'; stageText = 'Your world is blooming.'; }
-  else if (week >= 3) { stageIcon = '\uD83C\uDF31'; stageText = 'Seeds are sprouting in your world.'; }
-  var h = '<div class="card" id="mission-card" style="border-left:3px solid var(--accent);background:linear-gradient(135deg,rgba(16,185,129,.08),var(--card))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="font-size:14px;margin:0">\uD83D\uDDD3 ' + t('Today\'s Mission') + '</h3><span class="btn btn-sm" style="width:auto;font-size:11px;padding:3px 10px;background:rgba(16,185,129,.12);color:var(--accent);border:1px solid var(--accent)">' + streak + ' day streak \uD83D\uDD25</span></div>';
+  var stageIcon = '\uD83D\uDCA7', stageText = t('Complete missions to feed your world.');
+  if (week >= 6) { stageIcon = '\uD83C\uDF43'; stageText = t('Your world is lush. Keep the streak alive.'); }
+  else if (week >= 4) { stageIcon = '\uD83C\uDF38'; stageText = t('Your world is blooming.'); }
+  else if (week >= 3) { stageIcon = '\uD83C\uDF31'; stageText = t('Seeds are sprouting in your world.'); }
+  var h = '<div class="card" id="mission-card" style="border-left:3px solid var(--accent);background:linear-gradient(135deg,rgba(16,185,129,.08),var(--card))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="font-size:14px;margin:0">\uD83D\uDDD3 ' + t('Today\'s Mission') + '</h3><span class="btn btn-sm" style="width:auto;font-size:11px;padding:3px 10px;background:rgba(16,185,129,.12);color:var(--accent);border:1px solid var(--accent)">' + streak + ' ' + t('day streak') + ' \uD83D\uDD25</span></div>';
   h += '<div style="font-size:13px;font-weight:600;line-height:1.55;margin-bottom:8px;padding:9px;border-radius:8px;border:1px dashed var(--accent);background:rgba(16,185,129,.05)">\uD83C\uDF1F ' + safe(m.label) + '</div>';
   if (m.done) {
-    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(16,185,129,.14);margin-bottom:6px"><span style="font-size:18px">\u2705</span><div style="font-size:12px;font-weight:600;color:var(--accent)">' + t('Completed today') + ' \u2014 your reflection is saved in your journal.</div></div>';
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(16,185,129,.14);margin-bottom:6px"><span style="font-size:18px">\u2705</span><div style="font-size:12px;font-weight:600;color:var(--accent)">' + t('Completed today') + ' \u2014 ' + t('your reflection is saved in your journal.') + '</div></div>';
     if (m.reflection) {
       var prev = m.reflection.length > 140 ? m.reflection.slice(0, 140) + '\u2026' : m.reflection;
       h += '<div style="margin-top:6px;padding:8px;border-radius:8px;background:var(--card);border:1px solid var(--border);font-size:12px;color:var(--muted);font-style:italic">"' + safe(prev) + '"</div>';
@@ -610,7 +616,7 @@ function missionHTML() {
     h += '<textarea id="mission-entry" placeholder="' + t('Write a short reflection in response to the prompt...') + '" style="min-height:64px;margin-bottom:6px"></textarea>';
     h += '<button class="btn btn-primary" onclick="saveMissionReflection()" style="width:100%">\u2713 ' + t('Submit Reflection & Complete') + '</button>';
   }
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:9px"><div style="display:flex;gap:4px;align-items:center">' + dots + '</div><div style="text-align:right"><div style="font-size:10px;color:var(--muted)">' + week + '/7 this week</div><div style="font-size:10px;color:var(--muted)">' + stageIcon + ' ' + safe(stageText) + '</div></div></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:9px"><div style="display:flex;gap:4px;align-items:center">' + dots + '</div><div style="text-align:right"><div style="font-size:10px;color:var(--muted)">' + week + '/7 ' + t('this week') + '</div><div style="font-size:10px;color:var(--muted)">' + stageIcon + ' ' + safe(stageText) + '</div></div></div>';
   h += '</div>';
   return h;
 }

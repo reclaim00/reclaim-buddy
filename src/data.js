@@ -20,6 +20,29 @@ function isNativeApp() {
   return typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform && Capacitor.isNativePlatform();
 }
 
+function haptic(kind, style) {
+  if (!isNativeApp()) return;
+  try {
+    var H = Capacitor.Plugins && Capacitor.Plugins.Haptics;
+    if (!H) return;
+    if (kind === 'impact') H.impact({ style: style || 'medium' }).catch(function(){});
+    else if (kind === 'success') H.notification({ type: 'success' }).catch(function(){});
+    else if (kind === 'warning') H.notification({ type: 'warning' }).catch(function(){});
+    else if (kind === 'error') H.notification({ type: 'error' }).catch(function(){});
+    else if (kind === 'light') H.selectionStart().catch(function(){});
+  } catch(e) {}
+}
+
+function syncStatusBar() {
+  if (!isNativeApp()) return;
+  try {
+    var SB = Capacitor.Plugins && Capacitor.Plugins.StatusBar;
+    if (!SB || !SB.setStyle) return;
+    SB.setStyle({ style: D && D.darkMode ? 'LIGHT' : 'DARK' }).catch(function(){});
+    if (SB.setOverlaysWebView) SB.setOverlaysWebView({ overlay: true }).catch(function(){});
+  } catch(e) {}
+}
+
 function subscribePush() {
   if (isNativeApp()) { registerNativePush(); return; }
   if (!MESSAGING || !AUTH_EMAIL || VAPID_KEY === 'REPLACE_WITH_YOUR_VAPID_KEY') return;

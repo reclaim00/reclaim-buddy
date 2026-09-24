@@ -20,7 +20,7 @@
       "splashFullScreen": true
     },
     "StatusBar": {
-      "overlaysWebView": false
+      "overlaysWebView": true
     },
     "FirebaseMessaging": {
       "presentationOptions": ["alert", "badge", "sound"]

@@ -71,18 +71,18 @@ document.addEventListener('change', function(e){
 });
 
 function assessmentHTML() {
-  var h = '<h2 class="page-title">Addiction Assessment</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">This screening helps you understand your relationship with substances.</p>';
+  var h = '<h2 class="page-title">' + t('Addiction Assessment') + '</h2>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">' + t('This screening helps you understand your relationship with substances.') + '</p>';
   if (D.assessmentTaken && D.assessmentResult) {
     var r = D.assessmentResult;
-    var sev = r.score <= 20 ? 'Low Risk' : r.score <= 40 ? 'Moderate' : r.score <= 60 ? 'Substantial' : r.score <= 80 ? 'Severe' : 'Critical';
+    var sev = r.score <= 20 ? t('Low Risk') : r.score <= 40 ? t('Moderate') : r.score <= 60 ? t('Substantial') : r.score <= 80 ? t('Severe') : t('Critical');
     var sevColor = r.score <= 20 ? 'var(--primary)' : r.score <= 40 ? 'var(--accent)' : r.score <= 60 ? '#f97316' : r.score <= 80 ? 'var(--danger)' : '#1d4a35';
     h += '<div class="card" style="text-align:center;border:2px solid '+sevColor+'">';
     h += '<div style="font-size:48px;font-weight:900;color:'+sevColor+'">'+r.score+'/100</div>';
     h += '<div style="font-size:18px;font-weight:700;color:'+sevColor+'">'+sev+'</div>';
-    h += '<p style="font-size:13px;color:var(--muted);margin-top:8px">Assessed on '+new Date(r.date).toLocaleDateString()+'</p>';
-    h += '<p style="font-size:12px;color:var(--muted);margin-top:4px">This is not a diagnosis. Talk to a professional for a full evaluation.</p>';
-    h += '<button class="btn btn-outline btn-sm" onclick="D.assessmentTaken=false;D.assessmentProgress=null;saveData()" style="margin-top:8px">Retake Assessment</button></div>';
+    h += '<p style="font-size:13px;color:var(--muted);margin-top:8px">' + t('Assessed on ') + new Date(r.date).toLocaleDateString() + '</p>';
+    h += '<p style="font-size:12px;color:var(--muted);margin-top:4px">' + t('This is not a diagnosis. Talk to a professional for a full evaluation.') + '</p>';
+    h += '<button class="btn btn-outline btn-sm" onclick="D.assessmentTaken=false;D.assessmentProgress=null;saveData()" style="margin-top:8px">' + t('Retake Assessment') + '</button></div>';
     return h;
   }
   if (!D.assessmentProgress || D.assessmentProgress.length !== ASSESS_QUESTIONS.length) {
@@ -160,18 +160,18 @@ function showAssessmentAfterSignIn() {
   var sev = '';
   if (D.assessmentTaken && D.assessmentResult) {
     var r = D.assessmentResult;
-    var sevLbl = r.score <= 20 ? 'Low Risk' : r.score <= 40 ? 'Moderate' : r.score <= 60 ? 'Substantial' : r.score <= 80 ? 'Severe' : 'Critical';
+    var sevLbl = r.score <= 20 ? t('Low Risk') : r.score <= 40 ? t('Moderate') : r.score <= 60 ? t('Substantial') : r.score <= 80 ? t('Severe') : t('Critical');
     var sevColor = r.score <= 20 ? 'var(--primary)' : r.score <= 40 ? 'var(--accent)' : r.score <= 60 ? '#f97316' : r.score <= 80 ? 'var(--danger)' : '#1d4a35';
     sev = '<div class="card" style="text-align:center;border:2px solid '+sevColor+';margin-bottom:12px">';
     sev += '<div style="font-size:36px;font-weight:900;color:'+sevColor+'">'+r.score+'/100</div>';
     sev += '<div style="font-size:16px;font-weight:700;color:'+sevColor+'">'+sevLbl+'</div>';
-    sev += '<p style="font-size:12px;color:var(--muted);margin-top:4px">Assessed on '+new Date(r.date).toLocaleDateString()+'</p></div>';
+    sev += '<p style="font-size:12px;color:var(--muted);margin-top:4px">' + t('Assessed on ') + new Date(r.date).toLocaleDateString() + '</p></div>';
   }
   if (!D.assessmentProgress || D.assessmentProgress.length !== ASSESS_QUESTIONS.length) {
     D.assessmentProgress = new Array(ASSESS_QUESTIONS.length).fill(null);
   }
   var h = '<div class="overlay-content" style="max-width:500px">';
-  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:24px">&#128203;</div><div><h3 style="font-size:18px;font-weight:700;margin:0">Addiction Assessment</h3><p style="font-size:12px;color:var(--muted);margin:2px 0 0">Help us understand where you are on your journey</p></div></div>';
+  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><div style="font-size:24px">&#128203;</div><div><h3 style="font-size:18px;font-weight:700;margin:0">' + t('Addiction Assessment') + '</h3><p style="font-size:12px;color:var(--muted);margin:2px 0 0">' + t('Help us understand where you are on your journey') + '</p></div></div>';
   h += sev;
   if (!D.assessmentTaken) {
     h += '<div class="osi-quiz" data-idx="0">';
@@ -1325,7 +1325,7 @@ function reflectHTML() {
   var goal = D.journalWordGoal || 50;
   var jStreak = calcJournalStreak();
   var h = '<h2 class="page-title">'+t('Journal')+'</h2>';
-  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">Reflecting on your entries helps you see patterns in your recovery.</div></div></div>';
+  h += '<div class="card" style="border-left:3px solid var(--primary);padding:8px 12px;margin-bottom:8px;background:linear-gradient(135deg,rgba(91,33,182,.06),var(--card))"><div style="display:flex;align-items:center;gap:8px"><div style="width:36px;height:36px;border-radius:18px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 16 16" width="16" height="16" fill="#fff"><path d="M3 12V6l2.5 2L8 3l2.5 5L13 6v6z"/><rect x="2" y="12" width="12" height="1.5" rx=".3"/></svg></div><div style="font-size:12px;color:var(--muted)">'+t('Reflecting on your entries helps you see patterns in your recovery.')+'</div></div></div>';
   if (jStreak > 0) {
     h += '<div style="text-align:center;padding:8px 12px;margin:4px 0 8px;background:linear-gradient(135deg,#ff6b35,#f7931e);border-radius:12px;color:#fff;display:flex;align-items:center;justify-content:center;gap:10px">';
     h += '<span style="font-size:28px">&#128293;</span><div><div style="font-weight:700;font-size:18px">' + jStreak + ' '+t('Day Journal Streak')+'</div><div style="font-size:11px;opacity:.9">'+t('Keep it going! Write today to maintain your streak.')+'</div></div></div>';
@@ -1349,8 +1349,8 @@ function reflectHTML() {
   h += '<button id="save-entry-btn" class="btn btn-primary" onclick="saveRefJournal()">'+t('Save Entry')+'</button>';
   h += '</div>';
   h += '<div class="card" style="text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary-light),var(--card))">';
-  h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">Journal Reflections</div>';
-  h += '<p style="font-size:12px;color:var(--muted)">Tap any entry below for a reflection summary and gentle suggestions.</p></div>';
+  h += '<div style="font-weight:700;font-size:18px;margin-bottom:4px">'+t('Journal Reflections')+'</div>';
+  h += '<p style="font-size:12px;color:var(--muted)">'+t('Tap any entry below for a reflection summary and gentle suggestions.')+'</p></div>';
   h += journalInsightsHTML();
   if (!D.journal.length) {
     h += '<div class="card"><div class="empty-state">No entries yet. Write something above to see reflections here.</div></div>';
@@ -1495,6 +1495,7 @@ function persistRefEntry(entry, txt, text) {
   var saveIt = function() {
     if (saved) return;
     saved = true;
+    haptic('success');
     D.journal.push(entry);
     if (text) text.value = '';
     setRefJournalMode('type');
@@ -1927,14 +1928,14 @@ function journalInsightsHTML() {
   var weekMoods = D.moods.slice(-7);
   var weekAvg = weekMoods.length ? (weekMoods.reduce(function(s,m){return s+m.val},0)/weekMoods.length).toFixed(1) : '';
   h += '<div class="stat-grid" style="margin-bottom:6px">';
-  h += '<div class="stat-card"><div class="num">' + D.journal.length + '</div><div class="label">Entries</div></div>';
-  h += '<div class="stat-card"><div class="num">' + (D.journal.length ? Math.round(totalWords/D.journal.length) : 0) + '</div><div class="label">Avg Words</div></div>';
-  h += '<div class="stat-card"><div class="num">' + MOODS[mostCommonMood].emoji + '</div><div class="label">Common Mood</div></div>';
+  h += '<div class="stat-card"><div class="num">' + D.journal.length + '</div><div class="label">' + t('Entries') + '</div></div>';
+  h += '<div class="stat-card"><div class="num">' + (D.journal.length ? Math.round(totalWords/D.journal.length) : 0) + '</div><div class="label">' + t('Avg Words') + '</div></div>';
+  h += '<div class="stat-card"><div class="num">' + MOODS[mostCommonMood].emoji + '</div><div class="label">' + t('Common Mood') + '</div></div>';
   h += '</div>';
   // Mood trend mini bar
   if (weekMoods.length) {
     var colors = ['#ef4444','#f97316','#eab308','#22c55e','#059669'];
-    h += '<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--muted);margin-bottom:3px">This week\'s mood trend (avg ' + weekAvg + ')</div><div class="mood-chart" style="height:30px">';
+    h += '<div style="margin-bottom:6px"><div style="font-size:11px;color:var(--muted);margin-bottom:3px">' + t("This week's mood trend") + ' (avg ' + weekAvg + ')</div><div class="mood-chart" style="height:30px">';
     for (var wi=0;wi<weekMoods.length;wi++) {
       var pct = (weekMoods[wi].val / 5) * 100;
       h += '<div class="mood-bar" style="height:'+pct+'%;background:'+colors[weekMoods[wi].val-1]+'"></div>';
@@ -1943,7 +1944,7 @@ function journalInsightsHTML() {
   }
   // Top topics
   if (sortedKW.length) {
-    h += '<div style="font-size:11px;color:var(--muted)"><strong>Top topics you write about:</strong> ' + sortedKW.join(', ') + '</div>';
+    h += '<div style="font-size:11px;color:var(--muted)"><strong>' + t('Top topics you write about:') + '</strong> ' + sortedKW.join(', ') + '</div>';
   }
   h += '</div>';
   return h;
@@ -2794,35 +2795,35 @@ function todayPrompt() {
   var entries = D.journal || [];
   if (entries.length > 0) {
     var last = (getEntryText(entries[entries.length-1]) || '').toLowerCase();
-    if (last.match(/crav|urge|relaps|trigger|tempted|slip/)) return 'You mentioned a trigger recently. What strategies helped you get through it? How are you feeling about it now?';
-    if (last.match(/proud|accomplish|achieved|milestone|win|success|progress|goal|completed|finished/)) return 'That progress you mentioned  how did it feel? What helped you get there? Take a moment to really sit with that win.';
-    if (last.match(/sad|depres|lonel|alone|cry|grief|sorrow|despair|mourn/)) return 'You were feeling heavy last time. What do you need right now that you haven\'t given yourself? It\'s okay to not be okay.';
-    if (last.match(/angr|frustrat|mad|rage|pissed|furiou|annoyed|irritat/)) return 'Last time you wrote about frustration. Has that shifted? What would help you release what\'s still lingering?';
-    if (last.match(/anxi|worr|panic|scared|fear|stress|nervous|overwhelm|tense/)) return 'You were carrying anxiety last time. Let\'s check in  what\'s the volume of that worry today? What do you need to feel safer?';
-    if (last.match(/grateful|thank|blessed|appreciate|gratitude|blessing/)) return 'You found something to appreciate last time. What else has been good since then? Let\'s keep collecting those moments.';
-    if (last.match(/friend|family|mom|dad|partner|husband|wife|boyfriend|girlfriend|sister|brother/)) return 'How are things with the people you mentioned last time? Any updates worth noting? Connection matters in recovery.';
-    if (last.match(/job|work|career|boss|coworker|interview|fired|promot|office|meeting|deadline|project/)) return 'Last time you wrote about work. How is that situation evolving? What\'s one thing you can do today to improve it?';
-    if (last.match(/sleep|tired|exhaust|insomnia|rest/)) return 'You mentioned being exhausted last time. Have you been able to rest since then? Sleep is a foundation of recovery  how is yours?';
-    if (last.match(/exercise|workout|gym|run|walk|yoga|meditat/)) return 'You were focusing on wellness last time. How has your routine been? What feels good for your body today?';
-    if (last.match(/school|class|college|university|exam|test|study|course|grade/)) return 'You wrote about your studies last time. How are things going? What\'s one small step you can take today?';
-    if (last.match(/money|bills|debt|loan|rent|budget|finance|afford/)) return 'Finances were on your mind last time. Has anything shifted? What\'s within your control right now?';
-    if (last.match(/alone|lonely|isolat|miss|nobody|no one|empty|numb/)) return 'You were feeling isolated last time. I want you to know you\'re not alone in this. What would make you feel even 1% more connected today?';
-    if (last.match(/doctor|therapist|appointment|medication|therapy|counsel/)) return 'You mentioned your health journey last time. How did that appointment go? How are you feeling about your treatment?';
-    if (last.match(/sober.*day|day.*sober|clean|recover|heal|stronger|growth|progress/)) return 'You\'re building real momentum. What\'s working for you right now that you want to keep doing? Let\'s lock in those habits.';
+    if (last.match(/crav|urge|relaps|trigger|tempted|slip/)) return t('You mentioned a trigger recently. What strategies helped you get through it? How are you feeling about it now?');
+    if (last.match(/proud|accomplish|achieved|milestone|win|success|progress|goal|completed|finished/)) return t('That progress you mentioned  how did it feel? What helped you get there? Take a moment to really sit with that win.');
+    if (last.match(/sad|depres|lonel|alone|cry|grief|sorrow|despair|mourn/)) return t('You were feeling heavy last time. What do you need right now that you haven\'t given yourself? It\'s okay to not be okay.');
+    if (last.match(/angr|frustrat|mad|rage|pissed|furiou|annoyed|irritat/)) return t('Last time you wrote about frustration. Has that shifted? What would help you release what\'s still lingering?');
+    if (last.match(/anxi|worr|panic|scared|fear|stress|nervous|overwhelm|tense/)) return t('You were carrying anxiety last time. Let\'s check in  what\'s the volume of that worry today? What do you need to feel safer?');
+    if (last.match(/grateful|thank|blessed|appreciate|gratitude|blessing/)) return t('You found something to appreciate last time. What else has been good since then? Let\'s keep collecting those moments.');
+    if (last.match(/friend|family|mom|dad|partner|husband|wife|boyfriend|girlfriend|sister|brother/)) return t('How are things with the people you mentioned last time? Any updates worth noting? Connection matters in recovery.');
+    if (last.match(/job|work|career|boss|coworker|interview|fired|promot|office|meeting|deadline|project/)) return t('Last time you wrote about work. How is that situation evolving? What\'s one thing you can do today to improve it?');
+    if (last.match(/sleep|tired|exhaust|insomnia|rest/)) return t('You mentioned being exhausted last time. Have you been able to rest since then? Sleep is a foundation of recovery  how is yours?');
+    if (last.match(/exercise|workout|gym|run|walk|yoga|meditat/)) return t('You were focusing on wellness last time. How has your routine been? What feels good for your body today?');
+    if (last.match(/school|class|college|university|exam|test|study|course|grade/)) return t('You wrote about your studies last time. How are things going? What\'s one small step you can take today?');
+    if (last.match(/money|bills|debt|loan|rent|budget|finance|afford/)) return t('Finances were on your mind last time. Has anything shifted? What\'s within your control right now?');
+    if (last.match(/alone|lonely|isolat|miss|nobody|no one|empty|numb/)) return t('You were feeling isolated last time. I want you to know you\'re not alone in this. What would make you feel even 1% more connected today?');
+    if (last.match(/doctor|therapist|appointment|medication|therapy|counsel/)) return t('You mentioned your health journey last time. How did that appointment go? How are you feeling about your treatment?');
+    if (last.match(/sober.*day|day.*sober|clean|recover|heal|stronger|growth|progress/)) return t('You\'re building real momentum. What\'s working for you right now that you want to keep doing? Let\'s lock in those habits.');
   }
   var dayOfMonth = new Date().getDate();
   if (D.goals) {
     var gList = userList(D.goals);
-    if (gList.length && dayOfMonth % 3 === 1) return "One of your goals: \u201C" + gList[0] + "\u201D. What did you do today that moved you toward it, even by a single step?";
+    if (gList.length && dayOfMonth % 3 === 1) return t('One of your goals: ') + "\u201C" + gList[0] + "\u201D" + t(". What did you do today that moved you toward it, even by a single step?");
   }
   if (D.triggers) {
     var tList = userList(D.triggers);
-    if (tList.length && dayOfMonth % 3 === 2) return "You told us \u201C" + tList[0] + "\u201D can trip you up. Did it show up today? If it did, what helped you handle it \u2014 if not, how will you prepare?";
+    if (tList.length && dayOfMonth % 3 === 2) return t('You told us ') + "\u201C" + tList[0] + "\u201D " + t('can trip you up. Did it show up today? If it did, what helped you handle it \u2014 if not, how will you prepare?');
   }
   var now = new Date();
   var start = new Date(now.getFullYear(), 0, 0);
   var dayOfYear = Math.floor((now - start) / 86400000);
-  return DAILY_PROMPTS[dayOfYear % DAILY_PROMPTS.length];
+  return t(DAILY_PROMPTS[dayOfYear % DAILY_PROMPTS.length]);
 }
 
 
@@ -3662,7 +3663,7 @@ function showPastPartners() {
 function showRecommendations() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700">&#128161; Recommendations</h3><p style="font-size:13px;color:var(--muted);margin:4px 0 12px">Help shape Re.Claim! Share your ideas, feedback, or anything you\'d like to see improved.</p><textarea id="rec-text" placeholder="What would make this app better for you?" style="min-height:100px;margin-bottom:6px"></textarea><button class="btn btn-primary btn-sm" onclick="submitRecommendation()" style="width:100%">Submit</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><h3 style="font-size:18px;font-weight:700">&#128161; ' + t('Recommendations') + '</h3><p style="font-size:13px;color:var(--muted);margin:4px 0 12px">' + t('Help shape Re.Claim! Share your ideas, feedback, or anything you\'d like to see improved.') + '</p><textarea id="rec-text" placeholder="' + t('What would make this app better for you?') + '" style="min-height:100px;margin-bottom:6px"></textarea><button class="btn btn-primary btn-sm" onclick="submitRecommendation()" style="width:100%">' + t('Submit') + '</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">' + t('Cancel') + '</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -3774,7 +3775,7 @@ function saveProfileField(prop, val) {
   showToast('Saved','success');
 }
 function profileHTML() {
-  var h = '<h2 class="page-title">Profile</h2>';
+  var h = '<h2 class="page-title">'+t('Profile')+'</h2>';
   h += '<div class="card" style="text-align:center;padding:24px">';
   h += '<div style="position:relative;display:inline-block">';
   if (D.avatar) {
@@ -3796,7 +3797,7 @@ function profileHTML() {
   h += '<div class="card"><h3>'+t('Profile')+'</h3>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Name')+'</span><input type="text" value="'+esc(D.name||'')+'" onchange="saveProfileField(\'name\', this.value)" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Phone Number')+'</span><input type="tel" value="'+esc(D.phoneNumber||'')+'" onchange="saveProfileField(\'phoneNumber\', this.value)" placeholder="+1 (555) 123-4567" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"></div>';
-h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Language')+'</span><select onchange="saveProfileField(\'language\', this.value);delete _pageCache[pg];render()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
+h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Language')+'</span><select onchange="changeLanguage(this.value)" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Accent Colour')+'</span><div style="display:flex;gap:4px">';
@@ -4089,8 +4090,8 @@ function showShareQR() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.innerHTML = '<div class="overlay-content" style="max-width:380px;text-align:center;padding:24px">' +
-    '<div style="font-size:14px;font-weight:700;margin-bottom:4px">Share Re.Claim</div>' +
-    '<p style="font-size:12px;color:var(--muted);margin-bottom:12px">Scan to open the app on your device</p>' +
+    '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + t('Share Re.Claim') + '</div>' +
+    '<p style="font-size:12px;color:var(--muted);margin-bottom:12px">' + t('Scan to open the app on your device') + '</p>' +
     '<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=https://reclaim00.github.io/reclaim-buddy/" alt="QR Code" style="width:240px;height:240px;border-radius:12px;margin:0 auto;display:block">' +
     '<p style="font-size:11px;color:var(--muted);margin-top:10px">reclaim00.github.io/reclaim-buddy</p>' +
     '<button class="btn btn-primary" onclick="this.closest(\'.overlay\').remove()" style="margin-top:12px">'+t('Close')+'</button>' +
@@ -4634,10 +4635,11 @@ function applyTheme() {
     el.style.setProperty('--grad-accent','linear-gradient(135deg,'+c.dark+','+c.primary+')');
     el.style.setProperty('--primary-light', c.light);
   }
+  syncStatusBar();
   }
 
 function updateTabLabels() {
-  var labels = {home:'Home',reflect:'Journal',care:'Wellness',track:'History',more:'Tools'};
+  var labels = {home:t('Home'),reflect:t('Journal'),care:t('Wellness'),track:t('History'),more:t('Tools')};
   [].forEach.call(document.querySelectorAll('.tab'),function(el){
     var page = el.getAttribute('data-page');
     var span = el.querySelector('.tab-label');
@@ -4663,11 +4665,11 @@ document.addEventListener('keydown', function(e) {
 
 // ====== SEER'S TOWER ======
 function seerTowerHTML() {
-  var h = '<h2 class="page-title">&#127987; Your View</h2>';
+  var h = '<h2 class="page-title">&#127987; ' + t('Your View') + '</h2>';
   h += '<div class="card" style="text-align:center;padding:20px;background:linear-gradient(135deg,rgba(67,56,202,.04),var(--card))">';
   h += '<div class="seer-crystal-ball">&#10024;</div>';
-  h += '<h3 style="font-size:16px;font-weight:700;margin-bottom:2px">The Big Picture</h3>';
-  h += '<p style="font-size:12px;color:var(--muted);margin:0 0 4px">Here is a view of your patterns and progress...</p></div>';
+  h += '<h3 style="font-size:16px;font-weight:700;margin-bottom:2px">' + t('The Big Picture') + '</h3>';
+  h += '<p style="font-size:12px;color:var(--muted);margin:0 0 4px">' + t('Here is a view of your patterns and progress...') + '</p></div>';
 
   // Omens based on user data
   var journalCount = (D.journal||[]).length;

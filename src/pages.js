@@ -1495,6 +1495,7 @@ function persistRefEntry(entry, txt, text) {
   var saveIt = function() {
     if (saved) return;
     saved = true;
+    haptic('success');
     D.journal.push(entry);
     if (text) text.value = '';
     setRefJournalMode('type');
@@ -4634,6 +4635,7 @@ function applyTheme() {
     el.style.setProperty('--grad-accent','linear-gradient(135deg,'+c.dark+','+c.primary+')');
     el.style.setProperty('--primary-light', c.light);
   }
+  syncStatusBar();
   }
 
 function updateTabLabels() {

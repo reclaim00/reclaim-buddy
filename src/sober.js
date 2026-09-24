@@ -283,6 +283,7 @@ function plantHTML() {
 
 function recordRelapse() {
   if (!confirm(t('This records a relapse date. Remember: recovery is not linear. Every day is a fresh start.'))) return;
+  haptic('warning');
   if (!D.sobriety.relapseDates) D.sobriety.relapseDates = [];
   D.sobriety.relapseDates.push(Date.now());
   saveData();
