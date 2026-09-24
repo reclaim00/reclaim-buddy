@@ -22,6 +22,9 @@
     "StatusBar": {
       "overlaysWebView": true
     },
+    "Keyboard": {
+      "resize": "none"
+    },
     "FirebaseMessaging": {
       "presentationOptions": ["alert", "badge", "sound"]
     }

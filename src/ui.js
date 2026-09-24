@@ -1539,7 +1539,7 @@ function render() {
     }
     if (curPg === 'home') { setTimeout(function(){ checkAchievements(); checkPostCrisis(); if (D.sobriety.startDate) startSoberTimer(); }, 500); }
     app.style.opacity = '1';
-    app.style.transform = 'translateY(0)';
+    app.style.transform = 'translateY(0) scale(1)';
     app._renderTO = null;
   }
   if (app._renderTO) { clearTimeout(app._renderTO); app._renderTO = null; }
@@ -1547,8 +1547,8 @@ function render() {
     doRender();
   } else {
     app.style.opacity = '0';
-    app.style.transform = 'translateY(6px)';
-    app._renderTO = setTimeout(doRender, 170);
+    app.style.transform = 'translateY(14px) scale(.992)';
+    app._renderTO = setTimeout(doRender, 150);
   }
 }
 
@@ -1557,6 +1557,48 @@ function animateCloseOverlay(el) {
   el.classList.add('fade-out');
   setTimeout(function(){ if (el.parentNode) el.remove(); }, 150);
 }
+
+// ====== SWIPE DOWN TO DISMISS OVERLAYS (iOS sheet feel) ======
+var _ovDrag = null;
+document.addEventListener('touchstart', function(e) {
+  var target = e.target && e.target.closest ? e.target.closest('.overlay-content') : null;
+  if (!target) return;
+  var t = e.changedTouches[0];
+  _ovDrag = { el: target, startY: t.clientY, dy: 0, dragging: false };
+}, { passive: true });
+document.addEventListener('touchmove', function(e) {
+  if (!_ovDrag) return;
+  var t = e.changedTouches[0];
+  var dy = t.clientY - _ovDrag.startY;
+  if (!_ovDrag.dragging) {
+    if (dy < 8) return;
+    if (_ovDrag.el.scrollTop > 0) return;
+    _ovDrag.dragging = true;
+    _ovDrag.el.style.transition = 'none';
+  }
+  dy = Math.max(0, dy);
+  _ovDrag.dy = dy;
+  _ovDrag.el.style.transform = 'translateY(' + dy + 'px)';
+  var ov = _ovDrag.el.closest('.overlay');
+  if (ov) ov.style.backgroundColor = 'rgba(0,0,0,' + Math.max(.1, .35 - dy / 900) + ')';
+  e.preventDefault();
+}, { passive: false });
+function _ovDragEnd() {
+  if (!_ovDrag) return;
+  var d = _ovDrag;
+  _ovDrag = null;
+  var ov = d.el.closest('.overlay');
+  if (d.dy > 80) {
+    haptic('light');
+    animateCloseOverlay(ov);
+    return;
+  }
+  d.el.style.transition = 'transform .3s cubic-bezier(.22,1,.36,1)';
+  d.el.style.transform = 'translateY(0)';
+  if (ov) ov.style.backgroundColor = '';
+}
+document.addEventListener('touchend', _ovDragEnd);
+document.addEventListener('touchcancel', _ovDragEnd);
 
 function goTo(p) {
   [].forEach.call(document.querySelectorAll('[id$="-ov"],.overlay'),function(el){animateCloseOverlay(el)});
