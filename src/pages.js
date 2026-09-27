@@ -1335,7 +1335,11 @@ function reflectHTML() {
   }
   h += '<div class="card">';
   h += '<h3>'+t('Write in Your Journal')+'</h3>';
-  h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;border-left:3px solid var(--primary)"><strong>'+t("Today's Prompt:")+'</strong> ' + todayPrompt() + '</div>';
+  if (isPremium()) {
+    h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;border-left:3px solid var(--primary)"><strong>'+t("Today's Prompt:")+'</strong> ' + todayPrompt() + '</div>';
+  } else {
+    h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;border-left:3px solid var(--primary);display:flex;align-items:center;gap:10px"><span style="font-size:20px">&#128081;</span><div><strong>'+t('Guided reflections are Premium')+'</strong><br><span style="font-size:12px;color:var(--muted)">'+t('Get a daily prompt written for your journey and deep analysis of every entry.')+'</span></div><button class="btn btn-sm btn-primary" onclick="showPaywall()" style="margin-left:auto;width:auto;font-size:11px;white-space:nowrap">'+t('Unlock')+'</button></div>';
+  }
   // Optional mood for your entry
   h += '<div class="mood-row" id="ref-moods">';
   var moodEmojis = ['&#128542;','&#128533;','&#128528;','&#128578;','&#128513;'];
@@ -1367,7 +1371,7 @@ function reflectHTML() {
       h += '<div class="card journal-entry" data-search="' + (entryTextRefl.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
       h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
       h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div></div>';
-      h += '<button class="btn btn-sm btn-primary" onclick="showReflection(' + idx + ')" style="margin-top:8px">Reflect</button>';
+      h += '<button class="btn btn-sm btn-primary" onclick="requireReflection(' + idx + ')" style="margin-top:8px">Reflect</button>';
       h += '</div>';
     }
     h += '</div>';
@@ -1590,7 +1594,13 @@ function showJournalLetter(idx) {
   } catch(e) { alert('Could not show journal: ' + e.message); }
 }
 
+function requireReflection(idx) {
+  if (!requirePremium()) return;
+  showReflection(idx);
+}
+
 function showReflection(idx) {
+  if (!requirePremium()) return;
   try {
   var entry = D.journal[idx];
   if (!entry) return;
@@ -3600,6 +3610,7 @@ function exportReminderICS(id) {
 function moreHTML() {
   var h = '';
   h += '<h2 class="page-title">'+t('Tools')+'</h2>';
+  h += '<div class="card" style="cursor:pointer;padding:12px;background:linear-gradient(135deg,var(--primary-light),var(--card));display:flex;align-items:center;gap:10px;border-left:3px solid var(--accent)" onclick="showPaywall()"><span style="font-size:22px">&#128081;</span><div style="flex:1"><div style="font-size:14px;font-weight:700">'+(isPremium()?t('Premium Member'):t('Re.Claim Premium'))+'</div><div style="font-size:11px;color:var(--muted)">'+(isPremium()?t('Thanks for supporting the app!'):t('Guided reflections & daily prompts'))+'</div></div><button class="btn btn-sm '+(isPremium()?'btn-outline':'btn-primary')+'" style="width:auto;font-size:11px;white-space:nowrap">'+(isPremium()?t('Manage'):t('Unlock'))+'</button></div>';
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('Track')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'journal\')">'+t('Journal')+'</div>';

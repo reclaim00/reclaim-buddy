@@ -6,6 +6,7 @@ const FILES = [
   'src/buddy.js',
   'src/sober.js',
   'src/pages.js',
+  'src/paywall.js',
   'src/kingdom.js',
   'src/ui.js',
   'src/mfa.js',
