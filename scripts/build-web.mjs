@@ -2,6 +2,8 @@ import { cp, mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 
 const FILES = [
   'src/style.css',
+  'src/landscape-day.svg',
+  'src/landscape-night.svg',
   'src/data.js',
   'src/buddy.js',
   'src/sober.js',
