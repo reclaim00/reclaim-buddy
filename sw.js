@@ -73,9 +73,14 @@ self.addEventListener('notificationclick', function(e) {
   var url = e.notification.data && e.notification.data.url ? e.notification.data.url : baseUrl('app.html');
   e.notification.close();
   e.waitUntil(clients.matchAll({type:'window'}).then(function(ws) {
-    var match = ws.find(function(w) { return w.visibilityState === 'visible'; });
-    if (match) { match.focus(); return; }
-    if (ws.length) { ws[0].focus(); return; }
-    clients.openWindow(url);
+    var match = ws.find(function(w) { return w.visibilityState === 'visible'; }) || ws[0];
+    if (!match) return clients.openWindow(url);
+    // Bring an already-open app to the notification's destination as well as
+    // focusing it. Otherwise notifications only work when no app window exists.
+    return match.navigate(url).then(function(client) {
+      return (client || match).focus();
+    }).catch(function() {
+      return clients.openWindow(url);
+    });
   }));
 });
