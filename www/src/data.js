@@ -1237,6 +1237,22 @@ var TRANS = {
   "Manage":{  'es':"Gestionar",  'fr':"Gérer",  'de':"Verwalten",  'ru':"Управление",  'zh-cn':"管理",  'ja':"管理",  'ar':"إدارة"},
   "Guided reflections & daily prompts":{  'es':"Reflexiones guiadas y preguntas diarias",  'fr':"Réflexions guidées et invites quotidiennes",  'de':"Geführte Reflexionen & tägliche Impulse",  'ru':"Направляемые размышления и ежедневные вопросы",  'zh-cn':"引导式反思与每日提示",  'ja':"ガイド式リフレクション＆毎日のプロンプト",  'ar':"التأملات الموجّهة والموجّهات اليومية"},
   "Guided reflections that help you see the patterns others miss.":{  'es':"Reflexiones guiadas que te ayudan a ver los patrones que otros no ven.",  'fr':"Des réflexions guidées qui vous aident à voir ce que les autres ne voient pas.",  'de':"Geführte Reflexionen, mit denen du Muster siehst, die andere übersehen.",  'ru':"Направляемые размышления, которые помогают увидеть закономерности, которых замечают не все.",  'zh-cn':"引导式反思，帮你看见别人错过的模式。",  'ja':"見過ごされがちなパターンに気づくためのガイド式リフレクション。",  'ar':"تأملات موجّهة تساعدك على رؤية الأنماط التي يغفل عنها غيرك."},
+  "Continue with Google":{  'es':"Continuar con Google",  'fr':"Continuer avec Google",  'de':"Mit Google fortfahren",  'ru':"Продолжить через Google",  'zh-cn':"继续使用 Google",  'ja':"Google で続行",  'ar':"المتابعة باستخدام Google"},
+  "or":{  'es':"o",  'fr':"ou",  'de':"oder",  'ru':"или",  'zh-cn':"或",  'ja':"または",  'ar':"أو"},
+  "Link your accounts":{  'es':"Vincula tus cuentas",  'fr':"Associez vos comptes",  'de':"Konten verknüpfen",  'ru':"Свяжите свои аккаунты",  'zh-cn':"关联您的账号",  'ja':"アカウントを連携",  'ar':"ربط حساباتك"},
+  "Link":{  'es':"Vincular",  'fr':"Associer",  'de':"Verknüpfen",  'ru':"Связать",  'zh-cn':"关联",  'ja':"連携",  'ar':"ربط"},
+  "Linking...":{  'es':"Vinculando...",  'fr':"Association...",  'de':"Verknüpfen...",  'ru':"Связывание...",  'zh-cn':"正在关联...",  'ja':"連携中...",  'ar':"جارٍ الربط..."},
+  "An account already exists for":{  'es':"Ya existe una cuenta para",  'fr':"Un compte existe déjà pour",  'de':"Ein Konto existiert bereits für",  'ru':"Аккаунт уже существует для",  'zh-cn':"已存在对应邮箱的账号",  'ja':"次のメールアドレスのアカウントが既に存在します",  'ar':"يوجد حساب بالفعل لهذا البريد الإلكتروني"},
+  "Sign in with its password to link Google Sign-In, or use another email.":{  'es':"Inicia sesión con su contraseña para vincular Google Sign-In, o usa otro correo electrónico.",  'fr':"Connectez-vous avec son mot de passe pour associer Google Sign-In, ou utilisez une autre adresse e-mail.",  'de':"Melde dich mit dem Passwort an, um Google Sign-In zu verknüpfen, oder verwende eine andere E-Mail-Adresse.",  'ru':"Войдите с его паролем, чтобы связать Google Sign-In, или используйте другой адрес электронной почты.",  'zh-cn':"请使用其密码登录以关联 Google 账号，或使用其他邮箱。",  'ja':"そのパスワードでサインインして Google アカウントを連携するか、別のメールアドレスを使用してください。",  'ar':"سجّل الدخول بكلمة المرور الخاصة به لربط تسجيل الدخول عبر Google، أو استخدم بريدًا إلكترونيًا آخر."},
+  "Enter your email and password.":{  'es':"Introduce tu correo electrónico y contraseña.",  'fr':"Saisissez votre adresse e-mail et votre mot de passe.",  'de':"Gib deine E-Mail-Adresse und dein Passwort ein.",  'ru':"Введите адрес электронной почты и пароль.",  'zh-cn':"请输入您的邮箱和密码。",  'ja':"メールアドレスとパスワードを入力してください。",  'ar':"أدخل بريدك الإلكتروني وكلمة المرور."},
+  "Incorrect password for this account.":{  'es':"La contraseña de esta cuenta es incorrecta.",  'fr':"Mot de passe incorrect pour ce compte.",  'de':"Falsches Passwort für dieses Konto.",  'ru':"Неверный пароль для этого аккаунта.",  'zh-cn':"此账号的密码不正确。",  'ja':"このアカウントのパスワードが正しくありません。",  'ar':"كلمة المرور لهذا الحساب غير صحيحة."},
+  "No account found with this email.":{  'es':"No se ha encontrado ninguna cuenta con este correo electrónico.",  'fr':"Aucun compte trouvé avec cette adresse e-mail.",  'de':"Kein Konto mit dieser E-Mail-Adresse gefunden.",  'ru':"Аккаунт с таким адресом электронной почты не найден.",  'zh-cn':"未找到与此邮箱关联的账号。",  'ja':"このメールアドレスのアカウントが見つかりません。",  'ar':"لم يتم العثور على حساب بهذا البريد الإلكتروني."},
+  "Accounts linked. You can now sign in with Google.":{  'es':"Cuentas vinculadas. Ahora puedes iniciar sesión con Google.",  'fr':"Comptes associés. Vous pouvez maintenant vous connecter avec Google.",  'de':"Konten verknüpft. Du kannst dich jetzt mit Google anmelden.",  'ru':"Аккаунты связаны. Теперь вы можете войти через Google.",  'zh-cn':"账号已关联。您现在可以使用 Google 登录。",  'ja':"アカウントを連携しました。これより Google でサインインできます。",  'ar':"تم ربط الحسابات. يمكنك الآن تسجيل الدخول باستخدام Google."},
+  "Could not link accounts.":{  'es':"No se han podido vincular las cuentas.",  'fr':"Impossible d'associer les comptes.",  'de':"Konten konnten nicht verknüpft werden.",  'ru':"Не удалось связать аккаунты.",  'zh-cn':"无法关联账号。",  'ja':"アカウントを連携できませんでした。",  'ar':"تعذر ربط الحسابات."},
+  "An account already exists for this email. Linking your account...":{  'es':"Ya existe una cuenta para este correo electrónico. Vinculando tu cuenta...",  'fr':"Un compte existe déjà pour cette adresse e-mail. Association de votre compte...",  'de':"Für diese E-Mail-Adresse existiert bereits ein Konto. Konto wird verknüpft...",  'ru':"Аккаунт с таким адресом электронной почты уже существует. Связывание аккаунта...",  'zh-cn':"此邮箱已存在一个账号。正在关联您的账号...",  'ja':"このメールアドレスのアカウントが既に存在します。アカウントを連携しています...",  'ar':"يوجد حساب بالفعل بهذا البريد الإلكتروني. جارٍ ربط حسابك..."},
+  "Sign-in cancelled.":{  'es':"Inicio de sesión cancelado.",  'fr':"Connexion annulée.",  'de':"Anmeldung abgebrochen.",  'ru':"Вход отменён.",  'zh-cn':"已取消登录。",  'ja':"サインインがキャンセルされました。",  'ar':"تم إلغاء تسجيل الدخول."},
+  "Google Sign-In is not configured on this device yet.":{  'es':"Google Sign-In aún no está configurado en este dispositivo.",  'fr':"Google Sign-In n'est pas encore configuré sur cet appareil.",  'de':"Google Sign-In ist auf diesem Gerät noch nicht eingerichtet.",  'ru':"Вход через Google ещё не настроен на этом устройстве.",  'zh-cn':"此设备尚未配置 Google 登录。",  'ja':"このデバイスではまだ Google サインインが設定されていません。",  'ar':"لم يتم إعداد تسجيل الدخول عبر Google على هذا الجهاز بعد."},
+  "Google Sign-In is not enabled for this app yet.":{  'es':"Google Sign-In aún no está habilitado para esta aplicación.",  'fr':"Google Sign-In n'est pas encore activé pour cette application.",  'de':"Google Sign-In ist für diese App noch nicht aktiviert.",  'ru':"Вход через Google ещё не включён для этого приложения.",  'zh-cn':"此应用尚未启用 Google 登录。",  'ja':"このアプリではまだ Google サインインが有効になっていません。",  'ar':"لم يتم تفعيل تسجيل الدخول عبر Google لهذا التطبيق بعد."},
   "your@email.com":{"es":"your@email.com","fr":"your@email.com","de":"your@email.com","ru":"your@email.com","zh-cn":"your@email.com","ja":"your@email.com","ar":"your@email.com"},
 };
 var LANG_CODE = {'English':'en','Español':'es','Français':'fr','Deutsch':'de','Русский':'ru','中文':'zh-cn','日本語':'ja','العربية':'ar'};
@@ -1712,6 +1728,145 @@ function handleAuth() {
     if (btnLabel) btnLabel.textContent = isSignUp ? t('Sign Up') : t('Sign In');
   });
 }
+function googleSignIn() {
+  if (!firebase || !firebase.auth) { alert(t('Unable to connect. Check your internet connection and try again.')); return; }
+  var btn = document.getElementById('si-google-btn');
+  var lbl = document.getElementById('si-google-label');
+  var error = document.getElementById('si-error');
+  if (btn) btn.disabled = true;
+  if (lbl) lbl.textContent = t('Signing in...');
+  if (error) error.textContent = '';
+
+  function googleCredential(cred) {
+    var idToken = cred && (cred.idToken || cred.id_token);
+    var accessToken = cred && (cred.accessToken || cred.access_token);
+    return firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
+  }
+
+  function finishGoogleSignIn(authPromise) {
+    authPromise.then(function() {
+      // onAuthStateChanged handles onAuthReady + linking hooks below
+    }).catch(function(err) {
+      if (btn) btn.disabled = false;
+      if (lbl) lbl.textContent = t('Continue with Google');
+      _handleGoogleAuthError(err, googleCredential, function(cred) {
+        if (cred) return firebase.auth().signInWithCredential(cred);
+        return null;
+      });
+    });
+  }
+
+  if (isNativeApp()) {
+    var FA = Capacitor.Plugins && Capacitor.Plugins.FirebaseAuthentication;
+    if (!FA) { if (btn) btn.disabled = false; if (lbl) lbl.textContent = t('Continue with Google'); alert(t('Google Sign-In is not configured on this device yet.')); return; }
+    FA.signInWithGoogle({ skipNativeAuth: true }).then(function(result) {
+      var cred = result && result.credential;
+      if (!cred || !cred.idToken) { throw new Error('No Google credential returned'); }
+      finishGoogleSignIn(firebase.auth().signInWithCredential(googleCredential(cred)));
+    }).catch(function(e) {
+      if (btn) btn.disabled = false;
+      if (lbl) lbl.textContent = t('Continue with Google');
+      if (e && e.message && (e.message.indexOf('cancel') !== -1 || e.message.indexOf('CANCELLED') !== -1)) return;
+      console.warn('google native sign-in error:', e);
+      _handleGoogleAuthError(e, googleCredential, function() { return null; });
+    });
+  } else {
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('profile');
+    provider.addScope('email');
+    finishGoogleSignIn(firebase.auth().signInWithPopup(provider));
+  }
+}
+
+function _handleGoogleAuthError(err, googleCredential, makePromise) {
+  // Account exists but with a different credential (e.g. email/password). Auto-link.
+  if (err && err.code === 'auth/account-exists-with-different-credential') {
+    var email = err.email || '';
+    var pendingCred = err.credential || null;
+    if (!pendingCred) {
+      pendingCred = (typeof googleCredential === 'function') ? googleCredential(err) : null;
+    }
+    showToast(t('An account already exists for this email. Linking your account...'), 'info');
+    _linkGoogleCredential(email, pendingCred, makePromise);
+    return;
+  }
+  if (err && err.code === 'auth/multi-factor-auth-required' && typeof handleMfaSignIn === 'function' && err.resolver) {
+    handleMfaSignIn(err);
+    return;
+  }
+  var msg = (err && err.message) || 'Authentication failed.';
+  if (err && err.code === 'auth/popup-closed-by-user') msg = t('Sign-in cancelled.');
+  else if (err && err.code === 'auth/user-cancelled') msg = t('Sign-in cancelled.');
+  else if (msg.indexOf('auth/network-request-failed') !== -1) msg = t('Network error. Check your connection.');
+  else if (msg.indexOf('auth/operation-not-allowed') !== -1 || msg.indexOf('auth/unauthorized-domain') !== -1) msg = t('Google Sign-In is not enabled for this app yet.');
+  showToast(msg, 'error');
+}
+
+function _linkGoogleCredential(email, pendingCred, makePromise) {
+  // If there's an existing user signed in already (e.g. restored session), link directly.
+  var cu = firebase && firebase.auth().currentUser;
+  if (cu && cu.email === email) {
+    cu.linkWithCredential(pendingCred).then(function() {
+      showToast(t('Accounts linked. You can now sign in with Google.'));
+      render();
+    }).catch(function(e) {
+      console.warn('link failed:', e);
+      showToast((e && e.message) || t('Could not link accounts.'), 'error');
+    });
+    return;
+  }
+  // Prompt for the password of the existing email/password account, then link.
+  var ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = '<div class="overlay-content" style="max-width:360px;text-align:center">'
+    + '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">&#128279; '+t('Link your accounts')+'</h3>'
+    + '<p style="font-size:12px;color:var(--muted);margin-bottom:10px">'+t('An account already exists for')+' <strong>'+esc(email)+'</strong>. '+t('Sign in with its password to link Google Sign-In, or use another email.')+'</p>'
+    + '<input id="link-email" class="si-input" type="email" value="'+esc(email)+'" placeholder="'+t('your@email.com')+'">'
+    + '<input id="link-password" class="si-input" type="password" placeholder="'+t('Password')+'" onkeydown="if(event.key===\'Enter\')confirmAccountLink()">'
+    + '<div id="link-error" style="font-size:12px;color:var(--danger);margin:4px 0;display:none"></div>'
+    + '<div style="display:flex;gap:6px;margin-top:8px">'
+    + '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="flex:1">'+t('Cancel')+'</button>'
+    + '<button class="btn btn-primary" onclick="confirmAccountLink(this)" style="flex:1">'+t('Link')+'</button>'
+    + '</div></div>';
+  document.body.appendChild(ov);
+  window._pendingGoogleCred = pendingCred;
+  _pendingLinkEmail = email;
+}
+
+function confirmAccountLink(btn) {
+  var email = (document.getElementById('link-email') || {}).value;
+  var pwd = (document.getElementById('link-password') || {}).value;
+  var errEl = document.getElementById('link-error');
+  if (!email || !pwd) { if (errEl) { errEl.style.display = 'block'; errEl.textContent = t('Enter your email and password.'); } return; }
+  if (btn) { btn.disabled = true; btn.textContent = t('Linking...'); }
+  var cred = window._pendingGoogleCred;
+  var targetEmail = email;
+  firebase.auth().signInWithEmailAndPassword(email, pwd).then(function() {
+    var cu = firebase.auth().currentUser;
+    return cu.linkWithCredential(cred).then(function() {
+      showToast(t('Accounts linked. You can now sign in with Google.'));
+      if (window._pendingGoogleCred) window._pendingGoogleCred = null;
+      _pendingLinkEmail = '';
+      var ovs = document.querySelectorAll('.overlay');
+      for (var i = 0; i < ovs.length; i++) ovs[i].remove();
+      if (typeof render === 'function') render();
+    });
+  }).catch(function(e) {
+    if (btn) { btn.disabled = false; btn.textContent = t('Link'); }
+    if (errEl) {
+      errEl.style.display = 'block';
+      var m = (e && e.message) || '';
+      if (e && (e.code === 'auth/wrong-password' || e.code === 'auth/invalid-credential')) m = t('Incorrect password for this account.');
+      else if (e && e.code === 'auth/user-not-found') m = t('No account found with this email.');
+      else if (e && e.code === 'auth/email-already-in-use') m = t('This email is already registered. Try Sign In.');
+      else if (e && e.code === 'auth/multi-factor-auth-required' && typeof handleMfaSignIn === 'function' && e.resolver) { if (errEl) errEl.style.display = 'none'; handleMfaSignIn(e); return; }
+      errEl.textContent = m || (e && e.message) || t('Could not link accounts.');
+    }
+  });
+}
+
+var _pendingLinkEmail = '';
+
 function sendEmailVerification() {
   var user = firebase && firebase.auth().currentUser;
   if (!user) { alert(t('You are not signed in.')); return; }
@@ -1777,6 +1932,9 @@ function showSignIn() {
     '<div id="si-error" style="font-size:12px;color:var(--danger);margin:4px 0;text-align:center"></div>' +
     '<button class="si-btn" id="si-auth-btn" onclick="handleAuth()"><span id="si-btn-label">'+t('Sign In')+'</span></button>' +
     '</div>' +
+    '<div class="si-sep">'+t('or')+'</div>' +
+    '<button class="si-google-btn" id="si-google-btn" onclick="googleSignIn()">' +
+    '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span id="si-google-label">'+t('Continue with Google')+'</span></button>' +
     '</div>' +
     '<div class="si-lang-row">'+t('Language')+': <select id="si-language" onchange="changeLanguage(this.value);showSignIn()" style="font-size:12px;padding:4px 6px;max-width:160px">'+(function(){var r='';for(var li=0;li<LANGUAGES.length;li++){r+='<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>'}return r})()+'</select></div>' +
     '<div class="si-footer">'+t('Your journal, moods &amp; habits stay on your device. Partner features sync via Firebase.')+'</div>' +

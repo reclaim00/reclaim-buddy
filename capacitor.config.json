@@ -27,6 +27,10 @@
     },
     "FirebaseMessaging": {
       "presentationOptions": ["alert", "badge", "sound"]
+    },
+    "FirebaseAuthentication": {
+      "providers": ["google.com"],
+      "skipNativeAuth": true
     }
   },
   "experimental": {
@@ -34,6 +38,9 @@
       "spm": {
         "packageOptions": {
           "@capacitor-firebase/messaging": {
+            "symlink": true
+          },
+          "@capacitor-firebase/authentication": {
             "symlink": true
           }
         }
