@@ -3215,7 +3215,7 @@ function setupBuddyHTML() {
   // Find buddies by pairing code (works across the world)
   h += '<div class="card" style="border:2px solid var(--accent);text-align:center"><h3>Find Me a partner</h3>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">I\'ll automatically match you with someone who speaks <strong>' + (D.language || 'English') + '</strong>.</p>';
-  h += '<button class="btn btn-primary" id="find-buddy-btn" onclick="findBuddyAuto()" style="margin-bottom:6px">Find Me a partner</button>';
+  h += '<button class="btn btn-primary" id="find-buddy-btn" onclick="findBuddyAuto(this)" style="margin-bottom:6px">Find Me a partner</button>';
   h += '<div id="auto-buddy-result"></div></div>';
   h += '<div class="card" style="border:2px solid var(--primary)"><h3>Worldwide Buddy Pairing</h3>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Your language: <strong>' + (D.language || 'English') + '</strong></p>';
@@ -4776,7 +4776,7 @@ var _buddyMsgEmail = '';
 var _buddyLastNewAt = 0;
 
 function buddyMsgKey(m) {
-  return (m.timestamp || 0) + '|' + (m.text || '');
+  return m.id || ((m.timestamp || 0) + '|' + (m.from || '') + '|' + (m.text || ''));
 }
 
 function stopBuddyMessaging() {
@@ -4784,6 +4784,15 @@ function stopBuddyMessaging() {
   _buddyMsgListeners = [];
   _buddyMsgReady = false;
   _buddyMsgEmail = '';
+  _buddyMsgsCache = [];
+  _buddyMsgUnread = 0;
+  _buddyLastNewAt = 0;
+  _lastBuddyMsgPreview = '';
+  _lastBuddyMsgTime = '';
+  var pill = document.getElementById('comrade-unread-pill');
+  if (pill) { pill.textContent = ''; pill.style.display = 'none'; }
+  var toolsBadge = document.getElementById('tools-badge');
+  if (toolsBadge) toolsBadge.style.display = 'none';
 }
 
 function buddyMergeMessages(msgs) {
@@ -4823,7 +4832,10 @@ function renderBuddyMsgList() {
     var me = m.from === AUTH_EMAIL;
     html += '<div class="comrade-msg' + (me ? ' me' : '') + '">';
     if (!me) html += '<div class="msg-author">' + safe(buddyName) + '</div>';
-    html += '<div>' + safe(m.text) + '</div><div class="msg-date">' + safe(m.date || '') + ' ' + safe(m.time || '') + '</div></div>';
+    html += '<div>' + safe(m.text) + '</div>';
+    if (me && m.pending) html += '<div class="msg-date">Sending…</div>';
+    else html += '<div class="msg-date">' + safe(m.date || '') + ' ' + safe(m.time || '') + '</div>';
+    html += '</div>';
   }
   list.innerHTML = '<div class="comrade-scroll">' + html + '</div>';
   if (pg === 'buddy') {
@@ -4865,7 +4877,7 @@ function startBuddyMessaging() {
   _buddyMsgEmail = buddyEmail;
   function onSnap(snap) {
     var msgs = [];
-    try { snap.forEach(function(doc) { msgs.push(doc.data()); }); } catch (e) { return; }
+    try { snap.forEach(function(doc) { var m = doc.data(); if (m && !m.id) m.id = doc.id; msgs.push(m); }); } catch (e) { return; }
     var incoming = buddyMergeMessages(msgs);
     var fresh = _buddyLastNewAt && (Date.now() - _buddyLastNewAt) < 15000;
     if (incoming > 0) {
@@ -4882,42 +4894,59 @@ function startBuddyMessaging() {
     renderBuddyMsgList();
     updateBuddyMsgBadges();
   }
+  var errorNotified = false;
+  function onError(e) {
+    console.warn('buddy messaging listener failed:', e);
+    if (!errorNotified) {
+      errorNotified = true;
+      showToast('Could not load partner messages. Check your connection and try again.', 'error');
+    }
+  }
   try {
-    var q1 = DB.collection('messages').where('from', '==', AUTH_EMAIL);
-    var q2 = DB.collection('messages').where('from', '==', buddyEmail);
-    if (typeof q1.onSnapshot === 'function') _buddyMsgListeners.push(q1.onSnapshot(onSnap, function() {}));
-    if (typeof q2.onSnapshot === 'function') _buddyMsgListeners.push(q2.onSnapshot(onSnap, function() {}));
-  } catch (e) { console.warn('buddy messaging listener failed:', e); }
+    // Firestore read rules require each query to prove both sides of the conversation.
+    var q1 = DB.collection('messages').where('from', '==', AUTH_EMAIL).where('to', '==', buddyEmail);
+    var q2 = DB.collection('messages').where('from', '==', buddyEmail).where('to', '==', AUTH_EMAIL);
+    if (typeof q1.onSnapshot === 'function') _buddyMsgListeners.push(q1.onSnapshot(onSnap, onError));
+    if (typeof q2.onSnapshot === 'function') _buddyMsgListeners.push(q2.onSnapshot(onSnap, onError));
+  } catch (e) { onError(e); }
 }
 
 function comradeSendMessage() {
   var input = document.getElementById('comrade-msg-input');
   if (!input || !input.value.trim()) return;
   if (!D.buddy || !D.buddy.contact) { showToast('Connect a partner to send messages.', 'error'); return; }
+  if (!DB || !AUTH_EMAIL) { showToast('Sign in and connect to the internet to send messages.', 'error'); return; }
   var msg = input.value.trim();
   input.value = '';
   var now = new Date();
-  var uid = (firebase && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '';
+  var user = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser;
   var m = {
+    id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2),
     from: AUTH_EMAIL, to: D.buddy.contact, fromName: D.name || 'You',
-    fromUid: uid,
-    text: msg,
+    fromUid: user ? user.uid : '', text: msg,
     date: now.toDateString(),
     time: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
-    timestamp: Date.now()
+    timestamp: Date.now(), pending: true
   };
   if (!D.messages) D.messages = [];
   D.messages.push(m);
   saveDataSilent();
   buddyMergeMessages([m]);
   renderBuddyMsgList();
-  showToast('Message sent!', 'success');
-  if (DB) {
-    DB.collection('messages').add(m).catch(function(e) {
-      console.warn(e);
-      showToast('Message not delivered. Check your connection.', 'error');
-    });
-  }
+  DB.collection('messages').add(Object.assign({}, m, { pending: false })).then(function() {
+    m.pending = false;
+    renderBuddyMsgList();
+    saveDataSilent();
+    showToast('Message sent!', 'success');
+  }).catch(function(e) {
+    console.warn(e);
+    _buddyMsgsCache = _buddyMsgsCache.filter(function(cached) { return cached.id !== m.id; });
+    D.messages = D.messages.filter(function(saved) { return saved.id !== m.id; });
+    if (input && !input.value) input.value = msg;
+    renderBuddyMsgList();
+    saveDataSilent();
+    showToast('Message not delivered. Your text is back in the message box.', 'error');
+  });
 }
 
 var _buddyView = 'list';   // iMessage skin: 'list' | 'thread'

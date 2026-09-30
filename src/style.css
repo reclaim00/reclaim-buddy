@@ -38,8 +38,9 @@ body.dark .day-scene{display:none}
 body.dark ::-webkit-scrollbar-thumb{background:#24334a;border-color:#1f2a3d}
 body.dark ::-webkit-scrollbar-thumb:hover{background:#33445f}
 /* ===== PLANET VISUALIZATION ===== */
-.kingdom-scene{position:relative;width:100%;max-width:460px;margin:0 auto 10px;border-radius:16px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04)}
-.kingdom-scene svg{width:100%;height:auto;display:block}.k-sky{fill:var(--sky-c)}.k-damage-overlay{fill:#ff4444}
+.kingdom-scene{position:relative;width:100%;max-width:460px;margin:0 auto 10px;border-radius:16px;overflow:hidden;isolation:isolate;background:#050a18;box-shadow:0 1px 6px rgba(0,0,0,.06),0 4px 20px rgba(0,0,0,.04);transition:box-shadow .5s cubic-bezier(.22,1,.36,1),filter .4s ease}
+.kingdom-scene svg{width:100%;height:auto;display:block;transform-origin:center;animation:kingdomSceneEnter .58s cubic-bezier(.22,1,.36,1) both}.k-sky{fill:var(--sky-c)}.k-damage-overlay{fill:#ff4444}
+@keyframes kingdomSceneEnter{from{opacity:.72;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
 .kingdom-scene{--sky-c:#04061a}
 .kingdom-scene .k-stars circle{fill:#fff}
 @keyframes starTwinkle{0%,100%{opacity:.35}50%{opacity:1}}
@@ -639,3 +640,5 @@ body.elevated .empty-state{background:color-mix(in srgb,var(--card) 60%,transpar
 /* 10) SMOOTH THEME TRANSITION */
 body.elevated{transition:background .35s ease,color .35s ease}
 body.elevated .card,body.elevated .btn,body.elevated .breadcrumb{transition:transform .15s ease,box-shadow .2s ease,background .25s ease}
+
+@media(prefers-reduced-motion:reduce){.kingdom-scene,.kingdom-scene *{animation:none!important;scroll-behavior:auto!important;transition:none!important}.kingdom-scene animateTransform{display:none!important}}

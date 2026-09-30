@@ -127,15 +127,16 @@ function connectToBuddy(email) {
   }).catch(function(){alert(t('Could not reach global directory. Try again later.'))});
 }
 
-function findBuddyAuto() {
+function findBuddyAuto(btn) {
   if (!AUTH_EMAIL) { alert(t('Sign in to find a comrade.')); return; }
-  var btn = event && event.target ? event.target : document.getElementById('find-buddy-btn');
+  if (!DB) { showToast('The partner directory is unavailable right now.', 'error'); return; }
+  btn = btn || document.getElementById('find-buddy-btn');
   if (btn) { btn.textContent = 'Searching...'; btn.disabled = true; }
   var lang = D.language || 'English';
   DB.collection('users').where('language','==',lang).limit(50).get().then(function(snapshot){
     var available = [];
     snapshot.forEach(function(doc){
-      if (doc.id !== AUTH_EMAIL) available.push(doc.data());
+      if (doc.id !== AUTH_EMAIL) available.push(Object.assign({ email: doc.id }, doc.data()));
     });
     if (btn) { btn.textContent = 'Find Me a comrade'; btn.disabled = false; }
     if (!available.length) {
