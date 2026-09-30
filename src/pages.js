@@ -591,7 +591,12 @@ function crisisNotifyBuddy() {
   if (!AUTH_EMAIL || !D.buddy || !D.buddy.contact) return;
   var msg = t('I need support right now. Your partner may be in distress. Please reach out.');
   var uid = (firebase && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '';
-  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy.contact,partnershipCode:D.buddy.partnershipCode||'',fromUid:uid,fromName:D.name||'You',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(ref){notifyPartnerViaSupabase('message',ref.id);alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  if (!DB) { showToast('Could not reach your partner. Check your connection and try again.','error'); return; }
+  DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy.contact,partnershipCode:D.buddy.partnershipCode||'',fromUid:uid,fromName:D.name||'You',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(ref){
+    return notifyPartnerViaSupabase('message',ref.id).then(function(notified){
+      showToast(notified ? 'Your message was sent and your partner was alerted.' : 'Your message was sent, but an alert could not be delivered. Your partner may see it when they open the app.',notified?'success':'warning');
+    });
+  }).catch(function(e){ console.warn(e); showToast('Could not send your message. Check your connection and try again.','error'); });
 }
 
 var HARD_TIME_PATTERNS = [
@@ -4135,10 +4140,12 @@ function exportProgressReport() {
   a.click();
 }
 
-function deleteAccount() {
+async function deleteAccount() {
   if (!confirm('Delete your account and all data? This cannot be undone.')) return;
   if (!confirm('Are you absolutely sure? All Firestore data, local data, and your account will be permanently removed.')) return;
-  if (!firebase || !firebase.auth().currentUser) { clearLocalData(); return; }
+  var user = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser;
+  if (!user) { clearLocalData(); return; }
+  if (!DB || !AUTH_EMAIL) { showToast('Could not connect to your account data. Check your connection and try again. Your data is still here.','error'); return; }
   var uid = AUTH_EMAIL;
   var batch = DB.batch();
   batch.delete(DB.collection('appData').doc(uid));
@@ -4156,11 +4163,27 @@ function deleteAccount() {
       if (link && link.ownerEmail !== uid) return DB.collection('pairingCodes').doc(activeCode).update({ended:true,endedBy:uid,endedAt:firebase.firestore.FieldValue.serverTimestamp()});
     });
   }
-  closePartnership.then(function(){return batch.commit()}).catch(function(e){console.warn('Account cleanup failed:',e);showToast('Could not delete all account data. Check your connection and try again.','error');throw e}).then(function(){
-    firebase.auth().currentUser.delete().catch(function(e){ console.warn(e); }).then(function(){
-      clearLocalData();
-    });
-  });
+  try {
+    await closePartnership;
+    await batch.commit();
+  } catch(e) {
+    console.warn('Account cleanup failed:',e);
+    showToast('Could not remove your cloud data. Check your connection and try again. Your account and device data are still here.','error');
+    return;
+  }
+  try {
+    await user.delete();
+    clearLocalData();
+  } catch(e) {
+    console.warn('Account deletion failed:',e);
+    if (e && e.code === 'auth/requires-recent-login') {
+      showToast('Your cloud data was removed, but Firebase needs a recent sign-in to close the account. Sign out, sign back in, then choose Delete Account again. Your device copy is still here.','warning');
+    } else if (e && e.code === 'auth/network-request-failed') {
+      showToast('Your cloud data was removed, but the account could not be closed because the connection failed. Reconnect, sign in again, and choose Delete Account again. Your device copy is still here.','error');
+    } else {
+      showToast('Your cloud data was removed, but the account could not be closed. Sign in again and retry Delete Account. Your device copy is still here.','error');
+    }
+  }
 }
 
 function clearLocalData() {
@@ -5040,11 +5063,12 @@ function comradeSendMessage() {
   buddyMergeMessages([m]);
   renderBuddyMsgList();
   DB.collection('messages').add(Object.assign({}, m, { pending: false })).then(function(ref) {
-    notifyPartnerViaSupabase('message',ref.id);
     m.pending = false;
     renderBuddyMsgList();
     saveDataSilent();
-    showToast('Message sent!', 'success');
+    return notifyPartnerViaSupabase('message',ref.id).then(function(notified) {
+      showToast(notified ? 'Message sent and partner alerted.' : 'Message sent. Your partner may see it when they open the app.', notified ? 'success' : 'info');
+    });
   }).catch(function(e) {
     console.warn(e);
     _buddyMsgsCache = _buddyMsgsCache.filter(function(cached) { return cached.id !== m.id; });

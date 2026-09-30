@@ -26,7 +26,7 @@ function notifyPartnerViaSupabase(kind, documentId) {
     return fetch(SUPABASE_PUSH_URL, {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+idToken,'apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({kind:kind,documentId:documentId})});
   }).then(function(response) {
     if (!response.ok) throw new Error('Notification relay returned '+response.status);
-    return true;
+    return response.json().then(function(result) { return result.sent === true; });
   }).catch(function(error) { console.warn('Partner notification was not sent:',error); return false; });
 }
 
