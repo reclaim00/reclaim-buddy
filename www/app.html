@@ -17,7 +17,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Re.Claim</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://api.qrserver.com; connect-src 'self' https://api.qrserver.com https://*.firebaseio.com https://*.googleapis.com https://*.firestore.googleapis.com wss://*.firebaseio.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
-<link rel="stylesheet" href="src/style.css?v=20260930d">
+<link rel="stylesheet" href="src/style.css?v=20260930e">
 </head>
 <body>
 <div id="landscape-bg" aria-hidden="true">
@@ -89,6 +89,7 @@
 </svg>
 <div id="toast-container" aria-live="polite" role="status"></div>
 <div id="conn-status" style="position:fixed;bottom:76px;left:50%;transform:translateX(-50%);z-index:199;pointer-events:none;display:none"><span style="display:inline-block;padding:4px 12px;border-radius:6px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;letter-spacing:.5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15)">&#x26A0; No connection</span></div>
+<a class="skip-link" href="#app" onclick="document.getElementById('app').focus()">Skip to main content</a>
 <div class="top-bar">
   <div style="display:flex;align-items:center;gap:6px"><div class="globe-logo" role="heading" aria-level="1"><img src="globe-icon.png" alt="" width="24" height="24" style="border-radius:50%;object-fit:cover" aria-hidden="true"></div><div><div class="logo-text" role="heading" aria-level="1">Re.<span style="color:var(--primary)">Claim</span></div><div id="journey-header" style="font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:-2px"></div></div></div>
   <div style="display:flex;gap:6px;align-items:center">
@@ -98,9 +99,10 @@
   </div>
 </div>
 
-<div class="app" id="app"><div id="app-splash" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:20px"><img src="globe-icon.png" alt="Re.Claim" style="width:180px;height:180px;border-radius:50%;object-fit:cover;box-shadow:0 8px 32px rgba(45,106,79,.22);margin-bottom:24px"><div style="font-size:36px;font-weight:800;letter-spacing:-1.5px">Re.<span style="color:var(--primary)">Claim</span></div><div style="font-size:13px;color:var(--muted);margin-top:8px;animation:pulse 1.5s ease-in-out infinite">loading...</div></div></div>
+<main class="app" id="app" tabindex="-1" aria-label="Re.Claim app"><div id="app-splash" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:20px"><img src="globe-icon.png" alt="Re.Claim" style="width:180px;height:180px;border-radius:50%;object-fit:cover;box-shadow:0 8px 32px rgba(45,106,79,.22);margin-bottom:24px"><div style="font-size:36px;font-weight:800;letter-spacing:-1.5px">Re.<span style="color:var(--primary)">Claim</span></div><div style="font-size:13px;color:var(--muted);margin-top:8px;animation:pulse 1.5s ease-in-out infinite">loading...</div></div></main>
+<div id="page-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
-<div class="tabs" id="tabs">
+<nav class="tabs" id="tabs" aria-label="Main navigation">
     <button class="tab active" data-page="home" aria-label="Atlas">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/><circle cx="12" cy="12" r="2"/></svg><span class="tab-label">Atlas</span>
     </button>
@@ -116,22 +118,20 @@
     <button class="tab" data-page="more" aria-label="Tools">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg><span class="tab-label">Tools</span><span id="tools-badge" style="display:none;position:absolute;top:2px;right:50%;margin-right:-22px;background:var(--accent);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:999px;min-width:8px;text-align:center;line-height:1.4" aria-hidden="true">1</span>
     </button>
-</div>
+</nav>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
-<script src="src/data.js?v=20260930d"></script>
-<script src="src/buddy.js?v=20260930d"></script>
-<script src="src/sober.js?v=20260930d"></script>
-<script src="src/pages.js?v=20260930d"></script>
- <script src="src/paywall.js?v=20260930d"></script>
- <script src="src/kingdom.js?v=20260930d"></script>
- <script src="src/ui.js?v=20260930d"></script>
-<script src="src/mfa.js?v=20260930d"></script>
+<script src="src/data.js?v=20260930e"></script>
+<script src="src/buddy.js?v=20260930e"></script>
+<script src="src/sober.js?v=20260930e"></script>
+<script src="src/pages.js?v=20260930e"></script>
+ <script src="src/paywall.js?v=20260930e"></script>
+ <script src="src/kingdom.js?v=20260930e"></script>
+ <script src="src/ui.js?v=20260930e"></script>
+<script src="src/mfa.js?v=20260930e"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW registration failed:',e)})}</script>
 </body>
 </html>
-
-

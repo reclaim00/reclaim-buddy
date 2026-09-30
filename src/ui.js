@@ -1512,6 +1512,9 @@ function render() {
     app.classList.toggle('suppress-anim', !pageChanged);
     _lastRenderedPg = curPg;
     app.innerHTML = _pageCache[curPg];
+    var announcer = document.getElementById('page-announcer');
+    var heading = app.querySelector('h1,h2,.page-title');
+    if (announcer && pageChanged) announcer.textContent = heading ? heading.textContent.trim() : curPg;
     if (curPg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
     [].forEach.call(document.querySelectorAll('.tab'),function(t){
       var tp = t.getAttribute('data-page');
@@ -1638,6 +1641,11 @@ var _ovObs = new MutationObserver(function(muts) {
       if (n.nodeType === 1 && n.classList && n.classList.contains('overlay')) {
         n.setAttribute('role', 'dialog');
         n.setAttribute('aria-modal', 'true');
+        if (!n.hasAttribute('aria-label') && !n.hasAttribute('aria-labelledby')) {
+          var title = n.querySelector('h1,h2,h3,[role="heading"]');
+          if (title) { if (!title.id) title.id = 'dialog-title-' + Date.now() + '-' + ni; n.setAttribute('aria-labelledby',title.id); }
+          else n.setAttribute('aria-label','Dialog');
+        }
       }
     }
   }

@@ -655,6 +655,9 @@ function homeHTML() {
 
   h += pendingFollowUpHTML();
   h += accPendingHTML();
+  h += recoveryGoalFollowupHTML();
+  h += safetyPlanFollowupHTML();
+  h += nextReminderHTML();
 
   var homeExtras = installCardHTML() + backupCardHTML();
   if (homeExtras) h += '<details class="home-extras"><summary>More options</summary><div class="home-extras-content">' + homeExtras + '</div></details>';
@@ -669,4 +672,3 @@ function homeHTML() {
 function escText(s) {
   return (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-

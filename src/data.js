@@ -262,6 +262,7 @@ function onAuthReady(email, isNew) {
   AUTH_USER = email; AUTH_EMAIL = email;
   localStorage.setItem('rc_user', email); localStorage.setItem('rc_email', email);
   D = loadData();
+  try { D.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch(e) { D.timeZone = 'UTC'; }
   document.body.classList.add('logged-in');
   if (isNew) { D.joinDate = Date.now(); saveData(); }
   if (isNativeApp()) { subscribePush(); }
@@ -270,6 +271,8 @@ function onAuthReady(email, isNew) {
   registerCurrentUser();
   if (firebase && firebase.auth().currentUser) {
     loadFromFirestore(function(cloudData) {
+      try { D.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch(e) { D.timeZone = 'UTC'; }
+      saveDataSilent();
       render();
       if (isNew && !D._onboardingDone) { setTimeout(function(){ showOnboarding(); }, 400); }
     });
@@ -397,6 +400,7 @@ function defaultData() {
     customCopingCards: [],
     savedArticles: [], savedBooks: [], savedPodcasts: [], savedVideos: [],
     lastReportDate: null,
+    timeZone: (function(){try{return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'}catch(e){return 'UTC'}})(),
     notifications: { morning: false, evening: false, morningTime: '08:00', eveningTime: '20:00', craving: false, journal: false, breathe: false, cravingTime: '14:00', journalTime: '12:00', breatheTime: '10:00', reminderNotif: true, push: true, checkinReminder: false, checkinReminderTime: '18:00', buddyCheckin: false, streakMilestone: false },
     chatHistory: [], reflectionCount: 0, sosUsed: false, assessmentProgress: [], relapsePlan: { triggers: [], warningSigns: [], coping: [], support: [], statement: '' }, cravings: [], messages: [], journalWordGoal: 50, reminders: [],
     pledges: [], lastMilestoneShown: 0, recoveryGoals: [], plantType: 'default', accentColor: 'green',
@@ -1940,7 +1944,7 @@ function showSignIn() {
     '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span id="si-google-label">'+t('Continue with Google')+'</span></button>' +
     '</div>' +
     '<div class="si-lang-row">'+t('Language')+': <select id="si-language" onchange="changeLanguage(this.value);showSignIn()" style="font-size:12px;padding:4px 6px;max-width:160px">'+(function(){var r='';for(var li=0;li<LANGUAGES.length;li++){r+='<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>'}return r})()+'</select></div>' +
-    '<div class="si-footer">'+t('Your journal, moods &amp; habits stay on your device. Partner features sync via Firebase.')+'</div>' +
+    '<div class="si-footer">Your data is stored in this browser or synced to your account. Partner features use Firebase.<br><button type="button" class="si-forgot-btn" onclick="showHelpCenter()">Help with account or encryption recovery</button></div>' +
     '</div></div>';
   document.getElementById('tabs').style.display = 'none';
   var tb = document.querySelector('.top-bar');

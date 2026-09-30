@@ -26,7 +26,14 @@ service cloud.firestore {
         request.resource.data.code == code &&
         request.resource.data.expiresAt > request.time;
       allow update: if request.auth != null &&
-        (resource.data.ownerEmail == request.auth.token.email ||
+        ((resource.data.ownerEmail == request.auth.token.email && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['accepted', 'acceptedBy', 'acceptedAt', 'ended', 'endedBy', 'endedAt']) &&
+          (resource.data.accepted != true || request.resource.data.accepted == true) &&
+          (resource.data.ended != true || request.resource.data.ended == true) &&
+          (request.resource.data.accepted != true || request.resource.data.acceptedBy == request.auth.token.email)) ||
+         (resource.data.accepted == true && resource.data.ended != true &&
+          (resource.data.ownerEmail == request.auth.token.email || resource.data.consumedBy == request.auth.token.email) &&
+          request.resource.data.ended == true &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ended', 'endedBy', 'endedAt'])) ||
          (resource.data.expiresAt > request.time && resource.data.accepted != true &&
           ((resource.data.consumed != true && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['consumed', 'consumedBy', 'consumedAt', 'requestName', 'requestLanguage'])) ||
            (resource.data.consumedBy == request.auth.token.email && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['withdrawn'])))));
@@ -34,13 +41,22 @@ service cloud.firestore {
     }
     // Buddy progress shares: readable only to the owner and the partners they explicitly share with
     match /progress/{email} {
-      allow read: if request.auth != null && (request.auth.token.email == email || (resource.data is map && resource.data.participants is list && request.auth.token.email in resource.data.participants));
+      allow read: if request.auth != null && (request.auth.token.email == email ||
+        (resource.data is map && resource.data.participants is list && request.auth.token.email in resource.data.participants &&
+         resource.data.partnershipCode is string &&
+         get(/databases/$(db)/documents/pairingCodes/$(resource.data.partnershipCode)).data.accepted == true &&
+         get(/databases/$(db)/documents/pairingCodes/$(resource.data.partnershipCode)).data.ended != true));
       allow write: if request.auth != null && request.auth.token.email == email;
     }
     // Buddy messages: a user can read only conversations they are part of
     match /messages/{message} {
       allow read: if request.auth != null && (resource.data.from == request.auth.token.email || resource.data.to == request.auth.token.email);
-      allow create: if request.auth != null && request.resource.data.from == request.auth.token.email;
+      allow create: if request.auth != null && request.resource.data.from == request.auth.token.email &&
+        request.resource.data.partnershipCode is string &&
+        get(/databases/$(db)/documents/pairingCodes/$(request.resource.data.partnershipCode)).data.accepted == true &&
+        get(/databases/$(db)/documents/pairingCodes/$(request.resource.data.partnershipCode)).data.ended != true &&
+        ((get(/databases/$(db)/documents/pairingCodes/$(request.resource.data.partnershipCode)).data.ownerEmail == request.resource.data.from && get(/databases/$(db)/documents/pairingCodes/$(request.resource.data.partnershipCode)).data.consumedBy == request.resource.data.to) ||
+         (get(/databases/$(db)/documents/pairingCodes/$(request.resource.data.partnershipCode)).data.consumedBy == request.resource.data.from && get(/databases/$(db)/documents/pairingCodes/$(request.resource.data.partnershipCode)).data.ownerEmail == request.resource.data.to));
       allow update: if false;
       allow delete: if request.auth != null && (resource.data.from == request.auth.token.email || resource.data.to == request.auth.token.email);
     }

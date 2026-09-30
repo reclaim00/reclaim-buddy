@@ -591,7 +591,7 @@ function crisisNotifyBuddy() {
   if (!AUTH_EMAIL || !D.buddy || !D.buddy.contact) return;
   var msg = t('I need support right now. Your partner may be in distress. Please reach out.');
   var uid = (firebase && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '';
-  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy.contact,fromUid:uid,fromName:D.name||'You',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy.contact,partnershipCode:D.buddy.partnershipCode||'',fromUid:uid,fromName:D.name||'You',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
 var HARD_TIME_PATTERNS = [
@@ -1897,6 +1897,89 @@ function careHTML() {
   return h;
 }
 
+function relapsePlanHTML() {
+  var p = D.relapsePlan || (D.relapsePlan = {triggers:[],warningSigns:[],coping:[],support:[],statement:''});
+  var val = function(v){return Array.isArray(v) ? v.join('\n') : String(v || '')};
+  var h = '<h2 class="page-title">My Safety Plan</h2><p class="partner-intro">Keep your own warning signs and next steps together. This plan stays private to your account.</p>';
+  h += '<div class="card"><label class="form-label" for="rp-statement">What do I want to remember when things get hard?</label><textarea id="rp-statement" placeholder="One thing I want to hold on to…">'+safe(p.statement || '')+'</textarea>';
+  h += '<label class="form-label" for="rp-triggers">Situations or triggers to watch for</label><textarea id="rp-triggers" placeholder="One per line">'+safe(val(p.triggers))+'</textarea>';
+  h += '<label class="form-label" for="rp-warnings">Early warning signs</label><textarea id="rp-warnings" placeholder="One per line">'+safe(val(p.warningSigns))+'</textarea>';
+  h += '<label class="form-label" for="rp-coping">Things that help me cope</label><textarea id="rp-coping" placeholder="One per line">'+safe(val(p.coping))+'</textarea>';
+  h += '<label class="form-label" for="rp-support">People or places I can reach out to</label><textarea id="rp-support" placeholder="Names, support groups, or services">'+safe(val(p.support))+'</textarea>';
+  h += '<p class="partner-field-note">This is a personal support plan, not emergency monitoring. Use SOS for urgent support options.</p><button class="btn btn-primary" onclick="saveRelapsePlanFromPage()">Save my plan</button>';
+  if (p.lastReviewedAt) h += '<p class="partner-field-note">Last reviewed '+new Date(p.lastReviewedAt).toLocaleDateString()+'.</p>';
+  h += '</div><button class="btn btn-outline" onclick="goTo(\'care\')">Back to Wellness</button>';
+  return h;
+}
+
+function saveRelapsePlanFromPage() {
+  var p = D.relapsePlan || {};
+  var list = function(id){return (document.getElementById(id).value || '').split('\n').map(function(x){return x.trim()}).filter(Boolean)};
+  p.statement = document.getElementById('rp-statement').value.trim();
+  p.triggers = list('rp-triggers');
+  p.warningSigns = list('rp-warnings');
+  p.coping = list('rp-coping');
+  p.support = list('rp-support');
+  p.lastReviewedAt = Date.now();
+  D.relapsePlan = p;
+  saveData();
+  showToast('Safety plan saved. You can review it any time.','success');
+  render();
+}
+
+function safetyPlanFollowupHTML() {
+  var p = D.relapsePlan || {};
+  if (!p.statement && !(p.triggers && p.triggers.length) && !(p.coping && p.coping.length)) return '';
+  if (p.lastReviewedAt && Date.now() - p.lastReviewedAt < 30 * 86400000) return '';
+  return '<div class="card home-followup-card"><div><strong>Review your safety plan</strong><p>Plans can change. Take a moment to check that these steps still work for you.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'relapseplan\')">Review plan</button></div></div>';
+}
+
+function recoveryGoalFollowupHTML() {
+  var goals = D.recoveryGoals || [];
+  var today = new Date().toDateString();
+  for (var i=0;i<goals.length;i++) {
+    if (!goals[i].logs || goals[i].logs.indexOf(today) < 0) {
+      return '<div class="card home-followup-card"><div><strong>A small step toward your goal?</strong><p>'+safe(goals[i].text)+' — choose a step that feels manageable today.</p><div class="home-followup-actions"><button class="btn btn-primary btn-sm" onclick="toggleGoal('+i+');render()">Mark done</button><button class="btn btn-outline btn-sm" onclick="goTo(\'more\')">See my goals</button></div></div></div>';
+    }
+  }
+  return '';
+}
+
+function nextReminderHTML() {
+  var now = new Date();
+  var reminders = D.reminders || [];
+  var next = null;
+  for (var i=0;i<reminders.length;i++) {
+    var r = reminders[i];
+    if (!r.date || r.completedAt) continue;
+    var due = new Date(r.date + 'T' + (r.time || '23:59'));
+    if (r.repeat === 'daily' && due < now) { due.setFullYear(now.getFullYear(),now.getMonth(),now.getDate()); if (due < now) due.setDate(due.getDate()+1); }
+    if (r.repeat === 'weekly' && due < now) { while (due < now) due.setDate(due.getDate()+7); }
+    if (r.repeat === 'monthly' && due < now) { while (due < now) due.setMonth(due.getMonth()+1); }
+    if (r.repeat === 'none' && due < now) continue;
+    if (!next || due < next.due) next = {item:r,due:due,index:i};
+  }
+  if (!next || next.due - now > 86400000) return '';
+  var dueText = next.due.toDateString() === now.toDateString() ? 'Today at ' + next.due.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}) : 'Tomorrow at ' + next.due.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+  return '<div class="card home-followup-card"><div><strong>Coming up: '+safe(next.item.title)+'</strong><p>'+dueText+(next.item.notes ? ' · '+safe(next.item.notes) : '')+'</p><button class="btn btn-outline btn-sm" onclick="goTo(\'reminders\')">Open reminders</button></div></div>';
+}
+
+function showHelpCenter() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay help-overlay';
+  overlay.setAttribute('role','dialog'); overlay.setAttribute('aria-modal','true'); overlay.setAttribute('aria-labelledby','help-title');
+  overlay.innerHTML = '<div class="overlay-content help-content"><div class="help-heading"><div><h2 id="help-title">Help & account recovery</h2><p>Short answers for setup, reminders, partners, and your data.</p></div><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" aria-label="Close help">Close</button></div>'+
+    '<details class="help-section" open><summary>Getting started</summary><p>You can explore first and add your name, focus, goals, and reminders later. Use the planet on Home to see your journey, and Check in to record how today feels.</p></details>'+
+    '<details class="help-section"><summary>Partner invites and disconnecting</summary><p>Create an invite code and share it directly with someone you trust. It expires after 24 hours. They request a connection; you must accept before messages or progress sharing are available.</p><p>End the connection from the Partner page. The other person gets a push notice if they enabled notifications, or sees the change next time they open Partner. New messages stop, your own progress share is deleted, and access to their shared progress is revoked. Past messages remain in account records. Older connections may need to reconnect with a new invite.</p></details>'+
+    '<details class="help-section"><summary>Reminders and gentle follow-ups</summary><p>Create reminders from Tools → Reminders. Add them to your calendar there, or enable push notifications in Profile → Reminders. Push alerts require notification permission and a signed-in account. Home shows upcoming reminders, an overdue recovery goal, a monthly safety-plan review, and any scheduled follow-up.</p></details>'+
+    '<details class="help-section"><summary>Forgot your account password?</summary><p>On the sign-in screen, enter your email and choose “Forgot password?” Firebase will email you a reset link. A password reset restores account sign-in; it does not reset your separate encryption passphrase.</p></details>'+
+    '<details class="help-section"><summary>Forgot your encryption passphrase?</summary><p>The encryption passphrase cannot be reset or recovered. If another device is still unlocked, export your data there before signing out or removing the app. If the only copy is encrypted in the cloud and the passphrase is lost, Re.Claim cannot decrypt it.</p></details>'+
+    '<details class="help-section"><summary>Move or restore your data</summary><p>Use Profile → Export My Data to save a backup, then Profile → Import Data on the other device. Signed-in cloud sync can restore your account snapshot. Keep your encryption passphrase separately if encryption is on; a cloud backup alone cannot unlock it.</p></details>'+
+    '<div class="help-footer"><a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a href="terms.html" target="_blank" rel="noopener">Terms</a><button class="btn btn-outline btn-sm" onclick="showSOS();this.closest(\'.overlay\').remove()">Urgent support</button></div></div>';
+  document.body.appendChild(overlay);
+  var first = overlay.querySelector('summary'); if (first) first.focus();
+}
+
 function journalInsightsHTML() {
   var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="font-size:20px">&#128202;</div><h3 style="margin:0">'+t('Your Journal Insights')+'</h3></div>';
   if (!D.journal.length && !D.moods.length) {
@@ -3194,6 +3277,7 @@ window.addCompetitionProgress = function(idx) {
 function setupBuddyHTML() {
   var h = '';
   h += '<h2 class="page-title">'+t('Your Support Partner')+'</h2>';
+  if (D._partnerDisconnectNotice) h += '<div class="card partner-local-note" role="status"><strong>Partnership ended</strong><p>Your connection with '+safe(D._partnerDisconnectNotice.name)+' has ended. New messages are stopped and your progress share was withdrawn. Past messages remain in account records.</p><button class="btn btn-outline btn-sm" onclick="D._partnerDisconnectNotice=null;saveDataSilent();render()">Dismiss</button></div>';
   h += '<p class="partner-intro">Recovery is personal. Add someone you already trust, or connect with them using a private invite code.</p>';
   h += '<div class="card"><h3>Add someone who supports you</h3>';
   h += '<label class="form-label" for="comrade-name">Their name</label><input type="text" id="comrade-name" placeholder="Name" autocomplete="name">';
@@ -3266,7 +3350,7 @@ function editBuddy() {
   overlay.className = 'overlay';
   var opts = '';
   for (var li=0;li<LANGUAGES.length;li++) opts += '<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.buddy.language||D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>';
-  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('Edit Partner')+'</h3><input type="text" id="eb-name" value="'+(D.buddy.name||'')+'" placeholder="'+t('Name')+'"><input type="text" id="eb-contact" value="'+(D.buddy.contact||'')+'" placeholder="'+t('Contact')+'"><input type="text" id="eb-rel" value="'+(D.buddy.relationship||'')+'" placeholder="'+t('Relationship')+'"><div style="font-size:12px;color:var(--muted);margin:6px 0 2px">'+t('Tongue')+'</div><select id="eb-lang" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">'+opts+'</select><button class="btn btn-primary" onclick="saveBuddyEdit(this)">'+t('Save')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
+  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('Edit Partner')+'</h3><label class="form-label" for="eb-name">'+t('Name')+'</label><input type="text" id="eb-name" value="'+(D.buddy.name||'')+'" placeholder="'+t('Name')+'"><label class="form-label" for="eb-contact">Account email or local contact</label><input type="text" id="eb-contact" value="'+(D.buddy.contact||'')+'" placeholder="'+t('Contact')+'" '+(buddyIsPaired(D.buddy)?'disabled aria-describedby="eb-contact-note"':'')+'>'+ (buddyIsPaired(D.buddy)?'<p id="eb-contact-note" class="partner-field-note">To change a connected account, end this partnership and connect again with a new invite.</p>':'') +'<label class="form-label" for="eb-rel">'+t('Relationship')+'</label><input type="text" id="eb-rel" value="'+(D.buddy.relationship||'')+'" placeholder="'+t('Relationship')+'"><label class="form-label" for="eb-lang">Language</label><select id="eb-lang" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">'+opts+'</select><button class="btn btn-primary" onclick="saveBuddyEdit(this)">'+t('Save')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -3291,16 +3375,34 @@ function saveBuddyEdit(btn) {
 }
 
 function removeBuddy() {
-  if (!confirm(t('Remove your accountability partner? Your shared progress will be withdrawn from your account.'))) return;
-  var wasPaired = buddyIsPaired(D.buddy);
-  D.buddy = null;
-  saveData();
-  stopBuddyMessaging();
-  if (wasPaired && AUTH_EMAIL && DB) {
-    DB.collection('progress').doc(AUTH_EMAIL).delete().catch(function(e){ console.warn('Could not withdraw shared progress:', e); });
-  }
-  showToast('Partner removed. Your shared progress is being withdrawn.', 'success');
-  render();
+  var previous = D.buddy;
+  if (!previous) return;
+  var wasPaired = buddyIsPaired(previous);
+  var connectedMessage = 'End your connection with ' + previous.name + '? New messages will stop for both of you, your progress share will be removed, and access to their shared progress will end. Past messages will remain in the account records.';
+  if (wasPaired && !previous.partnershipCode) connectedMessage += ' This older connection cannot notify the other account; reconnect with a new invite for full disconnect support.';
+  var localMessage = 'Remove this partner profile from your device? Your local check-ins and goals will remain in your account.';
+  if (!confirm(wasPaired ? connectedMessage : localMessage)) return;
+  var finish = function(remoteEnded) {
+    if (wasPaired) {
+      D.pairedBuddies = D.pairedBuddies || [];
+      D.pairedBuddies.push({name:previous.name,email:previous.contact,language:previous.language,endedAt:Date.now()});
+      D._partnerDisconnectNotice = {name:previous.name,when:Date.now()};
+    }
+    D.buddy = null;
+    _endingPartnershipCode = '';
+    saveData();
+    stopBuddyMessaging();
+    _pageCache = {};
+    if (wasPaired && AUTH_EMAIL && DB) DB.collection('progress').doc(AUTH_EMAIL).delete().catch(function(e){console.warn('Could not withdraw shared progress:',e)});
+    showToast(remoteEnded ? 'Connection ended. They will be notified if push is enabled; past messages remain in account records.' : 'Partner removed from this device.', remoteEnded ? 'success' : 'warning');
+    render();
+  };
+  if (wasPaired && previous.partnershipCode && DB && AUTH_EMAIL) {
+    _endingPartnershipCode = previous.partnershipCode;
+    DB.collection('pairingCodes').doc(previous.partnershipCode).update({ended:true,endedBy:AUTH_EMAIL,endedAt:firebase.firestore.FieldValue.serverTimestamp()})
+      .then(function(){finish(true)})
+      .catch(function(e){_endingPartnershipCode='';console.warn('Could not end the partner connection:',e);showToast('Could not reach the server. The connection is still active; try again when online.','error')});
+  } else finish(false);
 }
 
 // ====== PROGRESS SHARING ======
@@ -3323,6 +3425,7 @@ function shareProgressWithBuddy(quiet) {
   if (btn) { btn.disabled = true; btn.textContent = 'Sharing…'; }
   if (status) status.textContent = 'Sharing selected progress totals…';
   var progress = progressSnapshot();
+  progress.partnershipCode = D.buddy.partnershipCode || '';
   progress.participants = [AUTH_EMAIL];
   progress.participants.push(D.buddy.contact);
   DB.collection('progress').doc(AUTH_EMAIL).set(progress).then(function(){
@@ -3614,6 +3717,7 @@ function moreHTML() {
   h += '<h3 style="font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px">'+t('App & Settings')+'</h3>';
   h += '<div class="sub-grid">';
   h += '<div class="sub-item" onclick="goTo(\'profile\')">'+t('Profile')+'</div>';
+  h += '<div class="sub-item" onclick="showHelpCenter()">Help & account recovery</div>';
   h += '<div class="sub-item" onclick="showRecommendations()">'+t('Recommendations')+'</div>';
   h += '<div class="sub-item" onclick="showShareQR()" style="border-color:var(--primary)">'+t('Share App')+'</div>';
   h += '<div class="sub-item" onclick="promptInstall()" style="border-color:var(--accent)">'+t('Install App')+'</div>';
@@ -3866,6 +3970,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:6px">'+t('Export My Data')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportJournalText()" style="margin-top:6px">'+t('Journal')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">'+t('Import Data')+'</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="showHelpCenter()" style="margin-top:8px">Help & account recovery</button>';
   if (AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="signOut()" style="margin-top:6px">'+t('Sign Out')+'</button>';
   if (AUTH_USER && firebase && firebase.auth().currentUser) h += '<button class="btn btn-danger btn-sm" onclick="deleteAccount()" style="margin-top:6px">Delete Account</button>';
   if (!AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="eraseLocalData()" style="margin-top:6px">'+t('Erase my data')+'</button>';
@@ -4043,7 +4148,15 @@ function deleteAccount() {
   if (ownInviteCode) batch.delete(DB.collection('pairingCodes').doc(ownInviteCode));
   batch.delete(DB.collection('pushSubscriptions').doc(uid));
   batch.delete(DB.collection('progress').doc(uid));
-  batch.commit().catch(function(e){ console.warn(e); }).then(function(){
+  var closePartnership = Promise.resolve();
+  var activeCode = D.buddy && buddyIsPaired(D.buddy) && D.buddy.partnershipCode ? D.buddy.partnershipCode : '';
+  if (activeCode && activeCode !== ownInviteCode) {
+    closePartnership = DB.collection('pairingCodes').doc(activeCode).get().then(function(doc){
+      var link = doc.exists ? doc.data() : null;
+      if (link && link.ownerEmail !== uid) return DB.collection('pairingCodes').doc(activeCode).update({ended:true,endedBy:uid,endedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    });
+  }
+  closePartnership.then(function(){return batch.commit()}).catch(function(e){console.warn('Account cleanup failed:',e);showToast('Could not delete all account data. Check your connection and try again.','error');throw e}).then(function(){
     firebase.auth().currentUser.delete().catch(function(e){ console.warn(e); }).then(function(){
       clearLocalData();
     });
@@ -4746,6 +4859,7 @@ var _buddyMsgUnread = 0;
 var _buddyMsgReady = false;
 var _buddyMsgListeners = [];
 var _buddyMsgEmail = '';
+var _endingPartnershipCode = '';
 var _buddyLastNewAt = 0;
 
 function buddyMsgKey(m) {
@@ -4848,6 +4962,25 @@ function startBuddyMessaging() {
   if (_buddyMsgEmail === buddyEmail && _buddyMsgListeners.length) return;
   stopBuddyMessaging();
   _buddyMsgEmail = buddyEmail;
+  if (D.buddy.partnershipCode) {
+    var linkCode = D.buddy.partnershipCode;
+    var linkListener = DB.collection('pairingCodes').doc(linkCode).onSnapshot(function(doc){
+      var link = doc.exists ? doc.data() : null;
+      if ((link && link.ended !== true) || !D.buddy || D.buddy.partnershipCode !== linkCode || _endingPartnershipCode === linkCode) return;
+      var formerName = D.buddy.name || 'Your partner';
+      D.pairedBuddies = D.pairedBuddies || [];
+      D.pairedBuddies.push({name:formerName,email:buddyEmail,endedAt:Date.now()});
+      D._partnerDisconnectNotice = {name:formerName,when:Date.now()};
+      D.buddy = null;
+      saveData();
+      stopBuddyMessaging();
+      _pageCache = {};
+      if (AUTH_EMAIL) DB.collection('progress').doc(AUTH_EMAIL).delete().catch(function(){});
+      showToast((link ? formerName + ' ended the partnership.' : 'The partner connection is no longer active.') + ' Messages are stopped; past messages remain in account records.','info');
+      if (pg === 'buddy') render();
+    },function(e){console.warn('partner status listener failed:',e)});
+    _buddyMsgListeners.push(linkListener);
+  }
   function onSnap(snap) {
     var msgs = [];
     try { snap.forEach(function(doc) { var m = doc.data(); if (m && !m.id) m.id = doc.id; msgs.push(m); }); } catch (e) { return; }
@@ -4899,7 +5032,7 @@ function comradeSendMessage() {
     fromUid: user ? user.uid : '', text: msg,
     date: now.toDateString(),
     time: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
-    timestamp: Date.now(), pending: true
+    timestamp: Date.now(), pending: true, partnershipCode:D.buddy.partnershipCode || ''
   };
   if (!D.messages) D.messages = [];
   D.messages.push(m);

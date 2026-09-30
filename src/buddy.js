@@ -115,7 +115,7 @@ function acceptPairingRequest(code) {
     var data = doc.exists ? doc.data() : null;
     if (!data || data.ownerEmail !== AUTH_EMAIL || !data.consumedBy || data.accepted) throw new Error('This request is no longer available.');
     return DB.collection('pairingCodes').doc(code).update({accepted:true,acceptedBy:AUTH_EMAIL,acceptedAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){
-      finishPairing({name:data.requestName || 'Your partner',language:data.requestLanguage || ''},data.consumedBy);
+      finishPairing({name:data.requestName || 'Your partner',language:data.requestLanguage || ''},data.consumedBy,code);
     });
   }).catch(function(e){ if (result) result.textContent = e && e.message ? e.message : 'Could not accept this request. Try again.'; });
 }
@@ -126,7 +126,7 @@ function checkPendingPairing() {
     var data = doc.exists ? doc.data() : null;
     if (data && data.accepted && data.acceptedBy === D.buddy.contact) {
       var buddy = {name:data.name || D.buddy.name,language:data.language || D.buddy.language || ''};
-      finishPairing(buddy,data.ownerEmail);
+      finishPairing(buddy,data.ownerEmail,D.buddy.inviteCode);
       showToast('Your partner accepted. Messaging and progress sharing are ready.', 'success');
     } else if (data && data.expiresAt && data.expiresAt.toMillis && data.expiresAt.toMillis() < Date.now()) {
       D.buddy.pending = false;
@@ -144,12 +144,12 @@ function cancelPairingRequest() {
   removeBuddy();
 }
 
-function finishPairing(match, email) {
+function finishPairing(match, email, partnershipCode) {
   if (!email || email === AUTH_EMAIL) {
     showToast('That is your own invite code. Share it with someone you trust.', 'warning');
     return;
   }
-  D.buddy = { name: match.name || 'Your partner', contact: email, relationship: 'Accountability Partner (paired)', language: match.language || (D.language || 'English'), paired: true };
+  D.buddy = { name: match.name || 'Your partner', contact: email, relationship: 'Accountability Partner (paired)', language: match.language || (D.language || 'English'), paired: true, partnershipCode:partnershipCode || (D.buddy && D.buddy.partnershipCode) || '' };
   var pairedList = D.pairedBuddies || [];
   if (!pairedList.some(function(p){return p.email === email})) {
     pairedList.push({ name: match.name || 'Your partner', email: email, language: match.language || (D.language || 'English'), pairedDate: Date.now() });

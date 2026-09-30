@@ -738,3 +738,27 @@ textarea{line-height:1.55}
 .partner-local-note{border-color:color-mix(in srgb,var(--accent) 45%,var(--border))}
 .partner-local-note p{color:var(--muted);font-size:13px;line-height:1.5}
 @media(max-width:360px){.partner-code-row{grid-template-columns:1fr}.partner-code-row .btn{width:100%}}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:fixed;z-index:10001;top:8px;left:8px;padding:10px 14px;transform:translateY(-160%);border-radius:10px;background:var(--card);color:var(--text);box-shadow:var(--shadow-hover)}
+.skip-link:focus{transform:translateY(0);outline:3px solid var(--primary);outline-offset:2px}
+#app:focus{outline:none}
+.help-content{max-width:520px;padding:22px 20px calc(26px + env(safe-area-inset-bottom,0px))}
+.help-heading{display:flex;align-items:flex-start;gap:10px;justify-content:space-between;margin-bottom:14px}
+.help-heading h2{margin:0;font-size:19px;line-height:1.3}
+.help-heading p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.help-section{margin:8px 0;border:1px solid var(--border);border-radius:13px;background:color-mix(in srgb,var(--card) 92%,transparent);overflow:hidden}
+.help-section summary{min-height:46px;padding:12px 14px;display:flex;align-items:center;cursor:pointer;font-size:13px;font-weight:700;list-style:none}
+.help-section summary::-webkit-details-marker{display:none}
+.help-section summary::after{content:'+';margin-left:auto;color:var(--muted);font-size:18px;font-weight:400}
+.help-section[open] summary::after{content:'−'}
+.help-section p{margin:0;padding:0 14px 12px;color:var(--muted);font-size:12px;line-height:1.6}
+.help-section summary:focus-visible{outline:3px solid var(--primary);outline-offset:-3px}
+.help-footer{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:12px}
+.home-followup-card{display:flex;align-items:center;gap:12px;border-color:color-mix(in srgb,var(--accent) 45%,var(--border));background:linear-gradient(135deg,color-mix(in srgb,var(--primary-light) 55%,var(--card)),var(--card))}
+.home-followup-card>div{flex:1;min-width:0}
+.home-followup-card strong{font-size:14px;line-height:1.35}
+.home-followup-card p{margin:4px 0 9px;color:var(--muted);font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.home-followup-actions{display:flex;gap:7px;flex-wrap:wrap}
+.home-followup-card .btn{max-width:100%}
+@media(max-width:360px){.help-content{padding:18px 14px calc(24px + env(safe-area-inset-bottom,0px))}.help-heading{align-items:center}.home-followup-card{padding:14px}.home-followup-actions .btn{flex:1}}
+@media(forced-colors:active){.home-action,.home-support-action,.home-extras,.help-section{border:1px solid ButtonText}.home-action:focus-visible,.home-support-action:focus-visible,.help-section summary:focus-visible{outline:2px solid Highlight}}
