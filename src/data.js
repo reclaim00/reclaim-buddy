@@ -1680,18 +1680,20 @@ function handleAuth() {
   var error = document.getElementById('si-error');
   var btn = document.getElementById('si-auth-btn');
   var btnLabel = document.getElementById('si-btn-label');
+  var isSignUp = SIGN_IN_MODE === 'up';
   var emailStr = email ? email.value.trim() : '';
   var pwdStr = password ? password.value.trim() : '';
-  if (!emailStr || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { if (error) error.textContent = t('Enter a valid email.'); return; }
-  if (!pwdStr || pwdStr.length < 4) { if (error) error.textContent = t('Password must be at least 4 characters.'); return; }
+  if (!emailStr || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { if (error) error.textContent = t('Enter a valid email.'); if (email) { email.setAttribute('aria-invalid','true'); email.focus(); } return; }
+  if (!pwdStr || pwdStr.length < 6) { if (error) error.textContent = t('Password must be at least 6 characters.'); if (password) { password.setAttribute('aria-invalid','true'); password.focus(); } return; }
   if (error) error.textContent = '';
-  if (btn) btn.disabled = true;
+  if (email) email.removeAttribute('aria-invalid');
+  if (password) password.removeAttribute('aria-invalid');
+  if (btn) { btn.disabled = true; btn.setAttribute('aria-busy','true'); }
   if (btnLabel) btnLabel.textContent = t('Signing in...');
-  var isSignUp = SIGN_IN_MODE === 'up';
   if (isSignUp && btnLabel) btnLabel.textContent = t('Creating account...');
   if (!firebase || !firebase.auth) {
     if (error) error.textContent = t('Unable to connect. Check your internet connection and try again.');
-    if (btn) btn.disabled = false;
+    if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
     if (btnLabel) btnLabel.textContent = isSignUp ? t('Sign Up') : t('Sign In');
     return;
   }
@@ -1709,7 +1711,7 @@ function handleAuth() {
     if (err && err.code === 'auth/multi-factor-auth-required' && err.resolver && typeof handleMfaSignIn === 'function') {
       if (error) error.textContent = '';
       handleMfaSignIn(err);
-      if (btn) btn.disabled = false;
+      if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
       if (btnLabel) btnLabel.textContent = isSignUp ? t('Sign Up') : t('Sign In');
       return;
     }
@@ -1719,12 +1721,13 @@ function handleAuth() {
       else if (msg.indexOf('auth/wrong-password') !== -1 || msg.indexOf('auth/invalid-credential') !== -1) msg = t('Incorrect email or password.');
       else if (msg.indexOf('auth/email-already-in-use') !== -1) msg = t('This email is already registered. Try Sign In.');
       else if (msg.indexOf('auth/weak-password') !== -1) msg = t('Password must be at least 6 characters.');
+      else if (msg.indexOf('auth/internal-error') !== -1) msg = t('Sign-in could not be completed. Please try again.');
       else if (msg.indexOf('auth/too-many-requests') !== -1) msg = t('Too many attempts. Please try again later.');
       else if (msg.indexOf('auth/network-request-failed') !== -1) msg = t('Network error. Check your connection.');
       else if (msg.indexOf('auth/invalid-email') !== -1) msg = t('Invalid email address.');
       error.textContent = msg;
     }
-    if (btn) btn.disabled = false;
+    if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
     if (btnLabel) btnLabel.textContent = isSignUp ? t('Sign Up') : t('Sign In');
   });
 }
@@ -1733,7 +1736,7 @@ function googleSignIn() {
   var btn = document.getElementById('si-google-btn');
   var lbl = document.getElementById('si-google-label');
   var error = document.getElementById('si-error');
-  if (btn) btn.disabled = true;
+  if (btn) { btn.disabled = true; btn.setAttribute('aria-busy','true'); }
   if (lbl) lbl.textContent = t('Signing in...');
   if (error) error.textContent = '';
 
@@ -1747,7 +1750,7 @@ function googleSignIn() {
     authPromise.then(function() {
       // onAuthStateChanged handles onAuthReady + linking hooks below
     }).catch(function(err) {
-      if (btn) btn.disabled = false;
+      if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
       if (lbl) lbl.textContent = t('Continue with Google');
       _handleGoogleAuthError(err, googleCredential, function(cred) {
         if (cred) return firebase.auth().signInWithCredential(cred);
@@ -1758,13 +1761,13 @@ function googleSignIn() {
 
   if (isNativeApp()) {
     var FA = Capacitor.Plugins && Capacitor.Plugins.FirebaseAuthentication;
-    if (!FA) { if (btn) btn.disabled = false; if (lbl) lbl.textContent = t('Continue with Google'); alert(t('Google Sign-In is not configured on this device yet.')); return; }
+    if (!FA) { if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); } if (lbl) lbl.textContent = t('Continue with Google'); showToast(t('Google Sign-In is not configured on this device yet.'), 'warning'); return; }
     FA.signInWithGoogle({ skipNativeAuth: true }).then(function(result) {
       var cred = result && result.credential;
       if (!cred || !cred.idToken) { throw new Error('No Google credential returned'); }
       finishGoogleSignIn(firebase.auth().signInWithCredential(googleCredential(cred)));
     }).catch(function(e) {
-      if (btn) btn.disabled = false;
+      if (btn) { btn.disabled = false; btn.removeAttribute('aria-busy'); }
       if (lbl) lbl.textContent = t('Continue with Google');
       if (e && e.message && (e.message.indexOf('cancel') !== -1 || e.message.indexOf('CANCELLED') !== -1)) return;
       console.warn('google native sign-in error:', e);
@@ -1798,6 +1801,7 @@ function _handleGoogleAuthError(err, googleCredential, makePromise) {
   if (err && err.code === 'auth/popup-closed-by-user') msg = t('Sign-in cancelled.');
   else if (err && err.code === 'auth/user-cancelled') msg = t('Sign-in cancelled.');
   else if (msg.indexOf('auth/network-request-failed') !== -1) msg = t('Network error. Check your connection.');
+  else if (err && err.code === 'auth/internal-error') msg = t('Sign-in could not be completed. Please try again.');
   else if (msg.indexOf('auth/operation-not-allowed') !== -1 || msg.indexOf('auth/unauthorized-domain') !== -1) msg = t('Google Sign-In is not enabled for this app yet.');
   showToast(msg, 'error');
 }
@@ -1921,19 +1925,22 @@ function showSignIn() {
     '<div class="si-title">Re.<span>Claim</span></div>' +
     '<div class="si-sub">'+t('Your recovery &amp; wellness journey starts here.')+'<br>'+t('Track moods, journal, build habits, and grow.')+'</div>' +
     '<div class="si-toggle">' +
-    '<button class="si-tab-btn active" id="si-tab-in" onclick="setSignInTab(\'in\')">'+t('Sign In')+'</button>' +
-    '<button class="si-tab-btn" id="si-tab-up" onclick="setSignInTab(\'up\')">'+t('Sign Up')+'</button>' +
+    '<button type="button" class="si-tab-btn active" id="si-tab-in" aria-pressed="true" onclick="setSignInTab(\'in\')">'+t('Sign In')+'</button>' +
+    '<button type="button" class="si-tab-btn" id="si-tab-up" aria-pressed="false" onclick="setSignInTab(\'up\')">'+t('Sign Up')+'</button>' +
     '</div>' +
     '<div id="si-auth-section">' +
     '<div id="si-email-mode">' +
-    '<input class="si-input" type="email" id="si-email" placeholder="'+t('your@email.com')+'">' +
-    '<input class="si-input" type="password" id="si-password" placeholder="'+t('Password')+'" onkeydown="if(event.key===\'Enter\')handleAuth()">' +
-    '<div id="si-forgot-container" style="text-align:right;font-size:11px;margin:2px 0 4px"><span id="si-forgot-link" style="color:var(--primary);cursor:pointer;display:none" onclick="handleForgotPassword()">'+t('Forgot password?')+'</span></div>' +
-    '<div id="si-error" style="font-size:12px;color:var(--danger);margin:4px 0;text-align:center"></div>' +
-    '<button class="si-btn" id="si-auth-btn" onclick="handleAuth()"><span id="si-btn-label">'+t('Sign In')+'</span></button>' +
+    '<form id="si-form" onsubmit="event.preventDefault();handleAuth()" novalidate>' +
+    '<input class="si-input" type="email" id="si-email" aria-label="'+t('Email address')+'" placeholder="'+t('your@email.com')+'" autocomplete="email" inputmode="email" required>' +
+    '<input class="si-input" type="password" id="si-password" aria-label="'+t('Password')+'" placeholder="'+t('Password')+'" autocomplete="current-password" minlength="6" required>' +
+    '<div id="si-password-help" class="si-password-help" style="display:none">'+t('Use at least 6 characters.')+'</div>' +
+    '<div id="si-forgot-container" style="text-align:right;font-size:11px;margin:2px 0 4px"><button type="button" class="si-forgot-btn" id="si-forgot-link" style="display:none" onclick="handleForgotPassword()">'+t('Forgot password?')+'</button></div>' +
+    '<div id="si-error" role="alert" aria-live="polite" style="font-size:12px;color:var(--danger);margin:4px 0;text-align:center"></div>' +
+    '<button type="submit" class="si-btn" id="si-auth-btn"><span id="si-btn-label">'+t('Sign In')+'</span></button>' +
+    '</form>' +
     '</div>' +
     '<div class="si-sep">'+t('or')+'</div>' +
-    '<button class="si-google-btn" id="si-google-btn" onclick="googleSignIn()">' +
+    '<button type="button" class="si-google-btn" id="si-google-btn" onclick="googleSignIn()">' +
     '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span id="si-google-label">'+t('Continue with Google')+'</span></button>' +
     '</div>' +
     '<div class="si-lang-row">'+t('Language')+': <select id="si-language" onchange="changeLanguage(this.value);showSignIn()" style="font-size:12px;padding:4px 6px;max-width:160px">'+(function(){var r='';for(var li=0;li<LANGUAGES.length;li++){r+='<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>'}return r})()+'</select></div>' +
@@ -1947,18 +1954,20 @@ function showSignIn() {
 
 function handleForgotPassword() {
   var email = document.getElementById('si-email');
-  if (!email || !email.value.trim()) { alert(t('Enter your email address first.')); email.focus(); return; }
+  var error = document.getElementById('si-error');
+  var link = document.getElementById('si-forgot-link');
+  if (!email || !email.value.trim()) { if (error) error.textContent = t('Enter your email address first.'); if (email) email.focus(); return; }
   var emailStr = email.value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { alert(t('Enter a valid email address.')); return; }
-  if (!firebase || !firebase.auth) { alert(t('Cloud authentication is not available.')); return; }
-  document.getElementById('si-btn-label').textContent = t('Sending...');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { if (error) error.textContent = t('Enter a valid email address.'); email.focus(); return; }
+  if (!firebase || !firebase.auth) { if (error) error.textContent = t('Cloud authentication is not available.'); return; }
+  if (error) { error.style.color = 'var(--muted)'; error.textContent = t('Sending reset link...'); }
+  if (link) { link.disabled = true; link.setAttribute('aria-busy','true'); }
   firebase.auth().sendPasswordResetEmail(emailStr).then(function() {
-    alert(t('Password reset email sent. Check your inbox.'));
-    document.getElementById('si-btn-label').textContent = t('Sign In');
+    if (error) { error.style.color = 'var(--primary)'; error.textContent = t('Password reset email sent. Check your inbox.'); }
   }).catch(function(err) {
-    var errorEl = document.getElementById('si-error');
-    if (errorEl) errorEl.textContent = err.message;
-    document.getElementById('si-btn-label').textContent = t('Sign In');
+    if (error) { error.style.color = 'var(--danger)'; error.textContent = err.code === 'auth/user-not-found' ? t('No account found with this email.') : t('Could not send the reset link. Please try again.'); }
+  }).finally(function() {
+    if (link) { link.disabled = false; link.removeAttribute('aria-busy'); }
   });
 }
 
@@ -1969,14 +1978,22 @@ function setSignInTab(mode) {
   var btnUp = document.getElementById('si-tab-up');
   var label = document.getElementById('si-btn-label');
   var forgotLink = document.getElementById('si-forgot-link');
-  if (mode === 'in') {
-    if (btnIn) { btnIn.style.background = 'var(--primary)'; btnIn.style.color = '#fff'; }
-    if (btnUp) { btnUp.style.background = 'transparent'; btnUp.style.color = 'var(--text)'; }
+  var email = document.getElementById('si-email');
+  var password = document.getElementById('si-password');
+  var passwordHelp = document.getElementById('si-password-help');
+  var isSignIn = mode === 'in';
+  if (btnIn) { btnIn.classList.toggle('active', isSignIn); btnIn.setAttribute('aria-pressed', String(isSignIn)); }
+  if (btnUp) { btnUp.classList.toggle('active', !isSignIn); btnUp.setAttribute('aria-pressed', String(!isSignIn)); }
+  if (password) password.autocomplete = isSignIn ? 'current-password' : 'new-password';
+  if (passwordHelp) passwordHelp.style.display = isSignIn ? 'none' : 'block';
+  var error = document.getElementById('si-error');
+  if (error) { error.textContent = ''; error.style.color = 'var(--danger)'; }
+  if (email) email.removeAttribute('aria-invalid');
+  if (password) password.removeAttribute('aria-invalid');
+  if (isSignIn) {
     if (label) label.textContent = t('Sign In');
     if (forgotLink) forgotLink.style.display = 'inline';
   } else {
-    if (btnUp) { btnUp.style.background = 'var(--primary)'; btnUp.style.color = '#fff'; }
-    if (btnIn) { btnIn.style.background = 'transparent'; btnIn.style.color = 'var(--text)'; }
     if (label) label.textContent = t('Sign Up');
     if (forgotLink) forgotLink.style.display = 'none';
   }
@@ -2078,5 +2095,3 @@ setInterval(function() {
 // Migration: ensure researchOptIn and researchLastSubmitted exist
 if (D && typeof D.researchOptIn === 'undefined') { D.researchOptIn = false; saveData(); }
 if (D && typeof D.researchLastSubmitted === 'undefined') { D.researchLastSubmitted = null; saveData(); }
-
-
