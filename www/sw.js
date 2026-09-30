@@ -1,4 +1,4 @@
-var CACHE = 'reclaim-20260918y';
+var CACHE = 'reclaim-20260930d';
 var BASE = self.registration.scope;
 function baseUrl(p) { return new URL(p, BASE).href; }
 var SHELL = [
@@ -6,7 +6,7 @@ var SHELL = [
   baseUrl('icon-192.png'), baseUrl('icon-512.png'), baseUrl('icon.svg'),
   baseUrl('src/style.css'), baseUrl('src/data.js'), baseUrl('src/buddy.js'),
   baseUrl('src/sober.js'), baseUrl('src/pages.js'), baseUrl('src/kingdom.js'), baseUrl('src/ui.js'),
-  baseUrl('src/mfa.js')
+  baseUrl('src/mfa.js'), baseUrl('src/landscape-day.svg'), baseUrl('src/landscape-night.svg')
 ];
 
 self.addEventListener('install', function(e) {
@@ -73,9 +73,14 @@ self.addEventListener('notificationclick', function(e) {
   var url = e.notification.data && e.notification.data.url ? e.notification.data.url : baseUrl('app.html');
   e.notification.close();
   e.waitUntil(clients.matchAll({type:'window'}).then(function(ws) {
-    var match = ws.find(function(w) { return w.visibilityState === 'visible'; });
-    if (match) { match.focus(); return; }
-    if (ws.length) { ws[0].focus(); return; }
-    clients.openWindow(url);
+    var match = ws.find(function(w) { return w.visibilityState === 'visible'; }) || ws[0];
+    if (!match) return clients.openWindow(url);
+    // Bring an already-open app to the notification's destination as well as
+    // focusing it. Otherwise notifications only work when no app window exists.
+    return match.navigate(url).then(function(client) {
+      return (client || match).focus();
+    }).catch(function() {
+      return clients.openWindow(url);
+    });
   }));
 });

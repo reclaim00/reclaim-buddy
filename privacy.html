@@ -34,24 +34,24 @@
     </div>
   </div>
 
-  <p>This policy explains what information Re.Claim collects, how it is used, and how you can control it. You own your recovery data. We have designed Re.Claim so that most of it never leaves your device.</p>
+  <p>This policy explains what information Re.Claim stores, how it is used, and how you can control it. Your recovery information stays in your browser unless you sign in; when you sign in, app data syncs to your account so you can restore it across devices.</p>
 
-  <div class="note"><strong>Before anything else:</strong> Re.Claim is a support tool, not a medical device or a substitute for professional care. If you are in crisis, call or text <strong>988</strong> (Suicide &amp; Crisis Lifeline in the U.S.) or call <strong>911</strong> if you are in immediate danger.</div>
+  <div class="note"><strong>Before anything else:</strong> Re.Claim is a support tool, not a medical device or a substitute for professional care. In the U.S. or Canada, call or text <strong>988</strong>. In the U.S., text HOME to 741741 for the Crisis Text Line. Elsewhere, find local support at <a href="https://findahelpline.com/" target="_blank" rel="noopener">Find A Helpline</a>. For immediate danger, contact local emergency services.</div>
 
   <h2>1. Data stored on your device</h2>
-  <p>When you use Re.Claim without signing in, everything you create is stored only in your browser's local storage on your device. This includes journal entries, mood and craving logs, your sobriety streak and start date, habits, goals, pledges, coping cards, reminders, safety-plan data, progress reports, and app settings. This data is not sent to any server, and nothing we run reads it.</p>
+  <p>When you use Re.Claim without signing in, your entries stay in this browser's local storage. This includes journal entries, mood and craving logs, your sobriety start date, habits, goals, pledges, coping cards, reminders, safety-plan data, and app settings. Clearing browser data or changing devices can remove this local copy, so export a backup if you need one.</p>
 
-  <h2>2. Optional cloud sync</h2>
-  <p>If you choose to create an account and sign in, your data is stored in <strong>Google Firebase</strong> (Authentication, Cloud Firestore, and Cloud Messaging) so it can sync across your devices and be recovered if you lose your phone. This includes the recovery data described above. You can delete your account and all synced data at any time from <em>Tools &rarr; Profile &rarr; Delete Account</em>.</p>
+  <h2>2. Account sync</h2>
+  <p>When you sign in, Re.Claim automatically syncs your app data to <strong>Google Firebase Cloud Firestore</strong> and checks for newer data when the app opens or returns to the foreground. The synced snapshot can include journal text, mood and craving logs, recovery goals, safety-plan details, partner details, and settings. If you enable Encryption in Profile, the app encrypts the full account snapshot on your device before upload; keep your passphrase safe because it is needed to unlock that copy. Without that option, the snapshot is stored in your Firebase account and protected by Firebase access rules and Google's encryption at rest. Firebase connections use TLS while data is in transit. See [Firebase's Firestore encryption overview](https://firebase.google.com/docs/firestore/enterprise/server-side-encryption).</p>
 
-  <h2>3. Partner (buddy) features</h2>
-  <p>If you use partner pairing, check-ins, or encrypted one-to-one messages, the minimum information needed to deliver those features (your pairing code, buddy handle, check-in status, and messages) is exchanged with your partner through Firebase Firestore. Transmissions are encrypted in transit. Partners never see your journal, screeners, or other private data.</p>
+  <h2>3. Partner features</h2>
+  <p>When you create an invite code, the code, your account email, display name, language, and expiry are stored in Firestore so another signed-in person can connect. A code is intended to be shared directly with someone you trust and expires after 24 hours. Once connected, messages are stored in Firestore and delivered to the two account addresses in that conversation. Messages are encrypted in transit and at rest by Firebase, but they are not end-to-end encrypted. Partner progress is a separate, explicit share containing your sober-day count and activity totals; it is not sent until you tap <em>Share My Progress</em>. Journal text and private notes are not included in that progress share. Local partner notes and check-ins are part of your account snapshot when signed in.</p>
 
   <h2>4. Push notifications</h2>
-  <p>If you enable notifications or reminders, we register your device for web push and use it only to deliver the reminders you request (for example, morning and evening check-ins, craving check-ins, or the reminder times you set). You can turn notifications off at any time in your device settings or in the app.</p>
+  <p>If you enable push notifications, your device token and platform are stored in Firebase so notifications you request can reach your device. Re.Claim's notification service reads your saved notification preferences and reminder schedule to send those notifications. You can turn notifications off in your device settings or in the app.</p>
 
-  <h2>5. Anonymous research data (optional)</h2>
-  <p>Nothing is collected unless you switch on "Share anonymous data" in <em>Profile</em>. If you opt in, we gather anonymized aggregate counts (for example, tool usage counts and mood trend patterns) to understand how people use Re.Claim. Journal text, names, email addresses, contacts, and anything identifying is never included. You can turn this off at any time.</p>
+  <h2>5. Research setting</h2>
+  <p>The current “Share anonymous data” setting only creates a summary on your device. It does not upload or send that summary. The research collection service is not active. Journal text, names, email addresses, and contact details are not included in that local summary.</p>
 
   <h2>6. What we do not collect or do</h2>
   <ul>
@@ -62,7 +62,7 @@
   </ul>
 
   <h2>7. Security</h2>
-  <p>Journaling can be protected with an optional device passphrase that encrypts your journal content before it is stored. All Firebase connections use HTTPS with encryption in transit. Sensitive content on your device is as secure as the operating system and browser that host it; for the strongest protection, enable the app's Privacy Lock and consider keeping your device locked when you use it away from home.</p>
+  <p>Optional app encryption encrypts your account snapshot on your device before cloud upload. The separate Privacy Lock is an access screen for this device; it is not a replacement for account encryption. Messages are not end-to-end encrypted. Use a unique account password, keep your device locked, and use a passphrase you can remember if you enable app encryption. Firebase describes its Firestore encryption in transit and at rest <a href="https://firebase.google.com/docs/firestore/enterprise/server-side-encryption" target="_blank" rel="noopener">in its encryption overview</a>.</p>
 
   <h2>8. Children</h2>
   <p>Re.Claim is intended for adults 18 and older. We do not knowingly collect information from anyone under 18. If you believe a minor has been using the app, use the data deletion tools in Profile or the erasure option for local data.</p>
@@ -71,11 +71,11 @@
   <ul>
     <li><strong>Export:</strong> <em>Profile &rarr; Export My Data</em> downloads your full data as a JSON file and your journal as text.</li>
     <li><strong>Erase local data:</strong> <em>Profile &rarr; Erase my data</em> permanently removes everything stored on the current device.</li>
-    <li><strong>Delete account:</strong> <em>Profile &rarr; Delete Account</em> removes your Firebase account and all synced data, then clears the local copy.</li>
+    <li><strong>Delete account:</strong> <em>Profile &rarr; Delete Account</em> removes your Firebase account and the account data collections managed by Re.Claim, then clears the local copy. Messages sent to another person may remain in that person's records.</li>
   </ul>
 
   <h2>10. Third-party services</h2>
-  <p>Re.Claim uses Google Firebase (Authentication, Firestore, Cloud Messaging) for accounts, sync, and push. Optional QR-code previews are rendered by an image service on request only. Fonts are loaded from Google Fonts. Each of these services runs under its own privacy policy.</p>
+  <p>Re.Claim uses Google Firebase (Authentication, Firestore, Cloud Messaging) for accounts, sync, partner features, and push notifications. Optional QR-code previews are requested from an image service. Fonts are loaded from Google Fonts. Each service is governed by its own privacy policy.</p>
 
   <div class="risk"><strong>Remember:</strong> your progress is your own. Re.Claim works on your side, in your pocket. If your scores on a self-check feel like a lot to carry, please talk to a trusted person or a professional &mdash; you deserve help, and you are not alone.</div>
 

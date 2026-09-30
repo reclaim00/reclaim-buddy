@@ -9,15 +9,28 @@ service cloud.firestore {
     match /pushSubscriptions/{email} {
       allow read, write: if request.auth != null && request.auth.token.email == email;
     }
-    // User profiles: readable for pairing/leaderboards, writable only by the owner
+    // Private account profile data is visible only to its owner.
     match /users/{email} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.email == email;
+      allow read, write: if request.auth != null && request.auth.token.email == email;
     }
-    // Buddy pairing codes: queryable to find a buddy, own code writable only by owner
-    match /pairingCodes/{email} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.token.email == email;
+    // Invite codes are unguessable document IDs, directly fetched by the person
+    // who received the code. Listing codes would expose accounts and invites.
+    match /pairingCodes/{code} {
+      allow get: if request.auth != null &&
+        (resource.data.ownerEmail == request.auth.token.email ||
+         resource.data.consumedBy == request.auth.token.email ||
+         (resource.data.expiresAt > request.time && resource.data.consumed != true));
+      allow list: if false;
+      allow create: if request.auth != null &&
+        request.resource.data.ownerEmail == request.auth.token.email &&
+        request.resource.data.code == code &&
+        request.resource.data.expiresAt > request.time;
+      allow update: if request.auth != null &&
+        (resource.data.ownerEmail == request.auth.token.email ||
+         (resource.data.expiresAt > request.time && resource.data.accepted != true &&
+          ((resource.data.consumed != true && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['consumed', 'consumedBy', 'consumedAt', 'requestName', 'requestLanguage'])) ||
+           (resource.data.consumedBy == request.auth.token.email && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['withdrawn'])))));
+      allow delete: if request.auth != null && resource.data.ownerEmail == request.auth.token.email;
     }
     // Buddy progress shares: readable only to the owner and the partners they explicitly share with
     match /progress/{email} {
@@ -28,7 +41,8 @@ service cloud.firestore {
     match /messages/{message} {
       allow read: if request.auth != null && (resource.data.from == request.auth.token.email || resource.data.to == request.auth.token.email);
       allow create: if request.auth != null && request.resource.data.from == request.auth.token.email;
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if request.auth != null && (resource.data.from == request.auth.token.email || resource.data.to == request.auth.token.email);
     }
     // Recommendations/feedback: create only under your own email, read only your own submissions
     match /recommendations/{id} {

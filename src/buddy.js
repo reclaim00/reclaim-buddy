@@ -10,21 +10,9 @@ function getRegisteredBuddies() {
 function saveRegisteredBuddies(list) {
   localStorage.setItem(PAIRING_STORAGE_KEY, JSON.stringify(list));
 }
-
-function fetchGlobalBuddies(callback) {
-  if (!firebase || !firebase.auth().currentUser) { callback(null); return; }
-  DB.collection('users').limit(100).get()
-    .then(function(snapshot){
-      var list = [];
-      snapshot.forEach(function(doc){ list.push(doc.data()); });
-      callback(list);
-    })
-    .catch(function(){callback(null)});
-}
-
-function syncToGlobal(entry) {
-  if (!firebase || !firebase.auth().currentUser) return;
-  DB.collection('users').doc(AUTH_EMAIL).set(entry).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+function buddyIsPaired(buddy) {
+  if (!buddy || !buddy.contact) return false;
+  return buddy.paired === true || /\(paired\)/i.test(buddy.relationship || '');
 }
 
 function registerCurrentUser() {
@@ -34,79 +22,137 @@ function registerCurrentUser() {
   if (idx >= 0) list[idx] = entry;
   else list.push(entry);
   saveRegisteredBuddies(list);
-  // Force token refresh before Firestore write to ensure auth is propagated
-  var cur = firebase.auth().currentUser;
-  if (cur) {
-    cur.getIdToken(true).then(function(){ syncToGlobal(entry); }).catch(function(){ syncToGlobal(entry); });
-  } else {
-    syncToGlobal(entry);
-  }
+  // Keep the local list for existing installs; never publish account profiles.
 }
 function generatePairingCode() {
+  var result = document.getElementById('pairing-result');
+  if (!AUTH_EMAIL || !DB) {
+    if (result) result.textContent = 'Sign in and reconnect to the internet before creating an invite code.';
+    return;
+  }
   registerCurrentUser();
-  var code = '';
   var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  for (var i=0;i<6;i++) code += chars[Math.floor(Math.random() * chars.length)];
+  if (!window.crypto || !window.crypto.getRandomValues) {
+    if (result) result.textContent = 'Secure invite codes are not available in this browser.';
+    return;
+  }
+  var bytes = new Uint8Array(8);
+  window.crypto.getRandomValues(bytes);
+  var code = '';
+  for (var i=0;i<bytes.length;i++) code += chars[bytes[i] % chars.length];
   var lang = D.language || 'English';
-  var shareBtn = (navigator.share ? '<button class="btn btn-sm btn-primary" onclick="navigator.share({title:\'Re.Claim comrade code\',text:\'Connect with me on Re.Claim! My pairing code: ' + code + ' (Language: ' + lang.replace(/'/g,"\\'") + ')\'}).catch(function(e){ console.warn(e) })" style="margin-top:4px;width:auto;margin-right:4px">Share</button>' : '');
-  document.getElementById('pairing-result').innerHTML = '<div style="background:var(--primary-light);padding:12px;border-radius:10px;text-align:center"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">Share this code with your comrade anywhere in the world:</div><div style="font-size:32px;font-weight:900;color:var(--primary);letter-spacing:6px">' + esc(code) + '</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Your language: <strong>' + esc(lang) + '</strong></div><div style="margin-top:6px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap">' + shareBtn + '<button class="btn btn-sm btn-outline" onclick="navigator.clipboard.writeText(\'' + code + '\');this.textContent=\'Copied!\'" style="width:auto">Copy Code</button></div></div>';
-  // Save code globally
-  DB.collection('pairingCodes').doc(AUTH_EMAIL).set({ code: code }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  if (result) result.textContent = 'Creating your invite code…';
+  var expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  DB.collection('pairingCodes').doc(code).set({ code: code, ownerEmail: AUTH_EMAIL, name: D.name || 'Re.Claim member', language: lang, expiresAt: firebase.firestore.Timestamp.fromDate(expiresAt), consumed: false }).then(function(){
+    localStorage.setItem('rc_pair_code', code);
+    if (!result) return;
+    result.innerHTML = '<div class="pairing-code-result"><p>Share this code directly with someone you trust. It expires in 24 hours.</p><strong class="pairing-code-value">' + esc(code) + '</strong><button class="btn btn-outline btn-sm" type="button" onclick="copyPairingCode(\'' + code + '\',this)">Copy code</button></div>';
+  }).catch(function(e){
+    console.warn('Could not create invite code:', e);
+    if (result) result.textContent = 'Could not create an invite code. Check your connection and try again.';
+  });
+}
+function copyPairingCode(code, button) {
+  if (!navigator.clipboard || !navigator.clipboard.writeText) {
+    showToast('Copy is not available here. Select and copy the code.', 'warning');
+    return;
+  }
+  navigator.clipboard.writeText(code).then(function(){
+    if (button) button.textContent = 'Copied';
+    showToast('Invite code copied.', 'success');
+  }).catch(function(){ showToast('Could not copy the code. Select it and copy manually.', 'warning'); });
 }
 function connectPairingCode() {
   var input = document.getElementById('pairing-code');
-  if (!input || !input.value.trim()) { alert(t('Enter a pairing code.')); return; }
-  var code = input.value.trim().toUpperCase();
-  var list = getRegisteredBuddies();
-  var allCodes = JSON.parse(localStorage.getItem('rc_pairing_codes') || '{}');
-  var matchEmail = null;
-  // Check local storage first
-  for (var e in allCodes) {
-    if (allCodes[e] === code && e !== AUTH_EMAIL) { matchEmail = e; break; }
-  }
-  if (matchEmail) {
-    var match = list.find(function(b){return b.email === matchEmail});
-    if (match) { finishPairing(match, matchEmail); return; }
-    // Try Firestore for full user info
-    DB.collection('users').doc(matchEmail).get().then(function(doc){
-      if (doc.exists) finishPairing(doc.data(), matchEmail);
-    });
-    return;
-  }
-  // Query Firestore for matching pairing code
-  DB.collection('pairingCodes').where('code', '==', code).get()
-    .then(function(snapshot){
-      var foundBuddy = null;
-      snapshot.forEach(function(doc){
-        if (doc.id !== AUTH_EMAIL) foundBuddy = { email: doc.id };
-      });
-      if (foundBuddy) {
-        DB.collection('users').doc(foundBuddy.email).get().then(function(userDoc){
-          if (userDoc.exists) finishPairing(userDoc.data(), foundBuddy.email);
-        });
-        return;
+  var result = document.getElementById('pairing-result');
+  var button = document.getElementById('pairing-connect-btn');
+  var code = input ? input.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'') : '';
+  if (code.length < 6 || code.length > 8) { if (result) result.textContent = 'Enter the 6–8 character invite code.'; if (input) input.focus(); return; }
+  if (!AUTH_EMAIL || !DB) { if (result) result.textContent = 'Sign in and reconnect to the internet before connecting.'; return; }
+  if (button) { button.disabled = true; button.textContent = 'Connecting…'; }
+  if (result) result.textContent = 'Checking this invite code…';
+  DB.collection('pairingCodes').doc(code).get()
+    .then(function(doc){
+      var data = doc.exists ? (doc.data() || {}) : null;
+      var expiry = data && data.expiresAt && typeof data.expiresAt.toMillis === 'function' ? data.expiresAt.toMillis() : 0;
+      if (data && data.ownerEmail !== AUTH_EMAIL && !data.consumed && expiry > Date.now()) {
+        return DB.collection('pairingCodes').doc(code).update({consumed:true,consumedBy:AUTH_EMAIL,consumedAt:firebase.firestore.FieldValue.serverTimestamp(),requestName:D.name || 'Re.Claim member',requestLanguage:D.language || 'English'})
+          .then(function(){
+            D.buddy = { name:data.name || 'Your partner', contact:data.ownerEmail, relationship:'Invite request pending', language:data.language || '', paired:false, pending:true, inviteCode:code };
+            saveData();
+            if (result) result.textContent = 'Request sent. Your partner must accept it from their Partner page before messaging or sharing can start.';
+            if (button) { button.disabled = false; button.textContent = 'Connect'; }
+            if (typeof render === 'function') render();
+          });
       }
-      // Code not found  save this one for a comrade to match
-      allCodes[AUTH_EMAIL] = code;
-      localStorage.setItem('rc_pairing_codes', JSON.stringify(allCodes));
-      DB.collection('pairingCodes').doc(AUTH_EMAIL).set({ code: code }).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
-      registerCurrentUser();
-      document.getElementById('pairing-result').innerHTML = '<div style="font-size:13px;color:var(--muted)">Code saved and shared globally! Share it with your comrade anywhere in the world.</div>';
+      if (result) result.textContent = 'No active invite matches that code. Check it with the person who shared it.';
+      if (button) { button.disabled = false; button.textContent = 'Connect'; }
     })
-    .catch(function(){
-      // Offline fallback
-      allCodes[AUTH_EMAIL] = code;
-      localStorage.setItem('rc_pairing_codes', JSON.stringify(allCodes));
-      registerCurrentUser();
-      document.getElementById('pairing-result').innerHTML = '<div style="font-size:13px;color:var(--muted)">Code saved locally! Share it with your comrade.</div>';
+    .catch(function(e){
+      console.warn('Could not check invite code:', e);
+      if (result) result.textContent = 'Could not check the invite code. Check your connection and try again.';
+      if (button) { button.disabled = false; button.textContent = 'Connect'; }
     });
 }
 
+function checkPairingRequest() {
+  var code = localStorage.getItem('rc_pair_code');
+  var result = document.getElementById('pairing-result');
+  if (!code || !AUTH_EMAIL || !DB) { if (result) result.textContent = 'Create an invite code on this account first.'; return; }
+  if (result) result.textContent = 'Checking your invite…';
+  DB.collection('pairingCodes').doc(code).get().then(function(doc){
+    var data = doc.exists ? doc.data() : null;
+    if (!data || !data.consumed || !data.consumedBy) { if (result) result.textContent = 'No one has requested to connect yet.'; return; }
+    if (data.withdrawn) { if (result) result.textContent = 'The person withdrew their request.'; return; }
+    if (data.accepted) { if (result) result.textContent = 'This invite has already been accepted.'; return; }
+    if (result) result.innerHTML = '<div class="partner-code-result"><p><strong>' + safe(data.requestName || 'Someone') + '</strong> wants to connect with you. Accept only if you recognize them.</p><button class="btn btn-primary btn-sm" onclick="acceptPairingRequest(\'' + code + '\')">Accept request</button></div>';
+  }).catch(function(){ if (result) result.textContent = 'Could not check your invite. Check your connection and try again.'; });
+}
+
+function acceptPairingRequest(code) {
+  var result = document.getElementById('pairing-result');
+  DB.collection('pairingCodes').doc(code).get().then(function(doc){
+    var data = doc.exists ? doc.data() : null;
+    if (!data || data.ownerEmail !== AUTH_EMAIL || !data.consumedBy || data.accepted) throw new Error('This request is no longer available.');
+    return DB.collection('pairingCodes').doc(code).update({accepted:true,acceptedBy:AUTH_EMAIL,acceptedAt:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){
+      finishPairing({name:data.requestName || 'Your partner',language:data.requestLanguage || ''},data.consumedBy);
+    });
+  }).catch(function(e){ if (result) result.textContent = e && e.message ? e.message : 'Could not accept this request. Try again.'; });
+}
+
+function checkPendingPairing() {
+  if (!D.buddy || !D.buddy.pending || !D.buddy.inviteCode || !DB) return;
+  DB.collection('pairingCodes').doc(D.buddy.inviteCode).get().then(function(doc){
+    var data = doc.exists ? doc.data() : null;
+    if (data && data.accepted && data.acceptedBy === D.buddy.contact) {
+      var buddy = {name:data.name || D.buddy.name,language:data.language || D.buddy.language || ''};
+      finishPairing(buddy,data.ownerEmail);
+      showToast('Your partner accepted. Messaging and progress sharing are ready.', 'success');
+    } else if (data && data.expiresAt && data.expiresAt.toMillis && data.expiresAt.toMillis() < Date.now()) {
+      D.buddy.pending = false;
+      D.buddy.relationship = 'Invite expired';
+      D.buddy.inviteCode = '';
+      saveData();
+      render();
+    }
+  }).catch(function(){ showToast('Could not check the request. Try again when online.', 'warning'); });
+}
+
+function cancelPairingRequest() {
+  var code = D.buddy && D.buddy.inviteCode;
+  if (code && DB) DB.collection('pairingCodes').doc(code).update({withdrawn:true}).catch(function(){});
+  removeBuddy();
+}
+
 function finishPairing(match, email) {
-  D.buddy = { name: match.name, contact: email, relationship: 'Accountability Partner (paired)', language: match.language || (D.language || 'English') };
+  if (!email || email === AUTH_EMAIL) {
+    showToast('That is your own invite code. Share it with someone you trust.', 'warning');
+    return;
+  }
+  D.buddy = { name: match.name || 'Your partner', contact: email, relationship: 'Accountability Partner (paired)', language: match.language || (D.language || 'English'), paired: true };
   var pairedList = D.pairedBuddies || [];
   if (!pairedList.some(function(p){return p.email === email})) {
-    pairedList.push({ name: match.name, email: email, language: match.language || (D.language || 'English'), pairedDate: Date.now() });
+    pairedList.push({ name: match.name || 'Your partner', email: email, language: match.language || (D.language || 'English'), pairedDate: Date.now() });
     D.pairedBuddies = pairedList;
   }
 saveData();
@@ -115,43 +161,5 @@ saveData();
   if (result) result.innerHTML = '<div style="font-size:13px;color:var(--primary);font-weight:600">Connected with ' + safe(match.name) + ' from ' + safe(match.language || 'your language') + '! You can now support each other.</div>';
   var input = document.getElementById('pairing-code');
   if (input) input.value = '';
+  if (typeof render === 'function') render();
 }
-function connectToBuddy(email) {
-  var list = getRegisteredBuddies();
-  var match = list.find(function(b){return b.email === email});
-  if (match) { finishPairing(match, email); return; }
-  // Try Firestore
-  DB.collection('users').doc(email).get().then(function(doc){
-    if (doc.exists) { finishPairing(doc.data(), email); return; }
-    alert(t('Partner not found. Make sure they have registered by visiting the Partner page.'));
-  }).catch(function(){alert(t('Could not reach global directory. Try again later.'))});
-}
-
-function findBuddyAuto(btn) {
-  if (!AUTH_EMAIL) { alert(t('Sign in to find a comrade.')); return; }
-  if (!DB) { showToast('The partner directory is unavailable right now.', 'error'); return; }
-  btn = btn || document.getElementById('find-buddy-btn');
-  if (btn) { btn.textContent = 'Searching...'; btn.disabled = true; }
-  var lang = D.language || 'English';
-  DB.collection('users').where('language','==',lang).limit(50).get().then(function(snapshot){
-    var available = [];
-    snapshot.forEach(function(doc){
-      if (doc.id !== AUTH_EMAIL) available.push(Object.assign({ email: doc.id }, doc.data()));
-    });
-    if (btn) { btn.textContent = 'Find Me a comrade'; btn.disabled = false; }
-    if (!available.length) {
-      var el = document.getElementById('auto-buddy-result');
-      if (el) el.innerHTML = '<div style="text-align:center;padding:12px;background:var(--primary-light);border-radius:10px"><div style="font-size:12px;color:var(--muted)">No available comrades in <strong>' + lang + '</strong> right now. Try generating a pairing code to invite someone!</div></div>';
-      return;
-    }
-    var pick = available[Math.floor(Math.random() * available.length)];
-    finishPairing(pick, pick.email);
-    var el = document.getElementById('auto-buddy-result');
-    if (el) el.innerHTML = '<div style="text-align:center;padding:12px;background:var(--primary-light);border-radius:10px;border:2px solid var(--primary)"><div style="font-size:24px;margin-bottom:4px">&#129309;</div><div style="font-weight:700;font-size:15px;color:var(--primary)">Connected with ' + safe(pick.name) + '!</div><div style="font-size:12px;color:var(--muted)">You can support each other on your recovery journey.</div><button class="btn btn-sm btn-primary" onclick="goTo(\'buddy\')" style="margin-top:6px">Go to Buddy Page</button></div>';
-  }).catch(function(){
-    if (btn) { btn.textContent = 'Find Me a comrade'; btn.disabled = false; }
-    var el = document.getElementById('auto-buddy-result');
-    if (el) el.innerHTML = '<div style="text-align:center;padding:12px;background:var(--danger-bg);border-radius:10px;font-size:12px;color:var(--danger)">Could not reach the buddy directory. Check your connection.</div>';
-  });
-}
-

@@ -272,14 +272,10 @@ function onAuthReady(email, isNew) {
     loadFromFirestore(function(cloudData) {
       render();
       if (isNew && !D._onboardingDone) { setTimeout(function(){ showOnboarding(); }, 400); }
-      if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
-      if (isNew && !D._goalsOnboardingDone && D.assessmentTaken) { setTimeout(function(){ showGoalsOnboarding(); D._goalsOnboardingDone = true; saveData(); }, 800); }
     });
   } else {
     render();
     if (isNew && !D._onboardingDone) { setTimeout(function(){ showOnboarding(); }, 400); }
-    if (isNew && !D.assessmentTaken) { setTimeout(function(){ showAssessmentAfterSignIn(); }, 600); }
-    if (isNew && !D._goalsOnboardingDone && D.assessmentTaken) { setTimeout(function(){ showGoalsOnboarding(); D._goalsOnboardingDone = true; saveData(); }, 800); }
   }
   if (isLockSet()) { showLockScreen(); } else { resetLockTimer(); }
   // Periodic cloud sync — re-check on focus
@@ -1519,7 +1515,7 @@ function showLockScreen() {
 function showLockScreenSOS() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:4px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:18px">'+t('You are not alone.')+'</h3><p style="font-size:13px;color:var(--text);margin:8px 0;line-height:1.5">'+t('Help is available 24/7. Reach out right now.')+'</p><div style="text-align:left;margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">988 Suicide & Crisis Lifeline</div><a href="tel:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">988</a></div><div style="background:var(--danger-bg);padding:10px;border-radius:10px"><div style="font-weight:600;font-size:13px">Crisis Text Line</div><div style="font-size:11px;color:var(--muted)">'+t('Text HOME to')+'</div><a href="tel:741741" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">741741</a></div></div><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t('Close')+'</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:4px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:18px">'+t('You are not alone.')+'</h3><p style="font-size:13px;color:var(--text);margin:8px 0;line-height:1.5">'+t('Help is available 24/7. Reach out right now.')+'</p><div style="text-align:left;margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:8px"><div style="font-weight:600;font-size:13px">U.S. & Canada: call or text 988</div><a href="tel:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">Call 988</a><span> · </span><a href="sms:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">Text 988</a></div><a href="https://www.crisistextline.org/text-us/" target="_blank" rel="noopener" style="display:block;background:var(--primary-light);padding:10px;border-radius:10px;margin-bottom:8px">Text HOME to 741741 (U.S.)</a><a href="https://findahelpline.com/" target="_blank" rel="noopener" style="display:block;background:var(--primary-light);padding:10px;border-radius:10px">Find support in other countries</a></div><p style="font-size:11px;color:var(--muted)">For immediate danger, contact local emergency services.</p><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%">'+t('Close')+'</button></div>';
   document.body.appendChild(overlay);
 }
 

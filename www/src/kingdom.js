@@ -121,6 +121,7 @@ function kingdomHTML() {
   h += '<radialGradient id="kd-atmo" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(130,200,255,0)"/><stop offset="72%" stop-color="rgba(130,200,255,.14)"/><stop offset="100%" stop-color="rgba(130,200,255,.3)"/></radialGradient>';
   h += '<radialGradient id="kd-core" cx="50%" cy="50%" r="58%"><stop offset="0%" stop-color="#fff6da"/><stop offset="42%" stop-color="#ffd27a"/><stop offset="82%" stop-color="#ff8c2e"/><stop offset="100%" stop-color="#cc5a12"/></radialGradient>';
   h += '<radialGradient id="kd-limb" cx="42%" cy="50%" r="130%"><stop offset="0%" stop-color="rgba(4,10,26,0)"/><stop offset="70%" stop-color="rgba(4,10,26,0)"/><stop offset="100%" stop-color="rgba(4,10,26,.5)"/></radialGradient>';
+  h += '<radialGradient id="kd-spec" cx="32%" cy="24%" r="82%"><stop stop-color="#ffffff" stop-opacity=".27"/><stop offset=".42" stop-color="#ffffff" stop-opacity=".08"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient>';
   h += '</defs>';
   h += '<rect width="500" height="280" class="k-sky"/>';
   // Stars — brighter and denser as your world grows
@@ -277,6 +278,7 @@ function kingdomHTML() {
     h += '</g>';
     // Soft limb shading for a rounded, solid look
     h += '<ellipse cx="250" cy="150" r="' + pr + '" fill="url(#kd-limb)"/>';
+    h += '<circle cx="250" cy="150" r="' + pr + '" fill="url(#kd-spec)" clip-path="url(#kd-sphere)"/>';
     // Polar ice caps that form as the world matures
     if (days >= 45) {
       var capW = pr * 0.34, capH = pr * 0.13;
@@ -326,8 +328,8 @@ function kingdomHTML() {
 
   h += '<rect width="500" height="280" class="k-damage-overlay" opacity="0"/>';
   // Weather overlays
-  if(weather==='rain')h+='<g class="w-rain">'+Array.from({length:40},function(_,i){var x=Math.random()*500,y=Math.random()*40*-1,d=70+Math.random()*80;return '<line x1="'+x+'" y1="'+y+'" x2="'+(x-2)+'" y2="'+(y+15)+'" stroke="#88bbff" stroke-width=".5" opacity=".3" style="animation:rainDrop '+d+'ms linear infinite;animation-delay:'+(Math.random()*d)+'ms"/>'}).join('')+'</g>';
-  if(weather==='storm'){h+='<rect width="500" height="280" fill="#fff" opacity="0" style="animation:lightningFlash 6s ease-in-out infinite;pointer-events:none"/>';h+='<g class="w-rain">'+Array.from({length:60},function(_,i){var x=Math.random()*500,y=Math.random()*40*-1,d=50+Math.random()*60;return '<line x1="'+x+'" y1="'+y+'" x2="'+(x-2)+'" y2="'+(y+15)+'" stroke="#88bbff" stroke-width=".5" opacity=".4" style="animation:rainDrop '+d+'ms linear infinite;animation-delay:'+(Math.random()*d)+'ms"/>'}).join('')+'</g>';}
+  if(weather==='rain')h+='<g class="w-rain">'+Array.from({length:40},function(_,i){var x=(i*73+i%7*19)%500,y=-((i*37)%40),d=70+(i*53)%80;return '<line x1="'+x+'" y1="'+y+'" x2="'+(x-2)+'" y2="'+(y+15)+'" stroke="#88bbff" stroke-width=".5" opacity=".3" style="animation:rainDrop '+d+'ms linear infinite;animation-delay:-'+((i*29)%d)+'ms"/>'}).join('')+'</g>';
+  if(weather==='storm'){h+='<rect width="500" height="280" fill="#fff" opacity="0" style="animation:lightningFlash 6s ease-in-out infinite;pointer-events:none"/>';h+='<g class="w-rain">'+Array.from({length:60},function(_,i){var x=(i*67+i%9*23)%500,y=-((i*31)%40),d=50+(i*47)%60;return '<line x1="'+x+'" y1="'+y+'" x2="'+(x-2)+'" y2="'+(y+15)+'" stroke="#88bbff" stroke-width=".5" opacity=".4" style="animation:rainDrop '+d+'ms linear infinite;animation-delay:-'+((i*23)%d)+'ms"/>'}).join('')+'</g>'; }
   if(weather==='fog'||weather==='mist')h+='<rect x="0" y="0" width="500" height="280" fill="#b0c0d0" opacity=".15" style="animation:fogDrift 8s ease-in-out infinite alternate;pointer-events:none"/><rect x="0" y="0" width="500" height="280" fill="#b0c0d0" opacity=".1" style="animation:fogDrift 12s ease-in-out infinite alternate;animation-delay:-3s;pointer-events:none"/>';
   if(weather==='rainbow'){var rY=90;h+='<g opacity=".4" style="animation:rainbowArc 4s ease-in-out infinite alternate">';['#ff0000','#ff8800','#ffff00','#00bb00','#0088ff','#4400ff','#8800cc'].forEach(function(c,i){var r=90+i*8;h+='<path d="M 80,'+rY+' A '+r+','+r+' 0 0,1 420,'+rY+'" fill="none" stroke="'+c+'" stroke-width="4"/>';});h+='</g>';}
   if(weather==='aurora'){h+='<g opacity=".25" style="animation:auroraWave 6s ease-in-out infinite alternate">';['#00ff88','#00ccff','#ff44ff'].forEach(function(c,i){h+='<path d="M 0,'+(200-i*30)+' Q 80,'+(160-i*30)+' 180,'+(190-i*30)+' T 360,'+(170-i*30)+' T 500,'+(180-i*30)+'" fill="none" stroke="'+c+'" stroke-width="20" opacity=".15"/>';h+='<path d="M 0,'+(210-i*30)+' Q 100,'+(170-i*30)+' 200,'+(200-i*30)+' T 380,'+(180-i*30)+' T 500,'+(190-i*30)+'" fill="none" stroke="'+c+'" stroke-width="12" opacity=".12" style="animation:auroraWave 8s ease-in-out infinite alternate;animation-delay:-'+(i*2)+'s"/>';});h+='</g>';}
@@ -630,14 +632,15 @@ function homeHTML() {
   h += homePageHTML();
   h += missionHTML();
 
-  // Install prompt card — inviting the user to add the app to their home screen
-  h += installCardHTML();
-
-  // Backup safety net for non-account users
-  h += backupCardHTML();
+  h += '<nav class="home-action-grid" aria-label="Quick actions">' +
+    '<button type="button" class="home-action" onclick="goTo(\'reflect\')"><span aria-hidden="true">&#10024;</span><strong>Check in</strong><small>Log how today feels</small></button>' +
+    '<button type="button" class="home-action" onclick="goTo(\'coping\')"><span aria-hidden="true">&#127807;</span><strong>Find support</strong><small>Open your coping tools</small></button>' +
+    '<button type="button" class="home-action" onclick="goTo(\'buddy\')"><span aria-hidden="true">&#129309;</span><strong>Partner</strong><small>' + (D.buddy && D.buddy.name ? 'Connect with ' + safe(D.buddy.name) : 'Find someone you trust') + '</small></button>' +
+    '<button type="button" class="home-action home-action-share" onclick="showShareCard()"><span aria-hidden="true">&#128200;</span><strong>Share progress</strong><small>Choose what you share</small></button>' +
+    '</nav>';
 
   // Crisis widget � always visible on home
-  h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS — crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
+  h += '<button type="button" class="home-support-action" onclick="showSOS()" aria-label="Open urgent support options"><span aria-hidden="true">&#128222;</span><span><strong>' + t('Need help right now?') + '</strong><small>Open urgent support options</small></span><span class="home-support-chevron" aria-hidden="true">&#8250;</span></button>';
 
   h += pledgeHTML();
 
@@ -653,7 +656,8 @@ function homeHTML() {
   h += pendingFollowUpHTML();
   h += accPendingHTML();
 
-  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#x265B; '+t('Share My Progress')+'</button></div>';
+  var homeExtras = installCardHTML() + backupCardHTML();
+  if (homeExtras) h += '<details class="home-extras"><summary>More options</summary><div class="home-extras-content">' + homeExtras + '</div></details>';
 
 
   return h;
@@ -665,5 +669,4 @@ function homeHTML() {
 function escText(s) {
   return (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-
 

@@ -632,14 +632,15 @@ function homeHTML() {
   h += homePageHTML();
   h += missionHTML();
 
-  // Install prompt card — inviting the user to add the app to their home screen
-  h += installCardHTML();
-
-  // Backup safety net for non-account users
-  h += backupCardHTML();
+  h += '<nav class="home-action-grid" aria-label="Quick actions">' +
+    '<button type="button" class="home-action" onclick="goTo(\'reflect\')"><span aria-hidden="true">&#10024;</span><strong>Check in</strong><small>Log how today feels</small></button>' +
+    '<button type="button" class="home-action" onclick="goTo(\'coping\')"><span aria-hidden="true">&#127807;</span><strong>Find support</strong><small>Open your coping tools</small></button>' +
+    '<button type="button" class="home-action" onclick="goTo(\'buddy\')"><span aria-hidden="true">&#129309;</span><strong>Partner</strong><small>' + (D.buddy && D.buddy.name ? 'Connect with ' + safe(D.buddy.name) : 'Find someone you trust') + '</small></button>' +
+    '<button type="button" class="home-action home-action-share" onclick="showShareCard()"><span aria-hidden="true">&#128200;</span><strong>Share progress</strong><small>Choose what you share</small></button>' +
+    '</nav>';
 
   // Crisis widget � always visible on home
-  h += '<div class="card" style="border-left:4px solid var(--danger);padding:12px;cursor:pointer;background:linear-gradient(135deg,rgba(220,38,38,.04),var(--card))" onclick="showSOS()"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px;line-height:1">&#128222;</div><div style="flex:1"><div style="font-weight:700;font-size:14px;color:var(--danger)">'+t('Need help right now?')+'</div><div style="font-size:12px;color:var(--muted)">'+t('SOS — crisis support is available 24/7')+'</div></div><span style="font-size:18px;color:var(--muted)">&#8250;</span></div></div>';
+  h += '<button type="button" class="home-support-action" onclick="showSOS()" aria-label="Open urgent support options"><span aria-hidden="true">&#128222;</span><span><strong>' + t('Need help right now?') + '</strong><small>Open urgent support options</small></span><span class="home-support-chevron" aria-hidden="true">&#8250;</span></button>';
 
   h += pledgeHTML();
 
@@ -655,7 +656,8 @@ function homeHTML() {
   h += pendingFollowUpHTML();
   h += accPendingHTML();
 
-  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline home-share-progress" onclick="showShareCard()" style="width:100%">&#x265B; '+t('Share My Progress')+'</button></div>';
+  var homeExtras = installCardHTML() + backupCardHTML();
+  if (homeExtras) h += '<details class="home-extras"><summary>More options</summary><div class="home-extras-content">' + homeExtras + '</div></details>';
 
 
   return h;
@@ -667,5 +669,4 @@ function homeHTML() {
 function escText(s) {
   return (s == null ? '' : String(s)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-
 

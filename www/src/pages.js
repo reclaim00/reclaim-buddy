@@ -535,7 +535,7 @@ function showCrisisAlert(text) {
     }
     var h = '<div class="overlay-content" style="max-width:440px">';
     if (steps[stepIdx] === 'sos') {
-      h += '<div style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:2px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:17px">'+t('I hear you. You are not alone.')+'</h3><p style="font-size:13px;color:var(--muted);margin:6px 0;line-height:1.4">'+t('These feelings are real. Help is available right now.')+'</p></div><div style="margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">988 Suicide & Crisis Lifeline</div><a href="tel:988" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">988</a></div><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">Crisis Text Line</div><div style="font-size:11px;color:var(--muted)">'+t('Text HOME to')+'</div><a href="tel:741741" style="font-size:18px;font-weight:700;color:var(--primary);text-decoration:none">741741</a></div></div>';
+      h += '<div style="text-align:center"><div style="font-size:48px;font-weight:900;color:var(--danger);margin-bottom:2px;letter-spacing:6px">SOS</div><h3 style="color:var(--danger);font-size:17px">'+t('I hear you. You are not alone.')+'</h3><p style="font-size:13px;color:var(--muted);margin:6px 0;line-height:1.4">'+t('These feelings are real. Help is available right now.')+'</p></div><div style="margin:10px 0"><div style="background:var(--danger-bg);padding:10px;border-radius:10px;margin-bottom:6px"><div style="font-weight:600;font-size:13px">U.S. & Canada: call or text 988</div><a href="tel:988" style="font-size:16px;font-weight:700;color:var(--primary);text-decoration:none">Call 988</a><span> · </span><a href="sms:988" style="font-size:16px;font-weight:700;color:var(--primary);text-decoration:none">Text 988</a></div><a href="https://www.crisistextline.org/text-us/" target="_blank" rel="noopener">Text HOME to 741741 in the U.S.</a><br><a href="https://findahelpline.com/" target="_blank" rel="noopener">Find support in other countries</a></div>';
       if (D.emergencyContacts && D.emergencyContacts.length) {
         h += '<div style="margin:6px 0"><div style="font-weight:600;font-size:12px;color:var(--muted);margin-bottom:4px">'+t('Your emergency contacts')+'</div>';
         for (var ei=0;ei<D.emergencyContacts.length;ei++) {
@@ -640,11 +640,9 @@ function showHardTimeSupport() {
   }
 
   h += '<div class="card" style="margin-bottom:8px;padding:14px">';
-  h += '<div style="font-weight:700;font-size:13px;margin-bottom:6px">Immediate Support</div>';
-  h += '<div style="display:flex;gap:6px">';
-  h += '<a href="tel:988" style="flex:1;text-align:center;padding:10px;background:var(--danger-bg,#fee2e2);border-radius:8px;font-size:13px;font-weight:600;color:var(--danger,#dc2626);text-decoration:none">Call 988</a>';
-  h += '<a href="sms:741741&body=HELLO" style="flex:1;text-align:center;padding:10px;background:var(--primary-light);border-radius:8px;font-size:13px;font-weight:600;color:var(--primary);text-decoration:none">Text 741741</a>';
-  h += '</div>';
+  h += '<div style="font-weight:700;font-size:13px;margin-bottom:6px">Immediate support</div>';
+  h += '<p style="font-size:12px;color:var(--muted);line-height:1.5">In the U.S. or Canada, call or text 988. In the U.S., you can also text HOME to 741741. Elsewhere, find a local crisis line at Find A Helpline. If someone is in immediate danger, contact local emergency services.</p>';
+  h += '<div style="display:flex;gap:6px;flex-wrap:wrap"><a href="tel:988" style="flex:1;min-width:95px;text-align:center;padding:10px;background:var(--danger-bg,#fee2e2);border-radius:8px;font-size:13px;font-weight:600;color:var(--danger,#dc2626);text-decoration:none">Call 988</a><a href="sms:988" style="flex:1;min-width:95px;text-align:center;padding:10px;background:var(--primary-light);border-radius:8px;font-size:13px;font-weight:600;color:var(--primary);text-decoration:none">Text 988</a><a href="https://www.crisistextline.org/text-us/" target="_blank" rel="noopener" style="flex:1;min-width:95px;text-align:center;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);text-decoration:none">Text HOME (U.S.)</a><a href="https://findahelpline.com/" target="_blank" rel="noopener" style="flex:1;min-width:95px;text-align:center;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text);text-decoration:none">Other countries</a></div>';
   h += '</div>';
 
   h += '<button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" style="width:100%;margin-top:4px">Close</button>';
@@ -1964,28 +1962,14 @@ function showSOS() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   var helplines = [
-    {name:'988 Suicide & Crisis Lifeline',num:'988',desc:'Call or text 988'},
-    {name:'Crisis Text Line',num:'741741',desc:'Text HOME to 741741'},
-    {name:'SAMHSA National Helpline',num:'1-800-662-4357',desc:'24/7 treatment referral'},
-    {name:'National Suicide Prevention Lifeline',num:'1-800-273-8255',desc:'24/7 confidential support'},
-    {name:'National Hopeline Network',num:'1-800-442-4673',desc:'Crisis intervention & suicide prevention'},
-    {name:'Veterans Crisis Line',num:'1-800-273-8255',desc:'Press 1 for veterans'},
-    {name:'Trans Lifeline',num:'1-877-565-8860',desc:'Peer support for trans community'},
-    {name:'The Trevor Project',num:'1-866-488-7386',desc:'LGBTQ+ youth crisis support'},
-    {name:'National Domestic Violence Hotline',num:'1-800-799-7233',desc:'Support for domestic violence'},
-    {name:'National Child Abuse Hotline',num:'1-800-422-4453',desc:'Child abuse reporting & support'},
-    {name:'RAINN Sexual Assault Hotline',num:'1-800-656-4673',desc:'Sexual assault support'},
-    {name:'NAMI Helpline',num:'1-800-950-6264',desc:'Mental health support & resources'},
-    {name:'Eating Disorders Helpline',num:'1-800-931-2237',desc:'Support for eating disorders'},
-    {name:'Substance Abuse Helpline',num:'1-800-327-5050',desc:'24/7 substance abuse support'},
-    {name:'Gambling Problem Helpline',num:'1-800-522-4700',desc:'Problem gambling support'},
-    {name:'Self-Harm Hotline',num:'1-800-366-8288',desc:'Self-harm crisis support'},
-    {name:'Warmline (Non-crisis)',num:'1-888-448-9777',desc:'Peer support for non-crisis moments'}
+    {name:'U.S. & Canada: 988 Suicide & Crisis Lifeline',num:'988',desc:'Call or text 988'},
+    {name:'U.S. Crisis Text Line',num:'Text HOME',desc:'Text HOME to 741741',url:'https://www.crisistextline.org/text-us/'},
+    {name:'Find a local support line',num:'Find support',desc:'Search verified helplines by country',url:'https://findahelpline.com/'}
   ];
   function helplinesHTML() {
     var hh = '';
     for (var i=0;i<helplines.length;i++) {
-      hh += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+helplines[i].name+'</div><div style="font-size:11px;color:var(--muted)">'+helplines[i].desc+'</div></div><a href="tel:'+helplines[i].num+'" style="font-size:16px;font-weight:700;color:var(--primary);text-decoration:none">'+helplines[i].num+'</a></div>';
+      hh += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+helplines[i].name+'</div><div style="font-size:11px;color:var(--muted)">'+helplines[i].desc+'</div></div><a '+(helplines[i].url?'target="_blank" rel="noopener" ':'')+'href="'+(helplines[i].url||'tel:'+helplines[i].num)+'" style="font-size:14px;font-weight:700;color:var(--primary);text-decoration:none">'+helplines[i].num+'</a></div>';
     }
     return hh;
   }
@@ -2944,20 +2928,27 @@ function reportsHTML() {
 // ====== BUDDY ======
 function buddyHTML() {
   if (!D.buddy || !D.buddy.name) return setupBuddyHTML();
-  if (_buddyView === 'thread') return buddyThreadHTML();
+  if (D.buddy.pending && !buddyIsPaired(D.buddy)) {
+    return '<h2 class="page-title">Partner request</h2><div class="card partner-local-note"><h3>Waiting for ' + safe(D.buddy.name) + '</h3><p>Your connection request is waiting for them to accept. Messaging and progress sharing stay off until they accept.</p><button class="btn btn-primary" onclick="checkPendingPairing()">Check request status</button><button class="btn btn-outline" onclick="cancelPairingRequest()" style="margin-top:8px">Cancel request</button></div>';
+  }
+  if (_buddyView === 'thread' && buddyIsPaired(D.buddy)) return buddyThreadHTML();
+  _buddyView = 'list';
   var h = '';
   h += '<h2 class="page-title">'+t('Your Partner')+'</h2>';
-  h += '<div class="card" style="cursor:pointer;padding:12px" onclick="openBuddyThread()">';
-  h += '<div style="display:flex;align-items:center;gap:10px">';
-  h += '<div class="comrade-avatar" style="width:42px;height:42px;border-radius:50%;font-size:18px">' + D.buddy.name[0].toUpperCase() + '</div>';
-  h += '<div style="flex:1;min-width:0">';
-  h += '<div style="font-weight:700;font-size:15px">' + safe(D.buddy.name) + '</div>';
-  h += '<div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (_lastBuddyMsgPreview || t('No messages yet &#183; tap to start your thread')) + '</div>';
-  h += '</div>';
-  h += '<div style="text-align:right;font-size:11px;color:var(--muted)">' + _lastBuddyMsgTime + '</div>';
-  h += '</div></div>';
+  if (buddyIsPaired(D.buddy)) {
+    h += '<div class="card" style="cursor:pointer;padding:12px" onclick="openBuddyThread()">';
+    h += '<div style="display:flex;align-items:center;gap:10px">';
+    h += '<div class="comrade-avatar" style="width:42px;height:42px;border-radius:50%;font-size:18px">' + D.buddy.name[0].toUpperCase() + '</div>';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="font-weight:700;font-size:15px">' + safe(D.buddy.name) + '</div>';
+    h += '<div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (_lastBuddyMsgPreview || t('No messages yet &#183; tap to start your thread')) + '</div>';
+    h += '</div>';
+    h += '<div style="text-align:right;font-size:11px;color:var(--muted)">' + _lastBuddyMsgTime + '</div>';
+    h += '</div></div>';
+  }
   h += '<div class="comrade-card"><div class="comrade-avatar">' + D.buddy.name[0].toUpperCase() + '</div><div><div style="font-weight:700;font-size:16px">' + D.buddy.name + '</div><div style="font-size:12px;color:var(--muted)">' + (D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + D.buddy.contact : '') + (D.buddy.language ? ' &middot; ' + D.buddy.language : '') + '</div></div></div>';
-  h += buddyMessagesHTML();
+  if (buddyIsPaired(D.buddy)) h += buddyMessagesHTML();
+  else h += '<div class="card partner-local-note"><h3>Local partner profile</h3><p>Use this space to keep your own check-ins and goals. Connect their Re.Claim account with an invite code to message or share progress.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'buddy\')">Connect an account</button><button class="btn btn-outline btn-sm" onclick="checkPairingRequest()" style="margin-left:6px">Check invite requests</button></div>';
   h += '<div class="stat-grid" style="margin:8px 0">';
   h += '<div class="stat-card"><div class="num">' + buddyStreak() + '</div><div class="label">Buddy Streak</div></div>';
   h += '<div class="stat-card"><div class="num">' + D.buddyCheckins.length + '</div><div class="label">Check-Ins</div></div>';
@@ -2970,9 +2961,9 @@ function buddyHTML() {
   } else {
     h += '<div class="card"><h3>Check In with ' + safe(D.buddy.name) + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Send a quick check-in to stay connected.</p><button class="btn btn-primary btn-sm" onclick="buddyCheckin()">Send Check-In</button></div>';
   }
-  h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Shared Goals</h3><button class="btn btn-sm btn-outline" onclick="addGoal()">+ Add</button></div>';
+  h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Goals to discuss</h3><button class="btn btn-sm btn-outline" onclick="addGoal()">+ Add</button></div>';
   if (!D.buddyGoals.length) {
-    h += '<div class="empty-state">No shared goals yet. Set a goal with ' + safe(D.buddy.name) + '.</div>';
+    h += '<div class="empty-state">Save a goal here to bring up with ' + safe(D.buddy.name) + '.</div>';
   } else {
     for (var i=0;i<D.buddyGoals.length;i++) {
       var done = D.buddyGoals[i].completed ? ' done' : '';
@@ -3013,8 +3004,10 @@ function buddyHTML() {
   }
   h += '</div>';
   // Progress sharing
-  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Let ' + safe(D.buddy.name) + ' see your recovery stats. Sharing is automatic when you visit this page.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button></div>';
-  h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128170;</div><h3 style="margin:0">' + safe(D.buddy.name) + '\'s Progress</h3></div><div id="comrade-progress"><div class="empty-state">Loading...</div></div></div>';
+  if (buddyIsPaired(D.buddy)) {
+    h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Nothing is shared until you choose. This shares your sober-day count and activity totals, never journal text or private notes.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button><div id="share-progress-status" class="partner-status" role="status" aria-live="polite"></div></div>';
+    h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128170;</div><h3 style="margin:0">' + safe(D.buddy.name) + '\'s Progress</h3></div><div id="comrade-progress"><div class="empty-state">Progress appears here after your partner chooses to share it.</div></div></div>';
+  }
   // Streak competition
   h += buddyCompetitionHTML();
   // Shared challenges
@@ -3035,8 +3028,7 @@ function buddyHTML() {
     }
     h += '</div>';
   }
-  setTimeout(fetchBuddyProgress, 400);
-  setTimeout(function(){ shareProgressWithBuddy(true); }, 600);
+  if (buddyIsPaired(D.buddy)) setTimeout(fetchBuddyProgress, 400);
   return h;
 }
 
@@ -3201,80 +3193,35 @@ window.addCompetitionProgress = function(idx) {
 
 function setupBuddyHTML() {
   var h = '';
-  h += '<h2 class="page-title" style="margin:16px 0 8px">'+t('Find Your Partner')+'</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:16px">An accountability partner helps you stay on track. Connect with someone who speaks your language anywhere in the world.</p>';
-  h += '<div class="card"><h3>Add Buddy Manually</h3>';
-  h += '<input type="text" id="comrade-name" placeholder="partner\'s name">';
-  h += '<input type="text" id="comrade-contact" placeholder="Phone, email, or username (optional)">';
-  h += '<input type="text" id="comrade-relationship" placeholder="e.g. Friend, Therapist, Sponsor">';
-  h += '<div style="font-size:12px;color:var(--muted);margin:6px 0 2px">Buddy\'s language</div>';
-  h += '<select id="comrade-language" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">';
+  h += '<h2 class="page-title">'+t('Your Support Partner')+'</h2>';
+  h += '<p class="partner-intro">Recovery is personal. Add someone you already trust, or connect with them using a private invite code.</p>';
+  h += '<div class="card"><h3>Add someone who supports you</h3>';
+  h += '<label class="form-label" for="comrade-name">Their name</label><input type="text" id="comrade-name" placeholder="Name" autocomplete="name">';
+  h += '<label class="form-label" for="comrade-contact">Contact (optional)</label><input type="text" id="comrade-contact" placeholder="Phone or email for your reference" autocomplete="off">';
+  h += '<p class="partner-field-note">This saves a local partner profile. It does not send them a message or connect their account.</p>';
+  h += '<label class="form-label" for="comrade-relationship">How they support you (optional)</label><input type="text" id="comrade-relationship" placeholder="Friend, therapist, sponsor…">';
+  h += '<label class="form-label" for="comrade-language">Their language</label>';
+  h += '<select id="comrade-language" style="width:100%;margin:0 0 8px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select>';
-  h += '<button class="btn btn-primary" onclick="saveBuddy()">Add Partner</button></div>';
-  // Find buddies by pairing code (works across the world)
-  h += '<div class="card" style="border:2px solid var(--accent);text-align:center"><h3>Find Me a partner</h3>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">I\'ll automatically match you with someone who speaks <strong>' + (D.language || 'English') + '</strong>.</p>';
-  h += '<button class="btn btn-primary" id="find-buddy-btn" onclick="findBuddyAuto()" style="margin-bottom:6px">Find Me a partner</button>';
-  h += '<div id="auto-buddy-result"></div></div>';
-  h += '<div class="card" style="border:2px solid var(--primary)"><h3>Worldwide Buddy Pairing</h3>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Your language: <strong>' + (D.language || 'English') + '</strong></p>';
-  h += '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">Generate a pairing code to share with your partner anywhere in the world. When they enter the same code, you\'ll be connected automatically via our global directory.</div>';
-  h += '<div style="display:flex;gap:8px;margin-bottom:6px"><input type="text" id="pairing-code" placeholder="Enter pairing code" style="flex:1"><button class="btn btn-sm btn-primary" onclick="connectPairingCode()">Connect</button></div>';
-  h += '<button class="btn btn-sm btn-outline" onclick="generatePairingCode()">Generate My Code</button>';
-  h += '<div id="pairing-result" style="margin-top:8px;font-size:13px;color:var(--muted)"></div>';
-  h += '</div>';
-  // Available buddies by language (local)
-  var registered = getRegisteredBuddies();
-  var lang = D.language || 'English';
-  var matches = registered.filter(function(b){return b.language === lang && b.email !== AUTH_EMAIL});
-  var totalLocal = matches.length;
-  h += '<div class="card" id="buddies-local"><h3>Available Partners (' + lang + ') <span id="comrade-count" style="font-size:12px;color:var(--muted);font-weight:400">(local)</span></h3>';
-  if (matches.length) {
-    for (var mi=0;mi<matches.length;mi++) {
-      h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">' + safe(matches[mi].name) + '</div><div style="font-size:11px;color:var(--muted)">' + safe(matches[mi].language) + ' speaker</div></div><button class="btn btn-sm btn-primary" onclick="connectToBuddy(\'' + matches[mi].email.replace(/'/g,'\\\'') + '\')">Connect</button></div>';
-    }
-  } else {
-    h += '<div class="empty-state">No local partners found yet.</div>';
-  }
-  h += '</div>';
-  // Global buddies (fetched from worldwide directory)
-  h += '<div class="card" id="buddies-global"><h3>Worldwide Partners <span style="font-size:12px;color:var(--muted);font-weight:400">(global directory)</span></h3>';
-  h += '<div id="global-buddies-list"><div class="empty-state">Loading global buddies...</div></div>';
-  h += '</div>';
-  h += '<div class="card"><p style="font-size:12px;color:var(--muted);line-height:1.5">Set your language in Profile to find partners who speak your language. The global directory connects you with people on the same journey worldwide.</p></div>';
-  // Fetch global buddies asynchronously
-  setTimeout(function(){
-    fetchGlobalBuddies(function(globalList){
-      var listEl = document.getElementById('global-buddies-list');
-      if (!listEl) return;
-      if (globalList === null) {
-        listEl.innerHTML = '<div class="empty-state">Could not reach global directory. Partners will appear when connected to the internet.</div>';
-        return;
-      }
-      var globalMatches = globalList.filter(function(b){return b.language === lang && b.email !== AUTH_EMAIL && !matches.some(function(lb){return lb.email === b.email})});
-      if (!globalMatches.length) {
-        listEl.innerHTML = '<div class="empty-state">No Worldwide Partners in your language yet. Be the first  share your pairing code!</div>';
-        return;
-      }
-      var gh = '';
-      for (var gi=0;gi<globalMatches.length;gi++) {
-        gh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)"><div style="flex:1"><div style="font-weight:600;font-size:13px">' + safe(globalMatches[gi].name) + '</div><div style="font-size:11px;color:var(--muted)">' + safe(globalMatches[gi].language) + ' speaker</div></div><button class="btn btn-sm btn-primary" onclick="connectToBuddy(\'' + globalMatches[gi].email.replace(/'/g,'\\\'') + '\')">Connect</button></div>';
-      }
-      listEl.innerHTML = gh;
-      var countEl = document.getElementById('buddy-count');
-      if (countEl) countEl.textContent = '(local: ' + totalLocal + ', global: ' + globalMatches.length + ')';
-    });
-  }, 300);
+  h += '<button class="btn btn-primary" onclick="saveBuddy()">Save partner</button></div>';
+  h += '<div class="card partner-connect-card"><h3>Connect their Re.Claim account</h3>';
+  h += '<p>Only connect with someone you choose. Share your invite code with them directly, or enter a code they shared with you.</p>';
+  h += '<button class="btn btn-outline" onclick="generatePairingCode()">Create an invite code</button>';
+  h += '<div class="partner-code-entry"><label class="form-label" for="pairing-code">Their invite code</label><div class="partner-code-row"><input type="text" id="pairing-code" placeholder="Enter code" autocomplete="one-time-code" autocapitalize="characters" maxlength="8"><button class="btn btn-primary" id="pairing-connect-btn" onclick="connectPairingCode()">Connect</button></div></div>';
+  h += '<div id="pairing-result" role="status" aria-live="polite" style="margin-top:10px;font-size:13px;color:var(--muted)"></div></div>';
+  h += '<div class="card partner-local-note"><h3>Already shared an invite?</h3><p>Check whether someone has asked to connect with this account. You decide whether to accept.</p><button class="btn btn-outline" onclick="checkPairingRequest()">Check invite requests</button></div>';
   return h;
 }
 
 function saveBuddy() {
-  var name = document.getElementById('buddy-name');
+  var name = document.getElementById('comrade-name');
   if (!name || !name.value.trim()) { alert(t('Enter your partner\'s name.')); return; }
-  D.buddy = { name: name.value.trim(), contact: document.getElementById('buddy-contact') ? document.getElementById('buddy-contact').value.trim() : '', relationship: document.getElementById('buddy-relationship') ? document.getElementById('buddy-relationship').value.trim() : '', language: document.getElementById('buddy-language') ? document.getElementById('buddy-language').value : (D.language || 'English') };
+  D.buddy = { name: name.value.trim(), contact: document.getElementById('comrade-contact') ? document.getElementById('comrade-contact').value.trim() : '', relationship: document.getElementById('comrade-relationship') ? document.getElementById('comrade-relationship').value.trim() : '', language: document.getElementById('comrade-language') ? document.getElementById('comrade-language').value : (D.language || 'English'), paired: false };
   saveData();
-  startBuddyMessaging();
+  stopBuddyMessaging();
+  showToast('Partner saved on this device. Connect their account to message or share progress.', 'success');
+  render();
 }
 
 function buddyCheckin() {
@@ -3326,21 +3273,33 @@ function editBuddy() {
 function saveBuddyEdit(btn) {
   var name = document.getElementById('eb-name');
   if (!name || !name.value.trim()) { alert(t('Name is required.')); return; }
+  var previousContact = D.buddy.contact || '';
+  var nextContact = document.getElementById('eb-contact') ? document.getElementById('eb-contact').value.trim() : '';
   D.buddy.name = name.value.trim();
-  D.buddy.contact = document.getElementById('eb-contact') ? document.getElementById('eb-contact').value.trim() : '';
+  D.buddy.contact = nextContact;
+  if (buddyIsPaired(D.buddy) && nextContact !== previousContact) {
+    D.buddy.paired = false;
+    D.buddy.relationship = (D.buddy.relationship || '').replace(/\s*\(paired\)/i, '');
+  }
   D.buddy.relationship = document.getElementById('eb-rel') ? document.getElementById('eb-rel').value.trim() : '';
   D.buddy.language = document.getElementById('eb-lang') ? document.getElementById('eb-lang').value : '';
   saveData();
   startBuddyMessaging();
+  if (!buddyIsPaired(D.buddy)) stopBuddyMessaging();
   btn.closest('.overlay').remove();
+  render();
 }
 
 function removeBuddy() {
-  if (!confirm(t('Remove your accountability partner?'))) return;
+  if (!confirm(t('Remove your accountability partner? Your shared progress will be withdrawn from your account.'))) return;
+  var wasPaired = buddyIsPaired(D.buddy);
   D.buddy = null;
   saveData();
   stopBuddyMessaging();
-  alert(t('Partner removed.'));
+  if (wasPaired && AUTH_EMAIL && DB) {
+    DB.collection('progress').doc(AUTH_EMAIL).delete().catch(function(e){ console.warn('Could not withdraw shared progress:', e); });
+  }
+  showToast('Partner removed. Your shared progress is being withdrawn.', 'success');
   render();
 }
 
@@ -3357,23 +3316,34 @@ function progressSnapshot() {
 }
 
 function shareProgressWithBuddy(quiet) {
+  if (!buddyIsPaired(D.buddy)) { showToast('Connect your partner with an invite code before sharing progress.', 'warning'); return; }
+  if (!DB || !AUTH_EMAIL) { showToast('Sign in and reconnect to the internet before sharing.', 'warning'); return; }
+  var btn = document.getElementById('share-progress-btn');
+  var status = document.getElementById('share-progress-status');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sharing…'; }
+  if (status) status.textContent = 'Sharing selected progress totals…';
   var progress = progressSnapshot();
   progress.participants = [AUTH_EMAIL];
-  if (D.buddy && D.buddy.contact) progress.participants.push(D.buddy.contact);
+  progress.participants.push(D.buddy.contact);
   DB.collection('progress').doc(AUTH_EMAIL).set(progress).then(function(){
-    var btn = document.getElementById('share-progress-btn');
-    if (btn) { btn.textContent = '? Shared! (' + progress.updated + ')'; btn.style.background = 'var(--primary-light)'; btn.style.color = 'var(--primary-dark)'; }
-    if (!quiet) { alert(t('Your progress has been shared with') + ' ' + (D.buddy ? D.buddy.name : t('your partner')) + '!'); }
+    if (btn) { btn.disabled = false; btn.textContent = 'Shared on ' + progress.updated; }
+    if (status) status.textContent = 'Your sober-day count and activity totals were shared with ' + D.buddy.name + '.';
+    if (!quiet) showToast('Your progress was shared with ' + D.buddy.name + '.', 'success');
     fetchBuddyProgress();
-  }).catch(function(){ if (!quiet) alert(t('Could not share. Check your internet connection.')); });
+  }).catch(function(){
+    if (btn) { btn.disabled = false; btn.textContent = 'Share My Progress'; }
+    if (status) status.textContent = 'Could not share yet. Your progress remains private; check your connection and try again.';
+    if (!quiet) showToast('Could not share. Check your internet connection.', 'error');
+  });
 }
 
 function fetchBuddyProgress() {
+  if (!buddyIsPaired(D.buddy) || !DB) return;
   var buddyEmail = D.buddy ? D.buddy.contact : '';
-  if (!buddyEmail) { var el = document.getElementById('buddy-progress'); if (el) el.innerHTML = '<div class="empty-state">No partner contact found.</div>'; return; }
+  if (!buddyEmail) { var el = document.getElementById('comrade-progress'); if (el) el.innerHTML = '<div class="empty-state">No partner contact found.</div>'; return; }
   DB.collection('progress').doc(buddyEmail).get().then(function(doc){
     var p = doc.exists ? doc.data() : null;
-    var el = document.getElementById('buddy-progress');
+    var el = document.getElementById('comrade-progress');
     if (!el) return;
     if (!p) {
       el.innerHTML = '<div class="empty-state">' + (D.buddy ? D.buddy.name : 'Buddy') + ' has not shared progress yet. Encourage them to use the Share Progress button!</div>';
@@ -3381,7 +3351,7 @@ function fetchBuddyProgress() {
     }
     el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-align:center">Last updated: ' + safe(p.updated) + '</div><div class="stat-grid"><div class="stat-card"><div class="num">' + (p.soberDays||0) + '</div><div class="label">Sober Days</div></div><div class="stat-card"><div class="num">' + (p.streak||0) + '</div><div class="label">Day Streak</div></div><div class="stat-card"><div class="num">' + (p.journalCount||0) + '</div><div class="label">Journal</div></div><div class="stat-card"><div class="num">' + (p.moodCount||0) + '</div><div class="label">Moods</div></div><div class="stat-card"><div class="num">' + (p.checkins||0) + '</div><div class="label">Check-Ins</div></div></div>' + (p.addictionType ? '<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px">Working on: ' + safe(p.addictionType) + '</div>' : '');
   }).catch(function(){
-    var el = document.getElementById('buddy-progress');
+    var el = document.getElementById('comrade-progress');
     if (el) el.innerHTML = '<div class="empty-state">Could not load progress. Check internet connection.</div>';
   });
 }
@@ -3901,8 +3871,8 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   if (!AUTH_USER) h += '<button class="btn btn-danger btn-sm" onclick="eraseLocalData()" style="margin-top:6px">'+t('Erase my data')+'</button>';
   h += '</div>';
   h += emergencyContactsSettingsHTML();
-  h += '<div class="card" style="border-left:3px solid #8a7a6a"><h3>'+t('Help Improve Re.Claim')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">'+t('Optionally share anonymous usage data to help us understand recovery patterns and improve the app. No personal information, journal text, or identifying data is ever collected.')+'</p><div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--primary-light);border-radius:10px"><div style="flex:1"><div style="font-weight:600;font-size:13px">'+t('Share anonymous data')+'</div><div style="font-size:11px;color:var(--muted)">'+t('Anonymized mood trends, streak lengths, tool usage counts')+'</div></div><input type="checkbox" onchange="D.researchOptIn=this.checked;saveData();if(this.checked)collectResearchData()" '+(D.researchOptIn?'checked':'')+' style="width:auto;transform:scale(1.2)"></div></div>';
-  h += '<div class="card" style="border-left:3px solid #f59e0b"><h3>'+t('Privacy & Security')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">'+t('All your journal entries, moods, habits, cravings, goals, and pledges are stored only on this device (localStorage). Nothing is sent to any server. Your password is hashed with SHA-256 and a random salt. Partner features (pairing, messaging) sync through Firebase Firestore with encrypted transmission.')+'</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><a class="btn btn-outline btn-sm" href="privacy.html" target="_blank" rel="noopener" style="width:auto">'+t('Privacy Policy')+'</a><a class="btn btn-outline btn-sm" href="terms.html" target="_blank" rel="noopener" style="width:auto">'+t('Terms & Conditions')+'</a></div></div>';
+  h += '<div class="card" style="border-left:3px solid #8a7a6a"><h3>'+t('Research data')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:8px">Usage summaries are currently saved on this device only. They are not uploaded or shared. You can clear local data or export a copy below.</p></div>';
+  h += '<div class="card" style="border-left:3px solid #f59e0b"><h3>'+t('Privacy & Security')+'</h3><p style="font-size:12px;color:var(--muted);line-height:1.6">When signed in, your app data syncs to Re.Claim’s Firebase account storage. The app can encrypt your saved snapshot before upload when encryption is enabled. Partner messages and invite details are stored in Firebase; message content is not end-to-end encrypted. Progress totals are private until you choose to share them with a connected partner.</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><a class="btn btn-outline btn-sm" href="privacy.html" target="_blank" rel="noopener" style="width:auto">'+t('Privacy Policy')+'</a><a class="btn btn-outline btn-sm" href="terms.html" target="_blank" rel="noopener" style="width:auto">'+t('Terms & Conditions')+'</a></div></div>';
   return h;
 }
 
@@ -4068,7 +4038,9 @@ function deleteAccount() {
   var batch = DB.batch();
   batch.delete(DB.collection('appData').doc(uid));
   batch.delete(DB.collection('users').doc(uid));
-  batch.delete(DB.collection('pairingCodes').doc(uid));
+  batch.delete(DB.collection('pairingCodes').doc(uid)); // legacy email-keyed invite
+  var ownInviteCode = localStorage.getItem('rc_pair_code');
+  if (ownInviteCode) batch.delete(DB.collection('pairingCodes').doc(ownInviteCode));
   batch.delete(DB.collection('pushSubscriptions').doc(uid));
   batch.delete(DB.collection('progress').doc(uid));
   batch.commit().catch(function(e){ console.warn(e); }).then(function(){
@@ -4084,6 +4056,7 @@ function clearLocalData() {
   localStorage.removeItem('rc_lock_hash');
   localStorage.removeItem('rc_lock_salt');
   localStorage.removeItem('rc_bio_cred');
+  localStorage.removeItem('rc_pair_code');
   localStorage.removeItem(dataKey());
   AUTH_USER = '';
   AUTH_EMAIL = '';
@@ -4776,7 +4749,7 @@ var _buddyMsgEmail = '';
 var _buddyLastNewAt = 0;
 
 function buddyMsgKey(m) {
-  return (m.timestamp || 0) + '|' + (m.text || '');
+  return m.id || ((m.timestamp || 0) + '|' + (m.from || '') + '|' + (m.text || ''));
 }
 
 function stopBuddyMessaging() {
@@ -4784,6 +4757,15 @@ function stopBuddyMessaging() {
   _buddyMsgListeners = [];
   _buddyMsgReady = false;
   _buddyMsgEmail = '';
+  _buddyMsgsCache = [];
+  _buddyMsgUnread = 0;
+  _buddyLastNewAt = 0;
+  _lastBuddyMsgPreview = '';
+  _lastBuddyMsgTime = '';
+  var pill = document.getElementById('comrade-unread-pill');
+  if (pill) { pill.textContent = ''; pill.style.display = 'none'; }
+  var toolsBadge = document.getElementById('tools-badge');
+  if (toolsBadge) toolsBadge.style.display = 'none';
 }
 
 function buddyMergeMessages(msgs) {
@@ -4823,7 +4805,10 @@ function renderBuddyMsgList() {
     var me = m.from === AUTH_EMAIL;
     html += '<div class="comrade-msg' + (me ? ' me' : '') + '">';
     if (!me) html += '<div class="msg-author">' + safe(buddyName) + '</div>';
-    html += '<div>' + safe(m.text) + '</div><div class="msg-date">' + safe(m.date || '') + ' ' + safe(m.time || '') + '</div></div>';
+    html += '<div>' + safe(m.text) + '</div>';
+    if (me && m.pending) html += '<div class="msg-date">Sending…</div>';
+    else html += '<div class="msg-date">' + safe(m.date || '') + ' ' + safe(m.time || '') + '</div>';
+    html += '</div>';
   }
   list.innerHTML = '<div class="comrade-scroll">' + html + '</div>';
   if (pg === 'buddy') {
@@ -4858,14 +4843,14 @@ function markBuddyMsgsRead() {
 }
 
 function startBuddyMessaging() {
-  if (!DB || !AUTH_EMAIL || !D.buddy || !D.buddy.contact) { stopBuddyMessaging(); return; }
+  if (!DB || !AUTH_EMAIL || !buddyIsPaired(D.buddy)) { stopBuddyMessaging(); return; }
   var buddyEmail = D.buddy.contact;
   if (_buddyMsgEmail === buddyEmail && _buddyMsgListeners.length) return;
   stopBuddyMessaging();
   _buddyMsgEmail = buddyEmail;
   function onSnap(snap) {
     var msgs = [];
-    try { snap.forEach(function(doc) { msgs.push(doc.data()); }); } catch (e) { return; }
+    try { snap.forEach(function(doc) { var m = doc.data(); if (m && !m.id) m.id = doc.id; msgs.push(m); }); } catch (e) { return; }
     var incoming = buddyMergeMessages(msgs);
     var fresh = _buddyLastNewAt && (Date.now() - _buddyLastNewAt) < 15000;
     if (incoming > 0) {
@@ -4882,42 +4867,59 @@ function startBuddyMessaging() {
     renderBuddyMsgList();
     updateBuddyMsgBadges();
   }
+  var errorNotified = false;
+  function onError(e) {
+    console.warn('buddy messaging listener failed:', e);
+    if (!errorNotified) {
+      errorNotified = true;
+      showToast('Could not load partner messages. Check your connection and try again.', 'error');
+    }
+  }
   try {
-    var q1 = DB.collection('messages').where('from', '==', AUTH_EMAIL);
-    var q2 = DB.collection('messages').where('from', '==', buddyEmail);
-    if (typeof q1.onSnapshot === 'function') _buddyMsgListeners.push(q1.onSnapshot(onSnap, function() {}));
-    if (typeof q2.onSnapshot === 'function') _buddyMsgListeners.push(q2.onSnapshot(onSnap, function() {}));
-  } catch (e) { console.warn('buddy messaging listener failed:', e); }
+    // Firestore read rules require each query to prove both sides of the conversation.
+    var q1 = DB.collection('messages').where('from', '==', AUTH_EMAIL).where('to', '==', buddyEmail);
+    var q2 = DB.collection('messages').where('from', '==', buddyEmail).where('to', '==', AUTH_EMAIL);
+    if (typeof q1.onSnapshot === 'function') _buddyMsgListeners.push(q1.onSnapshot(onSnap, onError));
+    if (typeof q2.onSnapshot === 'function') _buddyMsgListeners.push(q2.onSnapshot(onSnap, onError));
+  } catch (e) { onError(e); }
 }
 
 function comradeSendMessage() {
   var input = document.getElementById('comrade-msg-input');
   if (!input || !input.value.trim()) return;
-  if (!D.buddy || !D.buddy.contact) { showToast('Connect a partner to send messages.', 'error'); return; }
+  if (!buddyIsPaired(D.buddy)) { showToast('Connect a partner with an invite code before messaging.', 'warning'); return; }
+  if (!DB || !AUTH_EMAIL) { showToast('Sign in and connect to the internet to send messages.', 'error'); return; }
   var msg = input.value.trim();
   input.value = '';
   var now = new Date();
-  var uid = (firebase && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '';
+  var user = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser;
   var m = {
+    id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2),
     from: AUTH_EMAIL, to: D.buddy.contact, fromName: D.name || 'You',
-    fromUid: uid,
-    text: msg,
+    fromUid: user ? user.uid : '', text: msg,
     date: now.toDateString(),
     time: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
-    timestamp: Date.now()
+    timestamp: Date.now(), pending: true
   };
   if (!D.messages) D.messages = [];
   D.messages.push(m);
   saveDataSilent();
   buddyMergeMessages([m]);
   renderBuddyMsgList();
-  showToast('Message sent!', 'success');
-  if (DB) {
-    DB.collection('messages').add(m).catch(function(e) {
-      console.warn(e);
-      showToast('Message not delivered. Check your connection.', 'error');
-    });
-  }
+  DB.collection('messages').add(Object.assign({}, m, { pending: false })).then(function() {
+    m.pending = false;
+    renderBuddyMsgList();
+    saveDataSilent();
+    showToast('Message sent!', 'success');
+  }).catch(function(e) {
+    console.warn(e);
+    _buddyMsgsCache = _buddyMsgsCache.filter(function(cached) { return cached.id !== m.id; });
+    D.messages = D.messages.filter(function(saved) { return saved.id !== m.id; });
+    if (input && !input.value) input.value = msg;
+    renderBuddyMsgList();
+    saveDataSilent();
+    showToast('Message not delivered. Your text is back in the message box.', 'error');
+  });
 }
 
 var _buddyView = 'list';   // iMessage skin: 'list' | 'thread'

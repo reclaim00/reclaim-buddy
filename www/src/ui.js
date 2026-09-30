@@ -1414,41 +1414,38 @@ function renderOnboardingStep() {
   overlay.id = 'onboarding-ov';
   overlay.style.background = 'rgba(0,0,0,0.6)';
   overlay.innerHTML =
-    '<div style="background:var(--card);max-width:380px;width:92%;margin:0 auto;border-radius:20px;padding:32px 24px 24px;text-align:center;animation:siFade .3s ease;position:relative;border:2px solid var(--primary-light);box-shadow:0 0 0 1px var(--border),0 16px 64px rgba(0,0,0,.3)">' +
+    '<div class="onboarding-card" style="background:var(--card);max-width:420px;width:min(92%,420px);margin:0 auto;border-radius:20px;padding:28px 22px 20px;text-align:center;animation:siFade .3s ease;position:relative;border:1px solid var(--border);box-shadow:0 0 0 1px var(--border),0 16px 64px rgba(0,0,0,.3)">' +
     '<div style="position:absolute;top:-1px;left:20px;right:20px;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px"></div>' +
-    '<div style="font-size:42px;margin-bottom:8px;font-family:Georgia,serif">' + s.icon + '</div>' +
-    '<div style="font-size:20px;font-weight:700;margin-bottom:12px;color:var(--primary);font-family:Georgia,serif">' + s.title + '</div>' +
-    '<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:16px;padding:0 4px">' + s.desc + '</div>' +
-    '<div style="display:flex;justify-content:center;gap:5px;margin-bottom:16px">' +
-      ONBOARDING_STEPS.map(function(_,i){ return '<div style="width:7px;height:7px;border-radius:50%;background:'+(i===ONBOARDING_STEP?'var(--accent)':'var(--border)')+'"></div>'; }).join('') +
-    '</div>' +
+    '<div class="onboarding-step-count">Step ' + (ONBOARDING_STEP + 1) + ' of ' + ONBOARDING_STEPS.length + ' <span>· You can skip any step</span></div>' +
+    '<div class="onboarding-progress" aria-hidden="true"><span style="width:' + Math.round(((ONBOARDING_STEP + 1) / ONBOARDING_STEPS.length) * 100) + '%"></span></div>' +
+    '<div style="font-size:38px;margin:10px 0 6px">' + s.icon + '</div>' +
+    '<div style="font-size:20px;font-weight:750;margin-bottom:10px;color:var(--primary)">' + s.title + '</div>' +
+    '<div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;padding:0 2px">' + s.desc + '</div>' +
     '<div style="display:flex;gap:8px">' +
       (ONBOARDING_STEP > 0 ? '<button class="btn btn-sm btn-outline" onclick="ONBOARDING_STEP--;renderOnboardingStep()" style="flex:1">\u2190 Back</button>' : '') +
-      '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1">'+ (isLast ? '\u2727 Begin' : 'Next \u2192') +'</button>' +
+      '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1">'+ (isLast ? '\u2727 Start my journey' : 'Continue \u2192') +'</button>' +
     '</div>' +
-    '<button onclick="closeOnboarding()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted);font-family:serif">\u2715</button>' +
+    '<button class="onboarding-skip" onclick="closeOnboarding()">Start now — personalize this later</button>' +
     '</div>';
   document.body.appendChild(overlay);
 }
 
 function closeOnboarding() {
-  var el = document.getElementById('onboarding-ov');
-  if (el) el.remove();
-  if (!D.sobriety.startDate) { pg = 'home'; _pageCache = {}; render(); }
+  finalizeOnboarding();
 }
 
 var ONBOARDING_FIELDS = {1:'goals',2:'hopes',3:'triggers',4:'track',5:'why'};
 var ONBOARDING_IDS = {1:'onboarding-goals',2:'onboarding-hopes',3:'onboarding-triggers',4:'onboarding-track',5:'onboarding-why'};
 function advanceOnboarding() {
-  if (ONBOARDING_STEP === 0 && !D.addictionType) { alert('Pick an addiction to conquer.'); return; }
-  if (ONBOARDING_STEP === 6 && !D.theme) { alert('Choose a theme.'); return; }
+  if (ONBOARDING_STEP === 0 && !D.addictionType) D.addictionType = 'Other';
+  if (ONBOARDING_STEP === 6 && !D.theme) D.theme = 'green';
   var field = ONBOARDING_FIELDS[ONBOARDING_STEP];
   if (field) {
     var el = document.getElementById(ONBOARDING_IDS[ONBOARDING_STEP]);
     var val = el ? el.value : '';
-    if (!val.trim()) { alert('This matters \u2014 take a moment to write it down.'); if (el) el.focus(); return; }
-    D[field] = val.trim();
+    if (val.trim()) D[field] = val.trim();
   }
+  saveDataSilent();
   if (ONBOARDING_STEP >= ONBOARDING_STEPS.length - 1) {
     finalizeOnboarding();
     return;
@@ -1457,9 +1454,13 @@ function advanceOnboarding() {
   renderOnboardingStep();
 }
 function finalizeOnboarding() {
+  var el = document.getElementById('onboarding-ov');
+  if (el) el.remove();
+  if (!D.addictionType) D.addictionType = 'Other';
+  if (!D.theme) D.theme = 'green';
   seedOnboardingAnswers();
   D._onboardingDone = true;
-  D.sobriety.addictionType = D.addictionType || 'Other';
+  D.sobriety.addictionType = D.addictionType;
   D.sobriety.startDate = Date.now();
   pg = 'home'; _pageCache = {};
   saveData(); render();
