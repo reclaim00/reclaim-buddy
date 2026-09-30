@@ -655,7 +655,7 @@ function homeHTML() {
   h += pendingFollowUpHTML();
   h += accPendingHTML();
 
-  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline" onclick="showShareCard()" style="width:100%">&#x265B; '+t('Share My Progress')+'</button></div>';
+  h += '<div style="text-align:center;margin:4px 0 8px"><button class="btn btn-sm btn-outline home-share-progress" onclick="showShareCard()" style="width:100%">&#x265B; '+t('Share My Progress')+'</button></div>';
 
 
   return h;
