@@ -1,0 +1,4 @@
+project_id = "odndoykzrjmvonsyhvtx"
+
+[functions.send-partner-notification]
+verify_jwt = false

@@ -591,7 +591,7 @@ function crisisNotifyBuddy() {
   if (!AUTH_EMAIL || !D.buddy || !D.buddy.contact) return;
   var msg = t('I need support right now. Your partner may be in distress. Please reach out.');
   var uid = (firebase && firebase.auth && firebase.auth().currentUser) ? firebase.auth().currentUser.uid : '';
-  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy.contact,partnershipCode:D.buddy.partnershipCode||'',fromUid:uid,fromName:D.name||'You',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(){alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  if (DB) DB.collection('messages').add({from:AUTH_EMAIL,to:D.buddy.contact,partnershipCode:D.buddy.partnershipCode||'',fromUid:uid,fromName:D.name||'You',text:msg,timestamp:firebase.firestore.FieldValue.serverTimestamp()}).then(function(ref){notifyPartnerViaSupabase('message',ref.id);alert(t('your partner has been notified.'));}).catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
 }
 
 var HARD_TIME_PATTERNS = [
@@ -3400,7 +3400,7 @@ function removeBuddy() {
   if (wasPaired && previous.partnershipCode && DB && AUTH_EMAIL) {
     _endingPartnershipCode = previous.partnershipCode;
     DB.collection('pairingCodes').doc(previous.partnershipCode).update({ended:true,endedBy:AUTH_EMAIL,endedAt:firebase.firestore.FieldValue.serverTimestamp()})
-      .then(function(){finish(true)})
+      .then(function(){notifyPartnerViaSupabase('partnership_ended',previous.partnershipCode);finish(true)})
       .catch(function(e){_endingPartnershipCode='';console.warn('Could not end the partner connection:',e);showToast('Could not reach the server. The connection is still active; try again when online.','error')});
   } else finish(false);
 }
@@ -5039,7 +5039,8 @@ function comradeSendMessage() {
   saveDataSilent();
   buddyMergeMessages([m]);
   renderBuddyMsgList();
-  DB.collection('messages').add(Object.assign({}, m, { pending: false })).then(function() {
+  DB.collection('messages').add(Object.assign({}, m, { pending: false })).then(function(ref) {
+    notifyPartnerViaSupabase('message',ref.id);
     m.pending = false;
     renderBuddyMsgList();
     saveDataSilent();

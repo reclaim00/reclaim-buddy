@@ -15,6 +15,20 @@ try { if (firebase) { DB = firebase.firestore(); } } catch(e) { console.warn('Fi
 try { if (firebase) { MESSAGING = firebase.messaging(); } } catch(e) { console.warn('Messaging init failed:', e); }
 // Set your VAPID key below from Firebase Console > Cloud Messaging > Web Push certificates
 var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHOSCA7l4_ZUvy4RMvxDVaUFI84';
+// Supabase is used only as a no-cost server-side push relay. Firebase remains
+// the source of truth for accounts, messages, and notification tokens.
+var SUPABASE_PUSH_URL = 'https://odndoykzrjmvonsyhvtx.supabase.co/functions/v1/send-partner-notification';
+var SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_utL0bmp2n0WxwuumhRNk5Q_2NJ4zu1l';
+function notifyPartnerViaSupabase(kind, documentId) {
+  var user = firebase && firebase.auth && firebase.auth().currentUser;
+  if (!user || !SUPABASE_PUBLISHABLE_KEY || !SUPABASE_PUSH_URL) return Promise.resolve(false);
+  return user.getIdToken().then(function(idToken) {
+    return fetch(SUPABASE_PUSH_URL, {method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+idToken,'apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify({kind:kind,documentId:documentId})});
+  }).then(function(response) {
+    if (!response.ok) throw new Error('Notification relay returned '+response.status);
+    return true;
+  }).catch(function(error) { console.warn('Partner notification was not sent:',error); return false; });
+}
 
 function isNativeApp() {
   return typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform && Capacitor.isNativePlatform();
