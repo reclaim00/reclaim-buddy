@@ -3019,24 +3019,11 @@ function buddyHTML() {
   if (D.buddy.pending && !buddyIsPaired(D.buddy)) {
     return '<h2 class="page-title">Partner request</h2><div class="card partner-local-note"><h3>Waiting for ' + safe(D.buddy.name) + '</h3><p>Your connection request is waiting for them to accept. Messaging and progress sharing stay off until they accept.</p><button class="btn btn-primary" onclick="checkPendingPairing()">Check request status</button><button class="btn btn-outline" onclick="cancelPairingRequest()" style="margin-top:8px">Cancel request</button></div>';
   }
-  if (_buddyView === 'thread' && buddyIsPaired(D.buddy)) return buddyThreadHTML();
-  _buddyView = 'list';
+  if (buddyIsPaired(D.buddy)) return buddyThreadHTML();
   var h = '';
   h += '<h2 class="page-title">'+t('Your Partner')+'</h2>';
-  if (buddyIsPaired(D.buddy)) {
-    h += '<div class="card" style="cursor:pointer;padding:12px" onclick="openBuddyThread()">';
-    h += '<div style="display:flex;align-items:center;gap:10px">';
-    h += '<div class="comrade-avatar" style="width:42px;height:42px;border-radius:50%;font-size:18px">' + D.buddy.name[0].toUpperCase() + '</div>';
-    h += '<div style="flex:1;min-width:0">';
-    h += '<div style="font-weight:700;font-size:15px">' + safe(D.buddy.name) + '</div>';
-    h += '<div style="font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (_lastBuddyMsgPreview || t('No messages yet &#183; tap to start your thread')) + '</div>';
-    h += '</div>';
-    h += '<div style="text-align:right;font-size:11px;color:var(--muted)">' + _lastBuddyMsgTime + '</div>';
-    h += '</div></div>';
-  }
-  h += '<div class="comrade-card"><div class="comrade-avatar">' + D.buddy.name[0].toUpperCase() + '</div><div><div style="font-weight:700;font-size:16px">' + D.buddy.name + '</div><div style="font-size:12px;color:var(--muted)">' + (D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + D.buddy.contact : '') + (D.buddy.language ? ' &middot; ' + D.buddy.language : '') + '</div></div></div>';
-  if (buddyIsPaired(D.buddy)) h += buddyMessagesHTML();
-  else h += '<div class="card partner-local-note"><h3>Local partner profile</h3><p>Use this space to keep your own check-ins and goals. Connect their Re.Claim account with an invite code to message or share progress.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'buddy\')">Connect an account</button><button class="btn btn-outline btn-sm" onclick="checkPairingRequest()" style="margin-left:6px">Check invite requests</button></div>';
+  h += '<div class="comrade-card"><div class="comrade-avatar">' + safe(D.buddy.name[0].toUpperCase()) + '</div><div><div style="font-weight:700;font-size:16px">' + safe(D.buddy.name) + '</div><div style="font-size:12px;color:var(--muted)">' + safe(D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + safe(D.buddy.contact) : '') + (D.buddy.language ? ' &middot; ' + safe(D.buddy.language) : '') + '</div></div></div>';
+  h += '<div class="card partner-local-note"><h3>Local partner profile</h3><p>Use this space to keep your own check-ins and goals. Connect their Re.Claim account with an invite code to message or send quick check-ins.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'buddy\')">Connect an account</button><button class="btn btn-outline btn-sm" onclick="checkPairingRequest()" style="margin-left:6px">Check invite requests</button></div>';
   h += '<div class="stat-grid" style="margin:8px 0">';
   h += '<div class="stat-card"><div class="num">' + buddyStreak() + '</div><div class="label">Buddy Streak</div></div>';
   h += '<div class="stat-card"><div class="num">' + D.buddyCheckins.length + '</div><div class="label">Check-Ins</div></div>';
@@ -3047,7 +3034,7 @@ function buddyHTML() {
   if (checkedInToday) {
     h += '<div class="card" style="background:var(--primary-light);border:2px solid var(--primary)"><div style="display:flex;align-items:center;gap:8px"><div><div style="font-weight:600;font-size:14px">Checked in with ' + safe(D.buddy.name) + '</div><div style="font-size:12px;color:var(--muted)">Great job staying connected!</div></div></div></div>';
   } else {
-    h += '<div class="card"><h3>Check In with ' + safe(D.buddy.name) + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Send a quick check-in to stay connected.</p><button class="btn btn-primary btn-sm" onclick="buddyCheckin()">Send Check-In</button></div>';
+    h += '<div class="card"><h3>Private Check-In</h3><p style="font-size:13px;color:var(--muted);margin-bottom:8px">This check-in is saved to your account. Connect the account for ' + safe(D.buddy.name) + ' to send messages and quick check-ins.</p><button class="btn btn-primary btn-sm" onclick="buddyCheckin()">Log a Check-In</button></div>';
   }
   h += '<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Goals to discuss</h3><button class="btn btn-sm btn-outline" onclick="addGoal()">+ Add</button></div>';
   if (!D.buddyGoals.length) {
@@ -3286,7 +3273,7 @@ function saveBuddy() {
 function buddyCheckin() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Check In with ' + (D.buddy ? D.buddy.name : 'your partner') + '</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did your interaction go?</p><div class="mood-row" id="checkin-moods">';
+  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Private Check-In</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">This stays in your account. How did your interaction with ' + safe(D.buddy ? D.buddy.name : 'your partner') + ' go?</p><div class="mood-row" id="checkin-moods">';
   var labels = ['Tough','Hard','Okay','Good','Great'];
   for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#checkin-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
   h += '</div><textarea id="checkin-note" placeholder="What did you talk about? Any wins?" style="min-height:80px"></textarea><button class="btn btn-primary" onclick="saveBuddyCheckin(this)">Save Check-In</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
@@ -4901,8 +4888,6 @@ function stopBuddyMessaging() {
   _buddyMsgsCache = [];
   _buddyMsgUnread = 0;
   _buddyLastNewAt = 0;
-  _lastBuddyMsgPreview = '';
-  _lastBuddyMsgTime = '';
   var pill = document.getElementById('comrade-unread-pill');
   if (pill) { pill.textContent = ''; pill.style.display = 'none'; }
   var toolsBadge = document.getElementById('tools-badge');
@@ -4936,7 +4921,7 @@ function renderBuddyMsgList() {
   var list = document.getElementById('buddy-messages-list');
   if (!list) return;
   if (!D.buddy || !D.buddy.contact || !_buddyMsgsCache.length) {
-    list.innerHTML = '<div class="empty-state">Send a message to ' + safe(D.buddy ? D.buddy.name : 'your partner') + '!</div>';
+    list.innerHTML = '<div class="comrade-scroll"><div class="buddy-chat-empty">No messages yet. Send a quick check-in to start the conversation.</div></div>';
     return;
   }
   var buddyName = D.buddy ? D.buddy.name : 'Partner';
@@ -4959,7 +4944,7 @@ function renderBuddyMsgList() {
   }
 }
 
-function updateBuddyMsgBadges() { try { buddyMsgListCachePreview(); if (_buddyView === 'list' && typeof render === 'function') { var c = document.getElementById('buddy-list-preview-cell'); if (c && pg === 'buddy') render(); } } catch(e){}
+function updateBuddyMsgBadges() {
   var pill = document.getElementById('comrade-unread-pill');
   if (pill) {
     pill.textContent = _buddyMsgUnread > 0 ? (_buddyMsgUnread + ' new') : '';
@@ -5047,10 +5032,16 @@ function startBuddyMessaging() {
 function comradeSendMessage() {
   var input = document.getElementById('comrade-msg-input');
   if (!input || !input.value.trim()) return;
-  if (!buddyIsPaired(D.buddy)) { showToast('Connect a partner with an invite code before messaging.', 'warning'); return; }
-  if (!DB || !AUTH_EMAIL) { showToast('Sign in and connect to the internet to send messages.', 'error'); return; }
-  var msg = input.value.trim();
-  input.value = '';
+  sendBuddyMessage(input.value, input);
+}
+
+function sendBuddyMessage(text, input, onSent) {
+  var msg = String(text || '').trim();
+  if (!msg) return;
+  var targetInput = input || document.getElementById('comrade-msg-input');
+  if (!buddyIsPaired(D.buddy)) { showToast('Connect a partner with an invite code before messaging.', 'warning'); if (targetInput && !targetInput.value) targetInput.value = msg; return; }
+  if (!DB || !AUTH_EMAIL) { showToast('Reconnect to send this message. It is saved in the message box.', 'error'); if (targetInput && !targetInput.value) targetInput.value = msg; return; }
+  if (input) input.value = '';
   var now = new Date();
   var user = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser;
   var m = {
@@ -5066,11 +5057,12 @@ function comradeSendMessage() {
   saveDataSilent();
   buddyMergeMessages([m]);
   renderBuddyMsgList();
-  DB.collection('messages').add(Object.assign({}, m, { pending: false })).then(function(ref) {
+  return DB.collection('messages').add(Object.assign({}, m, { pending: false })).then(function(ref) {
     m.pending = false;
     renderBuddyMsgList();
     saveDataSilent();
     return notifyPartnerViaSupabase('message',ref.id).then(function(notified) {
+      if (typeof onSent === 'function') onSent();
       showToast(notified ? 'Message sent and partner alerted.' : 'Message sent. Your partner may see it when they open the app.', notified ? 'success' : 'info');
     });
   }).catch(function(e) {
@@ -5081,52 +5073,56 @@ function comradeSendMessage() {
     renderBuddyMsgList();
     saveDataSilent();
     showToast('Message not delivered. Your text is back in the message box.', 'error');
+    return false;
   });
 }
 
-var _buddyView = 'list';   // iMessage skin: 'list' | 'thread'
-var _lastBuddyMsgPreview = '';   // last-message one-liner for the list cell
-var _lastBuddyMsgTime = '';     // time of that last message
+function quickBuddyCheckin(kind) {
+  var options = {
+    okay: 'Quick check-in: I’m doing okay today. How are you doing?',
+    tough: 'Quick check-in: I’m having a tough moment. Could we talk when you have a chance?',
+    thinking: 'Quick check-in: I’m thinking of you. How are things going today?'
+  };
+  var text = options[kind];
+  if (!text) return;
+  sendBuddyMessage(text, null, function(){
+    var now = new Date();
+    D.buddyCheckins = D.buddyCheckins || [];
+    D.buddyCheckins.push({date:now.toDateString(),time:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),note:'Quick check-in message sent',rating:0});
+    saveData();
+  });
+}
 
 function buddyThreadHTML() {
-  var h = '<div class="thread-wrap">';
-  h += '<div class="thread-header" style="display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:8px">';
-  h += '<button class="btn btn-sm btn-outline" onclick="buddyBackToList()" style="width:auto;padding:4px 10px">&#8249;&#8249; ' + t('List') + '</button>';
-  h += '<div class="comrade-avatar" style="width:34px;height:34px;border-radius:50%;font-size:14px">' + D.buddy.name[0].toUpperCase() + '</div>';
-  h += '<div><div style="font-weight:700;font-size:14px">' + safe(D.buddy.name) + '</div><div style="font-size:10px;color:var(--muted)">' + (D.buddy.relationship || 'Accountability Partner') + '</div></div>';
+  var buddyName = safe(D.buddy.name || 'Your Partner');
+  var first = safe((D.buddy.name || 'P').charAt(0).toUpperCase());
+  var h = '<h2 class="page-title">Your Partner</h2><div class="buddy-chat-shell">';
+  h += '<div class="thread-header">';
+  h += '<div class="comrade-avatar buddy-thread-avatar">' + first + '</div>';
+  h += '<div class="buddy-thread-identity"><div class="buddy-thread-name">' + buddyName + '</div><div class="buddy-thread-status"><span class="buddy-link-check" aria-hidden="true">&#10003;</span>Connected on Re.Claim</div></div>';
+  h += '<span id="comrade-unread-pill" class="comrade-unread-pill" style="display:none"></span>';
+  h += '</div>';
+  h += '<div class="buddy-quick-label">Quick check-in</div><div class="buddy-quick-actions">';
+  h += '<button type="button" class="buddy-quick-btn" onclick="quickBuddyCheckin(\'okay\')">I’m doing okay</button>';
+  h += '<button type="button" class="buddy-quick-btn" onclick="quickBuddyCheckin(\'tough\')">Having a tough moment</button>';
+  h += '<button type="button" class="buddy-quick-btn" onclick="quickBuddyCheckin(\'thinking\')">Thinking of you</button>';
   h += '</div>';
   h += buddyMessagesHTML();
+  h += '<details class="buddy-thread-details" ontoggle="if(this.open)fetchBuddyProgress()"><summary>Partner and sharing settings</summary>';
+  h += '<p class="partner-field-note">You choose whether to share progress totals: recovery days, check-in streak, journal-entry count, mood-log count, and habit-log count. Journal text, mood details, addiction type, and private notes stay private. Messages and quick check-ins remain separate.</p>';
+  h += '<button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button>';
+  h += '<button class="btn btn-outline btn-sm" id="withdraw-progress-btn" onclick="withdrawProgressFromBuddy()" style="margin-top:6px">Stop Sharing</button>';
+  h += '<div id="share-progress-status" class="partner-status" role="status" aria-live="polite"></div>';
+  h += '<div class="card" style="margin-top:10px"><h3>Shared progress from ' + buddyName + '</h3><p class="partner-field-note">Only totals they chose to share appear here. Journal text, mood details, and private notes stay private.</p><div id="comrade-progress"><div class="empty-state">Loading shared totals…</div></div></div>';
+  h += '<div class="buddy-settings-actions"><button class="btn btn-outline btn-sm" onclick="editBuddy()">Edit partner</button><button class="btn btn-danger btn-sm" onclick="removeBuddy()">End connection</button></div>';
+  h += '</details>';
   h += '</div>';
+  setTimeout(fetchBuddyProgress, 400);
   return h;
 }
-function openBuddyThread() {
-  _buddyView = 'thread';
-  render();
-}
-function buddyBackToList() {
-  _buddyView = 'list';
-  render();
-}
-function buddyMsgListCachePreview() {
-  if (!_buddyMsgsCache || !_buddyMsgsCache.length) { _lastBuddyMsgPreview = ''; _lastBuddyMsgTime = ''; return; }
-  var last = _buddyMsgsCache[_buddyMsgsCache.length - 1];
-  var buddyName = D.buddy ? D.buddy.name : '';
-  var prefix = (last && last.from === AUTH_EMAIL) ? 'You : ' : (buddyName ? safe(buddyName) + ': ' : '');
-  _lastBuddyMsgPreview = prefix + (last && last.text ? last.text : '');
-  _lastBuddyMsgTime = (last && last.time) ? last.time : '';
-}
-
-/**
- * buddyMessagesHTML is declared a few lines earlier; this re-skin keeps its
- * id contract (comrade-msg-input / buddy-messages-list / comrade-unread-pill)
- * so Firestore messaging + unread badges + auto-scroll all keep working.
- */
-function _iMsgReskinNote() {}
-
 function buddyMessagesHTML() {
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128172;</div><h3 style="margin:0">Messages</h3><span id="comrade-unread-pill" class="comrade-unread-pill" style="display:none"></span></div>';
-  h += '<div id="buddy-messages-list"><div class="empty-state">Loading messages...</div></div>';
-  h += '<div style="display:flex;gap:6px"><input type="text" id="comrade-msg-input" placeholder="Write a message..." style="flex:1;margin:0"><button class="btn btn-sm btn-primary" onclick="comradeSendMessage()" style="width:auto">Send</button></div></div>';
+  var h = '<div id="buddy-messages-list" class="buddy-messages-list" aria-live="polite"><div class="empty-state">Loading messages…</div></div>';
+  h += '<div class="buddy-composer"><textarea id="comrade-msg-input" rows="1" maxlength="1000" aria-label="Write a message" placeholder="Message ' + safe(D.buddy.name) + '…" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();comradeSendMessage()}"></textarea><button class="buddy-send-btn" type="button" onclick="comradeSendMessage()" aria-label="Send message">Send</button></div>';
   startBuddyMessaging();
   setTimeout(function() {
     renderBuddyMsgList();
