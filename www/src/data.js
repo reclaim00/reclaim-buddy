@@ -276,6 +276,7 @@ function onAuthReady(email, isNew) {
   AUTH_USER = email; AUTH_EMAIL = email;
   localStorage.setItem('rc_user', email); localStorage.setItem('rc_email', email);
   D = loadData();
+  if (typeof removeLegacyProgressFields === 'function') removeLegacyProgressFields();
   try { D.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch(e) { D.timeZone = 'UTC'; }
   document.body.classList.add('logged-in');
   if (isNew) { D.joinDate = Date.now(); saveData(); }

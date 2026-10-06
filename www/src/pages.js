@@ -3093,14 +3093,13 @@ function buddyHTML() {
   h += '</div>';
   // Progress sharing
   if (buddyIsPaired(D.buddy)) {
-    h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Nothing is shared until you choose. This shares your sober-day count and activity totals, never journal text or private notes.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button><div id="share-progress-status" class="partner-status" role="status" aria-live="polite"></div></div>';
+    h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128200;</div><h3 style="margin:0">Share Your Progress</h3></div><p style="font-size:13px;color:var(--muted);margin-bottom:8px">Nothing is shared until you choose. Sharing includes your recovery-day count, check-in streak, and counts of journal entries, mood logs, and habit logs. Journal text, mood details, addiction type, and private notes stay private. Once shared, your partner can see these totals until you stop sharing.</p><button class="btn btn-primary btn-sm" id="share-progress-btn" onclick="shareProgressWithBuddy()">Share My Progress</button><button class="btn btn-outline btn-sm" id="withdraw-progress-btn" onclick="withdrawProgressFromBuddy()" style="margin-top:6px">Stop Sharing</button><div id="share-progress-status" class="partner-status" role="status" aria-live="polite"></div></div>';
     h += '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#128170;</div><h3 style="margin:0">' + safe(D.buddy.name) + '\'s Progress</h3></div><div id="comrade-progress"><div class="empty-state">Progress appears here after your partner chooses to share it.</div></div></div>';
   }
-  // Streak competition
+  // Streak comparison uses the partner's opt-in shared progress snapshot.
   h += buddyCompetitionHTML();
-  // Shared challenges
-  h += buddyChallengesHTML();
-  // Competitions
+  // Goals remain in the private account until a future shared-goals feature exists.
+  // Personal challenge tracking is labeled clearly and does not imply partner sync.
   h += competitionsHTML();
   h += '<div style="display:flex;gap:8px;margin:8px 0">';
   h += '<button class="btn btn-outline btn-sm" onclick="editBuddy()" style="flex:1">Edit Partner</button>';
@@ -3134,108 +3133,76 @@ function buddyStreak() {
 }
 
 function buddyCompetitionHTML() {
+  if (!buddyIsPaired(D.buddy)) return '';
   var myStreak = buddyStreak();
-  var h = '<div class="card" id="comrade-competition"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#127942;</div><h3 style="margin:0">Streak Challenge</h3></div><div id="comrade-competition-content"><div class="empty-state">Loading competition data...</div></div></div>';
-  // Fetch buddy's progress for comparison
+  var h = '<div class="card" id="comrade-competition"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#129309;</div><h3 style="margin:0">Partner Check-In Streaks</h3></div><p style="font-size:12px;color:var(--muted);margin-bottom:8px">A shared check-in rhythm, side by side. There is no score to beat.</p><div id="comrade-competition-content"><div class="empty-state">Loading shared check-in streak…</div></div></div>';
+  // Only compare a check-in streak the partner has explicitly shared.
   setTimeout(function(){
     var buddyEmail = D.buddy ? D.buddy.contact : '';
-    if (!buddyEmail) { var el = document.getElementById('buddy-competition-content'); if (el) el.innerHTML = '<div class="empty-state">No partner contact found.</div>'; return; }
+    var el = document.getElementById('comrade-competition-content');
+    if (!el) return;
+    if (!buddyEmail || !DB || !AUTH_EMAIL) { el.innerHTML = '<div class="empty-state">Reconnect to load your partner’s shared streak.</div>'; return; }
     DB.collection('progress').doc(buddyEmail).get().then(function(doc){
       var p = doc.exists ? doc.data() : null;
-      var buddyStreakData = p ? p.streak : 0;
-      var el = document.getElementById('buddy-competition-content');
+      var el = document.getElementById('comrade-competition-content');
       if (!el) return;
-      var myName = D.name || 'You';
-      var buddyName = D.buddy ? D.buddy.name : 'Buddy';
-      var winner = myStreak > buddyStreakData ? myName : (buddyStreakData > myStreak ? buddyName : 'Tie');
-      var myPct = Math.min(100, (myStreak / Math.max(myStreak, buddyStreakData, 1)) * 100);
-      var budPct = Math.min(100, (buddyStreakData / Math.max(myStreak, buddyStreakData, 1)) * 100);
-      var emoji = winner === myName ? '&#127942;' : (winner === buddyName ? '&#128079;' : '&#129309;');
-      el.innerHTML = '<div style="text-align:center;margin-bottom:8px"><span style="font-size:28px">' + emoji + '</span><div style="font-weight:700;font-size:16px;color:var(--primary)">' + (winner === 'Tie' ? 'You\'re tied!' : winner + ' is winning!') + '</div></div><div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>' + myName + '</span><span style="font-weight:700">' + myStreak + ' days</span></div><div class="progress-bar"><div class="fill" style="width:' + myPct + '%"></div></div></div><div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>' + buddyName + '</span><span style="font-weight:700">' + buddyStreakData + ' days</span></div><div class="progress-bar"><div class="fill" style="width:' + budPct + '%;background:var(--accent)"></div></div></div><div style="text-align:center;font-size:11px;color:var(--muted);margin-top:4px">Keep checking in to stay ahead!</div>';
+      var hasSharedStreak = p && p.partnershipCode === D.buddy.partnershipCode && Array.isArray(p.participants) && p.participants.indexOf(AUTH_EMAIL) !== -1 && typeof p.checkinStreak === 'number';
+      if (!hasSharedStreak) { el.innerHTML = '<div class="empty-state">Your partner has not shared a check-in streak yet. You can invite them to share when they are ready.</div>'; return; }
+      var buddyStreakData = Math.max(0, Math.floor(p.checkinStreak));
+      var scale = Math.max(myStreak, buddyStreakData, 1);
+      var myPct = Math.min(100, (myStreak / scale) * 100);
+      var budPct = Math.min(100, (buddyStreakData / scale) * 100);
+      var myName = safe(D.name || 'You');
+      var buddyName = safe(D.buddy ? D.buddy.name : 'Partner');
+      el.innerHTML = '<div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>' + myName + '</span><span style="font-weight:700">' + myStreak + ' days</span></div><div class="progress-bar"><div class="fill" style="width:' + myPct + '%"></div></div></div><div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span>' + buddyName + '</span><span style="font-weight:700">' + buddyStreakData + ' days</span></div><div class="progress-bar"><div class="fill" style="width:' + budPct + '%;background:var(--accent)"></div></div></div>';
     }).catch(function(){
-      var el = document.getElementById('buddy-competition-content');
-      if (el) el.innerHTML = '<div class="empty-state">Share progress to start the challenge!</div>';
+      var el = document.getElementById('comrade-competition-content');
+      if (el) el.innerHTML = '<div class="empty-state">Could not load the shared streak. Check your connection and try again.</div>';
     });
   }, 600);
   return h;
-}
-
-// ====== BUDDY CHALLENGES ======
-function buddyChallengesHTML() {
-  var challenges = D.buddyGoals || [];
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#127919;</div><h3 style="margin:0">Shared Challenges</h3></div>';
-  if (!challenges.length) {
-    h += '<div class="empty-state">No challenges yet. Create one to compete with ' + (D.buddy ? D.buddy.name : 'your partner') + '!</div>';
-    h += '<button class="btn btn-outline btn-sm" onclick="newChallenge()">+ New Challenge</button></div>';
-    return h;
-  }
-  var completed = challenges.filter(function(g){return g.completed}).length;
-  h += '<p style="font-size:12px;color:var(--muted);margin-bottom:6px">' + completed + '/' + challenges.length + ' completed</p>';
-  for (var i=0;i<challenges.length;i++) {
-    var done = challenges[i].completed ? 'line-through;color:var(--muted)' : '';
-    h += '<div class="goal-item" style="text-decoration:' + done + ';cursor:pointer;padding:8px 6px" onclick="toggleGoal(' + i + ');render()"><span style="flex:1;font-size:13px">' + challenges[i].title + '</span><span style="font-size:11px;color:var(--muted)">' + (challenges[i].completed ? '&#10003;' : '&#9711;') + '</span></div>';
-  }
-  h += '<button class="btn btn-outline btn-sm" onclick="newChallenge()" style="margin-top:6px">+ New Challenge</button></div>';
-  return h;
-}
-
-function newChallenge() {
-  var title = prompt(t('Challenge title (e.g. "7-day check-in streak"):'));
-  if (!title || !title.trim()) return;
-  D.buddyGoals.push({ id: Date.now(), title: title.trim(), description: '', completed: false, dateCreated: new Date().toDateString() });
-  saveData();
-  render();
 }
 
 // ====== COMPETITIONS ======
 function competitionsHTML() {
   var comps = D.competitions || [];
   if (!comps.length) return '';
-  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#9876;&#65039;</div><h3 style="margin:0">Active Competitions</h3></div>';
+  var h = '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="font-size:18px">&#127919;</div><h3 style="margin:0">Personal Challenge Tracker</h3></div><p style="font-size:12px;color:var(--muted);margin-bottom:8px">Your challenge progress is saved to your account and is not sent to your partner.</p>';
   var now = Date.now();
   var active = comps.filter(function(c){ return c.status === 'active' && c.endDate > now; });
   if (!active.length) {
-    h += '<div class="empty-state">No active competitions. Start one with your partner!</div>';
-    h += '<button class="btn btn-outline btn-sm" onclick="createCompetition()">+ New Competition</button></div>';
+    h += '<div class="empty-state">No active personal challenges.</div>';
+    h += '<button class="btn btn-outline btn-sm" onclick="createCompetition()">+ Add a Challenge</button></div>';
     return h;
   }
   for (var i=0;i<active.length;i++) {
     var c = active[i];
-    var me = c.participants && c.participants[0] ? c.participants[0] : {name:'You',progress:0};
-    var them = c.participants && c.participants[1] ? c.participants[1] : {name:'Buddy',progress:0};
-    var total = Math.max(me.progress, them.progress, 1);
-    var myPct = Math.min(100, (me.progress / total) * 100);
-    var theirPct = Math.min(100, (them.progress / total) * 100);
-    var leader = me.progress > them.progress ? me.name : (them.progress > me.progress ? them.name : 'Tied');
+    var me = c.participants && c.participants.filter(function(p){return p && p.email === AUTH_EMAIL})[0] ? c.participants.filter(function(p){return p && p.email === AUTH_EMAIL})[0] : {name:'You',progress:0};
     var daysLeft = Math.max(0, Math.ceil((c.endDate - now) / 86400000));
     h += '<div style="border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:8px">';
     h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><strong style="font-size:13px">' + safe(c.title) + '</strong><span style="font-size:11px;color:var(--muted)">' + daysLeft + 'd left</span></div>';
-    h += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px">' + leader + ' is winning</div>';
-    h += '<div style="margin:4px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span>' + safe(me.name) + '</span><span>' + me.progress + '</span></div><div class="progress-bar"><div class="fill" style="width:' + myPct + '%"></div></div></div>';
-    h += '<div style="margin:4px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px"><span>' + safe(them.name) + '</span><span>' + them.progress + '</span></div><div class="progress-bar"><div class="fill" style="width:' + theirPct + '%;background:var(--accent)"></div></div></div>';
-    h += '<button class="btn btn-sm btn-outline" onclick="addCompetitionProgress(' + i + ')" style="margin-top:4px;font-size:10px">+ Update Progress</button>';
+    h += '<div style="font-size:11px;color:var(--muted);margin-bottom:6px">' + safe(me.name || 'You') + ' · ' + Math.max(0, Math.floor(Number(me.progress) || 0)) + ' steps logged</div>';
+    h += '<button class="btn btn-sm btn-outline" onclick="addCompetitionProgress(' + i + ')" style="margin-top:4px;font-size:10px">+ Log a Step</button>';
     h += '</div>';
   }
-  h += '<button class="btn btn-outline btn-sm" onclick="createCompetition()">+ New Competition</button></div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="createCompetition()">+ Add a Challenge</button></div>';
   return h;
 }
 
 function createCompetition() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var buddyName = D.buddy ? D.buddy.name : 'your partner';
   var types = [
-    {id:'streak', label:'Check-in Streak', desc:'Who keeps the longest streak'},
-    {id:'journal', label:'Journal Entries', desc:'Who writes more entries'},
-    {id:'checkin', label:'Buddy Check-ins', desc:'Who checks in more'},
+    {id:'streak', label:'Check-In Consistency', desc:'Track the days you check in'},
+    {id:'journal', label:'Journal Consistency', desc:'Track your writing sessions'},
+    {id:'checkin', label:'Support Check-Ins', desc:'Track check-ins with people you trust'},
     {id:'custom', label:'Custom Challenge', desc:'Set your own rules'}
   ];
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px"><h3 style="margin-bottom:4px">Start a Competition</h3><p style="font-size:12px;color:var(--muted);margin-bottom:10px">Compete with ' + safe(buddyName) + ' to stay motivated</p><div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Challenge Type</label>' +
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:380px"><h3 style="margin-bottom:4px">Add a Personal Challenge</h3><p style="font-size:12px;color:var(--muted);margin-bottom:10px">Track a goal at your own pace. Progress stays in your account.</p><div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Challenge Type</label>' +
     types.map(function(t,i){ return '<div class="goal-item" onclick="selectCompType('+i+')" id="comp-type-'+i+'" style="cursor:pointer;padding:8px 10px;margin-bottom:4px;border:2px solid var(--border);border-radius:8px"><strong style="font-size:13px">' + t.label + '</strong><div style="font-size:11px;color:var(--muted)">' + t.desc + '</div></div>'; }).join('') +
     '</div><div style="margin-bottom:10px"><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Duration (days)</label><select id="comp-duration" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--text)"><option value="7">7 days</option><option value="14">14 days</option><option value="21">21 days</option><option value="30" selected>30 days</option><option value="60">60 days</option></select></div>' +
-    '<div style="display:flex;gap:6px;margin-top:4px"><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary" onclick="finalizeCompetition()">&#9876;&#65039; Start Competition!</button></div></div>';
+    '<div style="display:flex;gap:6px;margin-top:4px"><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()">Cancel</button><button class="btn btn-primary" onclick="finalizeCompetition()">Start Tracking</button></div></div>';
   document.body.appendChild(overlay);
-  window._compBuddyName = buddyName;
 }
 
 function finalizeCompetition() {
@@ -3246,17 +3213,16 @@ function finalizeCompetition() {
   var type = types[idx];
   var labels = ['Check-in Streak','Journal Entries','Buddy Check-ins','Custom Challenge'];
   var duration = parseInt(document.getElementById('comp-duration').value);
-  var title = type === 'custom' ? prompt('Name your challenge:') : labels[idx] + ' Battle';
+  var title = type === 'custom' ? prompt('Name your challenge:') : labels[idx] + ' Goal';
   if (!title || !title.trim()) return;
   if (!D.competitions) D.competitions = [];
-  var buddyEmail = D.buddy ? (D.buddy.contact || 'buddy@unknown') : 'buddy@unknown';
   D.competitions.push({
     id: Date.now(),
     type: type,
     title: title.trim(),
     startDate: Date.now(),
     endDate: Date.now() + duration * 86400000,
-    participants: [{email: AUTH_EMAIL, name: D.name || 'You', progress: 0}, {email: buddyEmail, name: D.buddy ? D.buddy.name : 'Buddy', progress: 0}],
+    participants: [{email: AUTH_EMAIL, name: D.name || 'You', progress: 0}],
     status: 'active'
   });
   saveData();
@@ -3271,10 +3237,14 @@ window.selectCompType = function(idx) {
 window.addCompetitionProgress = function(idx) {
   var comps = D.competitions || [];
   if (!comps[idx]) return;
-  var me = comps[idx].participants[0];
-  if (me.email !== AUTH_EMAIL) { me = comps[idx].participants[1]; }
+  if (!Array.isArray(comps[idx].participants)) comps[idx].participants = [];
+  var me = comps[idx].participants.filter(function(p){return p && p.email === AUTH_EMAIL})[0];
+  if (!me) {
+    me = {email:AUTH_EMAIL, name:D.name || 'You', progress:0};
+    comps[idx].participants.push(me);
+  }
   if (!me) return;
-  me.progress = (me.progress || 0) + 1;
+  me.progress = Math.max(0, Math.floor(Number(me.progress) || 0)) + 1;
   saveData();
   render();
 };
@@ -3414,16 +3384,28 @@ function removeBuddy() {
 function progressSnapshot() {
   return {
     soberDays: soberDays(),
+    checkinStreak: buddyStreak(),
     journalCount: D.journal.length,
     moodCount: D.moods.length,
-    habitsDone: D.habits.filter(function(h){return h.logs && h.logs.length}).length,
-    addictionType: D.sobriety.addictionType || '',
+    habitsDone: D.habits.reduce(function(total,h){return total + (Array.isArray(h.logs) ? h.logs.length : 0)},0),
     updated: new Date().toLocaleDateString()
   };
 }
 
+function removeLegacyProgressFields() {
+  if (!AUTH_EMAIL || !DB || typeof firebase === 'undefined' || !firebase.firestore || !firebase.firestore.FieldValue) return;
+  var ref = DB.collection('progress').doc(AUTH_EMAIL);
+  ref.get().then(function(doc){
+    var shared = doc.exists ? doc.data() : null;
+    if (shared && Object.prototype.hasOwnProperty.call(shared, 'addictionType')) {
+      return ref.update({addictionType:firebase.firestore.FieldValue.delete()});
+    }
+  }).catch(function(e){ console.warn('Could not remove an old progress field:', e); });
+}
+
 function shareProgressWithBuddy(quiet) {
   if (!buddyIsPaired(D.buddy)) { showToast('Connect your partner with an invite code before sharing progress.', 'warning'); return; }
+  if (!D.buddy.partnershipCode) { showToast('Reconnect with a fresh invite code before sharing progress.', 'warning'); return; }
   if (!DB || !AUTH_EMAIL) { showToast('Sign in and reconnect to the internet before sharing.', 'warning'); return; }
   var btn = document.getElementById('share-progress-btn');
   var status = document.getElementById('share-progress-status');
@@ -3445,6 +3427,24 @@ function shareProgressWithBuddy(quiet) {
   });
 }
 
+function withdrawProgressFromBuddy() {
+  if (!buddyIsPaired(D.buddy)) { showToast('Connect a partner before changing shared progress.', 'warning'); return; }
+  if (!DB || !AUTH_EMAIL) { showToast('Reconnect to the internet to remove shared progress.', 'warning'); return; }
+  var btn = document.getElementById('withdraw-progress-btn');
+  var status = document.getElementById('share-progress-status');
+  if (btn) { btn.disabled = true; btn.textContent = 'Removing…'; }
+  if (status) status.textContent = 'Removing your shared totals…';
+  DB.collection('progress').doc(AUTH_EMAIL).delete().then(function(){
+    if (btn) { btn.disabled = false; btn.textContent = 'Stop Sharing'; }
+    if (status) status.textContent = 'Your shared totals were removed. Your partner connection and messages remain active.';
+    showToast('Shared progress removed. You can share again whenever you choose.', 'success');
+  }).catch(function(){
+    if (btn) { btn.disabled = false; btn.textContent = 'Stop Sharing'; }
+    if (status) status.textContent = 'Could not remove your shared totals. Check your connection and try again.';
+    showToast('Could not remove shared progress. Try again when you are online.', 'error');
+  });
+}
+
 function fetchBuddyProgress() {
   if (!buddyIsPaired(D.buddy) || !DB) return;
   var buddyEmail = D.buddy ? D.buddy.contact : '';
@@ -3457,7 +3457,11 @@ function fetchBuddyProgress() {
       el.innerHTML = '<div class="empty-state">' + (D.buddy ? D.buddy.name : 'Buddy') + ' has not shared progress yet. Encourage them to use the Share Progress button!</div>';
       return;
     }
-    el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-align:center">Last updated: ' + safe(p.updated) + '</div><div class="stat-grid"><div class="stat-card"><div class="num">' + (p.soberDays||0) + '</div><div class="label">Sober Days</div></div><div class="stat-card"><div class="num">' + (p.streak||0) + '</div><div class="label">Day Streak</div></div><div class="stat-card"><div class="num">' + (p.journalCount||0) + '</div><div class="label">Journal</div></div><div class="stat-card"><div class="num">' + (p.moodCount||0) + '</div><div class="label">Moods</div></div><div class="stat-card"><div class="num">' + (p.checkins||0) + '</div><div class="label">Check-Ins</div></div></div>' + (p.addictionType ? '<div style="text-align:center;font-size:12px;color:var(--muted);margin-top:4px">Working on: ' + safe(p.addictionType) + '</div>' : '');
+    if (p.partnershipCode !== D.buddy.partnershipCode || !Array.isArray(p.participants) || p.participants.indexOf(AUTH_EMAIL) === -1) {
+      el.innerHTML = '<div class="empty-state">There is no progress share for this partner connection.</div>';
+      return;
+    }
+    el.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:6px;text-align:center">Last updated: ' + safe(p.updated || '') + '</div><div class="stat-grid"><div class="stat-card"><div class="num">' + safe(String(Number.isFinite(Number(p.soberDays)) ? Math.max(0, Math.floor(Number(p.soberDays))) : 0)) + '</div><div class="label">Recovery Days</div></div><div class="stat-card"><div class="num">' + safe(String(Number.isFinite(Number(p.checkinStreak)) ? Math.max(0, Math.floor(Number(p.checkinStreak))) : 0)) + '</div><div class="label">Check-In Streak</div></div><div class="stat-card"><div class="num">' + safe(String(Number.isFinite(Number(p.journalCount)) ? Math.max(0, Math.floor(Number(p.journalCount))) : 0)) + '</div><div class="label">Journal Entries</div></div><div class="stat-card"><div class="num">' + safe(String(Number.isFinite(Number(p.moodCount)) ? Math.max(0, Math.floor(Number(p.moodCount))) : 0)) + '</div><div class="label">Mood Logs</div></div><div class="stat-card"><div class="num">' + safe(String(Number.isFinite(Number(p.habitsDone)) ? Math.max(0, Math.floor(Number(p.habitsDone))) : 0)) + '</div><div class="label">Habit Logs</div></div></div>';
   }).catch(function(){
     var el = document.getElementById('comrade-progress');
     if (el) el.innerHTML = '<div class="empty-state">Could not load progress. Check internet connection.</div>';
