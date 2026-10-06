@@ -1551,8 +1551,8 @@ function render() {
     doRender();
   } else {
     app.style.opacity = '0';
-    app.style.transform = 'translateY(14px) scale(.992)';
-    app._renderTO = setTimeout(doRender, 150);
+    app.style.transform = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'none' : 'translateY(7px) scale(.997)';
+    app._renderTO = setTimeout(doRender, window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 95);
   }
 }
 

@@ -719,6 +719,59 @@ textarea{line-height:1.55}
 @media(max-width:380px){.app{padding-left:14px;padding-right:14px}.card{padding:15px}.page-title{font-size:19px}.tab{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.card,.btn,.tab,.kingdom-scene{transition:none!important}}
 
+/* ===== RE.CLAIM PRODUCT FINISH =====
+   Shared surface, focus, and responsive rules for the whole app. */
+:root{
+  --surface-raised:color-mix(in srgb,var(--card) 94%,transparent);
+  --surface-soft:color-mix(in srgb,var(--primary-light) 38%,var(--card));
+  --shadow-card:0 1px 2px rgba(15,23,42,.025),0 8px 24px rgba(15,23,42,.055);
+  --shadow-hover:0 14px 34px rgba(15,23,42,.105);
+}
+body.dark{--surface-raised:rgba(18,26,43,.94);--surface-soft:color-mix(in srgb,var(--primary-light) 55%,var(--card))}
+#landscape-bg::before{opacity:.27}
+body.dark #landscape-bg::before{opacity:.44}
+.top-bar{position:sticky;top:0;max-width:1040px;padding:12px 22px calc(8px + env(safe-area-inset-top,0px));z-index:101;isolation:isolate}
+.top-bar::before{content:"";position:absolute;inset:0 0 -4px;background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 90%,transparent),color-mix(in srgb,var(--bg) 78%,transparent));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:-1;pointer-events:none}
+.top-bar .logo-text{text-shadow:none;letter-spacing:-.7px}
+.app{max-width:720px;padding:8px 20px calc(132px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--bg) 52%,transparent)}
+body.dark .app{background:color-mix(in srgb,var(--bg) 48%,transparent)}
+.page-title{margin:10px 0 18px;text-align:left;padding:4px 2px 12px;border:0;border-radius:0;background:transparent;box-shadow:0 1px 0 color-mix(in srgb,var(--border) 72%,transparent);font-size:24px;letter-spacing:-.65px;line-height:1.2;color:var(--text)}
+body.dark .page-title{background:transparent;color:var(--text)}
+.card{border-radius:20px;background:var(--surface-raised);border:1px solid color-mix(in srgb,var(--border) 82%,transparent);box-shadow:var(--shadow-card);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.card::before{opacity:.11}
+body.dark .card{border-color:color-mix(in srgb,var(--border) 86%,transparent)}
+.card h3{color:var(--text)}
+.btn{font-weight:650;letter-spacing:.005em}
+.btn:focus-visible,.tab:focus-visible,.top-bar button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 46%,white);outline-offset:2px}
+.tabs{padding:8px 8px calc(14px + env(safe-area-inset-bottom,0px));border:1px solid color-mix(in srgb,var(--border) 82%,transparent);border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(15,23,42,.075)}
+.tab{min-height:52px;border-radius:14px}
+.tab.active{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--primary) 13%,transparent)}
+.kingdom-scene{border-radius:20px;box-shadow:0 16px 36px rgba(3,7,18,.2),0 0 0 1px rgba(255,255,255,.08)}
+.home-share-progress{scroll-margin-block-end:calc(160px + env(safe-area-inset-bottom,0px))}
+.app:not(.suppress-anim) .card{animation:productCardIn .34s cubic-bezier(.2,.75,.25,1) both}
+.app:not(.suppress-anim) .card:nth-of-type(2){animation-delay:35ms}
+.app:not(.suppress-anim) .card:nth-of-type(3){animation-delay:65ms}
+.app{transition:opacity .16s ease,transform .24s cubic-bezier(.2,.75,.25,1)}
+@keyframes productCardIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media(min-width:760px){
+  body{padding-bottom:0}
+  .top-bar{max-width:none;width:min(820px,calc(100vw - 320px));margin:0 0 0 max(276px,calc((100vw - 1072px)/2 + 252px));padding:16px 28px 12px}
+  .app{width:min(calc(100% - 320px),820px);max-width:820px;margin:0 0 0 max(276px,calc((100vw - 1072px)/2 + 252px));padding:12px 28px 48px;min-height:calc(100dvh - 72px)}
+  .tabs{position:fixed;top:84px;bottom:24px;left:max(24px,calc((100vw - 1072px)/2));transform:none;width:208px;max-width:none;height:max-content;display:flex;flex-direction:column;gap:6px;padding:14px 12px;border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow-card)}
+  .tab{flex:none;min-height:48px;width:100%;flex-direction:row;justify-content:flex-start;gap:12px;margin:0;padding:10px 12px;font-size:13px}
+  .tab svg{width:20px;height:20px;flex:none}
+  .tab-label{font-size:13px}
+  .tab.active{background:var(--primary-light);color:var(--primary);box-shadow:none}
+  body.dark .tabs{background:rgba(18,26,43,.94)}
+  .home-action-grid{gap:14px}
+}
+@media(max-width:759px){.top-bar{max-width:520px}.app{max-width:520px}}
+@media(max-width:380px){.top-bar{padding-left:14px;padding-right:14px}.app{padding-left:14px;padding-right:14px}.page-title{font-size:21px}}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .app,.app *,.top-bar,.tabs,.tab,.card,.btn{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
 /* A calm, compact home dashboard and clear first-run setup affordances. */
 .home-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
 .home-action{appearance:none;min-width:0;min-height:104px;display:grid;grid-template-columns:30px minmax(0,1fr);grid-template-rows:auto auto;align-content:center;align-items:center;column-gap:10px;row-gap:2px;padding:14px;text-align:left;color:var(--text);background:color-mix(in srgb,var(--card) 92%,transparent);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-card);cursor:pointer;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
