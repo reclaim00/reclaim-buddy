@@ -384,12 +384,12 @@ try { firebase.auth().onAuthStateChanged(function(user) {
           })();
     }, 3000);
   } else {
-    showSignIn();
+    showAuthGate();
   }
   window._authFired = true;
 }); } catch(e) { console.warn('onAuthStateChanged setup failed:', e); }
 // Fallback if Firebase auth never fires
-setTimeout(function(){ if (!window._authFired) showSignIn(); }, 3000);
+setTimeout(function(){ if (!window._authFired) showAuthGate(); }, 3000);
 
 // Register service worker for offline support
 if ('serviceWorker' in navigator) {
@@ -486,6 +486,38 @@ var TRANS = {
 'Search':{es:'Buscar', fr:'Rechercher', de:'Suchen', 'ja':'検索', 'ru':'Поиск', 'zh-cn':'搜索', ar:'بحث'},
 'Send':{es:'Enviar', fr:'Envoyer', de:'Senden', 'ja':'送信', 'ru':'Отправить', 'zh-cn':'发送', ar:'إرسال'},
 'Back':{es:'Volver', fr:'Retour', de:'Zur\u00fcck', 'ja':'戻る', 'ru':'Назад', 'zh-cn':'返回', ar:'رجوع'},
+'Continue':{es:'Continuar', fr:'Continuer', de:'Weiter', 'ja':'続ける', 'ru':'Продолжить', 'zh-cn':'继续', ar:'متابعة'},
+'Your challenge':{es:'Tu desafío', fr:'Ton défi', de:'Deine Herausforderung'},
+'Your start date':{es:'Tu fecha de inicio', fr:'Ta date de début', de:'Dein Startdatum'},
+'Your strongholds':{es:'Tus fortalezas', fr:'Tes piliers', de:'Deine Stütze'},
+'Know where you stand':{es:'Sé dónde estás', fr:'Sache où tu en es', de:'Weiß, wo du stehst'},
+'Gentle check-ins':{es:'Chequeos suaves', fr:'Points d\u2019étape doux', de:'Sanfte Check-ins'},
+'Almost there':{es:'Casi listo', fr:'Presque fini', de:'Fast geschafft'},
+'What would you like to change?':{es:'¿Qué te gustaría cambiar?', fr:'Qu\u2019aimerais-tu changer ?', de:'Was möchtest du ändern?'},
+'When did you decide to begin?':{es:'¿Cuándo decidiste empezar?', fr:'Quand as-tu décidé de commencer ?', de:'Wann hast du beschlossen zu beginnen?'},
+'What are you working toward?':{es:'¿Hacia qué trabajas?', fr:'Vers quoi travailles-tu ?', de:'Worauf arbeitest du hin?'},
+'What makes it hardest?':{es:'¿Qué lo hace más difícil?', fr:'Qu\u2019est-ce qui rend le plus difficile ?', de:'Was fällt dir am schwersten?'},
+'What keeps you steady on track?':{es:'¿Qué te mantiene firme?', fr:'Qu\u2019est-ce qui te garde stable ?', de:'Was hält dich auf Kurs?'},
+'What are you fighting for?':{es:'¿Por qué luchas?', fr:'Pour quoi te bats-tu ?', de:'Wofür kämpfst du?'},
+'A quick, honest check-in':{es:'Una revisión rápida y honesta', fr:'Un point rapide et honnête', de:'Ein schneller, ehrlicher Check-in'},
+'Small nudges, big momentum':{es:'Pequeños empujones, gran impulso', fr:'Petits coups de pouce, grand élan', de:'Kleine Schubser, großer Schwung'},
+'Set the mood':{es:'Ambienta tu espacio', fr:'Installe l\u2019ambiance', de:'Stimmung setzen'},
+'Take the assessment':{es:'Hacer la evaluación', fr:'Faire l\u2019évaluation', de:'Die Bewertung machen'},
+'Skip for now':{es:'Omitir por ahora', fr:'Passer pour l\u2019instant', de:'Für jetzt überspringen'},
+'Morning & evening check-ins':{es:'Chequeos de mañana y tarde', fr:'Points matin et soir', de:'Morgen- & Abend-Check-ins'},
+'Craving support':{es:'Apoyo para antojos', fr:'Aide face aux envies', de:'Unterstützung bei Gelüsten'},
+'Woodland':{es:'Bosque', fr:'Boisé', de:'Waldlicht'},
+'Nightfall':{es:'Anochecer', fr:'Crépuscule', de:'Nachtdunkel'},
+'Begin your journey':{es:'Comienza tu viaje', fr:'Commence ton voyage', de:'Beginne deine Reise'},
+'Welcome. Your journey begins today.':{es:'Bienvenido. Tu viaje comienza hoy.', fr:'Bienvenue. Ton voyage commence aujourd\u2019hui.', de:'Willkommen. Deine Reise beginnt heute.'},
+'Choose your challenge':{es:'Elige tu desafío', fr:'Choisis ton défi', de:'Wähle deine Herausforderung'},
+'Set your start date':{es:'Elige tu fecha de inicio', fr:'Choisis ta date de début', de:'Lege dein Startdatum fest'},
+'Pick your goals':{es:'Elige tus metas', fr:'Choisis tes objectifs', de:'Wähle deine Ziele'},
+'Name your triggers':{es:'Nombra tus desencadenantes', fr:'Nomme tes déclencheurs', de:'Benenne deine Auslöser'},
+'Add coping tools':{es:'Añade herramientas de afrontamiento', fr:'Ajoute des outils d\u2019apaisement', de:'Füge Bewältigungswerkzeuge hinzu'},
+'Write your reasons':{es:'Escribe tus razones', fr:'Écris tes raisons', de:'Schreibe deine Gründe'},
+'Enable gentle check-ins':{es:'Activa los chequeos suaves', fr:'Active les points d\u2019étape doux', de:'Aktiviere sanfte Check-ins'},
+'Set Up Your Space':{es:'Prepara tu espacio', fr:'Prépare ton espace', de:'Richte deinen Raum ein'},
 'Enable':{es:'Activar', fr:'Activer', de:'Aktivieren', 'ja':'有効にする', 'ru':'Включить', 'zh-cn':'启用', ar:'تمكين'},
 'Disable':{es:'Desactivar', fr:'D\u00e9sactiver', de:'Deaktivieren', 'ja':'無効にする', 'ru':'Отключить', 'zh-cn':'禁用', ar:'تعطيل'},
 'Change':{es:'Cambiar', fr:'Changer', de:'\u00c4ndern', 'ja':'変更', 'ru':'Изменить', 'zh-cn':'更改', ar:'تغيير'},
@@ -1930,8 +1962,45 @@ function handleUrlAction() {
 if (AUTH_USER) { setTimeout(handleUrlAction, 1000); }
 
 // ====== UI ======
-function showSignIn() {
-  SIGN_IN_MODE = 'in';
+
+function showAuthGate() {
+  if (localStorage.getItem('rc_welcome_seen')) { showSignIn(); return; }
+  showWelcome();
+}
+
+function showWelcome() {
+  localStorage.setItem('rc_welcome_seen', '1');
+  SIGN_IN_MODE = 'up';
+  var app = document.getElementById('app');
+  var langSel = '<select id="wl-language" onchange="changeLanguage(this.value);showWelcome()">'+ (function(){var r='';for(var li=0;li<LANGUAGES.length;li++){r+='<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>'}return r})() +'</select>';
+  function feat(icon, title, desc) {
+    return '<div class="wl-feature"><div class="wl-ic">'+icon+'</div><div><div class="wl-ft">'+title+'</div><div class="wl-fd">'+desc+'</div></div></div>';
+  }
+  app.innerHTML =
+    '<div class="wl-wrap">' +
+    '<div class="wl-badge">&#127793; '+t('Your recovery companion')+'</div>' +
+    '<div class="wl-hero"><img src="globe-icon.png" alt="Re.Claim"></div>' +
+    '<h1 class="wl-title">'+t('Take back your days.')+'<br><span class="wl-accent">'+t('Step by step.')+'</span></h1>' +
+    '<p class="wl-sub">'+t('Re.Claim is a private space to track your recovery, quiet the noise, and stay grounded one day at a time.')+'</p>' +
+    '<div class="wl-features">' +
+    feat('&#127807;', t('Watch yourself rebuild'), t('Your planet grows with every sober day, journal entry, and milestone you reach.')) +
+    feat('&#128221;', t('Make sense of your days'), t('Quick mood checks and journaling help you spot patterns and stay steady.')) +
+    feat('&#128737;', t('Support when it matters'), t('In-the-moment coping tools and a 24/7 SOS line keep you grounded in the hard moments.')) +
+    '</div>' +
+    '<div class="wl-cta">' +
+    '<button class="btn btn-primary" onclick="showSignIn(\'up\');setSignInTab(\'up\')" style="min-height:50px;font-size:15px">'+t('Create your account')+'</button>' +
+    '<button class="btn btn-outline" onclick="showSignIn(\'in\')" style="min-height:48px">'+t('I already have an account')+'</button>' +
+    '</div>' +
+    '<div class="wl-lang">'+t('Language')+': ' + langSel + '</div>' +
+    '<div class="wl-foot">'+t('Your data stays on your device and is never sold.')+'<br><a href="privacy.html">'+t('Privacy')+'</a> &middot; <a href="terms.html">'+t('Terms')+'</a> &middot; <a href="#" onclick="showSignIn();return false">'+t('Sign in instead')+'</a></div>' +
+    '</div>';
+  document.getElementById('tabs').style.display = 'none';
+  var tb = document.querySelector('.top-bar');
+  if (tb) tb.style.display = 'none';
+}
+
+function showSignIn(mode) {
+  SIGN_IN_MODE = mode || 'in';
   var app = document.getElementById('app');
   app.innerHTML =
     '<div class="si-bg">' +

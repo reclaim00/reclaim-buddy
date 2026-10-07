@@ -462,9 +462,31 @@ function homePageHTML() {
     h += '<div style="padding:24px 20px;text-align:center">';
     h += '<div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px">' + t('Your Journey Awaits') + '</div>';
     h += '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">' + t('The path is open \u2014 and it\u2019s waiting for you.<br>Start your journey and build something real.') + '</div>';
-    h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">' + t('Start Your Journey') + '</button>';
+h += '<button class="btn btn-primary" onclick="showOnboarding()" style="width:100%;padding:14px;font-size:15px;font-weight:700">' + t('Start Your Journey') + '</button>';
     h += '</div></div>';
-return h;
+
+    var setupItems = [
+      { done: !!D.addictionType, label: t('Choose your challenge') },
+      { done: !!(D.sobriety.startDate || D._onbQuitDate), label: t('Set your start date') },
+      { done: (D.recoveryGoals || []).length > 0, label: t('Pick your goals') },
+      { done: !!D.triggers, label: t('Name your triggers') },
+      { done: !!D.track, label: t('Add coping tools') },
+      { done: !!D.why, label: t('Write your reasons') },
+      { done: !!D.assessmentTaken, label: t('Take the assessment') },
+      { done: !!(D.notifications && (D.notifications.morning || D.notifications.evening || D.notifications.craving)), label: t('Enable gentle check-ins') }
+    ];
+    var doneCount = 0;
+    for (var si = 0; si < setupItems.length; si++) if (setupItems[si].done) doneCount++;
+    if (doneCount > 0) {
+      h += '<div class="card" style="margin-top:12px">';
+      h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="section-h">' + t('Set Up Your Space') + '</div><span style="font-size:12px;color:var(--primary);font-weight:700">' + doneCount + '/' + setupItems.length + '</span></div>';
+      h += '<div class="setup-list">';
+      for (var sj = 0; sj < setupItems.length; sj++) {
+        h += '<div class="setup-item' + (setupItems[sj].done ? ' done' : '') + '" onclick="showOnboarding()"><div class="setup-dot">' + (setupItems[sj].done ? '&#10004;' : '') + '</div><div class="setup-name">' + setupItems[sj].label + '</div><div class="setup-go">' + (setupItems[sj].done ? t('Edit') : t('Continue')) + '</div></div>';
+      }
+      h += '</div></div>';
+    }
+    return h;
 }
 
   // === ACTIVE HOME PAGE ===
@@ -606,7 +628,7 @@ function missionHTML() {
   if (week >= 6) { stageIcon = '\uD83C\uDF43'; stageText = t('Your world is lush. Keep the streak alive.'); }
   else if (week >= 4) { stageIcon = '\uD83C\uDF38'; stageText = t('Your world is blooming.'); }
   else if (week >= 3) { stageIcon = '\uD83C\uDF31'; stageText = t('Seeds are sprouting in your world.'); }
-  var h = '<div class="card" id="mission-card" style="border-left:3px solid var(--accent);background:linear-gradient(135deg,rgba(16,185,129,.08),var(--card))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h3 style="font-size:14px;margin:0">\uD83D\uDDD3 ' + t('Today\'s Mission') + '</h3><span class="btn btn-sm" style="width:auto;font-size:11px;padding:3px 10px;background:rgba(16,185,129,.12);color:var(--accent);border:1px solid var(--accent)">' + streak + ' ' + t('day streak') + ' \uD83D\uDD25</span></div>';
+  var h = '<div class="card" id="mission-card" style="border-left:3px solid var(--accent);background:linear-gradient(135deg,rgba(16,185,129,.08),var(--card))"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="section-h" style="margin:0">\uD83D\uDDD3 ' + t('Today\'s Mission') + '</span><span class="btn btn-sm" style="width:auto;font-size:11px;padding:3px 10px;background:rgba(16,185,129,.12);color:var(--accent);border:1px solid var(--accent)">' + streak + ' ' + t('day streak') + ' \uD83D\uDD25</span></div>';
   h += '<div style="font-size:13px;font-weight:600;line-height:1.55;margin-bottom:8px;padding:9px;border-radius:8px;border:1px dashed var(--accent);background:rgba(16,185,129,.05)">\uD83C\uDF1F ' + safe(m.label) + '</div>';
   if (m.done) {
     h += '<div style="display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;background:rgba(16,185,129,.14);margin-bottom:6px"><span style="font-size:18px">\u2705</span><div style="font-size:12px;font-weight:600;color:var(--accent)">' + t('Completed today') + ' \u2014 ' + t('your reflection is saved in your journal.') + '</div></div>';

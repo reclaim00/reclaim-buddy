@@ -17,56 +17,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Re.Claim</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://api.qrserver.com; connect-src 'self' https://api.qrserver.com https://*.firebaseio.com https://*.googleapis.com https://*.firestore.googleapis.com https://*.supabase.co wss://*.firebaseio.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
-<link rel="stylesheet" href="src/style.css?v=20261006a">
+<link rel="stylesheet" href="src/style.css?v=20261007a">
 </head>
 <body>
-<div id="landscape-bg" aria-hidden="true">
-<svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#a9c9ea"/><stop offset="45%" stop-color="#cddfef"/><stop offset="78%" stop-color="#e7eef2"/><stop offset="100%" stop-color="#eef2db"/></linearGradient>
-    <radialGradient id="sunGlow"><stop offset="0%" stop-color="#fff6cf"/><stop offset="45%" stop-color="#ffe7a3" stop-opacity=".5"/><stop offset="100%" stop-color="#ffe7a3" stop-opacity="0"/></radialGradient>
-    <linearGradient id="skyNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0a1a2e"/><stop offset="55%" stop-color="#102c47"/><stop offset="100%" stop-color="#163a3c"/></linearGradient>
-  </defs>
-
-  <g class="day-scene">
-    <rect width="1440" height="900" fill="url(#skyDay)"/>
-    <circle cx="178" cy="150" r="130" fill="url(#sunGlow)"/>
-    <circle cx="178" cy="150" r="46" fill="#ffedb3"/>
-    <g fill="#ffffff" opacity=".55">
-      <ellipse cx="480" cy="122" rx="72" ry="15"/><ellipse cx="512" cy="110" rx="50" ry="11"/>
-      <ellipse cx="842" cy="162" rx="82" ry="14" opacity=".8"/><ellipse cx="874" cy="150" rx="54" ry="10"/>
-      <ellipse cx="1140" cy="130" rx="66" ry="13" opacity=".7"/><ellipse cx="1360" cy="152" rx="58" ry="12" opacity=".5"/>
-    </g>
-    <path d="M0 560 Q180 505 360 540 Q540 572 720 535 Q900 502 1080 545 Q1260 580 1440 540 L1440 900 L0 900 Z" fill="#7fa25f" opacity=".30"/>
-    <path d="M0 600 Q220 560 420 588 Q640 616 860 578 Q1080 548 1260 590 Q1380 612 1440 596 L1440 900 L0 900 Z" fill="#6b9153" opacity=".32"/>
-    <path d="M0 640 Q200 605 400 630 Q620 656 840 622 Q1080 588 1260 636 Q1380 656 1440 640 L1440 900 L0 900 Z" fill="#5a8248" opacity=".38"/>
-    <path d="M0 585 L120 430 Q180 400 240 470 L330 520 Q260 560 200 575 Z" fill="#46663e" opacity=".18"/>
-    <path d="M1080 570 L1200 445 Q1260 425 1320 490 L1380 540 L1440 528 L1440 590 L1200 590 Z" fill="#46663e" opacity=".18"/>
-    <g>
-      <rect x="622" y="598" width="8" height="26" rx="3" fill="#4a4a3a"/><circle cx="628" cy="590" r="16" fill="#4d7a3f" opacity=".55"/><circle cx="625" cy="596" r="12" fill="#5c8a4b" opacity=".55"/>
-      <rect x="692" y="596" width="7" height="24" rx="3" fill="#4a4a3a"/><circle cx="697" cy="590" r="14" fill="#4d7a3f" opacity=".50"/><circle cx="694" cy="596" r="11" fill="#5c8a4b" opacity=".50"/>
-      <rect x="556" y="612" width="7" height="22" rx="3" fill="#4a4a3a"/><circle cx="560" cy="606" r="13" fill="#4d7a3f" opacity=".50"/><circle cx="558" cy="612" r="10" fill="#5c8a4b" opacity=".50"/>
-    </g>
-  </g>
-
-  <g class="night-scene">
-    <rect width="1440" height="900" fill="url(#skyNight)"/>
-    <g fill="#ffffff">
-      <circle cx="140" cy="70" r="2"/><circle cx="320" cy="48" r="1.4"/><circle cx="560" cy="96" r="2.2"/><circle cx="780" cy="52" r="1.6"/><circle cx="980" cy="110" r="2"/><circle cx="1180" cy="60" r="1.5"/><circle cx="1340" cy="88" r="2"/>
-      <circle cx="80" cy="150" r="1.3"/><circle cx="240" cy="180" r="1"/><circle cx="420" cy="140" r="1.4"/><circle cx="660" cy="170" r="1"/><circle cx="880" cy="150" r="1.3"/><circle cx="1060" cy="180" r="1"/><circle cx="1240" cy="140" r="1.4"/>
-    </g>
-    <g fill="#ffffff" opacity=".5">
-      <circle cx="200" cy="120" r=".8"/><circle cx="500" cy="140" r=".9"/><circle cx="700" cy="100" r=".8"/><circle cx="900" cy="90" r=".9"/><circle cx="1120" cy="120" r=".8"/><circle cx="1300" cy="100" r=".9"/><circle cx="360" cy="60" r=".8"/><circle cx="1020" cy="50" r=".8"/>
-    </g>
-    <path d="M0 560 Q180 505 360 540 Q540 572 720 535 Q900 502 1080 545 Q1260 580 1440 540 L1440 900 L0 900 Z" fill="#122740" opacity=".8"/>
-    <path d="M0 600 Q220 560 420 588 Q640 616 860 578 Q1080 548 1260 590 Q1380 612 1440 596 L1440 900 L0 900 Z" fill="#0e2238" opacity=".85"/>
-    <path d="M0 640 Q200 605 400 630 Q620 656 840 622 Q1080 588 1260 636 Q1380 656 1440 640 L1440 900 L0 900 Z" fill="#0b1c30" opacity=".9"/>
-    <g>
-      <rect x="624" y="612" width="8" height="24" rx="3" fill="#0a1524"/><circle cx="630" cy="606" r="15" fill="#0d2032" opacity=".8"/>
-      <rect x="694" y="610" width="7" height="22" rx="3" fill="#0a1524"/><circle cx="698" cy="606" r="13" fill="#0d2032" opacity=".8"/>
-    </g>
-  </g>
-</svg></div>
+<div id="landscape-bg" aria-hidden="true"></div>
 <!-- Moon overlay (night only) -->
 <div id="moon-overlay">
 <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
@@ -91,10 +45,10 @@
 <div id="conn-status" style="position:fixed;bottom:76px;left:50%;transform:translateX(-50%);z-index:199;pointer-events:none;display:none"><span style="display:inline-block;padding:4px 12px;border-radius:6px;background:var(--danger);color:#fff;font-size:10px;font-weight:700;letter-spacing:.5px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.15)">&#x26A0; No connection</span></div>
 <a class="skip-link" href="#app" onclick="document.getElementById('app').focus()">Skip to main content</a>
 <div class="top-bar">
-  <div style="display:flex;align-items:center;gap:6px"><div class="globe-logo" role="heading" aria-level="1"><img src="globe-icon.png" alt="" width="24" height="24" style="border-radius:50%;object-fit:cover" aria-hidden="true"></div><div><div class="logo-text" role="heading" aria-level="1">Re.<span style="color:var(--primary)">Claim</span></div><div id="journey-header" style="font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:-2px"></div></div></div>
+  <div style="display:flex;align-items:center;gap:8px"><div class="globe-logo" role="heading" aria-level="1"><img src="globe-icon.png" alt="" width="32" height="32" aria-hidden="true"></div><div><div class="logo-text" role="heading" aria-level="1">Re.<span style="color:var(--primary)">Claim</span></div><div id="journey-header" class="journey-header"></div></div></div>
   <div style="display:flex;gap:6px;align-items:center">
     <span id="sync-indicator" class="sync-indicator" onclick="if(_syncStatus==='error'){syncToFirestore()}" style="display:none" title="Sync status" role="status" aria-live="polite">?</span>
-    <button class="sos-btn-float" onclick="showSOS()" title="SOS - Get help now" aria-label="SOS - Get help now" style="font-size:12px;font-weight:900;letter-spacing:1px">SOS</button>
+    <button class="sos-btn-float" onclick="showSOS()" title="SOS - Get help now" aria-label="SOS - Get help now">SOS</button>
     <button class="profile-btn-float" onclick="goTo('profile')" title="Profile" aria-label="Profile"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
   </div>
 </div>
@@ -124,14 +78,14 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
-<script src="src/data.js?v=20261006a"></script>
-<script src="src/buddy.js?v=20261006a"></script>
-<script src="src/sober.js?v=20261006a"></script>
-<script src="src/pages.js?v=20261006a"></script>
- <script src="src/paywall.js?v=20261006a"></script>
- <script src="src/kingdom.js?v=20261006a"></script>
- <script src="src/ui.js?v=20261006a"></script>
-<script src="src/mfa.js?v=20261006a"></script>
+<script src="src/data.js?v=20261007a"></script>
+<script src="src/buddy.js?v=20261007a"></script>
+<script src="src/sober.js?v=20261007a"></script>
+<script src="src/pages.js?v=20261007a"></script>
+ <script src="src/paywall.js?v=20261007a"></script>
+ <script src="src/kingdom.js?v=20261007a"></script>
+ <script src="src/ui.js?v=20261007a"></script>
+<script src="src/mfa.js?v=20261007a"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW registration failed:',e)})}</script>
 </body>
 </html>

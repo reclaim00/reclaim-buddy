@@ -1365,39 +1365,56 @@ function openCapsuleAnimation(idx) {
 
 // ====== ONBOARDING TUTORIAL ======
 var ONBOARDING_STEPS = [
-  {icon:'\u2694',title:'Your Challenge',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What would you like to change? Choose the challenge you\'re ready to take on.</div><div id="onboarding-addiction" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:12px 0">'+ADDICTION_TYPES.map(function(at){return'<button data-v="'+at+'" class="btn btn-sm btn-outline" onclick="document.querySelectorAll(\'#onboarding-addiction button\').forEach(function(b){b.style.background=\'var(--primary-light)\';b.style.color=\'var(--primary-dark)\';b.style.borderColor=\'var(--border)\'});this.style.background=\'var(--grad-primary)\';this.style.color=\'#fff\';this.style.borderColor=\'var(--primary)\';D.addictionType=this.getAttribute(\'data-v\')" style="width:auto;font-size:11px;padding:6px 14px;border-radius:20px;margin:0">'+at+'</button>';}).join('')+'</div>'},
-  {icon:'\u2727',title:'Your Goals',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">What do you want to achieve? Write down your goals.</div><textarea id="onboarding-goals" placeholder="e.g. Be sober for 30 days, rebuild trust with my family, find healthy hobbies..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
-  {icon:'\uD83C\uDF3F',title:'What Are You Hoping For?',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Hope keeps the path lit. Picture yourself further along \u2014 what do you hope your life looks like?</div><textarea id="onboarding-hopes" placeholder="e.g. Clear-headed mornings, a proud family, freedom from cravings, energy for the things I love..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
-  {icon:'\uD83C\uDF0A',title:'What Makes It Hardest?',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Knowing your triggers steadies your footing. What situations make it hardest to stay sober?</div><textarea id="onboarding-triggers" placeholder="e.g. Friday nights out, stress at work, arguments, being around old friends who still drink..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
-  {icon:'\u2693',title:'What Helps You Stay On Track?',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Share the tools and people that keep you steady. These become your coping kit.</div><textarea id="onboarding-track" placeholder="e.g. Morning walks, journaling, my partner, a run or a phone call when urges hit..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
-  {icon:'\u2764',title:'What Are You Fighting For?',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Your reasons are your anchor when the road gets dark. What are you fighting for?</div><textarea id="onboarding-why" placeholder="e.g. My kids, my health, my peace of mind, a future I can be proud of..." style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:13px;min-height:80px;margin:8px 0"></textarea>'},
-  {icon:'\uD83C\uDF31',title:'Your Journey',
-   desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">Choose a theme that fits your world.</div><div id="onboarding-theme" style="display:flex;gap:12px;justify-content:center;margin:16px 0">'+
-     '<button class="btn" onclick="selectOnboardingTheme(\'gothic\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2726</span><span style="font-weight:700;font-size:15px">Woodland</span><span style="font-size:11px;color:var(--muted)">Deep shade, cool air, quiet forest</span></button>'+
-     '<button class="btn" onclick="selectOnboardingTheme(\'fantasy\',this)" style="flex:1;flex-direction:column;gap:6px;padding:20px 12px;background:var(--primary-light);color:var(--text);border:2px solid var(--border);border-radius:12px;width:auto;font-size:13px"><span style="font-size:36px">\u2600</span><span style="font-weight:700;font-size:15px">Meadow</span><span style="font-size:11px;color:var(--muted)">Open sky, tall grass, morning light</span></button>'+
-   '</div>'},
-  {icon:'\u2728',title:'You\u2019ve Got This',
-    desc:'<div style="margin-bottom:8px;font-size:13px;color:var(--muted)">You just built the foundation of your recovery: your goals, your hopes, the situations to watch for, your coping kit, and what you\u2019re fighting for.</div><div style="margin-top:14px;padding:12px;background:var(--primary-light);border-radius:10px;font-size:13px;color:var(--text);line-height:1.6">"You\u2019ve got this. One grounded step at a time."</div><div style="margin-top:8px;font-size:11px;color:var(--muted);text-align:center">Your journey starts now.</div>'},
+  {icon:'\u2694',kicker:'Your challenge',title:'What would you like to change?',
+   desc:'Choose the challenge you\u2019re ready to take on. You can adjust this anytime.',
+   kind:'chips',key:'addictionType',req:true},
+  {icon:'\U0001F5D3',kicker:'Your start date',title:'When did you decide to begin?',
+   desc:'Pick today if you\u2019re starting now — or backdate to the day you last quit. Your streak starts here.',
+   kind:'quitdate',req:true},
+  {icon:'\U0001F3AF',kicker:'Your goals',title:'What are you working toward?',
+   desc:'Select a few goals so you can watch them come to life. You can add more later.',
+   kind:'goals',key:'goals'},
+  {icon:'\U0001F30A',kicker:'Your triggers',title:'What makes it hardest?',
+   desc:'Naming the situations that shake you gives you the footing to meet them.',
+   kind:'textarea',key:'triggers'},
+  {icon:'\u2693',kicker:'Your strongholds',title:'What keeps you steady on track?',
+   desc:'Share the tools and people that hold you up. These become your coping kit.',
+   kind:'textarea',key:'track'},
+  {icon:'\u2764',kicker:'Your reasons',title:'What are you fighting for?',
+   desc:'Your reasons are your anchor when the road gets dark.',
+   kind:'textarea',key:'why'},
+  {icon:'\U0001F4CB',kicker:'Know where you stand',title:'A quick, honest check-in',
+   desc:'A 12-question assessment (about 2 minutes) helps you see where you are. Skip anytime.',
+   kind:'assessment'},
+  {icon:'\U0001F514',kicker:'Gentle check-ins',title:'Small nudges, big momentum',
+   desc:'Optional daily reminders to check in with yourself. You can change these in Settings anytime.',
+   kind:'notifications'},
+  {icon:'\U0001F319',kicker:'Almost there',title:'Set the mood',
+   desc:'Woodland is a bright, airy look. Nightfall is a calm, darker theme.',
+   kind:'theme'},
 ];
 var ONBOARDING_STEP = 0;
+var ONB_QUIT_DATE = null;
+var ONB_APPEARANCE = 'woodland';
 function showOnboarding() {
-  ONBOARDING_STEP = 0;
+  ONBOARDING_STEP = (D._onboardingStep || 0) < ONBOARDING_STEPS.length ? (D._onboardingStep || 0) : 0;
+  ONB_QUIT_DATE = D._onbQuitDate || null;
+  ONB_APPEARANCE = 'woodland';
   renderOnboardingStep();
 }
-function selectOnboardingTheme(theme, btn) {
-  var all = btn.parentElement.querySelectorAll('button');
-  all.forEach(function(b){ b.style.background='var(--primary-light)'; b.style.color='var(--text)'; b.style.borderColor='var(--border)'; });
-  btn.style.background='var(--grad-primary)'; btn.style.color='#fff'; btn.style.borderColor='var(--primary)';
-  D.theme = theme;
-  if (theme === 'gothic') { D.darkMode = true; document.body.classList.add('dark'); }
-  else { D.darkMode = false; document.body.classList.remove('dark'); }
-  applyTheme();
+function selectOnbChip(btn, key) {
+  var all = btn.parentElement.querySelectorAll('.onb-chip');
+  for (var i=0;i<all.length;i++) all[i].classList.remove('selected');
+  btn.classList.add('selected');
+  D[key] = btn.getAttribute('data-v');
+  var er = document.getElementById('onb-err');
+  if (er) er.textContent = '';
+}
+function pickOnbTheme(name, el) {
+  ONB_APPEARANCE = name;
+  var opts = el.parentElement.querySelectorAll('.onb-opt');
+  for (var i=0;i<opts.length;i++) opts[i].classList.remove('selectable-selected');
+  el.classList.add('selectable-selected');
 }
 
 function renderOnboardingStep() {
@@ -1409,62 +1426,169 @@ function renderOnboardingStep() {
     return;
   }
   var isLast = ONBOARDING_STEP >= ONBOARDING_STEPS.length - 1;
+  var pct = Math.round(((ONBOARDING_STEP + 1) / ONBOARDING_STEPS.length) * 100);
+  var body = '';
+  function esc(x) { return ('' + x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  if (s.kind === 'chips') {
+    body = '<div class="onb-chips">' + ADDICTION_TYPES.map(function(at){
+      return '<button data-v="'+at+'" class="onb-chip'+(D.addictionType===at?' selected':'')+'" onclick="selectOnbChip(this,\'addictionType\')">'+at+'</button>';
+    }).join('') + '</div>';
+  } else if (s.kind === 'quitdate') {
+    function ymd(x) { var d = new Date(); if (x) d = new Date(x); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+    body = '<div style="text-align:center">' +
+      '<input type="date" id="onb-quitdate" class="onb-date" value="'+ymd(ONB_QUIT_DATE)+'" max="'+ymd(null)+'">' +
+      '<div style="font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.5">'+t('Choose today to start fresh, or select an earlier date if you already quit.')+'</div></div>';
+  } else if (s.kind === 'goals') {
+    if (!D.recoveryGoals) D.recoveryGoals = [];
+    body = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0">' + GOAL_PRESETS.map(function(gp,gi){
+      var has = D.recoveryGoals.some(function(g){return g.text === gp.text});
+      return '<div class="onb-chip'+(has?' selected':'')+'" style="border-radius:12px;padding:12px 10px;display:flex;align-items:center;gap:8px;text-align:left" data-gi="'+gi+'" onclick="toggleOnbGoal(this,'+gi+')">' +
+        '<span style="font-size:16px">'+gp.icon+'</span><span style="font-size:12px;line-height:1.3">'+t(gp.text)+'</span></div>';
+    }).join('') + '</div>' +
+    '<input type="text" id="onb-goal-custom" placeholder="'+t('Add a custom goal...')+'" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;font-family:inherit;background:var(--card);color:var(--text);outline:none">';
+  } else if (s.kind === 'textarea') {
+    var placeholders = {
+      triggers: t('e.g. Friday nights out, stress at work, arguments, old friends who still drink...'),
+      track: t('e.g. Morning walks, journaling, my partner, a phone call when urges hit...'),
+      why: t('e.g. My kids, my health, my peace of mind, a future I can be proud of...')
+    };
+    var cur = D[s.key] ? esc(D[s.key]) : '';
+    body = '<textarea id="onb-txt" placeholder="'+(placeholders[s.key]||'')+'" style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;min-height:90px;margin:8px 0;font-family:inherit;background:var(--card);color:var(--text);outline:none">'+cur+'</textarea>';
+  } else if (s.kind === 'assessment') {
+    body = '<div class="onb-opt" onclick="launchOnbAssessment()"><div class="ic">&#128203;</div><div class="tx"><b>'+t('Take the assessment')+'</b><span>'+t('12 quick questions, about 2 minutes, for a snapshot of where you are.')+'</span></div></div>' +
+      '<div class="onb-opt" onclick="advanceOnboarding()"><div class="ic">&#128075;</div><div class="tx"><b>'+t('Skip for now')+'</b><span>'+t('You can take it anytime from the Tools menu.')+'</span></div></div>';
+  } else if (s.kind === 'notifications') {
+    body = '<label class="onb-toggle-row"><span class="tx"><b>'+t('Morning & evening check-ins')+'</b><small>'+t('A gentle nudge to start and end your day reflecting.')+'</small></span><input type="checkbox" id="onb-notif-daily" checked></label>' +
+      '<label class="onb-toggle-row"><span class="tx"><b>'+t('Craving support')+'</b><small>'+t('An afternoon note with quick grounding tools.')+'</small></span><input type="checkbox" id="onb-notif-craving" checked></label>';
+  } else if (s.kind === 'theme') {
+    body = '<div onclick="pickOnbTheme(\'woodland\',this)" class="onb-opt'+(ONB_APPEARANCE==='woodland'?' selectable-selected':'')+'"><div class="ic">\u2600</div><div class="tx"><b>'+t('Woodland')+'</b><span>'+t('Bright and airy, forest light.')+'</span></div></div>' +
+      '<div onclick="pickOnbTheme(\'dark\',this)" class="onb-opt'+(ONB_APPEARANCE==='dark'?' selectable-selected':'')+'"><div class="ic">\u2726</div><div class="tx"><b>'+t('Nightfall')+'</b><span>'+t('Calm, deep night colors.')+'</span></div></div>';
+  }
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.id = 'onboarding-ov';
   overlay.style.background = 'rgba(0,0,0,0.6)';
   overlay.innerHTML =
-    '<div class="onboarding-card" style="background:var(--card);max-width:420px;width:min(92%,420px);margin:0 auto;border-radius:20px;padding:28px 22px 20px;text-align:center;animation:siFade .3s ease;position:relative;border:1px solid var(--border);box-shadow:0 0 0 1px var(--border),0 16px 64px rgba(0,0,0,.3)">' +
-    '<div style="position:absolute;top:-1px;left:20px;right:20px;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);border-radius:2px"></div>' +
-    '<div class="onboarding-step-count">Step ' + (ONBOARDING_STEP + 1) + ' of ' + ONBOARDING_STEPS.length + ' <span>· You can skip any step</span></div>' +
-    '<div class="onboarding-progress" aria-hidden="true"><span style="width:' + Math.round(((ONBOARDING_STEP + 1) / ONBOARDING_STEPS.length) * 100) + '%"></span></div>' +
-    '<div style="font-size:38px;margin:10px 0 6px">' + s.icon + '</div>' +
-    '<div style="font-size:20px;font-weight:750;margin-bottom:10px;color:var(--primary)">' + s.title + '</div>' +
-    '<div style="font-size:14px;color:var(--text);line-height:1.6;margin-bottom:16px;padding:0 2px">' + s.desc + '</div>' +
-    '<div style="display:flex;gap:8px">' +
-      (ONBOARDING_STEP > 0 ? '<button class="btn btn-sm btn-outline" onclick="ONBOARDING_STEP--;renderOnboardingStep()" style="flex:1">\u2190 Back</button>' : '') +
-      '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1">'+ (isLast ? '\u2727 Start my journey' : 'Continue \u2192') +'</button>' +
+    '<div class="onb-card">' +
+    '<div class="onb-kicker">'+t(s.kicker)+' &middot; '+(ONBOARDING_STEP+1)+' / '+ONBOARDING_STEPS.length+'</div>' +
+    '<div class="onb-icon">'+s.icon+'</div>' +
+    '<div class="onb-title">'+t(s.title)+'</div>' +
+    '<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:10px;padding:0 2px">'+t(s.desc)+'</div>' +
+    body +
+    '<div class="onb-progress"><div class="fill" style="width:'+pct+'%"></div></div>' +
+    '<div id="onb-err" class="onb-err"></div>' +
+    '<div class="onb-nav">' +
+      (ONBOARDING_STEP > 0 ? '<button class="btn btn-sm btn-outline" onclick="ONBOARDING_STEP--;renderOnboardingStep()" style="flex:1">\u2190 '+t('Back')+'</button>' : '') +
+      '<button class="btn btn-sm btn-primary" onclick="advanceOnboarding()" style="flex:1;min-height:44px">' + (isLast ? '\u2727 '+t('Begin your journey') : t('Continue')+' \u2192') + '</button>' +
     '</div>' +
-    '<button class="onboarding-skip" onclick="closeOnboarding()">Start now — personalize this later</button>' +
+    '<button class="onb-close" onclick="closeOnboarding()" aria-label="'+t('Close')+'">\u2715</button>' +
     '</div>';
   document.body.appendChild(overlay);
+  var focusEl = overlay.querySelector('textarea, input[type=date], input[type=text]');
+  if (focusEl) setTimeout(function(){ focusEl.focus(); }, 120);
+}
+
+var ONB_GOALS = {};
+function toggleOnbGoal(el, gi) {
+  ONB_GOALS[gi] = !ONB_GOALS[gi];
+  if (ONB_GOALS[gi]) el.classList.add('selected');
+  else el.classList.remove('selected');
+}
+function launchOnbAssessment() {
+  if (D.assessmentTaken) { advanceOnboarding(); return; }
+  var ov = document.getElementById('onboarding-ov');
+  if (ov) ov.remove();
+  D._onboardingStep = ONBOARDING_STEP;
+  saveDataSilent();
+  window._afterOnbGate = function() {
+    window._afterOnbGate = null;
+    if (!D._onboardingDone) renderOnboardingStep();
+  };
+  showAssessmentAfterSignIn();
 }
 
 function closeOnboarding() {
-  finalizeOnboarding();
+  var el = document.getElementById('onboarding-ov');
+  if (el) el.remove();
+  window._afterOnbGate = null;
+  D._onboardingStep = ONBOARDING_STEP;
+  D._onbQuitDate = ONB_QUIT_DATE;
+  saveDataSilent();
+  if (!D.sobriety.startDate) { pg = 'home'; _pageCache = {}; render(); }
 }
 
-var ONBOARDING_FIELDS = {1:'goals',2:'hopes',3:'triggers',4:'track',5:'why'};
-var ONBOARDING_IDS = {1:'onboarding-goals',2:'onboarding-hopes',3:'onboarding-triggers',4:'onboarding-track',5:'onboarding-why'};
 function advanceOnboarding() {
-  if (ONBOARDING_STEP === 0 && !D.addictionType) D.addictionType = 'Other';
-  if (ONBOARDING_STEP === 6 && !D.theme) D.theme = 'green';
-  var field = ONBOARDING_FIELDS[ONBOARDING_STEP];
-  if (field) {
-    var el = document.getElementById(ONBOARDING_IDS[ONBOARDING_STEP]);
-    var val = el ? el.value : '';
-    if (val.trim()) D[field] = val.trim();
+  var s = ONBOARDING_STEPS[ONBOARDING_STEP];
+  var errEl = document.getElementById('onb-err');
+  var er = function(m) { if (errEl) errEl.textContent = m; };
+  if (!s) { finalizeOnboarding(); return; }
+  if (s.kind === 'chips') {
+    if (!D.addictionType) { er(t('Please pick a challenge to start.')); return; }
+  } else if (s.kind === 'quitdate') {
+    var d = document.getElementById('onb-quitdate');
+    var v = d && d.value;
+    if (!v) { er(t('Please choose a date.')); return; }
+    var t0 = new Date(v + 'T00:00:00').getTime();
+    if (isNaN(t0)) { er(t('Please choose a valid date.')); return; }
+    if (t0 > Date.now()) { er(t('Your start date can\u2019t be in the future.')); return; }
+    ONB_QUIT_DATE = t0;
+  } else if (s.kind === 'goals') {
+    if (!D.recoveryGoals) D.recoveryGoals = [];
+    var added = 0;
+    for (var gi in ONB_GOALS) {
+      if (ONB_GOALS[gi]) {
+        var tx = GOAL_PRESETS[parseInt(gi)].text;
+        if (!D.recoveryGoals.some(function(g){ return g.text === tx; })) { D.recoveryGoals.push({ text: tx, logs: [] }); added++; }
+      }
+    }
+    var cust = document.getElementById('onb-goal-custom');
+    if (cust && cust.value.trim()) {
+      var cgs = cust.value.split(/[,;]+/).map(function(x){return x.trim()}).filter(Boolean);
+      for (var j=0;j<cgs.length;j++) {
+        if (!D.recoveryGoals.some(function(g){ return g.text === cgs[j]; })) { D.recoveryGoals.push({ text: cgs[j], logs: [] }); added++; }
+      }
+    }
+    ONB_GOALS = {};
+    if (added) saveDataSilent();
+  } else if (s.kind === 'textarea') {
+    var ta = document.getElementById('onb-txt');
+    var val = ta ? ta.value.trim() : '';
+    if (s.req && !val) { er(t('This matters \u2014 take a moment to write it down.')); if (ta) ta.focus(); return; }
+    D[s.key] = val;
+    saveDataSilent();
+  } else if (s.kind === 'notifications') {
+    var daily = document.getElementById('onb-notif-daily');
+    var craving = document.getElementById('onb-notif-craving');
+    if (daily) { D.notifications.morning = daily.checked; D.notifications.evening = daily.checked; }
+    if (craving) D.notifications.craving = craving.checked;
+    saveDataSilent();
+    if ((daily && daily.checked) || (craving && craving.checked)) requestNotif();
+  } else if (s.kind === 'theme') {
+    D.theme = ONB_APPEARANCE === 'dark' ? 'gothic' : 'woodland';
+    D.darkMode = ONB_APPEARANCE === 'dark';
+    applyTheme();
+    saveDataSilent();
   }
-  saveDataSilent();
   if (ONBOARDING_STEP >= ONBOARDING_STEPS.length - 1) {
     finalizeOnboarding();
     return;
   }
   ONBOARDING_STEP++;
+  D._onboardingStep = ONBOARDING_STEP;
   renderOnboardingStep();
 }
 function finalizeOnboarding() {
-  var el = document.getElementById('onboarding-ov');
-  if (el) el.remove();
-  if (!D.addictionType) D.addictionType = 'Other';
-  if (!D.theme) D.theme = 'green';
   seedOnboardingAnswers();
   D._onboardingDone = true;
-  D.sobriety.addictionType = D.addictionType;
-  D.sobriety.startDate = Date.now();
+  D._onboardingStep = null;
+  D._onbQuitDate = null;
+  D.sobriety.addictionType = D.addictionType || 'Other';
+  D.sobriety.startDate = ONB_QUIT_DATE || Date.now();
+  D.theme = D.theme || 'woodland';
+  window._afterOnbGate = null;
   pg = 'home'; _pageCache = {};
   saveData(); render();
-  setTimeout(startSoberTimer, 200);
+  setTimeout(function(){ startSoberTimer(); showToast(t('Welcome. Your journey begins today.'), 'success'); }, 300);
 }
 function seedOnboardingAnswers() {
   if (!D.myWhy) D.myWhy = { reasons: [], createdAt: null };
@@ -1509,6 +1633,7 @@ function render() {
   var pageChanged = pg !== _lastRenderedPg;
   function doRender() {
     if (pg !== curPg) return;
+    window.scrollTo(0, 0);
     app.classList.toggle('suppress-anim', !pageChanged);
     _lastRenderedPg = curPg;
     app.innerHTML = _pageCache[curPg];
