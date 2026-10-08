@@ -271,8 +271,16 @@ var AUTH_EMAIL = localStorage.getItem('rc_email') || '';
 
 // Track if onAuthStateChanged has restored a session on page load
 var AUTH_RESTORED = false;
+// True once onAuthReady() has completed a session this page load (avoids
+// re-entering the app on every auth-state re-emission, e.g. token refresh).
+var AUTH_READY_RUN = false;
+// Set while an intentional sign-out / reset is clearing the Firebase session
+// so the session-restore path doesn't fire misleading "session lost" UI.
+var AUTH_SIGN_OUT_IN_PROGRESS = false;
 
 function onAuthReady(email, isNew) {
+  AUTH_READY_RUN = true;
+  AUTH_SIGN_OUT_IN_PROGRESS = false;
   AUTH_USER = email; AUTH_EMAIL = email;
   localStorage.setItem('rc_user', email); localStorage.setItem('rc_email', email);
   D = loadData();
@@ -353,13 +361,12 @@ try { firebase.auth().onAuthStateChanged(function(user) {
   if (user && user.email) {
     AUTH_RESTORED = true;
     if (_sessionRestoreTimer) { clearTimeout(_sessionRestoreTimer); _sessionRestoreTimer = null; }
-    var wasSignedOut = !AUTH_USER;
     var email = user.email;
     if (user.isAnonymous || email.endsWith('@reclaim.local')) {
-      if (!AUTH_USER) { wasSignedOut = true; email = user.isAnonymous ? (user.uid || AUTH_USER || email.replace(/@.*/,'')) : email.replace('@reclaim.local',''); }
+      email = user.isAnonymous ? (user.uid || AUTH_USER || email.replace(/@.*/,'')) : email.replace('@reclaim.local','');
     }
-    if (wasSignedOut) {
-      var isNew = !loadData().joinDate;
+    if (!AUTH_READY_RUN || email !== AUTH_USER) {
+      var isNew = !joinedBefore(email);
       user.getIdToken(true).then(function() {
         onAuthReady(email, isNew);
       }).catch(function() {
@@ -367,6 +374,7 @@ try { firebase.auth().onAuthStateChanged(function(user) {
       });
     }
   } else if (AUTH_RESTORED) {
+    if (AUTH_SIGN_OUT_IN_PROGRESS) { window._authFired = true; return; }
     if (_sessionRestoreTimer) return;
     _sessionRestoreTimer = setTimeout(function() {
       _sessionRestoreTimer = null;
@@ -1322,7 +1330,15 @@ function changeLanguage(lang) {
   render();
 }
 
-function dataKey() { return 'rc_data_' + (AUTH_USER || 'local').replace(/[^a-zA-Z0-9_-]/g,''); }
+function dataKey() { return dataKeyFor(AUTH_USER); }
+function dataKeyFor(user) { return 'rc_data_' + (user || 'local').replace(/[^a-zA-Z0-9_-]/g,''); }
+function joinedBefore(user) {
+  try {
+    var d = JSON.parse(localStorage.getItem(dataKeyFor(user)));
+    if (d && d.joinDate) return true;
+  } catch(e) {}
+  return false;
+}
 
 function loadData() {
   try {
@@ -1554,7 +1570,7 @@ function showLockScreen() {
     '<div id="lock-error" style="font-size:12px;color:var(--danger);margin-top:4px"></div>' +
     (bioAvailable ? '<button class="btn btn-outline btn-sm" onclick="unlockWithBiometric()" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Face ID</button>' : '<button class="btn btn-outline btn-sm" onclick="setupBiometric()" id="bio-setup-btn" style="margin-top:8px;width:auto;display:inline-flex">&#128065; Set Up Face ID</button>') +
     '<button class="btn btn-danger btn-sm" onclick="showLockScreenSOS()" style="margin-top:8px;width:auto;display:inline-flex">&#128222; SOS</button>' +
-    '<button class="btn btn-outline btn-sm" onclick="if(confirm(\''+t('This will erase all local data and let you sign in again.')+'\')){localStorage.removeItem(\'rc_lock_hash\');localStorage.removeItem(\'rc_lock_salt\');localStorage.removeItem(\'rc_user\');localStorage.removeItem(\'rc_email\');sessionStorage.clear();location.reload()}" style="margin-top:12px;width:auto;display:inline-flex">Reset &amp; Sign Out</button>' +
+    '<button class="btn btn-outline btn-sm" onclick="resetAccountAndSignOut()" style="margin-top:12px;width:auto;display:inline-flex">Reset &amp; Sign Out</button>' +
     '</div></div>';
   document.getElementById('tabs').style.display = 'none';
   var tb = document.querySelector('.top-bar');
@@ -1928,13 +1944,40 @@ function sendEmailVerification() {
   });
 }
 function signOut() {
-  firebase.auth().signOut().catch(function(e){ console.warn(e); showToast('Something went wrong','error'); });
+  AUTH_SIGN_OUT_IN_PROGRESS = true;
+  var leave = function() {
+    localStorage.removeItem('rc_user');
+    localStorage.removeItem('rc_email');
+    AUTH_USER = '';
+    AUTH_EMAIL = '';
+    D = defaultData();
+    document.body.classList.remove('logged-in');
+    showSignIn();
+  };
+  var wipeFirebaseSession = function() {
+    // Remove Firebase's persisted IndexedDB session so a reload or a quick
+    // sign-up cannot auto-restore the previous account.
+    try { if (window.indexedDB) window.indexedDB.deleteDatabase('firebaseLocalStorageDb'); } catch(e) {}
+    leave();
+  };
+  if (!firebase || !firebase.auth) { wipeFirebaseSession(); return; }
+  firebase.auth().signOut().then(wipeFirebaseSession).catch(wipeFirebaseSession);
+}
+function resetAccountAndSignOut() {
+  if (!confirm(t('This will erase all local data and let you sign in again.'))) return;
+  if (AUTH_USER) { try { localStorage.removeItem(dataKeyFor(AUTH_USER)); } catch(e) {} }
+  localStorage.removeItem('rc_lock_hash');
+  localStorage.removeItem('rc_lock_salt');
   localStorage.removeItem('rc_user');
-  AUTH_USER = '';
-  AUTH_EMAIL = '';
-  D = defaultData();
-  document.body.classList.remove('logged-in');
-  showSignIn();
+  localStorage.removeItem('rc_email');
+  sessionStorage.clear();
+  AUTH_SIGN_OUT_IN_PROGRESS = true;
+  var reload = function() {
+    try { if (window.indexedDB) window.indexedDB.deleteDatabase('firebaseLocalStorageDb'); } catch(e) {}
+    location.reload();
+  };
+  if (firebase && firebase.auth) { firebase.auth().signOut().then(reload).catch(reload); }
+  else reload();
 }
 // Block back-navigation to app when signed out
 window.addEventListener('popstate', function(e) {
