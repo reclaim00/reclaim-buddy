@@ -29,7 +29,7 @@
       "presentationOptions": ["alert", "badge", "sound"]
     },
     "FirebaseAuthentication": {
-      "providers": ["google.com", "apple.com"],
+      "providers": ["google.com"],
       "skipNativeAuth": true
     }
   },
