@@ -483,22 +483,42 @@ function decryptText(encrypted, key) {
   });
 }
 function encryptAllEntries(key) {
-  return Promise.all(D.journal.map(function(entry, i) {
-    if (entry.text && typeof entry.text === 'string') {
-      return encryptText(entry.text, key).then(function(enc) { D.journal[i].text = enc; });
+  var jobs = [];
+  D.journal.forEach(function(entry, i) {
+    var e = D.journal[i];
+    if (e.text && typeof e.text === 'string') {
+      jobs.push(encryptText(e.text, key).then(function(enc) { e.text = enc; }));
     }
-  }));
+    if (e.reflections && e.reflections.length > 0) {
+      e.reflections.forEach(function(r) {
+        if (r.a && typeof r.a === 'string') {
+          jobs.push(encryptText(r.a, key).then(function(enc) { r.a = enc; }));
+        }
+      });
+    }
+  });
+  return Promise.all(jobs);
 }
 function decryptAllEntries() {
   ENC_CACHE = {};
   if (!ENC_KEY || !isEncryptionEnabled()) return Promise.resolve();
-  return Promise.all(D.journal.map(function(entry, i) {
-    if (entry.text && typeof entry.text === 'object' && entry.text.enc) {
-      return decryptText(entry.text, ENC_KEY).then(function(text) { ENC_CACHE[entry.text.data] = text; });
-    } else if (entry.text && typeof entry.text === 'string') {
-      ENC_CACHE[i+'s'] = entry.text;
+  var jobs = [];
+  D.journal.forEach(function(entry, i) {
+    var e = D.journal[i];
+    if (e.text && typeof e.text === 'object' && e.text.enc) {
+      jobs.push(decryptText(e.text, ENC_KEY).then(function(text) { ENC_CACHE[e.text.data] = text; }));
+    } else if (e.text && typeof e.text === 'string') {
+      ENC_CACHE[i+'s'] = e.text;
     }
-  }));
+    if (e.reflections && e.reflections.length > 0) {
+      e.reflections.forEach(function(r) {
+        if (r.a && typeof r.a === 'object' && r.a.enc) {
+          jobs.push(decryptText(r.a, ENC_KEY).then(function(text) { ENC_CACHE[r.a.data] = text; }));
+        }
+      });
+    }
+  });
+  return Promise.all(jobs);
 }
 function getEntryText(entry) {
   if (!entry || !entry.text) return '';

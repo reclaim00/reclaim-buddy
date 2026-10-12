@@ -1478,7 +1478,52 @@ function saveRefJournal() {
   var text = document.getElementById('ref-entry');
   var txt = (text ? text.value.trim() : '');
   if (!txt) { alert(t('Write something first.')); return; }
+  showJournalReflectionQuestions();
+}
+
+var JOURNAL_REFLECTION_QUESTIONS = [
+  'How were you feeling in that situation?',
+  'What can I learn from this situation?',
+  'What is one thing I can do to keep me moving forward?'
+];
+
+function showJournalReflectionQuestions() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.id = 'journal-reflect-ov';
+  var h = '<div class="overlay-content" style="max-width:440px">';
+  h += '<h3 style="font-weight:700;font-size:18px;margin-bottom:4px">' + t('Reflect on This Entry') + '</h3>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">' + t('Answer any of these to get more out of your entry.') + '</p>';
+  for (var i=0;i<JOURNAL_REFLECTION_QUESTIONS.length;i++) {
+    h += '<div style="margin-bottom:10px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">' + t(JOURNAL_REFLECTION_QUESTIONS[i]) + '</label>';
+    h += '<textarea class="jr-q" data-qidx="' + i + '" style="min-height:50px" aria-label="' + t(JOURNAL_REFLECTION_QUESTIONS[i]) + '"></textarea></div>';
+  }
+  h += '<button class="btn btn-primary" onclick="finalizeRefJournal(this)">' + t('Save Entry') + '</button>';
+  h += '<button class="btn btn-outline" onclick="finalizeRefJournal(this, true)" style="margin-top:6px">' + t('Skip') + '</button>';
+  h += '</div>';
+  overlay.innerHTML = h;
+  document.body.appendChild(overlay);
+  var first = overlay.querySelector('textarea.jr-q');
+  if (first) first.focus();
+}
+
+function finalizeRefJournal(btn, skip) {
+  var overlay = btn ? btn.closest('.overlay') : document.getElementById('journal-reflect-ov');
+  var text = document.getElementById('ref-entry');
+  var txt = (text ? text.value.trim() : '');
+  if (!txt) { if (overlay) overlay.remove(); alert(t('Write something first.')); return; }
+  var reflections = [];
+  if (!skip && overlay) {
+    var tas = overlay.querySelectorAll('textarea.jr-q');
+    for (var i=0;i<tas.length;i++) {
+      var q = JOURNAL_REFLECTION_QUESTIONS[parseInt(tas[i].getAttribute('data-qidx'), 10)];
+      var a = tas[i].value.trim();
+      if (a) reflections.push({ q: q, a: a });
+    }
+  }
   var entry = buildRefEntry(text, txt);
+  if (reflections.length > 0) entry.reflections = reflections;
+  if (overlay) overlay.remove();
   persistRefEntry(entry, txt, text);
 }
 
@@ -1515,7 +1560,16 @@ function persistRefEntry(entry, txt, text) {
   var finish = function() {
     if (txt && isEncryptionEnabled()) {
       var doEncrypt = function() {
-        encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; saveIt(); });
+        var tasks = [encryptText(txt, ENC_KEY).then(function(enc) { entry.text = enc; ENC_CACHE[enc.data] = txt; })];
+        if (entry.reflections && entry.reflections.length > 0) {
+          for (var ri=0; ri<entry.reflections.length; ri++) {
+            (function(r) {
+              var plain = r.a;
+              tasks.push(encryptText(plain, ENC_KEY).then(function(enc) { r.a = enc; ENC_CACHE[enc.data] = plain; }));
+            })(entry.reflections[ri]);
+          }
+        }
+        Promise.all(tasks).then(function() { saveIt(); });
       };
       if (ENC_KEY) doEncrypt();
       else promptEncryptionPassphrase(function() { doEncrypt(); });
@@ -1568,6 +1622,15 @@ function showJournalLetter(idx) {
   h += '<div style="font-size:12px;color:var(--muted);margin-bottom:12px">' + timeStr + '</div>';
   // Entry text (shown immediately)
   h += '<div class="card" style="white-space:pre-wrap;font-size:14px;line-height:1.7;margin-bottom:8px">' + safe(entryText) + '</div>';
+  // Reflection answers (if the user completed the reflection step)
+  if (entry.reflections && entry.reflections.length > 0) {
+    h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">' + t('Your Reflection') + '</div>';
+    for (var ri=0; ri<entry.reflections.length; ri++) {
+      h += '<div style="margin-top:6px"><div style="font-size:12px;font-weight:600;color:var(--muted)">' + safe(t(entry.reflections[ri].q)) + '</div>';
+      h += '<div style="font-size:13px;line-height:1.6;white-space:pre-wrap;color:var(--text-light);margin-top:2px">' + safe(getEntryText({text: entry.reflections[ri].a})) + '</div></div>';
+    }
+    h += '</div>';
+  }
   // Summary
   if (summaryText) {
     h += '<div class="card" style="padding:10px 12px;margin-bottom:8px"><div class="letter-section-label">A Thought on Your Entry</div><div id="js-summary-say" style="font-size:13px;line-height:1.6;color:var(--text-light);margin-top:4px">' + summaryText + '</div></div>';
