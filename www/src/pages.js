@@ -1225,7 +1225,12 @@ var RECOVERY_VIGNETTES = {
     "A woman said 'I'm happy about some things and devastated about others. Which one is real?' I said 'Both. Your heart is a house with many rooms. You're allowed to be in more than one at a time.'"
   ]
 };
-function buildSummary(txt, mood, topics, dayCount, streak, entryHour) {
+function shortenForSummary(s, maxLen) {
+  s = (s || '').replace(/\s+/g, ' ').trim();
+  if (s.length <= maxLen) return s;
+  return s.substring(0, maxLen).replace(/[^ ]+$/, '').replace(/\s$/, '') + '...';
+}
+function buildSummary(txt, mood, topics, dayCount, streak, entryHour, reflections) {
   var lines = [];
   var words = txt.trim().split(/\s+/).length;
   var mins = Math.ceil(words / 15);
@@ -1236,6 +1241,23 @@ function buildSummary(txt, mood, topics, dayCount, streak, entryHour) {
   else if (words > 50) lines.push('Entry Overview: ' + words + ' words  about ' + mins + ' minutes. Sometimes the shortest entries carry the most weight. You said what needed to be said.');
   else if (words > 10) lines.push('Entry Overview: ' + words + ' words  a brief but meaningful check-in. Even a few words on the page is a victory over silence.');
   else lines.push('Entry Overview: ' + words + ' words. Every entry counts, no matter how short. You showed up, and that\'s what matters.');
+
+  // Reflection answers (if the user completed the reflection step)
+  if (reflections && reflections.length) {
+    var seen = 0;
+    for (var rsi=0; rsi<reflections.length; rsi++) {
+      var ra = getEntryText({text: reflections[rsi].a}) || '';
+      if (!ra || ra === '[Encrypted]' || !ra.trim()) continue;
+      var qi = JOURNAL_REFLECTION_QUESTIONS.indexOf(reflections[rsi].q);
+      if (qi < 0 || qi > 2) continue;
+      var snip = shortenForSummary(ra, 80);
+      seen++;
+      if (seen === 1) lines.push('Reflection Summary:');
+      if (qi === 0) lines.push('Reflection - Feelings: "' + snip + '"  Naming the feeling takes away some of its power - what you can name, you can work with.');
+      else if (qi === 1) lines.push('Reflection - Lesson: "' + snip + '"  You turned the moment into insight, and insight is exactly how recovery grows.');
+      else lines.push('Reflection - Next step: "' + snip + '"  Keep this as your one small move forward, and act on it today.');
+    }
+  }
 
   // Sobriety context
   if (dayCount > 0 && dayCount <= 7) lines.push('Sobriety: You\'re ' + dayCount + ' day' + (dayCount!==1?'s':'') + ' in. The first week is the hardest  every day you hold this line, you\'re rewriting your story. The cravings will come and go, but you\'re proving you can outlast them.');
@@ -1487,24 +1509,69 @@ var JOURNAL_REFLECTION_QUESTIONS = [
   'What is one thing I can do to keep me moving forward?'
 ];
 
+var JR_CURRENT_STEP = 0;
+
 function showJournalReflectionQuestions() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
   overlay.id = 'journal-reflect-ov';
   var h = '<div class="overlay-content" style="max-width:440px">';
   h += '<h3 style="font-weight:700;font-size:18px;margin-bottom:4px">' + t('Reflect on This Entry') + '</h3>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">' + t('Answer any of these to get more out of your entry.') + '</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">' + t('Take it one question at a time.') + '</p>';
+  h += '<div style="height:4px;background:var(--border);border-radius:2px;margin:0 0 10px;overflow:hidden"><div id="jr-bar" style="height:100%;width:' + (100 / JOURNAL_REFLECTION_QUESTIONS.length) + '%;background:var(--primary);border-radius:2px;transition:width .2s"></div></div>';
+  h += '<div id="jr-steps">';
   for (var i=0;i<JOURNAL_REFLECTION_QUESTIONS.length;i++) {
-    h += '<div style="margin-bottom:10px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">' + t(JOURNAL_REFLECTION_QUESTIONS[i]) + '</label>';
-    h += '<textarea class="jr-q" data-qidx="' + i + '" style="min-height:50px" aria-label="' + t(JOURNAL_REFLECTION_QUESTIONS[i]) + '"></textarea></div>';
+    h += '<div class="jr-step" data-step="' + i + '"' + (i>0 ? ' style="display:none"' : '') + '>';
+    h += '<div style="font-size:13px;font-weight:600;margin-bottom:4px" id="jr-qlabel-' + i + '">' + t(JOURNAL_REFLECTION_QUESTIONS[i]) + '</div>';
+    h += '<textarea class="jr-q" data-qidx="' + i + '" style="min-height:70px" aria-label="' + t(JOURNAL_REFLECTION_QUESTIONS[i]) + '"></textarea>';
+    h += '</div>';
   }
-  h += '<button class="btn btn-primary" onclick="finalizeRefJournal(this)">' + t('Save Entry') + '</button>';
-  h += '<button class="btn btn-outline" onclick="finalizeRefJournal(this, true)" style="margin-top:6px">' + t('Skip') + '</button>';
+  h += '</div>';
+  h += '<div style="display:flex;gap:8px;margin-top:12px;align-items:center">';
+  h += '<button type="button" class="btn btn-outline" id="jr-prev" onclick="jrStep(-1)" style="display:none">' + t('Back') + '</button>';
+  h += '<button type="button" class="btn btn-primary" id="jr-next" onclick="jrNextStep()" style="flex:1">' + t('Next') + '</button>';
+  h += '</div>';
+  h += '<button type="button" class="btn btn-outline" onclick="finalizeRefJournal(this, true)" style="width:100%;margin-top:6px">' + t('Skip') + '</button>';
   h += '</div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
-  var first = overlay.querySelector('textarea.jr-q');
-  if (first) first.focus();
+  JR_CURRENT_STEP = 0;
+  jrRenderStep(overlay);
+}
+
+function jrStep(delta) {
+  var overlay = document.getElementById('journal-reflect-ov');
+  if (!overlay) return;
+  JR_CURRENT_STEP = Math.max(0, Math.min(JOURNAL_REFLECTION_QUESTIONS.length - 1, JR_CURRENT_STEP + delta));
+  jrRenderStep(overlay);
+}
+
+function jrNextStep() {
+  jrStep(1);
+}
+
+function jrRenderStep(overlay) {
+  var steps = overlay.querySelectorAll('.jr-step');
+  for (var i=0;i<steps.length;i++) steps[i].style.display = (i===JR_CURRENT_STEP) ? '' : 'none';
+  var prev = overlay.querySelector('#jr-prev');
+  var next = overlay.querySelector('#jr-next');
+  var bar = overlay.querySelector('#jr-bar');
+  if (prev) prev.style.display = (JR_CURRENT_STEP === 0) ? 'none' : '';
+  if (next) {
+    if (JR_CURRENT_STEP === JOURNAL_REFLECTION_QUESTIONS.length - 1) {
+      next.textContent = t('Save Entry');
+      next.setAttribute('onclick', 'finalizeRefJournal(this)');
+    } else {
+      next.textContent = t('Next');
+      next.setAttribute('onclick', 'jrNextStep()');
+    }
+  }
+  if (bar) bar.style.width = ((JR_CURRENT_STEP + 1) / JOURNAL_REFLECTION_QUESTIONS.length * 100) + '%';
+  var cur = steps[JR_CURRENT_STEP];
+  if (cur) {
+    var ta = cur.querySelector('textarea.jr-q');
+    if (ta) ta.focus();
+  }
 }
 
 function finalizeRefJournal(btn, skip) {
@@ -1600,7 +1667,7 @@ function showJournalLetter(idx) {
 
   var entryHour = entry.time ? parseInt(entry.time.split(':')[0]) : -1;
   var entryNum = idx + 1;
-  var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour);
+  var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour, entry.reflections);
   var mot = getMotivation(mood);
 
   var now = new Date();
@@ -1703,7 +1770,7 @@ function showReflection(idx) {
 
   var ctx = contextLines.map(function(l){return '<span style="font-size:9px;background:rgba(255,255,255,.06);padding:2px 8px;border-radius:8px;color:rgba(255,255,255,.5);letter-spacing:.3px">'+l+'</span>'}).join(' ');
   var entryNum = idx + 1;
-  var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour);
+  var summaryText = buildSummary(entryText, mood, extractTopics(entryText), dayCount, streak, entryHour, entry.reflections);
   var mot = getMotivation(mood);
 
   // Build overlay
