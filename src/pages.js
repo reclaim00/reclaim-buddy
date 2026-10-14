@@ -3386,6 +3386,11 @@ function setupBuddyHTML() {
   h += '<button class="btn btn-outline" onclick="generatePairingCode()">Create an invite code</button>';
   h += '<div class="partner-code-entry"><label class="form-label" for="pairing-code">Their invite code</label><div class="partner-code-row"><input type="text" id="pairing-code" placeholder="Enter code" autocomplete="one-time-code" autocapitalize="characters" maxlength="8"><button class="btn btn-primary" id="pairing-connect-btn" onclick="connectPairingCode()">Connect</button></div></div>';
   h += '<div id="pairing-result" role="status" aria-live="polite" style="margin-top:10px;font-size:13px;color:var(--muted)"></div></div>';
+  h += '<div class="card partner-connect-card"><h3>Find a Partner</h3>';
+  h += '<p>Choose to join a pool of members who are also looking. Re.Claim will randomly match two people who opt in. Your partner’s account email is used privately to connect messaging.</p>';
+  h += '<button class="btn btn-primary" id="random-partner-btn" onclick="findRandomPartner()">Find a Partner</button>';
+  h += '<button class="btn btn-outline" id="random-partner-cancel" onclick="cancelRandomPartnerSearch()" style="display:none;margin-left:6px">Cancel search</button>';
+  h += '<div id="random-partner-status" role="status" aria-live="polite" style="margin-top:10px;font-size:13px;color:var(--muted)"></div></div>';
   h += '<div class="card partner-local-note"><h3>Already shared an invite?</h3><p>Check whether someone has asked to connect with this account. You decide whether to accept.</p><button class="btn btn-outline" onclick="checkPairingRequest()">Check invite requests</button></div>';
   return h;
 }

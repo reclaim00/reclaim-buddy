@@ -18,6 +18,7 @@ var VAPID_KEY = 'BMEecOfxkld0GFQk8oH7Rdn017rRpqeE5A0tnd0xlM4iDHuHiTaHPCxhxjjPCHO
 // Supabase is used only as a no-cost server-side push relay. Firebase remains
 // the source of truth for accounts, messages, and notification tokens.
 var SUPABASE_PUSH_URL = 'https://odndoykzrjmvonsyhvtx.supabase.co/functions/v1/send-partner-notification';
+var SUPABASE_MATCH_URL = 'https://odndoykzrjmvonsyhvtx.supabase.co/functions/v1/partner-matching';
 var SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_utL0bmp2n0WxwuumhRNk5Q_2NJ4zu1l';
 function notifyPartnerViaSupabase(kind, documentId) {
   var user = firebase && firebase.auth && firebase.auth().currentUser;
