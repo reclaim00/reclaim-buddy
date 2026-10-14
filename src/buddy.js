@@ -167,8 +167,25 @@ saveData();
   if (typeof render === 'function') render();
 }
 
-function getPartnerFunctions() {
-  try { return firebase.app().functions('us-central1'); } catch (e) { return null; }
+function requestRandomPartner(action) {
+  var user = firebase && firebase.auth && firebase.auth().currentUser;
+  if (!user || !SUPABASE_MATCH_URL || !SUPABASE_PUBLISHABLE_KEY) return Promise.reject(new Error('Sign in before looking for a partner.'));
+  return user.getIdToken().then(function(token) {
+    return fetch(SUPABASE_MATCH_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'apikey': SUPABASE_PUBLISHABLE_KEY },
+      body: JSON.stringify({ action: action, name: D.name || AUTH_USER || 'Re.Claim member', language: D.language || 'English' })
+    });
+  }).then(function(response) {
+    return response.json().catch(function() { return {}; }).then(function(data) {
+      if (!response.ok) {
+        var error = new Error(data && data.error || 'Partner matching could not be completed.');
+        error.status = response.status;
+        throw error;
+      }
+      return data;
+    });
+  });
 }
 
 function setRandomPartnerStatus(message) {
@@ -187,22 +204,19 @@ function showRandomPartnerMatch(result) {
 
 function checkRandomPartnerSearch() {
   if (randomPartnerInFlight || !AUTH_EMAIL) return;
-  var functions = getPartnerFunctions();
-  if (!functions) { setRandomPartnerStatus('Partner matching is not available right now. Try again later.'); return; }
   randomPartnerInFlight = true;
-  functions.httpsCallable('findRandomPartner')({name: D.name || AUTH_USER || 'Re.Claim member', language: D.language || 'English'})
-    .then(function(response) {
+  requestRandomPartner('search')
+    .then(function(result) {
       if (randomPartnerCancelled) return;
-      var result = response && response.data;
       if (showRandomPartnerMatch(result)) return;
       if (result && result.waiting) setRandomPartnerStatus('You’re in the opt-in matching pool. We’ll connect you when another member is available. Keep this page open while you wait.');
       else setRandomPartnerStatus('Still looking for an available partner…');
     })
     .catch(function(error) {
       console.warn('Could not search for a partner:', error);
-      var message = error && error.code === 'functions/failed-precondition' ? (error.message || 'End your current connection before finding another partner.') : 'Could not reach partner matching. Check your connection and try again.';
+      var message = error && error.status === 409 ? error.message : 'Could not reach partner matching. Check your connection and try again.';
       setRandomPartnerStatus(message);
-      if (error && error.code === 'functions/failed-precondition' && randomPartnerTimer) { clearInterval(randomPartnerTimer); randomPartnerTimer = null; }
+      if (error && error.status === 409 && randomPartnerTimer) { clearInterval(randomPartnerTimer); randomPartnerTimer = null; }
     })
     .then(function() { randomPartnerInFlight = false; });
 }
@@ -210,16 +224,14 @@ function checkRandomPartnerSearch() {
 function findRandomPartner() {
   if (buddyIsPaired(D.buddy)) { setRandomPartnerStatus('You already have a connected partner. End that connection before finding another.'); return; }
   if (!AUTH_EMAIL) { setRandomPartnerStatus('Sign in before looking for a partner.'); return; }
-  var functions = getPartnerFunctions();
-  if (!functions) { setRandomPartnerStatus('Partner matching is not available right now. Try again later.'); return; }
   var start = document.getElementById('random-partner-btn');
   if (start) { start.disabled = true; start.textContent = 'Finding…'; }
   randomPartnerCancelled = false;
   setRandomPartnerStatus('Joining the opt-in matching pool…');
-  functions.httpsCallable('findRandomPartner')({name: D.name || AUTH_USER || 'Re.Claim member', language: D.language || 'English'})
-    .then(function(response) {
+  requestRandomPartner('search')
+    .then(function(result) {
       if (randomPartnerCancelled) return;
-      if (showRandomPartnerMatch(response && response.data)) return;
+      if (showRandomPartnerMatch(result)) return;
       setRandomPartnerStatus('You’re in the opt-in matching pool. We’ll connect you when another member is available. Keep this page open while you wait.');
       if (start) { start.textContent = 'Searching for a partner…'; start.style.display = 'none'; }
       var cancel = document.getElementById('random-partner-cancel');
@@ -236,9 +248,8 @@ function findRandomPartner() {
 function cancelRandomPartnerSearch() {
   randomPartnerCancelled = true;
   if (randomPartnerTimer) { clearInterval(randomPartnerTimer); randomPartnerTimer = null; }
-  var functions = getPartnerFunctions();
-  if (!functions) { setRandomPartnerStatus('Could not reach partner matching. Your search may still be active; try again when connected.'); return; }
-  functions.httpsCallable('cancelRandomPartnerSearch')({}).then(function() {
+  requestRandomPartner('cancel').then(function(result) {
+    if (result && result.match) { showRandomPartnerMatch(result.match); return; }
     var start = document.getElementById('random-partner-btn');
     var cancel = document.getElementById('random-partner-cancel');
     if (start) { start.disabled = false; start.textContent = 'Find a Partner'; start.style.display = ''; }

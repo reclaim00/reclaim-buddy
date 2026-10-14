@@ -1,11 +1,10 @@
-var CACHE = 'reclaim-20261013a';
+var CACHE = 'reclaim-20261014a';
 var BASE = self.registration.scope;
 function baseUrl(p) { return new URL(p, BASE).href; }
 var FIREBASE_ASSETS = [
   'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
   'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
   'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js',
-  'https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js',
   'https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js'
 ];
 var SHELL = [
