@@ -14,11 +14,11 @@ let package = Package(
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.5.2"),
         .package(name: "CapacitorFirebaseAuthentication", path: "symlinks/CapacitorFirebaseAuthentication"),
         .package(name: "CapacitorFirebaseMessaging", path: "symlinks/CapacitorFirebaseMessaging"),
-        .package(name: "CapacitorHaptics", path: "../../../node_modules/@capacitor/haptics"),
-        .package(name: "CapacitorKeyboard", path: "../../../node_modules/@capacitor/keyboard"),
-        .package(name: "CapacitorLocalNotifications", path: "../../../node_modules/@capacitor/local-notifications"),
-        .package(name: "CapacitorStatusBar", path: "../../../node_modules/@capacitor/status-bar"),
-        .package(name: "RevenuecatPurchasesCapacitor", path: "../../../node_modules/@revenuecat/purchases-capacitor")
+        .package(name: "CapacitorHaptics", path: "../../../../../../Users/jackgeatches/Documents/Codex/2026-09-29/fix/reclaim-buddy-product/node_modules/@capacitor/haptics"),
+        .package(name: "CapacitorKeyboard", path: "../../../../../../Users/jackgeatches/Documents/Codex/2026-09-29/fix/reclaim-buddy-product/node_modules/@capacitor/keyboard"),
+        .package(name: "CapacitorLocalNotifications", path: "../../../../../../Users/jackgeatches/Documents/Codex/2026-09-29/fix/reclaim-buddy-product/node_modules/@capacitor/local-notifications"),
+        .package(name: "CapacitorStatusBar", path: "../../../../../../Users/jackgeatches/Documents/Codex/2026-09-29/fix/reclaim-buddy-product/node_modules/@capacitor/status-bar"),
+        .package(name: "RevenuecatPurchasesCapacitor", path: "../../../../../../Users/jackgeatches/Documents/Codex/2026-09-29/fix/reclaim-buddy-product/node_modules/@revenuecat/purchases-capacitor")
     ],
     targets: [
         .target(

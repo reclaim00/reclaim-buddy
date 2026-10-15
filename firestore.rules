@@ -66,6 +66,8 @@ service cloud.firestore {
       allow read: if request.auth != null && resource.data.email == request.auth.token.email;
       allow update, delete: if false;
     }
+    // partnerQueue, partnerBlocks, and partnerReports are intentionally unavailable to clients.
+    // The partner-matching Edge Function accesses them with its server-side service account.
     // Everything else is locked down
     match /{document=**} {
       allow read, write: if false;

@@ -1,3 +1,5 @@
+const LANGUAGES = new Set(["English", "Español", "Français", "Deutsch", "Русский", "中文", "日本語", "العربية"]);
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
@@ -197,16 +199,41 @@ async function commitWrites(project: string, token: string, transaction: string,
   await firestoreRequest(`${documentsUrl(project)}:commit`, token, { transaction, writes });
 }
 
-async function findPartner(project: string, token: string, email: string, name: string, language: string) {
+function queueTimestamp(data: Record<string, unknown>) {
+  const value = data.updatedAt || data.joinedAt;
+  return typeof value === "string" ? Date.parse(value) || 0 : 0;
+}
+
+function queueExpired(data: Record<string, unknown>) {
+  const timestamp = queueTimestamp(data);
+  return !timestamp || Date.now() - timestamp > 15 * 60 * 1000;
+}
+
+function matchPreferenceScore(own: Record<string, unknown>, candidate: Record<string, unknown>) {
+  const ownLanguage = String(own.language || "English");
+  const candidateLanguage = String(candidate.language || "English");
+  const ownPreferred = String(own.preferredLanguage || "Any language");
+  const candidatePreferred = String(candidate.preferredLanguage || "Any language");
+  const ownAvailability = String(own.availability || "Any time");
+  const candidateAvailability = String(candidate.availability || "Any time");
+  let score = 0;
+  if (ownPreferred === "Any language" || ownPreferred === candidateLanguage) score++;
+  if (candidatePreferred === "Any language" || candidatePreferred === ownLanguage) score++;
+  if (ownAvailability === "Any time" || candidateAvailability === "Any time" || ownAvailability === candidateAvailability) score++;
+  return score;
+}
+
+async function findPartner(project: string, token: string, email: string, name: string, language: string, preferredLanguage: string, availability: string) {
   for (let attempt = 0; attempt < 5; attempt++) {
     const transaction = await beginTransaction(project, token);
     try {
       const queuePath = docPath(project, "partnerQueue", email);
       const ownDataPath = docPath(project, "appData", email);
       const ownDocs = await getDocuments(project, token, transaction, [queuePath, ownDataPath]);
-      const ownQueue = ownDocs.get(queuePath) || {};
+      let ownQueue = ownDocs.get(queuePath) || {};
       const ownApp = ownDocs.get(ownDataPath) || {};
 
+      if (ownQueue.status === "waiting" && queueExpired(ownQueue)) ownQueue = {};
       if (ownQueue.status === "paired" && typeof ownQueue.partnershipCode === "string") {
         const pairPath = docPath(project, "pairingCodes", ownQueue.partnershipCode);
         const pairDoc = (await getDocuments(project, token, transaction, [pairPath])).get(pairPath);
@@ -223,7 +250,23 @@ async function findPartner(project: string, token: string, email: string, name: 
         throw new Error("You already have a connected partner. End that connection before finding another.");
       }
 
-      const waiting = shuffle((await queryWaiting(project, token, transaction)).filter((row) => row.data.email !== email));
+      const [blockedByMe, blockingMe] = await Promise.all([
+        queryDocuments(project, token, transaction, "partnerBlocks", "blockerEmail", email),
+        queryDocuments(project, token, transaction, "partnerBlocks", "blockedEmail", email),
+      ]);
+      const blockedEmails = new Set<string>();
+      blockedByMe.forEach((row) => { if (typeof row.data.blockedEmail === "string") blockedEmails.add(row.data.blockedEmail); });
+      blockingMe.forEach((row) => { if (typeof row.data.blockerEmail === "string") blockedEmails.add(row.data.blockerEmail); });
+
+      const staleQueuePaths: string[] = [];
+      const waiting = shuffle((await queryWaiting(project, token, transaction)).filter((row) => {
+        const candidateEmail = String(row.data.email || documentId(row.document));
+        if (candidateEmail === email) return false;
+        if (queueExpired(row.data)) { staleQueuePaths.push(row.document.name); return false; }
+        return !blockedEmails.has(candidateEmail);
+      })).sort((a, b) => matchPreferenceScore(b.data, { language, preferredLanguage, availability }) - matchPreferenceScore(a.data, { language, preferredLanguage, availability }));
+      const staleWrites = staleQueuePaths.map((path) => ({ delete: path }));
+
       for (const candidate of waiting) {
         const partnerEmail = String(candidate.data.email || documentId(candidate.document));
         if (!partnerEmail || partnerEmail === email) continue;
@@ -232,15 +275,14 @@ async function findPartner(project: string, token: string, email: string, name: 
           queryDocuments(project, token, transaction, "pairingCodes", "consumedBy", partnerEmail),
         ]);
         if (activePairForEmail(partnerPairings.flat())) {
-          const stale = { delete: candidate.document.name };
-          await commitWrites(project, token, transaction, [stale]);
-          return await findPartner(project, token, email, name, language);
+          staleWrites.push({ delete: candidate.document.name });
+          continue;
         }
 
         const now = new Date();
         const code = crypto.randomUUID().replace(/-/g, "").slice(0, 16).toUpperCase();
         const partnerQueue = { ...candidate.data, status: "paired", partnershipCode: code, updatedAt: now };
-        const myQueue = { ...ownQueue, email, name, language, status: "paired", partnershipCode: code, joinedAt: ownQueue.joinedAt || now, updatedAt: now };
+        const myQueue = { ...ownQueue, email, name, language, preferredLanguage, availability, status: "paired", partnershipCode: code, joinedAt: ownQueue.joinedAt || now, updatedAt: now };
         const pairing = {
           code,
           ownerEmail: email,
@@ -257,6 +299,7 @@ async function findPartner(project: string, token: string, email: string, name: 
           ended: false,
         };
         await commitWrites(project, token, transaction, [
+          ...staleWrites,
           { update: { name: docPath(project, "pairingCodes", code), fields: encodeFields(pairing) }, currentDocument: { exists: false } },
           { update: { name: queuePath, fields: encodeFields(myQueue) } },
           { update: { name: candidate.document.name, fields: encodeFields(partnerQueue) } },
@@ -265,8 +308,8 @@ async function findPartner(project: string, token: string, email: string, name: 
       }
 
       const now = new Date();
-      const waitingQueue = { ...ownQueue, email, name, language, status: "waiting", joinedAt: ownQueue.joinedAt || now, updatedAt: now };
-      await commitWrites(project, token, transaction, [{ update: { name: queuePath, fields: encodeFields(waitingQueue) } }]);
+      const waitingQueue = { ...ownQueue, email, name, language, preferredLanguage, availability, status: "waiting", joinedAt: ownQueue.joinedAt || now, updatedAt: now };
+      await commitWrites(project, token, transaction, [...staleWrites, { update: { name: queuePath, fields: encodeFields(waitingQueue) } }]);
       return { matched: false, waiting: true };
     } catch (error) {
       if ((error as Error & { status?: number }).status === 409 && attempt < 4) continue;
@@ -274,6 +317,67 @@ async function findPartner(project: string, token: string, email: string, name: 
     }
   }
   throw new Error("Matching is busy. Please try again.");
+}
+
+async function verifyActivePair(project: string, token: string, transaction: string, email: string, targetEmail: string, code: string) {
+  const path = docPath(project, "pairingCodes", code);
+  const pairing = (await getDocuments(project, token, transaction, [path])).get(path);
+  const participants = pairing && ((pairing.ownerEmail === email && pairing.consumedBy === targetEmail) || (pairing.ownerEmail === targetEmail && pairing.consumedBy === email));
+  if (!pairing || pairing.accepted !== true || pairing.ended === true || !participants) throw new Error("This partner connection is no longer active.");
+  return { path, pairing };
+}
+
+async function blockPartner(project: string, token: string, email: string, targetEmail: string, code: string) {
+  const transaction = await beginTransaction(project, token);
+  const verified = await verifyActivePair(project, token, transaction, email, targetEmail, code);
+  const blockId = b64url(`${email}\n${targetEmail}`);
+  const blockPath = docPath(project, "partnerBlocks", blockId);
+  const queuePaths = [docPath(project, "partnerQueue", email), docPath(project, "partnerQueue", targetEmail)];
+  const current = await getDocuments(project, token, transaction, [blockPath]);
+  const blocked = { ...(current.get(blockPath) || {}), blockerEmail: email, blockedEmail: targetEmail, partnershipCode: code, createdAt: new Date() };
+  const ended = { ...verified.pairing, ended: true, endedBy: email, endedAt: new Date(), endedReason: "blocked" };
+  const writes: unknown[] = [
+    { update: { name: verified.path, fields: encodeFields(ended) } },
+    { update: { name: blockPath, fields: encodeFields(blocked) }, ...(current.has(blockPath) ? {} : { currentDocument: { exists: false } }) },
+    ...queuePaths.map((path) => ({ delete: path })),
+  ];
+  await commitWrites(project, token, transaction, writes);
+  return { blocked: true };
+}
+
+async function unblockPartner(project: string, token: string, email: string, targetEmail: string) {
+  const transaction = await beginTransaction(project, token);
+  const blockPath = docPath(project, "partnerBlocks", b64url(`${email}\n${targetEmail}`));
+  const record = (await getDocuments(project, token, transaction, [blockPath])).get(blockPath);
+  if (!record || record.blockerEmail !== email) return { unblocked: true };
+  await commitWrites(project, token, transaction, [{ delete: blockPath }]);
+  return { unblocked: true };
+}
+
+async function reportPartner(project: string, token: string, email: string, targetEmail: string, code: string, category: string, alsoBlock: boolean) {
+  const allowed = new Set(["harassment", "spam", "inappropriate", "safety", "other"]);
+  if (!allowed.has(category)) throw new Error("Choose a report reason.");
+  const transaction = await beginTransaction(project, token);
+  await verifyActivePair(project, token, transaction, email, targetEmail, code);
+  const id = crypto.randomUUID();
+  const now = new Date();
+  const report = { partnershipCode: code, category, createdAt: now, status: "new" };
+  const writes: unknown[] = [{ update: { name: docPath(project, "partnerReports", id), fields: encodeFields(report) }, currentDocument: { exists: false } }];
+  if (alsoBlock) {
+    const blockId = b64url(`${email}\n${targetEmail}`);
+    const blockPath = docPath(project, "partnerBlocks", blockId);
+    const queuePaths = [docPath(project, "partnerQueue", email), docPath(project, "partnerQueue", targetEmail)];
+    const current = await getDocuments(project, token, transaction, [blockPath]);
+    const blocked = { ...(current.get(blockPath) || {}), blockerEmail: email, blockedEmail: targetEmail, partnershipCode: code, createdAt: now };
+    const ended = { ...verified.pairing, ended: true, endedBy: email, endedAt: now, endedReason: "blocked" };
+    writes.push(
+      { update: { name: verified.path, fields: encodeFields(ended) } },
+      { update: { name: blockPath, fields: encodeFields(blocked) }, ...(current.has(blockPath) ? {} : { currentDocument: { exists: false } }) },
+      ...queuePaths.map((path) => ({ delete: path })),
+    );
+  }
+  await commitWrites(project, token, transaction, writes);
+  return { reported: true, blocked: alsoBlock };
 }
 
 async function cancelSearch(project: string, token: string, email: string) {
@@ -302,16 +406,30 @@ Deno.serve(async (request) => {
     if (!email) return Response.json({ error: "Invalid sign-in" }, { status: 401, headers: corsHeaders });
     const input = await request.json();
     const action = input?.action;
-    if (action !== "search" && action !== "cancel") return Response.json({ error: "Invalid request" }, { status: 400, headers: corsHeaders });
+    if (!["search", "cancel", "block", "unblock", "report"].includes(action)) return Response.json({ error: "Invalid request" }, { status: 400, headers: corsHeaders });
 
     const account = serviceAccount();
     const accessToken = await googleAccessToken(account);
     if (action === "cancel") {
       return Response.json(await cancelSearch(account.project_id, accessToken, email), { headers: corsHeaders });
     }
+    if (["block", "unblock", "report"].includes(action)) {
+      const targetEmail = String(input?.targetEmail || "").trim().toLowerCase();
+      if (!targetEmail || targetEmail === email) return Response.json({ error: "Invalid partner connection" }, { status: 400, headers: corsHeaders });
+      if (action === "unblock") return Response.json(await unblockPartner(account.project_id, accessToken, email, targetEmail), { headers: corsHeaders });
+      const code = String(input?.partnershipCode || "").trim();
+      if (!code) return Response.json({ error: "Invalid partner connection" }, { status: 400, headers: corsHeaders });
+      const result = action === "block"
+        ? await blockPartner(account.project_id, accessToken, email, targetEmail, code)
+        : await reportPartner(account.project_id, accessToken, email, targetEmail, code, String(input?.category || ""), input?.block === true);
+      return Response.json(result, { headers: corsHeaders });
+    }
     const name = String(input?.name || "Re.Claim member").trim().slice(0, 60) || "Re.Claim member";
     const language = String(input?.language || "English").trim().slice(0, 40) || "English";
-    return Response.json(await findPartner(account.project_id, accessToken, email, name, language), { headers: corsHeaders });
+    const preferredLanguage = LANGUAGES.has(String(input?.preferredLanguage || "Any language")) ? String(input?.preferredLanguage || "Any language") : "Any language";
+    const availabilityOptions = new Set(["Any time", "Morning", "Afternoon", "Evening"]);
+    const availability = availabilityOptions.has(String(input?.availability || "Any time")) ? String(input?.availability || "Any time") : "Any time";
+    return Response.json(await findPartner(account.project_id, accessToken, email, name, language, preferredLanguage, availability), { headers: corsHeaders });
   } catch (error) {
     console.error("Partner matching error:", error);
     const message = error instanceof Error && error.message.startsWith("You already have") ? error.message : "Partner matching could not be completed. Please try again.";

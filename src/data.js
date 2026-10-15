@@ -417,7 +417,7 @@ function defaultData() {
     habits: [], // [{id, name, logs: ['date strings']}]
     breatheCount: 0, lastBreatheDate: '',
     targetAddictions: [],
-    buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [], competitions: [],
+    buddy: null, buddyCheckins: [], buddyGoals: [], pairedBuddies: [], blockedPartners: [], partnerMatchPrefs: { language: 'Any language', availability: 'Any time' }, competitions: [],
     assessmentTaken: false, assessmentResult: null,
     sobriety: { startDate: null, relapseDates: [], addictionType: '', costPerDay: 0, dailyQuantity: 0, unitLabel: '', spendingOn: '', weeklyIncome: 0 },
     // Pre-populated coping cards displayed from defaults; user can add custom

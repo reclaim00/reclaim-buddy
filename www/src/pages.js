@@ -2105,11 +2105,11 @@ function showHelpCenter() {
   overlay.setAttribute('role','dialog'); overlay.setAttribute('aria-modal','true'); overlay.setAttribute('aria-labelledby','help-title');
   overlay.innerHTML = '<div class="overlay-content help-content"><div class="help-heading"><div><h2 id="help-title">Help & account recovery</h2><p>Short answers for setup, reminders, partners, and your data.</p></div><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove()" aria-label="Close help">Close</button></div>'+
     '<details class="help-section" open><summary>Getting started</summary><p>You can explore first and add your name, focus, goals, and reminders later. Use the planet on Home to see your journey, and Check in to record how today feels.</p></details>'+
-    '<details class="help-section"><summary>Partner invites and disconnecting</summary><p>Create an invite code and share it directly with someone you trust. It expires after 24 hours. They request a connection; you must accept before messages or progress sharing are available.</p><p>End the connection from the Partner page. The other person gets a push notice if they enabled notifications, or sees the change next time they open Partner. New messages stop, your own progress share is deleted, and access to their shared progress is revoked. Past messages remain in account records. Older connections may need to reconnect with a new invite.</p></details>'+
+    '<details class="help-section"><summary>Partner invites, blocking, and reports</summary><p>Create an invite code and share it directly with someone you trust. It expires in 24 hours. You can also opt in to random matching and choose language and usual availability; the app prioritizes those preferences when possible.</p><p>End a connection from the Partner page. Use Report or block to send a concern category to Re.Claim or prevent that account from matching with you again. Reports are not monitored in real time. New messages stop after a block, and blocked accounts can be unblocked from the Partner page.</p></details>'+
     '<details class="help-section"><summary>Reminders and gentle follow-ups</summary><p>Create reminders from Tools → Reminders. Add them to your calendar there, or enable push notifications in Profile → Reminders. Push alerts require notification permission and a signed-in account. Home shows upcoming reminders, an overdue recovery goal, a monthly safety-plan review, and any scheduled follow-up.</p></details>'+
     '<details class="help-section"><summary>Forgot your account password?</summary><p>On the sign-in screen, enter your email and choose “Forgot password?” Firebase will email you a reset link. A password reset restores account sign-in; it does not reset your separate encryption passphrase.</p></details>'+
     '<details class="help-section"><summary>Forgot your encryption passphrase?</summary><p>The encryption passphrase cannot be reset or recovered. If another device is still unlocked, export your data there before signing out or removing the app. If the only copy is encrypted in the cloud and the passphrase is lost, Re.Claim cannot decrypt it.</p></details>'+
-    '<details class="help-section"><summary>Move or restore your data</summary><p>Use Profile → Export My Data to save a backup, then Profile → Import Data on the other device. Signed-in cloud sync can restore your account snapshot. Keep your encryption passphrase separately if encryption is on; a cloud backup alone cannot unlock it.</p></details>'+
+    '<details class="help-section"><summary>Move or restore your data</summary><p>On a new device, sign in with the same account and allow cloud sync to restore your latest snapshot. You can also use Profile → Export My Data on the old device and Profile → Import Data on the new one. Import previews the backup before replacing data. Keep your encryption passphrase separately if encryption is on; a cloud snapshot cannot unlock itself.</p></details>'+
     '<div class="help-footer"><a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a><a href="terms.html" target="_blank" rel="noopener">Terms</a><button class="btn btn-outline btn-sm" onclick="showSOS();this.closest(\'.overlay\').remove()">Urgent support</button></div></div>';
   document.body.appendChild(overlay);
   var first = overlay.querySelector('summary'); if (first) first.focus();
@@ -3154,6 +3154,7 @@ function buddyHTML() {
   h += '<h2 class="page-title">'+t('Your Partner')+'</h2>';
   h += '<div class="comrade-card"><div class="comrade-avatar">' + safe(D.buddy.name[0].toUpperCase()) + '</div><div><div style="font-weight:700;font-size:16px">' + safe(D.buddy.name) + '</div><div style="font-size:12px;color:var(--muted)">' + safe(D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + safe(D.buddy.contact) : '') + (D.buddy.language ? ' &middot; ' + safe(D.buddy.language) : '') + '</div></div></div>';
   h += '<div class="card partner-local-note"><h3>Local partner profile</h3><p>Use this space to keep your own check-ins and goals. Connect their Re.Claim account with an invite code to message or send quick check-ins.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'buddy\')">Connect an account</button><button class="btn btn-outline btn-sm" onclick="checkPairingRequest()" style="margin-left:6px">Check invite requests</button></div>';
+  h += blockedPartnerCardHTML();
   h += '<div class="stat-grid" style="margin:8px 0">';
   h += '<div class="stat-card"><div class="num">' + buddyStreak() + '</div><div class="label">Buddy Streak</div></div>';
   h += '<div class="stat-card"><div class="num">' + D.buddyCheckins.length + '</div><div class="label">Check-Ins</div></div>';
@@ -3366,6 +3367,14 @@ window.addCompetitionProgress = function(idx) {
   render();
 };
 
+function blockedPartnerCardHTML() {
+  var blockedPartners = Array.isArray(D.blockedPartners) ? D.blockedPartners : [];
+  if (!blockedPartners.length) return '';
+  var h = '<div class="card partner-local-note"><h3>Blocked accounts</h3><p>These accounts will be skipped during matching.</p>';
+  for (var bi=0;bi<blockedPartners.length;bi++) h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--border)"><span style="font-size:12px">'+safe(blockedPartners[bi].name || blockedPartners[bi].email || 'Partner')+'</span><button class="btn btn-outline btn-sm" onclick="unblockPartnerAt('+bi+')">Unblock</button></div>';
+  return h + '</div>';
+}
+
 function setupBuddyHTML() {
   var h = '';
   h += '<h2 class="page-title">'+t('Your Support Partner')+'</h2>';
@@ -3386,11 +3395,18 @@ function setupBuddyHTML() {
   h += '<button class="btn btn-outline" onclick="generatePairingCode()">Create an invite code</button>';
   h += '<div class="partner-code-entry"><label class="form-label" for="pairing-code">Their invite code</label><div class="partner-code-row"><input type="text" id="pairing-code" placeholder="Enter code" autocomplete="one-time-code" autocapitalize="characters" maxlength="8"><button class="btn btn-primary" id="pairing-connect-btn" onclick="connectPairingCode()">Connect</button></div></div>';
   h += '<div id="pairing-result" role="status" aria-live="polite" style="margin-top:10px;font-size:13px;color:var(--muted)"></div></div>';
+  var matchPrefs = D.partnerMatchPrefs || { language: 'Any language', availability: 'Any time' };
   h += '<div class="card partner-connect-card"><h3>Find a Partner</h3>';
-  h += '<p>Choose to join a pool of members who are also looking. Re.Claim will randomly match two people who opt in. Your partner’s account email is used privately to connect messaging.</p>';
-  h += '<button class="btn btn-primary" id="random-partner-btn" onclick="findRandomPartner()">Find a Partner</button>';
+  h += '<p>Choose to join a pool of members who are also looking. We prioritize your preferences when possible; if none align, you may still be matched with someone outside them.</p>';
+  h += '<label class="form-label" for="random-partner-language">Preferred language</label><select id="random-partner-language" onchange="savePartnerMatchPreference(\'language\',this.value)" style="width:100%;margin-bottom:8px"><option value="Any language"'+(matchPrefs.language==='Any language'?' selected':'')+'>Any language</option>';
+  for (var mi=0;mi<LANGUAGES.length;mi++) h += '<option value="'+LANGUAGES[mi]+'"'+(matchPrefs.language===LANGUAGES[mi]?' selected':'')+'>'+LANGUAGES[mi]+'</option>';
+  h += '</select><label class="form-label" for="random-partner-availability">When are you usually available?</label><select id="random-partner-availability" onchange="savePartnerMatchPreference(\'availability\',this.value)" style="width:100%;margin-bottom:8px">';
+  var availabilityOptions = ['Any time','Morning','Afternoon','Evening'];
+  for (var ai=0;ai<availabilityOptions.length;ai++) h += '<option value="'+availabilityOptions[ai]+'"'+((matchPrefs.availability||'Any time')===availabilityOptions[ai]?' selected':'')+'>'+availabilityOptions[ai]+'</option>';
+  h += '</select><button class="btn btn-primary" id="random-partner-btn" onclick="findRandomPartner()">Find a Partner</button>';
   h += '<button class="btn btn-outline" id="random-partner-cancel" onclick="cancelRandomPartnerSearch()" style="display:none;margin-left:6px">Cancel search</button>';
   h += '<div id="random-partner-status" role="status" aria-live="polite" style="margin-top:10px;font-size:13px;color:var(--muted)"></div></div>';
+  h += blockedPartnerCardHTML();
   h += '<div class="card partner-local-note"><h3>Already shared an invite?</h3><p>Check whether someone has asked to connect with this account. You decide whether to accept.</p><button class="btn btn-outline" onclick="checkPairingRequest()">Check invite requests</button></div>';
   return h;
 }
@@ -4094,7 +4110,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   }
   h += '</div>';
   h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Cloud Sync')+'</h3>';
-  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Your data syncs automatically to the cloud when you\'re signed in.')+'</p>';
+  h += '<p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Your data syncs automatically to the cloud when you\'re signed in.')+' On a new device, sign in to restore your latest snapshot. If encryption is on, you will also need your passphrase.</p>';
   h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:12px;color:var(--muted)">'+t('Last sync')+':</span><span id="sync-time-display" style="font-size:12px;font-weight:600">'+(_lastSyncTime||t('Never'))+'</span></div>';
   h += '<button class="btn btn-sm btn-primary" onclick="syncToFirestore()" style="margin-bottom:6px">'+t('Sync Now')+'</button></div>';
   h += '<button class="btn btn-primary btn-sm" onclick="showProgressReport()" style="margin-top:8px">&#128202; '+t('Progress Report')+'</button>';
@@ -4138,58 +4154,113 @@ function changeAvatar() {
   };
   input.click();
 }
-function exportData() {
-  var exportObj = {
-    _exportedAt: new Date().toISOString(),
-    _exportVersion: 2,
-    _dataVersion: D.version || 1,
-    _stats: {
-      journalEntries: (D.journal||[]).length,
-      moodsLogged: (D.moods||[]).length,
-      cravingsLogged: (D.cravings||[]).length,
-      soberDays: D.sobriety && D.sobriety.startDate ? soberDays() : 0,
-      copingCardsCount: (D.copingCards||[]).length + (D.customCopingCards||[]).length,
-      habitsTracked: (D.habits||[]).length
-    },
-    data: D
+function dataExportSummary(data) {
+  return {
+    journalEntries: (data.journal || []).length,
+    moodsLogged: (data.moods || []).length,
+    cravingsLogged: (data.cravings || []).length,
+    soberDays: data.sobriety && data.sobriety.startDate ? Math.max(0, Math.floor((Date.now() - new Date(data.sobriety.startDate).getTime()) / 86400000)) : 0,
+    copingCardsCount: (data.copingCards || []).length + (data.customCopingCards || []).length,
+    habitsTracked: (data.habits || []).length,
+    recoveryGoals: (data.recoveryGoals || []).length,
+    reminders: (data.reminders || []).length
   };
-  var blob = new Blob([JSON.stringify(exportObj, null, 2)], {type:'application/json'});
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'reclaim-data-' + new Date().toISOString().split('T')[0] + '.json';
-  a.click();
 }
 
+function makeDataExport(data) {
+  return {
+    _exportedAt: new Date().toISOString(),
+    _exportVersion: 2,
+    _dataVersion: data.version || 1,
+    _stats: dataExportSummary(data),
+    data: data
+  };
+}
+
+function downloadDataExport(data, filename) {
+  var blob = new Blob([JSON.stringify(makeDataExport(data), null, 2)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename || 'reclaim-data-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+}
+
+function exportData() {
+  downloadDataExport(D);
+}
+
+var _pendingImportData = null;
+var _pendingImportFileName = '';
+
 function importData() {
-  if (!confirm(t('This will overwrite all current data. Are you sure?'))) return;
   var input = document.createElement('input');
   input.type = 'file';
-  input.accept = '.json';
+  input.accept = '.json,application/json';
   input.onchange = function(e) {
-    var file = e.target.files[0];
+    var file = e.target.files && e.target.files[0];
     if (!file) return;
+    if (file.size > 15 * 1024 * 1024) { alert(t('This backup file is too large to import.')); return; }
     var reader = new FileReader();
     reader.onload = function(ev) {
       try {
         var parsed = JSON.parse(ev.target.result);
         var data;
-        // Handle wrapped export format (v2+)
-        if (parsed && parsed._exportVersion && parsed.data) {
-          data = parsed.data;
-        } else if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-          data = parsed;
-        } else {
-          alert(t('Invalid file format.')); return;
-        }
-        data = validateData(data);
-        for (var k in data) D[k] = data[k];
-        saveData();
-        alert(t('Data imported successfully!'));
-      } catch(err) { alert(t('Invalid file format.')); }
+        if (parsed && parsed._exportVersion && parsed.data) data = parsed.data;
+        else if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) data = parsed;
+        else throw new Error('Invalid backup');
+        _pendingImportData = validateData(JSON.parse(JSON.stringify(data)));
+        _pendingImportFileName = file.name || 'backup file';
+        showImportPreview(parsed && parsed._exportedAt ? parsed._exportedAt : 'Unknown date');
+      } catch(err) {
+        _pendingImportData = null;
+        alert(t('This file is not a valid Re.Claim data backup.'));
+      }
     };
+    reader.onerror = function() { alert(t('Could not read this backup file.')); };
     reader.readAsText(file);
   };
   input.click();
+}
+
+function showImportPreview(exportedAt) {
+  if (!_pendingImportData) return;
+  var summary = dataExportSummary(_pendingImportData);
+  var dateText = exportedAt === 'Unknown date' ? exportedAt : new Date(exportedAt).toLocaleString();
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:440px"><h3 style="font-size:18px;margin-bottom:6px">Review backup before restoring</h3><p style="font-size:12px;color:var(--muted);margin-bottom:8px">File: '+safe(_pendingImportFileName)+'<br>Created: '+safe(dateText)+'</p><div class="card" style="font-size:13px;line-height:1.8"><div>Journal entries: <strong>'+summary.journalEntries+'</strong></div><div>Mood logs: <strong>'+summary.moodsLogged+'</strong></div><div>Craving logs: <strong>'+summary.cravingsLogged+'</strong></div><div>Recovery goals: <strong>'+summary.recoveryGoals+'</strong></div><div>Reminders: <strong>'+summary.reminders+'</strong></div></div><p style="font-size:12px;color:var(--danger);line-height:1.5">Restoring replaces data on this device and syncs it to your account if you are signed in. The JSON backup is not encrypted. The restored copy will use this device’s encryption setting; keep your passphrase if encryption is on.</p><button class="btn btn-outline" onclick="exportData()">Download current data first</button><label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted);margin:10px 0"><input id="import-backup-confirm" type="checkbox" onchange="updateImportRestoreButton(this.checked)" style="width:auto;margin-top:2px">I downloaded a backup of my current data, or understand it will be replaced.</label><button id="import-restore-btn" class="btn btn-primary" onclick="applyImportedData()" disabled>Restore this backup</button><button class="btn btn-outline" onclick="cancelDataImport()" style="margin-top:6px">Cancel</button></div>';
+  document.body.appendChild(overlay);
+}
+
+function updateImportRestoreButton(ready) {
+  var button = document.getElementById('import-restore-btn');
+  if (button) button.disabled = !ready;
+}
+
+function cancelDataImport() {
+  _pendingImportData = null;
+  _pendingImportFileName = '';
+  var overlay = document.querySelector('.overlay');
+  if (overlay) overlay.remove();
+}
+
+function applyImportedData() {
+  if (!_pendingImportData) return;
+  var consent = document.getElementById('import-backup-confirm');
+  if (!consent || !consent.checked) return;
+  var imported = validateData(_pendingImportData);
+  var destinationEncryption = D && D.encryption ? JSON.parse(JSON.stringify(D.encryption)) : { enabled: false, salt: null, keyCheck: null };
+  if (destinationEncryption.enabled && !ENC_KEY) { showToast('Unlock encryption on this device before restoring a backup.', 'error'); return; }
+  var overlay = document.querySelector('.overlay');
+  if (overlay) overlay.remove();
+  imported.encryption = destinationEncryption;
+  D = imported;
+  _pendingImportData = null;
+  _pendingImportFileName = '';
+  saveData();
+  showToast('Backup restored. Cloud sync will update your account if you are signed in.', 'success');
 }
 
 function exportJournalText() {
@@ -5160,6 +5231,7 @@ function buddyThreadHTML() {
   h += '<div class="buddy-thread-identity"><div class="buddy-thread-name">' + buddyName + '</div><div class="buddy-thread-status"><span class="buddy-link-check" aria-hidden="true">&#10003;</span>Connected on Re.Claim</div></div>';
   h += '<span id="comrade-unread-pill" class="comrade-unread-pill" style="display:none"></span>';
   h += '</div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="showPartnerSafetyOptions()" style="width:100%;margin:8px 0">Report or block</button>';
   h += '<div class="buddy-quick-label">Quick check-in</div><div class="buddy-quick-actions">';
   h += '<button type="button" class="buddy-quick-btn" onclick="quickBuddyCheckin(\'okay\')">I’m doing okay</button>';
   h += '<button type="button" class="buddy-quick-btn" onclick="quickBuddyCheckin(\'tough\')">Having a tough moment</button>';
