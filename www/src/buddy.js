@@ -342,9 +342,16 @@ function renderPartnerReportList(overlay, reports) {
     var created = report.createdAt ? new Date(report.createdAt) : null;
     var dateLabel = created && !isNaN(created.getTime()) ? created.toLocaleString() : 'Date unavailable';
     var options = statuses.map(function(item) { return '<option value="'+item[0]+'"'+(report.status === item[0] ? ' selected' : '')+'>'+item[1]+'</option>'; }).join('');
-    html += '<div class="card" style="text-align:left"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><strong>'+safe(labels[report.category] || 'Other concern')+'</strong><span style="font-size:11px;color:var(--muted)">'+safe(dateLabel)+'</span></div><div style="font-size:12px;color:var(--muted);margin:6px 0">Reporter: '+safe(report.reporterEmail || 'Not recorded on older report')+'<br>Reported account: '+safe(report.reportedEmail || 'Not recorded on older report')+'<br>Connection: '+safe(report.partnershipCode || 'Unavailable')+'</div><label class="form-label" for="partner-report-status-'+index+'">Review status</label><select id="partner-report-status-'+index+'" style="width:100%;margin-bottom:6px">'+options+'</select><button class="btn btn-primary btn-sm" onclick="savePartnerReportStatus('+index+',this)">Save status</button>'+(report.reviewedBy ? '<div style="font-size:10px;color:var(--muted);margin-top:5px">Last updated by '+safe(report.reviewedBy)+'</div>' : '')+'</div>';
+    html += '<div class="card" style="text-align:left"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><strong>'+safe(labels[report.category] || 'Other concern')+'</strong><span style="font-size:11px;color:var(--muted)">'+safe(dateLabel)+'</span></div><div style="font-size:12px;color:var(--muted);margin:6px 0">Reporter: '+safe(report.reporterEmail || 'Not recorded on older report')+'<br>Reported account: '+safe(report.reportedEmail || 'Not recorded on older report')+'<br>Connection: '+safe(report.partnershipCode || 'Unavailable')+'</div><label class="form-label" for="partner-report-status-'+index+'">Review status</label><select id="partner-report-status-'+index+'" style="width:100%;margin-bottom:6px">'+options+'</select><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-primary btn-sm" onclick="savePartnerReportStatus('+index+',this)">Save status</button>'+(report.reporterEmail ? '<button class="btn btn-outline btn-sm" onclick="emailPartnerReporter('+index+')">Email reporter</button>' : '')+'</div>'+(report.reviewedBy ? '<div style="font-size:10px;color:var(--muted);margin-top:5px">Last updated by '+safe(report.reviewedBy)+'</div>' : '')+'</div>';
   });
   list.innerHTML = html;
+}
+
+function emailPartnerReporter(index) {
+  var report = _partnerReportRows[index];
+  if (!report || !report.reporterEmail) return;
+  var subject = encodeURIComponent('Re.Claim partner safety report follow-up');
+  window.location.href = 'mailto:' + encodeURIComponent(report.reporterEmail) + '?subject=' + subject;
 }
 
 function savePartnerReportStatus(index, button) {

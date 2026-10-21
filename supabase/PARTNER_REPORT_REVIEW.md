@@ -10,6 +10,6 @@ The report inbox is available to a Re.Claim account only when its Firebase sign-
 4. Deploy the updated `partner-matching` Edge Function.
 5. Sign in to the app with an allowlisted account and open **Partner**. The **Safety report review** card will appear there.
 
-Do not put administrator credentials in the app or in this file. The inbox shows up to 100 most recent reports and allows an administrator to mark each report **New**, **In review**, **Action taken**, or **Closed**. Reports remain private in Firestore; normal app users cannot read or change them directly.
+Do not put administrator credentials in the app or in this file. The inbox shows up to 100 most recent reports and allows an administrator to mark each report **New**, **In review**, **Action taken**, or **Closed**, and open an email reply to the reporter when their email is available. Reports remain private in Firestore; normal app users cannot read or change them directly.
 
 Reports are reviewed manually and are not monitored in real time. The inbox does not send an alert when a report arrives.
