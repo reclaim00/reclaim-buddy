@@ -361,7 +361,7 @@ async function reportPartner(project: string, token: string, email: string, targ
   await verifyActivePair(project, token, transaction, email, targetEmail, code);
   const id = crypto.randomUUID();
   const now = new Date();
-  const report = { partnershipCode: code, category, createdAt: now, status: "new" };
+  const report = { partnershipCode: code, category, reporterEmail: email, reportedEmail: targetEmail, createdAt: now, status: "new" };
   const writes: unknown[] = [{ update: { name: docPath(project, "partnerReports", id), fields: encodeFields(report) }, currentDocument: { exists: false } }];
   if (alsoBlock) {
     const blockId = b64url(`${email}\n${targetEmail}`);
@@ -378,6 +378,51 @@ async function reportPartner(project: string, token: string, email: string, targ
   }
   await commitWrites(project, token, transaction, writes);
   return { reported: true, blocked: alsoBlock };
+}
+
+function reportAdminEmails() {
+  return new Set((Deno.env.get("PARTNER_REPORT_ADMIN_EMAILS") || "").split(",").map((value) => value.trim().toLowerCase()).filter(Boolean));
+}
+
+async function listPartnerReports(project: string, token: string) {
+  const query = {
+    structuredQuery: {
+      from: [{ collectionId: "partnerReports" }],
+      orderBy: [{ field: { fieldPath: "createdAt" }, direction: "DESCENDING" }],
+      limit: 100,
+    },
+  };
+  const rows = await firestoreRequest(`${documentsUrl(project)}:runQuery`, token, query) as Array<{ document?: FirestoreDocument }>;
+  return (rows || []).flatMap((row) => {
+    if (!row.document) return [];
+    const data = decodeFields(row.document.fields);
+    return [{
+      id: documentId(row.document),
+      category: String(data.category || "other"),
+      status: String(data.status || "new"),
+      createdAt: data.createdAt || null,
+      reporterEmail: typeof data.reporterEmail === "string" ? data.reporterEmail : "",
+      reportedEmail: typeof data.reportedEmail === "string" ? data.reportedEmail : "",
+      partnershipCode: typeof data.partnershipCode === "string" ? data.partnershipCode : "",
+      reviewedAt: data.reviewedAt || null,
+      reviewedBy: typeof data.reviewedBy === "string" ? data.reviewedBy : "",
+    }];
+  });
+}
+
+async function updatePartnerReport(project: string, token: string, adminEmail: string, reportId: string, status: string) {
+  const allowedStatuses = new Set(["new", "in_review", "action_taken", "closed"]);
+  if (!/^[0-9a-f-]{36}$/i.test(reportId) || !allowedStatuses.has(status)) throw new Error("Invalid report update.");
+  const transaction = await beginTransaction(project, token);
+  const path = docPath(project, "partnerReports", reportId);
+  const existing = (await getDocuments(project, token, transaction, [path])).get(path);
+  if (!existing) return { updated: false };
+  const reviewedAt = new Date();
+  await commitWrites(project, token, transaction, [{
+    update: { name: path, fields: encodeFields({ status, reviewedAt, reviewedBy: adminEmail }) },
+    updateMask: { fieldPaths: ["status", "reviewedAt", "reviewedBy"] },
+  }]);
+  return { updated: true };
 }
 
 async function cancelSearch(project: string, token: string, email: string) {
@@ -406,7 +451,18 @@ Deno.serve(async (request) => {
     if (!email) return Response.json({ error: "Invalid sign-in" }, { status: 401, headers: corsHeaders });
     const input = await request.json();
     const action = input?.action;
-    if (!["search", "cancel", "block", "unblock", "report"].includes(action)) return Response.json({ error: "Invalid request" }, { status: 400, headers: corsHeaders });
+    if (!["search", "cancel", "block", "unblock", "report", "admin_check", "admin_list_reports", "admin_update_report"].includes(action)) return Response.json({ error: "Invalid request" }, { status: 400, headers: corsHeaders });
+    const isReportAdmin = reportAdminEmails().has(email);
+    if (action === "admin_check") return Response.json({ isAdmin: isReportAdmin }, { headers: corsHeaders });
+    if (action === "admin_list_reports" || action === "admin_update_report") {
+      if (!isReportAdmin) return Response.json({ error: "You do not have access to review safety reports." }, { status: 403, headers: corsHeaders });
+      const account = serviceAccount();
+      const accessToken = await googleAccessToken(account);
+      if (action === "admin_list_reports") return Response.json({ reports: await listPartnerReports(account.project_id, accessToken) }, { headers: corsHeaders });
+      const reportId = String(input?.reportId || "");
+      const status = String(input?.status || "");
+      return Response.json(await updatePartnerReport(account.project_id, accessToken, email, reportId, status), { headers: corsHeaders });
+    }
 
     const account = serviceAccount();
     const accessToken = await googleAccessToken(account);

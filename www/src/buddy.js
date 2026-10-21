@@ -292,6 +292,76 @@ function resetRandomPartnerControls() {
 }
 
 
+var _partnerReportAdminEmailChecked = "";
+var _partnerReportAdminCheckPending = false;
+var _partnerReportAdmin = false;
+var _partnerReportRows = [];
+
+function checkPartnerReportAdmin() {
+  var slot = document.getElementById('partner-report-admin-tools');
+  if (!slot || !AUTH_EMAIL) return;
+  if (_partnerReportAdminEmailChecked === AUTH_EMAIL) {
+    if (_partnerReportAdmin) slot.innerHTML = '<div class="card"><h3>Safety report review</h3><p style="font-size:13px;color:var(--muted)">Review reports submitted by partner-system users.</p><button class="btn btn-outline btn-sm" onclick="showPartnerReports()">Open report inbox</button></div>';
+    return;
+  }
+  if (_partnerReportAdminCheckPending) return;
+  _partnerReportAdminCheckPending = true;
+  requestRandomPartner('admin_check').then(function(result) {
+    _partnerReportAdminEmailChecked = AUTH_EMAIL;
+    _partnerReportAdmin = !!(result && result.isAdmin);
+    var currentSlot = document.getElementById('partner-report-admin-tools');
+    if (currentSlot && _partnerReportAdmin) currentSlot.innerHTML = '<div class="card"><h3>Safety report review</h3><p style="font-size:13px;color:var(--muted)">Review reports submitted by partner-system users.</p><button class="btn btn-outline btn-sm" onclick="showPartnerReports()">Open report inbox</button></div>';
+  }).catch(function(error) {
+    console.warn('Could not check report review access:', error);
+  }).then(function() { _partnerReportAdminCheckPending = false; });
+}
+
+function showPartnerReports() {
+  if (!_partnerReportAdmin) { showToast('You do not have access to review safety reports.', 'warning'); return; }
+  var overlay = document.getElementById('partner-report-inbox');
+  if (!overlay) { overlay = document.createElement('div'); overlay.className = 'overlay'; overlay.id = 'partner-report-inbox'; document.body.appendChild(overlay); }
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:620px;max-height:85vh;overflow:auto"><h3 style="font-size:18px;margin-bottom:6px">Partner safety reports</h3><p style="font-size:12px;color:var(--muted)">Manual review inbox. Reports are not monitored in real time.</p><div id="partner-report-list" class="empty-state">Loading reports…</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
+  requestRandomPartner('admin_list_reports').then(function(result) {
+    renderPartnerReportList(overlay, result && Array.isArray(result.reports) ? result.reports : []);
+  }).catch(function(error) {
+    var list = document.getElementById('partner-report-list');
+    if (list) list.textContent = error && error.message ? error.message : 'Could not load the reports. Check your connection and try again.';
+  });
+}
+
+function renderPartnerReportList(overlay, reports) {
+  if (!overlay || !overlay.isConnected) return;
+  _partnerReportRows = reports;
+  var list = overlay.querySelector('#partner-report-list');
+  if (!list) return;
+  if (!reports.length) { list.textContent = 'No partner reports have been submitted.'; return; }
+  var labels = { harassment: 'Harassment or unwanted contact', spam: 'Spam or scam', inappropriate: 'Inappropriate content', safety: 'User feels unsafe', other: 'Other concern' };
+  var statuses = [['new','New'],['in_review','In review'],['action_taken','Action taken'],['closed','Closed']];
+  var html = '';
+  reports.forEach(function(report, index) {
+    var created = report.createdAt ? new Date(report.createdAt) : null;
+    var dateLabel = created && !isNaN(created.getTime()) ? created.toLocaleString() : 'Date unavailable';
+    var options = statuses.map(function(item) { return '<option value="'+item[0]+'"'+(report.status === item[0] ? ' selected' : '')+'>'+item[1]+'</option>'; }).join('');
+    html += '<div class="card" style="text-align:left"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><strong>'+safe(labels[report.category] || 'Other concern')+'</strong><span style="font-size:11px;color:var(--muted)">'+safe(dateLabel)+'</span></div><div style="font-size:12px;color:var(--muted);margin:6px 0">Reporter: '+safe(report.reporterEmail || 'Not recorded on older report')+'<br>Reported account: '+safe(report.reportedEmail || 'Not recorded on older report')+'<br>Connection: '+safe(report.partnershipCode || 'Unavailable')+'</div><label class="form-label" for="partner-report-status-'+index+'">Review status</label><select id="partner-report-status-'+index+'" style="width:100%;margin-bottom:6px">'+options+'</select><button class="btn btn-primary btn-sm" onclick="savePartnerReportStatus('+index+',this)">Save status</button>'+(report.reviewedBy ? '<div style="font-size:10px;color:var(--muted);margin-top:5px">Last updated by '+safe(report.reviewedBy)+'</div>' : '')+'</div>';
+  });
+  list.innerHTML = html;
+}
+
+function savePartnerReportStatus(index, button) {
+  var report = _partnerReportRows[index];
+  var select = document.getElementById('partner-report-status-' + index);
+  if (!report || !select) return;
+  if (button) { button.disabled = true; button.textContent = 'Saving…'; }
+  requestRandomPartner('admin_update_report', { reportId: report.id, status: select.value }).then(function(result) {
+    if (!result || !result.updated) throw new Error('That report could not be found. Refresh the inbox and try again.');
+    showToast('Report status updated.', 'success');
+    showPartnerReports();
+  }).catch(function(error) {
+    if (button) { button.disabled = false; button.textContent = 'Save status'; }
+    showToast(error && error.message ? error.message : 'Could not update the report. Try again.', 'error');
+  });
+}
+
 function showPartnerSafetyOptions() {
   if (!buddyIsPaired(D.buddy) || !D.buddy.partnershipCode) {
     showToast('Safety controls are available for a current connected partner. Reconnect using a new invite if this is an older connection.', 'warning');
@@ -299,7 +369,7 @@ function showPartnerSafetyOptions() {
   }
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px"><h3 style="font-size:18px;margin-bottom:6px">Report or block partner</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">A report sends the selected category and connection code to Re.Claim for review. Reports are not monitored in real time.</p><label class="form-label" for="partner-report-category">What happened?</label><select id="partner-report-category" style="width:100%;margin-bottom:10px"><option value="harassment">Harassment or unwanted contact</option><option value="spam">Spam or scam</option><option value="inappropriate">Inappropriate content</option><option value="safety">I feel unsafe</option><option value="other">Other concern</option></select><button class="btn btn-primary" onclick="submitPartnerReport(false,this)">Send report</button><button class="btn btn-danger" onclick="submitPartnerReport(true,this)" style="margin-top:6px">Report and block</button><button class="btn btn-outline" onclick="blockCurrentPartner()" style="margin-top:6px">Block without reporting</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px"><h3 style="font-size:18px;margin-bottom:6px">Report or block partner</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">A report sends the selected reason and both account emails to an authorized Re.Claim administrator for review. Reports are not monitored in real time.</p><label class="form-label" for="partner-report-category">What happened?</label><select id="partner-report-category" style="width:100%;margin-bottom:10px"><option value="harassment">Harassment or unwanted contact</option><option value="spam">Spam or scam</option><option value="inappropriate">Inappropriate content</option><option value="safety">I feel unsafe</option><option value="other">Other concern</option></select><button class="btn btn-primary" onclick="submitPartnerReport(false,this)">Send report</button><button class="btn btn-danger" onclick="submitPartnerReport(true,this)" style="margin-top:6px">Report and block</button><button class="btn btn-outline" onclick="blockCurrentPartner()" style="margin-top:6px">Block without reporting</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
   document.body.appendChild(overlay);
 }
 

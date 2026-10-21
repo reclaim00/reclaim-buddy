@@ -1,10 +1,54 @@
 ﻿// ====== GLOBAL ERROR HANDLING ======
-window.onerror = function(msg, url, line, col, err) {
-  console.error('Uncaught error:', msg, 'at', url, line + ':' + col);
-  try { showToast('Something went wrong. The app will try to recover.','error'); } catch(e) {}
-};
+var _lastRuntimeErrorRecord = null;
+var _lastRuntimeErrorShownAt = 0;
+function captureRuntimeError(kind, message, source, line, column, error) {
+  var id = 'ERR-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  var sourceName = '';
+  if (source) { try { sourceName = new URL(source, location.href).pathname.split('/').pop() || ''; } catch(e) {} }
+  var record = { id: id, kind: String(kind || 'app'), message: String(message || 'Unknown error').slice(0, 1200), source: sourceName, line: Number(line) || 0, column: Number(column) || 0, stack: error && error.stack ? String(error.stack).slice(0, 4000) : '' };
+  _lastRuntimeErrorRecord = record;
+  try { sessionStorage.setItem('rc_last_runtime_error', JSON.stringify(record)); } catch(e) {}
+  console.error('[Re.Claim ' + id + '] ' + record.kind + ':', error || record.message, record.source ? record.source + ':' + record.line + ':' + record.column : '');
+  if (Date.now() - _lastRuntimeErrorShownAt > 10000) {
+    _lastRuntimeErrorShownAt = Date.now();
+    try {
+      showToast('App error ' + id + ' — tap for details.', 'danger');
+      var container = document.getElementById('toast-container');
+      var toast = container && container.lastElementChild;
+      if (toast) { toast.setAttribute('role', 'button'); toast.tabIndex = 0; toast.style.cursor = 'pointer'; toast.addEventListener('click', showLastRuntimeErrorDetails); toast.addEventListener('keydown', function(e) { if (e.key === 'Enter' || e.key === ' ') showLastRuntimeErrorDetails(); }); }
+    } catch(e) {}
+  }
+  return record;
+}
+function showLastRuntimeErrorDetails() {
+  var record = _lastRuntimeErrorRecord;
+  if (!record) { try { record = JSON.parse(sessionStorage.getItem('rc_last_runtime_error') || 'null'); } catch(e) {} }
+  if (!record) return;
+  var existing = document.getElementById('runtime-error-ov');
+  if (existing) existing.remove();
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay'; overlay.id = 'runtime-error-ov';
+  var content = document.createElement('div'); content.className = 'overlay-content';
+  var title = document.createElement('h3'); title.textContent = 'App error details'; title.style.marginBottom = '8px';
+  var description = document.createElement('p'); description.textContent = 'Try closing and reopening the app. If this happens again, copy these details and send them to support.'; description.style.cssText = 'font-size:13px;color:var(--muted);line-height:1.5';
+  var details = document.createElement('pre'); details.tabIndex = 0; details.style.cssText = 'white-space:pre-wrap;overflow-wrap:anywhere;max-height:35vh;overflow:auto;padding:10px;border-radius:8px;background:var(--primary-light);font-size:11px';
+  details.textContent = ['Reference: ' + record.id, 'Type: ' + record.kind, 'Error: ' + record.message, record.source ? 'File: ' + record.source + ':' + record.line + ':' + record.column : '', record.stack || ''].filter(Boolean).join('\n');
+  var copy = document.createElement('button'); copy.className = 'btn btn-primary'; copy.textContent = 'Copy error details'; copy.style.marginTop = '8px';
+  copy.addEventListener('click', function() {
+    var text = details.textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function(){ showToast('Error details copied.', 'success'); }).catch(function(){ details.focus(); showToast('Select and copy the details above.', 'warning'); });
+    else { details.focus(); showToast('Select and copy the details above.', 'warning'); }
+  });
+  var close = document.createElement('button'); close.className = 'btn btn-outline'; close.textContent = 'Close'; close.style.marginTop = '8px'; close.addEventListener('click', function(){ overlay.remove(); });
+  content.appendChild(title); content.appendChild(description); content.appendChild(details); content.appendChild(copy); content.appendChild(close); overlay.appendChild(content); document.body.appendChild(overlay);
+}
+function runtimeErrorFallbackHTML() {
+  return '<div class=\"card\"><h3>We couldn’t open this page</h3><p style=\"font-size:13px;color:var(--muted)\">Your saved information is still on this device. Try again. If it happens again, view the error details and send them to support.</p><button class=\"btn btn-outline btn-sm\" onclick=\"showLastRuntimeErrorDetails()\">View error details</button></div>';
+}
+window.onerror = function(msg, url, line, col, err) { captureRuntimeError('javascript', msg, url, line, col, err); return false; };
 window.addEventListener('unhandledrejection', function(e) {
-  console.warn('Unhandled rejection:', e.reason);
+  var reason = e.reason;
+  captureRuntimeError('promise', reason && reason.message ? reason.message : String(reason || 'Unhandled promise rejection'), '', 0, 0, reason);
 });
 var _lastRenderedPg = null;
 // ====== NOTIFICATIONS ======
@@ -1647,7 +1691,7 @@ function render() {
   };
   if (!_pageCache[pg]) {
     var fn = pages[pg];
-    try { _pageCache[pg] = fn ? fn() : (pg = 'home', homeHTML()); } catch(e) { _pageCache[pg] = '<div class="card"><h3>Could not load page</h3><p style="font-size:12px;color:var(--muted)">' + e.message + '</p></div>'; }
+    try { _pageCache[pg] = fn ? fn() : (pg = 'home', homeHTML()); } catch(e) { captureRuntimeError('page-render', e && e.message, '', 0, 0, e); _pageCache[pg] = runtimeErrorFallbackHTML(); }
   }
   var curPg = pg;
   var pageChanged = pg !== _lastRenderedPg;
@@ -1661,6 +1705,7 @@ function render() {
     var heading = app.querySelector('h1,h2,.page-title');
     if (announcer && pageChanged) announcer.textContent = heading ? heading.textContent.trim() : curPg;
     if (curPg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
+    if (curPg === 'buddy' && typeof checkPartnerReportAdmin === 'function') checkPartnerReportAdmin();
     [].forEach.call(document.querySelectorAll('.tab'),function(t){
       var tp = t.getAttribute('data-page');
       t.classList.toggle('active', tp === curPg || (tp === 'more' && MORE_SUB_PAGES.indexOf(curPg) !== -1) || (tp === 'reflect' && REFLECT_SUB_PAGES.indexOf(curPg) !== -1) || (tp === 'care' && CARE_SUB_PAGES.indexOf(curPg) !== -1));
@@ -1898,7 +1943,7 @@ if (!navigator.onLine && connEl) connEl.style.display = 'block';
 setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
 if (AUTH_USER && !isLockSet()) {
   document.body.classList.add('logged-in');
-  try { render(); } catch(e) { document.getElementById('app').innerHTML = '<div class="card"><h3>Something went wrong</h3><p style="font-size:12px;color:var(--muted)">' + e.message + '</p></div>'; }
+  try { render(); } catch(e) { captureRuntimeError('startup-render', e && e.message, '', 0, 0, e); document.getElementById('app').innerHTML = runtimeErrorFallbackHTML(); }
   loadFromFirestore(function(cloudData) {
     if (cloudData && cloudData.joinDate) { D = cloudData; saveData(); }
   });

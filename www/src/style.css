@@ -263,6 +263,8 @@ body.dark .cal-nav button:hover{background:var(--primary);color:#fff}
 .cal-day.future{background:transparent;color:var(--muted);cursor:default}
 .cal-day.other-month{opacity:.25}
 .cal-day.today{border:2px solid var(--primary)}
+.cal-day.sober-day:after{content:'✓';position:absolute;top:1px;right:1px;width:10px;height:10px;border-radius:50%;background:var(--primary);color:#fff;font-size:7px;line-height:10px;text-align:center;box-shadow:0 0 0 1px var(--card)}
+.cal-legend .sober-swatch{background:var(--primary-light);border:2px solid var(--primary);box-sizing:border-box}
 .cal-day .cal-tag{font-size:6px;position:absolute;bottom:1px;left:50%;transform:translateX(-50%);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
 .cal-legend{display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;margin:8px 0 4px}
 .cal-legend span{display:flex;align-items:center;gap:var(--space-xs);font-size:var(--fs-2xs);color:var(--muted)}

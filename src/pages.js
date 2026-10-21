@@ -3145,12 +3145,13 @@ function reportsHTML() {
 }
 // ====== BUDDY ======
 function buddyHTML() {
-  if (!D.buddy || !D.buddy.name) return setupBuddyHTML();
+  var reportReviewSlot = '<div id="partner-report-admin-tools"></div>';
+  if (!D.buddy || !D.buddy.name) return reportReviewSlot + setupBuddyHTML();
   if (D.buddy.pending && !buddyIsPaired(D.buddy)) {
-    return '<h2 class="page-title">Partner request</h2><div class="card partner-local-note"><h3>Waiting for ' + safe(D.buddy.name) + '</h3><p>Your connection request is waiting for them to accept. Messaging and progress sharing stay off until they accept.</p><button class="btn btn-primary" onclick="checkPendingPairing()">Check request status</button><button class="btn btn-outline" onclick="cancelPairingRequest()" style="margin-top:8px">Cancel request</button></div>';
+    return reportReviewSlot + '<h2 class="page-title">Partner request</h2><div class="card partner-local-note"><h3>Waiting for ' + safe(D.buddy.name) + '</h3><p>Your connection request is waiting for them to accept. Messaging and progress sharing stay off until they accept.</p><button class="btn btn-primary" onclick="checkPendingPairing()">Check request status</button><button class="btn btn-outline" onclick="cancelPairingRequest()" style="margin-top:8px">Cancel request</button></div>';
   }
-  if (buddyIsPaired(D.buddy)) return buddyThreadHTML();
-  var h = '';
+  if (buddyIsPaired(D.buddy)) return reportReviewSlot + buddyThreadHTML();
+  var h = reportReviewSlot;
   h += '<h2 class="page-title">'+t('Your Partner')+'</h2>';
   h += '<div class="comrade-card"><div class="comrade-avatar">' + safe(D.buddy.name[0].toUpperCase()) + '</div><div><div style="font-weight:700;font-size:16px">' + safe(D.buddy.name) + '</div><div style="font-size:12px;color:var(--muted)">' + safe(D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + safe(D.buddy.contact) : '') + (D.buddy.language ? ' &middot; ' + safe(D.buddy.language) : '') + '</div></div></div>';
   h += '<div class="card partner-local-note"><h3>Local partner profile</h3><p>Use this space to keep your own check-ins and goals. Connect their Re.Claim account with an invite code to message or send quick check-ins.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'buddy\')">Connect an account</button><button class="btn btn-outline btn-sm" onclick="checkPairingRequest()" style="margin-left:6px">Check invite requests</button></div>';
@@ -3614,10 +3615,26 @@ function calendarHTML() {
   var d = new Date(now.getFullYear(), now.getMonth() + CAL_MONTH_OFFSET, 1);
   var year = d.getFullYear(), month = d.getMonth();
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var rawStartDate = D.sobriety && D.sobriety.startDate;
+  var journeyStart = rawStartDate ? new Date(rawStartDate) : null;
+  if (!journeyStart || !isFinite(journeyStart.getTime())) journeyStart = null;
+  var relapseDates = D.sobriety && Array.isArray(D.sobriety.relapseDates) ? D.sobriety.relapseDates : [];
+  for (var ri = 0; journeyStart && ri < relapseDates.length; ri++) {
+    var relapseDate = new Date(relapseDates[ri]);
+    if (isFinite(relapseDate.getTime()) && relapseDate > journeyStart) journeyStart = relapseDate;
+  }
+  var monthStartKey = Date.UTC(year, month, 1);
+  var monthEndKey = Date.UTC(year, month + 1, 0);
+  var todayKey = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  var journeyStartKey = journeyStart ? Date.UTC(journeyStart.getFullYear(), journeyStart.getMonth(), journeyStart.getDate()) + 86400000 : 0;
+  var soberFromKey = Math.max(monthStartKey, journeyStartKey);
+  var soberToKey = Math.min(monthEndKey, todayKey);
+  var soberDaysThisMonth = journeyStart && journeyStartKey <= todayKey && soberFromKey <= soberToKey ? Math.floor((soberToKey - soberFromKey) / 86400000) + 1 : 0;
   var h = '<h2 class="page-title">'+t('Streak Calendar')+'</h2>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Color-coded view of your daily activity.')+'</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Color-coded view of your daily activity and sobriety journey.')+'</p>';
   h += '<div class="card">';
-  h += '<div class="cal-nav"><button onclick="CAL_MONTH_OFFSET--;render()">'+t('Prev')+'</button><span style="font-weight:700;font-size:15px">'+months[month]+' '+year+'</span><button onclick="CAL_MONTH_OFFSET++;render()">'+t('Next')+'</button></div>';
+  h += '<div class="cal-nav"><button onclick="CAL_MONTH_OFFSET--;_pageCache.calendar=null;render()">'+t('Prev')+'</button><span style="font-weight:700;font-size:15px">'+months[month]+' '+year+'</span><button onclick="CAL_MONTH_OFFSET++;_pageCache.calendar=null;render()">'+t('Next')+'</button></div>';
+  h += '<div class="stat-card" style="margin:8px 0 10px;text-align:center"><div class="num">'+soberDaysThisMonth+'</div><div class="label">Sober '+(soberDaysThisMonth===1?'day':'days')+' in '+months[month]+'</div>'+(journeyStart ? '' : '<div style="font-size:11px;color:var(--muted);margin-top:4px">Start your journey to begin tracking sober days.</div>')+'</div>';
   h += '<div class="cal-grid">';
   var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   for (var i=0;i<7;i++) h += '<div class="cal-header">'+dayNames[i]+'</div>';
@@ -3630,15 +3647,17 @@ function calendarHTML() {
     var dateStr = dateObj.toDateString();
     var isToday = dateStr === now.toDateString();
     var isFuture = dateObj > now;
+    var dayKey = Date.UTC(year, month, day);
+    var soberClass = journeyStart && dayKey >= journeyStartKey && dayKey <= todayKey ? ' sober-day' : '';
     var hasMood = D.moods.some(function(m){return m.date===dateStr});
     var habitsDone = D.habits.filter(function(h){return h.logs && h.logs.indexOf(dateStr)!==-1}).length;
     var hasJournal = D.journal.some(function(j){return j.date===dateStr});
     if (!isFuture) {
-      if (hasMood && habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--primary);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
-      else if (hasMood && hasJournal) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:#2d6a4f;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
-      else if (hasMood) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:#22c55e;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
-      else if (habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--accent);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
-      else { h += '<div class="cal-day'+(isToday?' today':'')+'" style="background:var(--border);color:var(--muted)" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      if (hasMood && habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:var(--primary);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      else if (hasMood && hasJournal) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:#2d6a4f;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      else if (hasMood) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:#22c55e;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      else if (habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:var(--accent);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      else { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:var(--border);color:var(--muted)" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
     } else {
       h += '<div class="cal-day future" style="background:transparent;color:var(--muted)"><span>'+day+'</span></div>';
     }
@@ -3646,8 +3665,8 @@ function calendarHTML() {
   var rem = 7 - ((firstDay + daysInMonth) % 7);
   if (rem < 7) { for (var i=1;i<=rem;i++) { h += '<div class="cal-day other-month" style="background:transparent;cursor:default">'+i+'</div>'; } }
   h += '</div>';
-  h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#2d6a4f"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#4a8a63"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span></div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="CAL_MONTH_OFFSET=0;render()" style="margin-top:8px">'+t('Jump to Today')+'</button>';
+  h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#2d6a4f"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#4a8a63"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span><span><span class="swatch sober-swatch"></span>Sober day</span></div>';
+  h += '<button class="btn btn-outline btn-sm" onclick="CAL_MONTH_OFFSET=0;_pageCache.calendar=null;render()" style="margin-top:8px">'+t('Jump to Today')+'</button>';
   h += '</div>';
   return h;
 }
