@@ -3154,7 +3154,8 @@ function buddyHTML() {
   var h = reportReviewSlot;
   h += '<h2 class="page-title">'+t('Your Partner')+'</h2>';
   h += '<div class="comrade-card"><div class="comrade-avatar">' + safe(D.buddy.name[0].toUpperCase()) + '</div><div><div style="font-weight:700;font-size:16px">' + safe(D.buddy.name) + '</div><div style="font-size:12px;color:var(--muted)">' + safe(D.buddy.relationship || 'Accountability Partner') + (D.buddy.contact ? ' &middot; ' + safe(D.buddy.contact) : '') + (D.buddy.language ? ' &middot; ' + safe(D.buddy.language) : '') + '</div></div></div>';
-  h += '<div class="card partner-local-note"><h3>Local partner profile</h3><p>Use this space to keep your own check-ins and goals. Connect their Re.Claim account with an invite code to message or send quick check-ins.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'buddy\')">Connect an account</button><button class="btn btn-outline btn-sm" onclick="checkPairingRequest()" style="margin-left:6px">Check invite requests</button></div>';
+  h += '<div class="card partner-local-note"><h3>Local partner profile</h3><p>Use this space to keep your own check-ins and goals. Connect their Re.Claim account with an invite code to message or send quick check-ins.</p><button class="btn btn-outline btn-sm" onclick="editBuddy()">Edit profile</button><button class="btn btn-outline btn-sm" onclick="checkPairingRequest()" style="margin-left:6px">Check invite requests</button></div>';
+  h += partnerConnectionPanelHTML();
   h += blockedPartnerCardHTML();
   h += '<div class="stat-grid" style="margin:8px 0">';
   h += '<div class="stat-card"><div class="num">' + buddyStreak() + '</div><div class="label">Buddy Streak</div></div>';
@@ -3412,6 +3413,17 @@ function setupBuddyHTML() {
   return h;
 }
 
+function partnerConnectionPanelHTML() {
+  var matchPrefs = D.partnerMatchPrefs || { language: 'Any language', availability: 'Any time' };
+  var h = '<div class="card partner-connect-card"><h3>Connect their Re.Claim account</h3><p>Only connect with someone you choose. Share your invite code with them directly, or enter a code they shared with you.</p><button class="btn btn-outline" onclick="generatePairingCode()">Create an invite code</button><div class="partner-code-entry"><label class="form-label" for="pairing-code">Their invite code</label><div class="partner-code-row"><input type="text" id="pairing-code" placeholder="Enter code" autocomplete="one-time-code" autocapitalize="characters" maxlength="8"><button class="btn btn-primary" id="pairing-connect-btn" onclick="connectPairingCode()">Connect</button></div></div><div id="pairing-result" role="status" aria-live="polite" class="partner-status"></div></div>';
+  h += '<div class="card partner-connect-card"><h3>Find a Partner</h3><p>Choose to join the opt-in pool and get paired with another member who is looking.</p><label class="form-label" for="random-partner-language">Preferred language</label><select id="random-partner-language" onchange="savePartnerMatchPreference(\'language\',this.value)" style="width:100%;margin-bottom:8px"><option value="Any language"'+(matchPrefs.language==='Any language'?' selected':'')+'>Any language</option>';
+  for (var mi=0;mi<LANGUAGES.length;mi++) h += '<option value="'+LANGUAGES[mi]+'"'+(matchPrefs.language===LANGUAGES[mi]?' selected':'')+'>'+LANGUAGES[mi]+'</option>';
+  h += '</select><label class="form-label" for="random-partner-availability">When are you usually available?</label><select id="random-partner-availability" onchange="savePartnerMatchPreference(\'availability\',this.value)" style="width:100%;margin-bottom:8px">';
+  ['Any time','Morning','Afternoon','Evening'].forEach(function(option){h += '<option value="'+option+'"'+((matchPrefs.availability||'Any time')===option?' selected':'')+'>'+option+'</option>';});
+  h += '</select><button class="btn btn-primary" id="random-partner-btn" onclick="findRandomPartner()">Find a Partner</button><button class="btn btn-outline" id="random-partner-cancel" onclick="cancelRandomPartnerSearch()" style="display:none;margin-left:6px">Cancel search</button><div id="random-partner-status" role="status" aria-live="polite" class="partner-status"></div></div>';
+  return h;
+}
+
 function saveBuddy() {
   var name = document.getElementById('comrade-name');
   if (!name || !name.value.trim()) { alert(t('Enter your partner\'s name.')); return; }
@@ -3635,6 +3647,10 @@ function calendarHTML() {
   h += '<div class="card">';
   h += '<div class="cal-nav"><button onclick="CAL_MONTH_OFFSET--;_pageCache.calendar=null;render()">'+t('Prev')+'</button><span style="font-weight:700;font-size:15px">'+months[month]+' '+year+'</span><button onclick="CAL_MONTH_OFFSET++;_pageCache.calendar=null;render()">'+t('Next')+'</button></div>';
   h += '<div class="stat-card" style="margin:8px 0 10px;text-align:center"><div class="num">'+soberDaysThisMonth+'</div><div class="label">Sober '+(soberDaysThisMonth===1?'day':'days')+' in '+months[month]+'</div>'+(journeyStart ? '' : '<div style="font-size:11px;color:var(--muted);margin-top:4px">Start your journey to begin tracking sober days.</div>')+'</div>';
+  var monthMeetings = (D.meetingLog || []).filter(function(m){var x=new Date(m.date+'T00:00:00');return x.getFullYear()===year&&x.getMonth()===month}).length;
+  var monthReminders = (D.reminders || []).filter(function(r){var x=new Date(r.date+'T00:00:00');return x.getFullYear()===year&&x.getMonth()===month}).length;
+  var monthJournal = (D.journal || []).filter(function(j){var x=new Date(j.date);return x.getFullYear()===year&&x.getMonth()===month}).length;
+  h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 10px;text-align:center"><div class="card" style="padding:8px 4px;margin:0"><strong>'+monthMeetings+'</strong><div style="font-size:10px;color:var(--muted)">Meetings</div></div><div class="card" style="padding:8px 4px;margin:0"><strong>'+monthJournal+'</strong><div style="font-size:10px;color:var(--muted)">Journal entries</div></div><div class="card" style="padding:8px 4px;margin:0"><strong>'+monthReminders+'</strong><div style="font-size:10px;color:var(--muted)">Reminders</div></div></div>';
   h += '<div class="cal-grid">';
   var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   for (var i=0;i<7;i++) h += '<div class="cal-header">'+dayNames[i]+'</div>';
@@ -3652,12 +3668,17 @@ function calendarHTML() {
     var hasMood = D.moods.some(function(m){return m.date===dateStr});
     var habitsDone = D.habits.filter(function(h){return h.logs && h.logs.indexOf(dateStr)!==-1}).length;
     var hasJournal = D.journal.some(function(j){return j.date===dateStr});
+    var dateISO = year+'-'+String(month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    var hasMeeting = (D.meetingLog || []).some(function(m){return m.date===dateISO});
+    var hasReminder = (D.reminders || []).some(function(r){return r.date===dateISO});
+    var hasBuddy = (D.buddyCheckins || []).some(function(b){return b.date===dateStr || b.date===dateISO});
+    var hasActivity = hasMeeting || hasReminder || hasBuddy;
     if (!isFuture) {
-      if (hasMood && habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:var(--primary);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      if (hasMood && habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:var(--primary);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+(hasActivity?' ·':'')+'</span></div>'; }
       else if (hasMood && hasJournal) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:#2d6a4f;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
       else if (hasMood) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:#22c55e;color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
       else if (habitsDone > 0) { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:var(--accent);color:#fff" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
-      else { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:var(--border);color:var(--muted)" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+'</span></div>'; }
+      else { h += '<div class="cal-day'+(isToday?' today':'')+soberClass+'" style="background:var(--border);color:var(--muted)" onclick="showDayDetail(\''+dateStr+'\')"><span>'+day+(hasActivity?' ·':'')+'</span></div>'; }
     } else {
       h += '<div class="cal-day future" style="background:transparent;color:var(--muted)"><span>'+day+'</span></div>';
     }
@@ -3678,11 +3699,25 @@ function showDayDetail(dateStr) {
   var mood = D.moods.filter(function(m){return m.date===dateStr});
   var habits = D.habits.filter(function(h){return h.logs && h.logs.indexOf(dateStr)!==-1});
   var journal = D.journal.filter(function(j){return j.date===dateStr});
+  var dateObj = new Date(dateStr);
+  var dateISO = dateObj.getFullYear()+'-'+String(dateObj.getMonth()+1).padStart(2,'0')+'-'+String(dateObj.getDate()).padStart(2,'0');
+  var meetings = (D.meetingLog || []).filter(function(m){return m.date===dateISO});
+  var reminders = (D.reminders || []).filter(function(r){return r.date===dateISO});
+  var checkins = (D.buddyCheckins || []).filter(function(b){return b.date===dateStr || b.date===dateISO});
+  var start = D.sobriety && D.sobriety.startDate ? new Date(D.sobriety.startDate) : null;
+  (D.sobriety && D.sobriety.relapseDates || []).forEach(function(r){var rd=new Date(r);if(start&&rd>start)start=rd});
+  var dateKey = Date.UTC(dateObj.getFullYear(),dateObj.getMonth(),dateObj.getDate());
+  var startKey = start ? Date.UTC(start.getFullYear(),start.getMonth(),start.getDate()) : 0;
+  var soberDay = start && dateKey > startKey && dateKey <= Date.UTC(new Date().getFullYear(),new Date().getMonth(),new Date().getDate());
   h += '<div style="font-size:13px;line-height:1.8">';
   h += '<div><strong>'+t('Mood:')+'</strong> '+(mood.length?MOODS[mood[mood.length-1].val-1].label:t('None'))+'</div>';
   h += '<div><strong>Habits done:</strong> '+(habits.length?habits.map(function(h){return h.name}).join(', '):'None')+'</div>';
   h += '<div><strong>Journal entries:</strong> '+(journal.length?journal.length:'None')+'</div>';
-  h += '</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">'+t('Close')+'</button></div>';
+  h += '<div><strong>Sobriety:</strong> '+(soberDay?'Sober day '+Math.floor((dateKey-startKey)/86400000):'Not counted as a sober day')+'</div>';
+  h += '<div><strong>Meetings:</strong> '+(meetings.length?meetings.map(function(m){return safe((m.type||'Meeting')+(m.topic?' · '+m.topic:''))}).join(', '):'None')+'</div>';
+  h += '<div><strong>Reminders:</strong> '+(reminders.length?reminders.map(function(r){return safe(r.title||'Reminder')+(r.time?' · '+safe(r.time):'')}).join(', '):'None')+'</div>';
+  h += '<div><strong>Partner check-ins:</strong> '+(checkins.length?checkins.length:'None')+'</div>';
+  h += '</div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'meetings\');showLogMeeting(undefined,\''+dateISO+'\')">+ Log meeting</button><button class="btn btn-outline btn-sm" onclick="this.closest(\'.overlay\').remove();goTo(\'reminders\');showNewReminder(undefined,\''+dateISO+'\')">+ Reminder</button></div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">'+t('Close')+'</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
 }
@@ -3754,7 +3789,7 @@ function formatReminderDate(date, time) {
   if (time) label += ' at '+time;
   return label;
 }
-function showNewReminder(editId) {
+function showNewReminder(editId, datePrefill) {
   var r = (editId!==undefined && D.reminders && D.reminders[editId]) ? D.reminders[editId] : null;
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
@@ -3773,7 +3808,9 @@ function showNewReminder(editId) {
   h += '<button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
-  if (!r) {
+  if (!r && datePrefill) {
+    document.getElementById('rem-date').value = datePrefill;
+  } else if (!r) {
     var tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate()+1);
     var def = tomorrow.getFullYear()+'-'+String(tomorrow.getMonth()+1).padStart(2,'0')+'-'+String(tomorrow.getDate()).padStart(2,'0');

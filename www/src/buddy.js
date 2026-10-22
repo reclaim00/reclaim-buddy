@@ -6,6 +6,7 @@ var randomPartnerInFlight = false;
 var randomPartnerCancelled = false;
 var randomPartnerTimeout = null;
 var randomPartnerStartedAt = 0;
+var randomPartnerRestorePending = false;
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/'/g,'&#39;').replace(/"/g,'&quot;').replace(/\\/g,'&#92;'); }
 
 
@@ -200,6 +201,7 @@ function showRandomPartnerMatch(result) {
   if (randomPartnerTimer) { clearInterval(randomPartnerTimer); randomPartnerTimer = null; }
   if (randomPartnerTimeout) { clearTimeout(randomPartnerTimeout); randomPartnerTimeout = null; }
   randomPartnerInFlight = false;
+  try { sessionStorage.removeItem('reclaimPartnerSearchActive'); } catch(e) {}
   finishPairing(result.partner, result.partner.email, result.partnershipCode);
   showToast('You were matched with ' + (result.partner.name || 'a Re.Claim member') + '.', 'success');
   return true;
@@ -237,6 +239,7 @@ function findRandomPartner() {
       if (randomPartnerCancelled) return;
       if (showRandomPartnerMatch(result)) return;
       setRandomPartnerStatus('You’re in the opt-in matching pool. We’ll connect you when another member is available. Keep this page open while you wait.');
+      try { sessionStorage.setItem('reclaimPartnerSearchActive', '1'); } catch(e) {}
       if (start) { start.textContent = 'Searching for a partner…'; start.style.display = 'none'; }
       var cancel = document.getElementById('random-partner-cancel');
       if (cancel) cancel.style.display = '';
@@ -246,9 +249,39 @@ function findRandomPartner() {
     })
     .catch(function(error) {
       console.warn('Could not start partner matching:', error);
-      setRandomPartnerStatus(error && error.message ? error.message : 'Could not start partner matching. Check your connection and try again.');
+      var message = error && error.message ? error.message : 'Could not start partner matching. Check your connection and try again.';
+      if (error && error.status === 401) message = 'Your sign-in expired. Sign out and sign back in, then try again.';
+      else if (error && error.status === 403) message = error.message || 'Partner matching is not available for this account.';
+      setRandomPartnerStatus(message);
       if (start) { start.disabled = false; start.textContent = 'Find a Partner'; }
     });
+}
+
+function restoreRandomPartnerSearch() {
+  if (!AUTH_EMAIL || buddyIsPaired(D.buddy) || randomPartnerRestorePending || randomPartnerTimer) return;
+  var active = false;
+  try { active = sessionStorage.getItem('reclaimPartnerSearchActive') === '1'; } catch(e) {}
+  if (!active) return;
+  randomPartnerRestorePending = true;
+  randomPartnerCancelled = false;
+  randomPartnerStartedAt = Date.now();
+  setRandomPartnerStatus('Checking your existing partner search…');
+  requestRandomPartner('search', getPartnerMatchPreferences()).then(function(result) {
+    if (showRandomPartnerMatch(result)) {
+      try { sessionStorage.removeItem('reclaimPartnerSearchActive'); } catch(e) {}
+      return;
+    }
+    setRandomPartnerStatus('You’re still in the matching pool. We’ll connect you when another member is available.');
+    var start = document.getElementById('random-partner-btn');
+    var cancel = document.getElementById('random-partner-cancel');
+    if (start) { start.textContent = 'Searching for a partner…'; start.style.display = 'none'; }
+    if (cancel) cancel.style.display = '';
+    if (!randomPartnerTimer) randomPartnerTimer = setInterval(checkRandomPartnerSearch, 6000);
+  }).catch(function(error) {
+    console.warn('Could not restore partner search:', error);
+    setRandomPartnerStatus(error && error.status === 401 ? 'Your sign-in expired. Sign out and sign back in to continue.' : 'Could not reconnect to your partner search. Tap Find a Partner to try again.');
+    try { sessionStorage.removeItem('reclaimPartnerSearchActive'); } catch(e) {}
+  }).then(function() { randomPartnerRestorePending = false; });
 }
 
 function cancelRandomPartnerSearch(endMessage) {
@@ -256,6 +289,7 @@ function cancelRandomPartnerSearch(endMessage) {
   if (randomPartnerTimer) { clearInterval(randomPartnerTimer); randomPartnerTimer = null; }
   if (randomPartnerTimeout) { clearTimeout(randomPartnerTimeout); randomPartnerTimeout = null; }
   requestRandomPartner('cancel').then(function(result) {
+    try { sessionStorage.removeItem('reclaimPartnerSearchActive'); } catch(e) {}
     if (result && result.match) { showRandomPartnerMatch(result.match); return; }
     var start = document.getElementById('random-partner-btn');
     var cancel = document.getElementById('random-partner-cancel');

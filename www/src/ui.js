@@ -805,11 +805,12 @@ function calcMeetingStreak(log) {
   }
   return maxStreak;
 }
-function showLogMeeting(editIdx) {
+function showLogMeeting(editIdx, datePrefill) {
   var m = (editIdx!==undefined && D.meetingLog && D.meetingLog[editIdx]) ? D.meetingLog[editIdx] : null;
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var dateVal = m ? m.date : new Date().toISOString().split('T')[0];
+  var localToday = new Date();
+  var dateVal = m ? m.date : (datePrefill || localToday.getFullYear()+'-'+String(localToday.getMonth()+1).padStart(2,'0')+'-'+String(localToday.getDate()).padStart(2,'0'));
   var typeOpts = '';
   for (var i=0;i<MEETING_TYPES.length;i++) {
     var sel = m && m.type === MEETING_TYPES[i].id ? ' selected' : '';
@@ -1706,6 +1707,7 @@ function render() {
     if (announcer && pageChanged) announcer.textContent = heading ? heading.textContent.trim() : curPg;
     if (curPg === 'assessment') { var qq = document.getElementById('quiz'); if (qq) renderQuizQuestion(0); }
     if (curPg === 'buddy' && typeof checkPartnerReportAdmin === 'function') checkPartnerReportAdmin();
+    if (curPg === 'buddy' && typeof restoreRandomPartnerSearch === 'function') restoreRandomPartnerSearch();
     [].forEach.call(document.querySelectorAll('.tab'),function(t){
       var tp = t.getAttribute('data-page');
       t.classList.toggle('active', tp === curPg || (tp === 'more' && MORE_SUB_PAGES.indexOf(curPg) !== -1) || (tp === 'reflect' && REFLECT_SUB_PAGES.indexOf(curPg) !== -1) || (tp === 'care' && CARE_SUB_PAGES.indexOf(curPg) !== -1));
