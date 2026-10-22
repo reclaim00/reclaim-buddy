@@ -1,7 +1,7 @@
 ﻿// ====== GLOBAL ERROR HANDLING ======
 var _lastRuntimeErrorRecord = null;
 var _lastRuntimeErrorShownAt = 0;
-function captureRuntimeError(kind, message, source, line, column, error) {
+function captureRuntimeError(kind, message, source, line, column, error, notifyUser) {
   var id = 'ERR-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
   var sourceName = '';
   if (source) { try { sourceName = new URL(source, location.href).pathname.split('/').pop() || ''; } catch(e) {} }
@@ -9,7 +9,7 @@ function captureRuntimeError(kind, message, source, line, column, error) {
   _lastRuntimeErrorRecord = record;
   try { sessionStorage.setItem('rc_last_runtime_error', JSON.stringify(record)); } catch(e) {}
   console.error('[Re.Claim ' + id + '] ' + record.kind + ':', error || record.message, record.source ? record.source + ':' + record.line + ':' + record.column : '');
-  if (Date.now() - _lastRuntimeErrorShownAt > 10000) {
+  if (notifyUser !== false && Date.now() - _lastRuntimeErrorShownAt > 10000) {
     _lastRuntimeErrorShownAt = Date.now();
     try {
       showToast('App error ' + id + ' — tap for details.', 'danger');
@@ -48,7 +48,9 @@ function runtimeErrorFallbackHTML() {
 window.onerror = function(msg, url, line, col, err) { captureRuntimeError('javascript', msg, url, line, col, err); return false; };
 window.addEventListener('unhandledrejection', function(e) {
   var reason = e.reason;
-  captureRuntimeError('promise', reason && reason.message ? reason.message : String(reason || 'Unhandled promise rejection'), '', 0, 0, reason);
+  // Background sync/auth requests can reject during startup without breaking the app.
+  // Keep details for support, but don't present those as a fatal app startup error.
+  captureRuntimeError('background-promise', reason && reason.message ? reason.message : String(reason || 'Unhandled promise rejection'), '', 0, 0, reason, false);
 });
 var _lastRenderedPg = null;
 // ====== NOTIFICATIONS ======

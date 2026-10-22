@@ -488,8 +488,21 @@ Deno.serve(async (request) => {
     return Response.json(await findPartner(account.project_id, accessToken, email, name, language, preferredLanguage, availability), { headers: corsHeaders });
   } catch (error) {
     console.error("Partner matching error:", error);
-    const message = error instanceof Error && error.message.startsWith("You already have") ? error.message : "Partner matching could not be completed. Please try again.";
-    const status = error instanceof Error && error.message.startsWith("You already have") ? 409 : 500;
+    const detail = error instanceof Error ? error.message : "";
+    let message = "Partner matching could not be completed. Please try again.";
+    let status = 500;
+    if (detail.startsWith("You already have")) {
+      message = detail;
+      status = 409;
+    } else if (detail.includes("service account secret is not configured") || detail.includes("web API key secret is not configured")) {
+      message = "Partner matching setup is incomplete. The app administrator must finish the Firebase settings in Supabase.";
+    } else if (detail.startsWith("Google token exchange failed")) {
+      message = "Partner matching cannot connect to Firebase. The app administrator needs to check the Supabase service account settings.";
+    } else if (detail.startsWith("Firestore request failed (403)")) {
+      message = "Partner matching cannot access its database. The app administrator needs to grant the Supabase service account Firestore access.";
+    } else if (detail.startsWith("Firestore request failed (")) {
+      message = "Partner matching reached Firebase, but its database request failed. Please try again later; if it continues, the app administrator should check the Supabase function logs.";
+    }
     return Response.json({ error: message }, { status, headers: corsHeaders });
   }
 });
