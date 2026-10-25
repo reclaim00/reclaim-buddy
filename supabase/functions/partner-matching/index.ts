@@ -128,7 +128,7 @@ async function firestoreRequest(url: string, token: string, body?: unknown, meth
 }
 
 function docPath(project: string, collection: string, id: string) {
-  return `${documentsUrl(project)}/${collection}/${id.split("/").map(encodeURIComponent).join("/")}`;
+  return `projects/${project}/databases/(default)/documents/${collection}/${id}`;
 }
 
 async function beginTransaction(project: string, token: string) {
