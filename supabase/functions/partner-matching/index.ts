@@ -110,7 +110,8 @@ async function firestoreRequest(url: string, token: string, body?: unknown, meth
   });
   const payload = response.status === 204 ? null : await response.json().catch(() => null);
   if (!response.ok) {
-    const error = new Error(`Firestore request failed (${response.status})`);
+    const detail = typeof payload?.error?.message === "string" ? payload.error.message : "No additional details returned";
+    const error = new Error(`Firestore request failed (${response.status}): ${detail}`);
     (error as Error & { status?: number }).status = response.status;
     throw error;
   }
