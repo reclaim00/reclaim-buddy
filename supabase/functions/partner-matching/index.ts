@@ -108,9 +108,18 @@ async function firestoreRequest(url: string, token: string, body?: unknown, meth
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
-  const payload = response.status === 204 ? null : await response.json().catch(() => null);
+  const responseText = response.status === 204 ? "" : await response.text();
+  let payload: unknown = null;
+  if (responseText) {
+    try { payload = JSON.parse(responseText); } catch { /* Keep the raw response below for Firestore errors. */ }
+  }
   if (!response.ok) {
-    const detail = typeof payload?.error?.message === "string" ? payload.error.message : "No additional details returned";
+    const errorPayload = payload && typeof payload === "object"
+      ? (payload as { error?: { message?: unknown } }).error
+      : undefined;
+    const detail = typeof errorPayload?.message === "string"
+      ? errorPayload.message
+      : responseText.trim().slice(0, 1000) || "Firestore returned an empty error response";
     const error = new Error(`Firestore request failed (${response.status}): ${detail}`);
     (error as Error & { status?: number }).status = response.status;
     throw error;
