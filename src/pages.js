@@ -3622,6 +3622,55 @@ function fetchBuddyProgress() {
 // ====== STREAK CALENDAR ======
 var CAL_MONTH_OFFSET = 0;
 
+function calendarHistoryDate(value) {
+  if (typeof value === 'string') {
+    var iso = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (iso) return new Date(Number(iso[1]), Number(iso[2]) - 1, Number(iso[3]));
+  }
+  var date = new Date(value);
+  return isFinite(date.getTime()) ? date : null;
+}
+
+function calendarHistoryHTML(year, month) {
+  var byDate = Object.create(null);
+  function add(value, label) {
+    var date = calendarHistoryDate(value);
+    if (!date || date.getFullYear() !== year || date.getMonth() !== month) return;
+    var key = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+    if (!byDate[key]) byDate[key] = { date: new Date(date.getFullYear(), date.getMonth(), date.getDate()), labels: [] };
+    if (byDate[key].labels.indexOf(label) === -1) byDate[key].labels.push(label);
+  }
+  (D.moods || []).forEach(function(item) {
+    var mood = MOODS.find(function(option) { return option.val === Number(item.val); });
+    add(item.date, mood ? 'Mood: ' + mood.label : 'Mood check-in');
+  });
+  (D.habits || []).forEach(function(habit) {
+    (habit.logs || []).forEach(function(date) { add(date, 'Habit: ' + (habit.name || 'Check-in')); });
+  });
+  (D.journal || []).forEach(function(entry) { add(entry.date, 'Journal entry'); });
+  (D.meetingLog || []).forEach(function(meeting) { add(meeting.date, (meeting.type || 'Meeting') + ' meeting'); });
+  (D.reminders || []).forEach(function(reminder) { add(reminder.date, 'Reminder: ' + (reminder.title || 'Reminder')); });
+  (D.buddyCheckins || []).forEach(function(checkin) { add(checkin.date, 'Partner check-in'); });
+  ((D.sobriety && D.sobriety.relapseDates) || []).forEach(function(date) { add(date, 'Recovery reset recorded'); });
+  if (D.sobriety && D.sobriety.startDate) add(D.sobriety.startDate, 'Current journey start');
+
+  var entries = Object.keys(byDate).map(function(key) { return byDate[key]; });
+  entries.sort(function(a, b) { return b.date - a.date; });
+  var monthName = new Date(year, month, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  var h = '<details class="card calendar-history" style="margin-top:8px"><summary style="cursor:pointer;font-weight:700;font-size:14px">' + t('Calendar history') + ' · ' + safe(monthName) + ' (' + entries.length + ' ' + t('days with activity') + ')</summary>';
+  if (!entries.length) {
+    h += '<div class="empty-state" style="padding:12px 4px">' + t('No logged activity for this month yet.') + '</div>';
+  } else {
+    h += '<div style="display:grid;gap:6px;margin-top:10px">';
+    entries.forEach(function(entry) {
+      var dateLabel = entry.date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+      h += '<button type="button" class="btn btn-outline btn-sm" onclick="showDayDetail(\'' + entry.date.toDateString() + '\')" style="width:100%;text-align:left;white-space:normal"><strong>' + safe(dateLabel) + '</strong><span style="display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:2px">' + entry.labels.map(safe).join(' · ') + '</span></button>';
+    });
+    h += '</div>';
+  }
+  return h + '</details>';
+}
+
 function calendarHTML() {
   var now = new Date();
   var d = new Date(now.getFullYear(), now.getMonth() + CAL_MONTH_OFFSET, 1);
@@ -3687,6 +3736,7 @@ function calendarHTML() {
   if (rem < 7) { for (var i=1;i<=rem;i++) { h += '<div class="cal-day other-month" style="background:transparent;cursor:default">'+i+'</div>'; } }
   h += '</div>';
   h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#2d6a4f"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#4a8a63"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span><span><span class="swatch sober-swatch"></span>Sober day</span></div>';
+  h += calendarHistoryHTML(year, month);
   h += '<button class="btn btn-outline btn-sm" onclick="CAL_MONTH_OFFSET=0;_pageCache.calendar=null;render()" style="margin-top:8px">'+t('Jump to Today')+'</button>';
   h += '</div>';
   return h;

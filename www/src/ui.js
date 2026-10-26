@@ -1944,7 +1944,6 @@ window.addEventListener('online', function() {
 });
 window.addEventListener('offline', function(){ if (connEl) { connEl.style.display = 'block'; connEl.querySelector('span').textContent = '\u26A0 ' + t('No connection — changes saved locally'); } });
 if (!navigator.onLine && connEl) connEl.style.display = 'block';
-setTimeout(function(){ if (!SONG_POOL_GENERATED) populateSongPool(); }, 2000);
 if (AUTH_USER && !isLockSet()) {
   document.body.classList.add('logged-in');
   try { render(); } catch(e) { captureRuntimeError('startup-render', e && e.message, '', 0, 0, e); document.getElementById('app').innerHTML = runtimeErrorFallbackHTML(); }
