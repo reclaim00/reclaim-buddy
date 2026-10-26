@@ -237,6 +237,7 @@ function checkRandomPartnerSearch() {
     })
     .catch(function(error) {
       console.warn('Could not search for a partner:', error);
+      if (randomPartnerTimer) { clearInterval(randomPartnerTimer); randomPartnerTimer = null; }
       var message = partnerRequestErrorMessage(error, 'Could not reach partner matching. Check your connection and try again.');
       setRandomPartnerStatus(message, true);
       if (error && error.status === 409) { resetRandomPartnerControls(); if (randomPartnerTimer) { clearInterval(randomPartnerTimer); randomPartnerTimer = null; } if (randomPartnerTimeout) { clearTimeout(randomPartnerTimeout); randomPartnerTimeout = null; } }
