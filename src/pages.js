@@ -4253,9 +4253,10 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
     h += '<p style="font-size:11px;color:var(--muted)">'+t('Two-step login needs the Phone sign-in provider enabled on this project first.')+'</p>';
   }
   h += '</div>';
-  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>'+t('Cloud Sync')+'</h3>';
+  h += '<div style="border-top:1px solid var(--border);margin:8px 0 4px;padding-top:8px"><h3>Backup &amp; Recovery</h3><h4 style="font-size:13px;margin:6px 0">'+t('Cloud Sync')+'</h4>';
   h += '<p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Your data syncs automatically to the cloud when you\'re signed in.')+' On a new device, sign in to restore your latest snapshot. If encryption is on, you will also need your passphrase.</p>';
-  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:12px;color:var(--muted)">'+t('Last sync')+':</span><span id="sync-time-display" style="font-size:12px;font-weight:600">'+(_lastSyncTime||t('Never'))+'</span></div>';
+  h += '<div id="cloud-backup-status" role="status" aria-live="polite" style="font-size:12px;line-height:1.5;padding:8px 10px;margin:6px 0;background:var(--primary-light);border-radius:8px">'+safe(typeof cloudBackupStatusText === 'function' ? cloudBackupStatusText() : 'Backup status is not available yet.')+'</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:12px;color:var(--muted)">'+t('Last confirmed backup')+':</span><span id="sync-time-display" style="font-size:12px;font-weight:600">'+(_lastSyncTime||t('Never'))+'</span></div>';
   h += '<button class="btn btn-sm btn-primary" onclick="syncToFirestore()" style="margin-bottom:6px">'+t('Sync Now')+'</button></div>';
   h += '<button class="btn btn-primary btn-sm" onclick="showProgressReport()" style="margin-top:8px">&#128202; '+t('Progress Report')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:6px">'+t('Export My Data')+'</button>';
@@ -4374,7 +4375,7 @@ function showImportPreview(exportedAt) {
   var dateText = exportedAt === 'Unknown date' ? exportedAt : new Date(exportedAt).toLocaleString();
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:440px"><h3 style="font-size:18px;margin-bottom:6px">Review backup before restoring</h3><p style="font-size:12px;color:var(--muted);margin-bottom:8px">File: '+safe(_pendingImportFileName)+'<br>Created: '+safe(dateText)+'</p><div class="card" style="font-size:13px;line-height:1.8"><div>Journal entries: <strong>'+summary.journalEntries+'</strong></div><div>Mood logs: <strong>'+summary.moodsLogged+'</strong></div><div>Craving logs: <strong>'+summary.cravingsLogged+'</strong></div><div>Recovery goals: <strong>'+summary.recoveryGoals+'</strong></div><div>Reminders: <strong>'+summary.reminders+'</strong></div></div><p style="font-size:12px;color:var(--danger);line-height:1.5">Restoring replaces data on this device and syncs it to your account if you are signed in. The JSON backup is not encrypted. The restored copy will use this device’s encryption setting; keep your passphrase if encryption is on.</p><button class="btn btn-outline" onclick="exportData()">Download current data first</button><label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted);margin:10px 0"><input id="import-backup-confirm" type="checkbox" onchange="updateImportRestoreButton(this.checked)" style="width:auto;margin-top:2px">I downloaded a backup of my current data, or understand it will be replaced.</label><button id="import-restore-btn" class="btn btn-primary" onclick="applyImportedData()" disabled>Restore this backup</button><button class="btn btn-outline" onclick="cancelDataImport()" style="margin-top:6px">Cancel</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:440px"><h3 style="font-size:18px;margin-bottom:6px">Review backup before restoring</h3><p style="font-size:12px;color:var(--muted);margin-bottom:8px">File: '+safe(_pendingImportFileName)+'<br>Created: '+safe(dateText)+'</p><div class="card" style="font-size:13px;line-height:1.8"><div>Journal entries: <strong>'+summary.journalEntries+'</strong></div><div>Mood logs: <strong>'+summary.moodsLogged+'</strong></div><div>Craving logs: <strong>'+summary.cravingsLogged+'</strong></div><div>Recovery goals: <strong>'+summary.recoveryGoals+'</strong></div><div>Reminders: <strong>'+summary.reminders+'</strong></div></div><p style="font-size:12px;color:var(--danger);line-height:1.5">Restoring replaces data on this device and syncs it to your account if you are signed in. The JSON file itself is not password-protected. Journal entries remain sealed only if app encryption was on when the backup was made; that backup’s passphrase will be needed to unlock them.</p><button class="btn btn-outline" onclick="exportData()">Download current data first</button><label style="display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--muted);margin:10px 0"><input id="import-backup-confirm" type="checkbox" onchange="updateImportRestoreButton(this.checked)" style="width:auto;margin-top:2px">I downloaded a backup of my current data, or understand it will be replaced.</label><button id="import-restore-btn" class="btn btn-primary" onclick="applyImportedData()" disabled>Restore this backup</button><button class="btn btn-outline" onclick="cancelDataImport()" style="margin-top:6px">Cancel</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -4395,14 +4396,43 @@ function applyImportedData() {
   var consent = document.getElementById('import-backup-confirm');
   if (!consent || !consent.checked) return;
   var imported = validateData(_pendingImportData);
-  var destinationEncryption = D && D.encryption ? JSON.parse(JSON.stringify(D.encryption)) : { enabled: false, salt: null, keyCheck: null };
-  if (destinationEncryption.enabled && !ENC_KEY) { showToast('Unlock encryption on this device before restoring a backup.', 'error'); return; }
+  var currentEncryption = D && D.encryption ? JSON.parse(JSON.stringify(D.encryption)) : { enabled: false, salt: null, keyCheck: null };
+  var importedEncryption = imported.encryption || {};
+  var backupEncrypted = !!(importedEncryption.enabled && importedEncryption.salt && importedEncryption.keyCheck);
+  var currentEncrypted = !!(currentEncryption.enabled && currentEncryption.salt && currentEncryption.keyCheck);
+  if (!backupEncrypted && currentEncrypted && !ENC_KEY) { showToast('Unlock encryption before restoring an unencrypted backup, so it can be protected with your current passphrase.', 'error'); return; }
   var overlay = document.querySelector('.overlay');
   if (overlay) overlay.remove();
-  imported.encryption = destinationEncryption;
-  D = imported;
   _pendingImportData = null;
   _pendingImportFileName = '';
+  if (backupEncrypted) {
+    imported.encryption = importedEncryption;
+    var reuseCurrentKey = currentEncrypted && ENC_KEY && currentEncryption.salt === importedEncryption.salt;
+    D = imported;
+    if (!reuseCurrentKey) { ENC_KEY = null; ENC_CACHE = {}; }
+    saveData();
+    showToast('Backup restored. Use the backup’s encryption passphrase to unlock journal entries.', 'success');
+    if (!reuseCurrentKey) promptEncryptionPassphrase(function() { syncToFirestore(); render(); });
+    else decryptAllEntries().then(function() { render(); });
+    return;
+  }
+  if (currentEncrypted) {
+    var previousData = D;
+    imported.encryption = currentEncryption;
+    D = imported;
+    encryptAllEntries(ENC_KEY).then(function() { return decryptAllEntries(); }).then(function() {
+      saveData();
+      showToast('Backup restored and protected with this device’s encryption passphrase.', 'success');
+    }).catch(function() {
+      D = previousData;
+      render();
+      showToast('Could not protect the backup. Your previous data is still in place.', 'error');
+    });
+    return;
+  }
+  imported.encryption = { enabled: false, salt: null, keyCheck: null };
+  ENC_KEY = null; ENC_CACHE = {};
+  D = imported;
   saveData();
   showToast('Backup restored. Cloud sync will update your account if you are signed in.', 'success');
 }

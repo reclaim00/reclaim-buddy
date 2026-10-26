@@ -206,6 +206,7 @@ function syncToFirestore(retries) {
     }).then(function(body){
       return DB.collection('appData').doc(AUTH_EMAIL).set(body);
     }).then(function(){
+      setCloudBackupAvailable(true, Date.now());
       syncStatusSynced();
     }).catch(function(e){
       console.warn(e);
@@ -219,8 +220,10 @@ function loadFromFirestore(callback) {
   if (!AUTH_EMAIL) { if (callback) callback(null); syncStatusOffline(); return; }
   syncStatusSyncing();
   DB.collection('appData').doc(AUTH_EMAIL).get().then(function(doc) {
-    if (!(doc.exists && doc.data().data)) { syncStatusSynced(); if (callback) callback(null); return; }
+    if (!(doc.exists && doc.data().data)) { setCloudBackupAvailable(false); syncStatusSynced(); if (callback) callback(null); return; }
     var raw = doc.data();
+    var cloudUpdatedAt = raw.lastUpdated && raw.lastUpdated.toMillis ? raw.lastUpdated.toMillis() : 0;
+    setCloudBackupAvailable(true, cloudUpdatedAt);
     var sealed = raw.enc && raw.data && raw.data.enc;
     var finish = function(cloudData) {
       if (cloudData) {
@@ -283,6 +286,7 @@ function onAuthReady(email, isNew) {
   AUTH_READY_RUN = true;
   AUTH_SIGN_OUT_IN_PROGRESS = false;
   AUTH_USER = email; AUTH_EMAIL = email;
+  restoreCloudSyncMeta(email);
   localStorage.setItem('rc_user', email); localStorage.setItem('rc_email', email);
   D = loadData();
   if (typeof removeLegacyProgressFields === 'function') removeLegacyProgressFields();
@@ -331,14 +335,53 @@ function onAuthReady(email, isNew) {
 // ====== SYNC STATUS TRACKING ======
 var _syncStatus = 'unknown'; // 'syncing' | 'synced' | 'error' | 'offline' | 'unknown'
 var _lastSyncTime = '';
+var _cloudBackupAvailable = false;
+
+function cloudSyncMetaKey(email) { return 'rc_cloud_sync_meta_' + String(email || '').replace(/[^a-zA-Z0-9_-]/g,''); }
+function restoreCloudSyncMeta(email) {
+  _cloudBackupAvailable = false;
+  _lastSyncTime = '';
+  try {
+    var meta = JSON.parse(localStorage.getItem(cloudSyncMetaKey(email)) || 'null');
+    if (meta && meta.available && Number(meta.timestamp) > 0) {
+      _cloudBackupAvailable = true;
+      _lastSyncTime = new Date(Number(meta.timestamp)).toLocaleString();
+    }
+  } catch(e) {}
+}
+function setCloudBackupAvailable(available, timestamp) {
+  _cloudBackupAvailable = !!available;
+  if (!_cloudBackupAvailable) {
+    _lastSyncTime = '';
+    if (AUTH_EMAIL) try { localStorage.removeItem(cloudSyncMetaKey(AUTH_EMAIL)); } catch(e) {}
+    updateSyncUI();
+    return;
+  }
+  var savedAt = Number(timestamp) || Date.now();
+  _lastSyncTime = new Date(savedAt).toLocaleString();
+  if (AUTH_EMAIL) try { localStorage.setItem(cloudSyncMetaKey(AUTH_EMAIL), JSON.stringify({available:true,timestamp:savedAt})); } catch(e) {}
+  updateSyncUI();
+}
+
+function cloudBackupStatusText() {
+  if (!AUTH_EMAIL || !firebase || !firebase.auth().currentUser) return 'Only on this device. Sign in to enable cloud recovery.';
+  if (typeof isEncryptionEnabled === 'function' && isEncryptionEnabled() && !ENC_KEY) return 'Cloud sync is paused while encryption is locked. Unlock to sync your backup.';
+  if (_syncStatus === 'syncing') return 'Syncing your latest changes to your account…';
+  if (_syncStatus === 'offline') return _cloudBackupAvailable ? 'No connection. Last confirmed backup: ' + _lastSyncTime + '. New changes will sync when you reconnect.' : 'No connection and no cloud backup has been confirmed yet. Your current changes are on this device.';
+  if (_syncStatus === 'error') return 'The latest sync failed. Your changes remain on this device; try Sync Now again.' + (_cloudBackupAvailable ? ' Last confirmed backup: ' + _lastSyncTime + '.' : ' No cloud backup has been confirmed yet.');
+  if (_cloudBackupAvailable) return 'Cloud backup confirmed. Last updated: ' + _lastSyncTime + '.';
+  return 'No cloud backup has been confirmed yet. Tap Sync Now to create one.';
+}
 
 function updateSyncUI() {
   if (typeof D === 'undefined' || !D) return;
   var el = document.getElementById('sync-indicator');
   var timeEl = document.getElementById('sync-time-display');
+  var backupEl = document.getElementById('cloud-backup-status');
   if (!AUTH_EMAIL || !firebase || !firebase.auth().currentUser) {
     if (el) el.style.display = 'none';
     if (timeEl) timeEl.textContent = 'Offline';
+    if (backupEl) backupEl.textContent = 'Only on this device. Sign in to enable cloud recovery.';
     return;
   }
   if (el) {
@@ -350,10 +393,11 @@ function updateSyncUI() {
     else { el.innerHTML = '?'; el.className = 'sync-indicator'; el.title = 'Sync status unknown'; }
   }
   if (timeEl) timeEl.textContent = _lastSyncTime || 'Never';
+  if (backupEl) backupEl.textContent = cloudBackupStatusText();
 }
 
 function syncStatusSyncing() { _syncStatus = 'syncing'; updateSyncUI(); }
-function syncStatusSynced() { _syncStatus = 'synced'; _lastSyncTime = new Date().toLocaleTimeString(); updateSyncUI(); }
+function syncStatusSynced() { _syncStatus = 'synced'; updateSyncUI(); }
 function syncStatusError() { _syncStatus = 'error'; updateSyncUI(); if (AUTH_EMAIL) showToast('Cloud sync failed. Data is safe locally.', 'error'); }
 function syncStatusOffline() { _syncStatus = 'offline'; updateSyncUI(); }
 
