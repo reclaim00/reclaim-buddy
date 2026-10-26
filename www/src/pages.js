@@ -3407,6 +3407,7 @@ function setupBuddyHTML() {
   for (var ai=0;ai<availabilityOptions.length;ai++) h += '<option value="'+availabilityOptions[ai]+'"'+((matchPrefs.availability||'Any time')===availabilityOptions[ai]?' selected':'')+'>'+availabilityOptions[ai]+'</option>';
   h += '</select><button class="btn btn-primary" id="random-partner-btn" onclick="findRandomPartner()">Find a Partner</button>';
   h += '<button class="btn btn-outline" id="random-partner-cancel" onclick="cancelRandomPartnerSearch()" style="display:none;margin-left:6px">Cancel search</button>';
+  h += '<button class="btn btn-outline btn-sm" id="random-partner-retry" onclick="retryRandomPartnerSearch()" style="display:none;margin:8px 0 0">Retry search</button>';
   h += '<div id="random-partner-status" role="status" aria-live="polite" style="margin-top:10px;font-size:13px;color:var(--muted)"></div></div>';
   h += blockedPartnerCardHTML();
   h += '<div class="card partner-local-note"><h3>Already shared an invite?</h3><p>Check whether someone has asked to connect with this account. You decide whether to accept.</p><button class="btn btn-outline" onclick="checkPairingRequest()">Check invite requests</button></div>';
@@ -3420,7 +3421,7 @@ function partnerConnectionPanelHTML() {
   for (var mi=0;mi<LANGUAGES.length;mi++) h += '<option value="'+LANGUAGES[mi]+'"'+(matchPrefs.language===LANGUAGES[mi]?' selected':'')+'>'+LANGUAGES[mi]+'</option>';
   h += '</select><label class="form-label" for="random-partner-availability">When are you usually available?</label><select id="random-partner-availability" onchange="savePartnerMatchPreference(\'availability\',this.value)" style="width:100%;margin-bottom:8px">';
   ['Any time','Morning','Afternoon','Evening'].forEach(function(option){h += '<option value="'+option+'"'+((matchPrefs.availability||'Any time')===option?' selected':'')+'>'+option+'</option>';});
-  h += '</select><button class="btn btn-primary" id="random-partner-btn" onclick="findRandomPartner()">Find a Partner</button><button class="btn btn-outline" id="random-partner-cancel" onclick="cancelRandomPartnerSearch()" style="display:none;margin-left:6px">Cancel search</button><div id="random-partner-status" role="status" aria-live="polite" class="partner-status"></div></div>';
+  h += '</select><button class="btn btn-primary" id="random-partner-btn" onclick="findRandomPartner()">Find a Partner</button><button class="btn btn-outline" id="random-partner-cancel" onclick="cancelRandomPartnerSearch()" style="display:none;margin-left:6px">Cancel search</button><button class="btn btn-outline btn-sm" id="random-partner-retry" onclick="retryRandomPartnerSearch()" style="display:none;margin:8px 0 0">Retry search</button><div id="random-partner-status" role="status" aria-live="polite" class="partner-status"></div></div>';
   return h;
 }
 
@@ -3621,6 +3622,8 @@ function fetchBuddyProgress() {
 
 // ====== STREAK CALENDAR ======
 var CAL_MONTH_OFFSET = 0;
+var CAL_HISTORY_FILTER = 'all';
+var CAL_HISTORY_OPEN = false;
 
 function calendarHistoryDate(value) {
   if (typeof value === 'string') {
@@ -3633,31 +3636,40 @@ function calendarHistoryDate(value) {
 
 function calendarHistoryHTML(year, month) {
   var byDate = Object.create(null);
-  function add(value, label) {
+  function add(value, label, category) {
     var date = calendarHistoryDate(value);
     if (!date || date.getFullYear() !== year || date.getMonth() !== month) return;
     var key = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
-    if (!byDate[key]) byDate[key] = { date: new Date(date.getFullYear(), date.getMonth(), date.getDate()), labels: [] };
-    if (byDate[key].labels.indexOf(label) === -1) byDate[key].labels.push(label);
+    if (!byDate[key]) byDate[key] = { date: new Date(date.getFullYear(), date.getMonth(), date.getDate()), items: [] };
+    if (!byDate[key].items.some(function(item) { return item.label === label && item.category === category; })) byDate[key].items.push({ label: label, category: category });
   }
   (D.moods || []).forEach(function(item) {
     var mood = MOODS.find(function(option) { return option.val === Number(item.val); });
-    add(item.date, mood ? 'Mood: ' + mood.label : 'Mood check-in');
+    add(item.date, mood ? 'Mood: ' + mood.label : 'Mood check-in', 'mood');
   });
   (D.habits || []).forEach(function(habit) {
-    (habit.logs || []).forEach(function(date) { add(date, 'Habit: ' + (habit.name || 'Check-in')); });
+    (habit.logs || []).forEach(function(date) { add(date, 'Habit: ' + (habit.name || 'Check-in'), 'habits'); });
   });
-  (D.journal || []).forEach(function(entry) { add(entry.date, 'Journal entry'); });
-  (D.meetingLog || []).forEach(function(meeting) { add(meeting.date, (meeting.type || 'Meeting') + ' meeting'); });
-  (D.reminders || []).forEach(function(reminder) { add(reminder.date, 'Reminder: ' + (reminder.title || 'Reminder')); });
-  (D.buddyCheckins || []).forEach(function(checkin) { add(checkin.date, 'Partner check-in'); });
-  ((D.sobriety && D.sobriety.relapseDates) || []).forEach(function(date) { add(date, 'Recovery reset recorded'); });
-  if (D.sobriety && D.sobriety.startDate) add(D.sobriety.startDate, 'Current journey start');
+  (D.journal || []).forEach(function(entry) { add(entry.date, 'Journal entry', 'journal'); });
+  (D.meetingLog || []).forEach(function(meeting) { add(meeting.date, (meeting.type || 'Meeting') + ' meeting', 'meetings'); });
+  (D.reminders || []).forEach(function(reminder) { add(reminder.date, 'Reminder: ' + (reminder.title || 'Reminder'), 'reminders'); });
+  (D.buddyCheckins || []).forEach(function(checkin) { add(checkin.date, 'Partner check-in', 'partner'); });
+  ((D.sobriety && D.sobriety.relapseDates) || []).forEach(function(date) { add(date, 'Recovery reset recorded', 'recovery'); });
+  if (D.sobriety && D.sobriety.startDate) add(D.sobriety.startDate, 'Current journey start', 'recovery');
 
-  var entries = Object.keys(byDate).map(function(key) { return byDate[key]; });
+  var entries = Object.keys(byDate).map(function(key) {
+    var entry = byDate[key];
+    entry.items = entry.items.filter(function(item) { return CAL_HISTORY_FILTER === 'all' || item.category === CAL_HISTORY_FILTER; });
+    entry.labels = entry.items.map(function(item) { return item.label; });
+    return entry;
+  }).filter(function(entry) { return entry.items.length > 0; });
   entries.sort(function(a, b) { return b.date - a.date; });
   var monthName = new Date(year, month, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
-  var h = '<details class="card calendar-history" style="margin-top:8px"><summary style="cursor:pointer;font-weight:700;font-size:14px">' + t('Calendar history') + ' · ' + safe(monthName) + ' (' + entries.length + ' ' + t('days with activity') + ')</summary>';
+  var filterOptions = [['all','All activity'],['mood','Moods'],['habits','Habits'],['journal','Journal'],['meetings','Meetings'],['reminders','Reminders'],['partner','Partner check-ins'],['recovery','Journey milestones']];
+  var h = '<details class="card calendar-history"' + (CAL_HISTORY_OPEN ? ' open' : '') + ' ontoggle="CAL_HISTORY_OPEN=this.open" style="margin-top:8px"><summary style="cursor:pointer;font-weight:700;font-size:14px">' + t('Calendar history') + ' · ' + safe(monthName) + ' (' + entries.length + ' ' + t('days with activity') + ')</summary>';
+  h += '<label class="form-label" for="calendar-history-filter" style="display:block;margin:10px 0 4px">Show</label><select id="calendar-history-filter" onchange="setCalendarHistoryFilter(this.value)" style="width:100%;margin-bottom:8px">';
+  filterOptions.forEach(function(option) { h += '<option value="' + option[0] + '"' + (CAL_HISTORY_FILTER === option[0] ? ' selected' : '') + '>' + t(option[1]) + '</option>'; });
+  h += '</select>';
   if (!entries.length) {
     h += '<div class="empty-state" style="padding:12px 4px">' + t('No logged activity for this month yet.') + '</div>';
   } else {
@@ -3669,6 +3681,14 @@ function calendarHistoryHTML(year, month) {
     h += '</div>';
   }
   return h + '</details>';
+}
+
+function setCalendarHistoryFilter(filter) {
+  var allowed = ['all','mood','habits','journal','meetings','reminders','partner','recovery'];
+  CAL_HISTORY_FILTER = allowed.indexOf(filter) !== -1 ? filter : 'all';
+  CAL_HISTORY_OPEN = true;
+  _pageCache.calendar = null;
+  render();
 }
 
 function calendarHTML() {

@@ -193,14 +193,25 @@ function requestRandomPartner(action, extra) {
 
 function partnerRequestErrorMessage(error, fallback) {
   if (error && error.status === 401) return 'Your sign-in expired. Sign out and sign back in, then try again.';
-  if (error && error.message && error.status >= 400 && error.status < 600) return error.message;
+  if (error && error.status === 403) return 'Partner matching is unavailable for this account right now. Try again later.';
+  if (error && error.status === 409) return 'Your account already has an active partner search or connection. Refresh the Partner page and check its status.';
+  if (error && error.status === 429) return 'Too many search attempts. Wait a moment, then try again.';
+  if (error && error.status >= 500) return 'Partner matching is temporarily unavailable. Check your connection and try again shortly.';
+  if (error && error.status === 400) return 'Partner matching could not process this request. Refresh the Partner page and try again.';
   if (error instanceof TypeError) return 'Could not connect to partner matching. Check your internet connection and try again.';
   return fallback || 'Partner matching could not be completed. Please try again.';
 }
 
-function setRandomPartnerStatus(message) {
+function setRandomPartnerStatus(message, canRetry) {
   var status = document.getElementById('random-partner-status');
   if (status) status.textContent = message;
+  var retry = document.getElementById('random-partner-retry');
+  if (retry) retry.style.display = canRetry ? '' : 'none';
+}
+
+function retryRandomPartnerSearch() {
+  setRandomPartnerStatus('Retrying partner search…');
+  findRandomPartner();
 }
 
 function showRandomPartnerMatch(result) {
@@ -227,7 +238,7 @@ function checkRandomPartnerSearch() {
     .catch(function(error) {
       console.warn('Could not search for a partner:', error);
       var message = partnerRequestErrorMessage(error, 'Could not reach partner matching. Check your connection and try again.');
-      setRandomPartnerStatus(message);
+      setRandomPartnerStatus(message, true);
       if (error && error.status === 409) { resetRandomPartnerControls(); if (randomPartnerTimer) { clearInterval(randomPartnerTimer); randomPartnerTimer = null; } if (randomPartnerTimeout) { clearTimeout(randomPartnerTimeout); randomPartnerTimeout = null; } }
     })
     .then(function() { randomPartnerInFlight = false; });
@@ -257,7 +268,7 @@ function findRandomPartner() {
     .catch(function(error) {
       console.warn('Could not start partner matching:', error);
       var message = partnerRequestErrorMessage(error, 'Could not start partner matching. Check your connection and try again.');
-      setRandomPartnerStatus(message);
+      setRandomPartnerStatus(message, true);
       if (start) { start.disabled = false; start.textContent = 'Find a Partner'; }
     });
 }
@@ -284,7 +295,7 @@ function restoreRandomPartnerSearch() {
     if (!randomPartnerTimer) randomPartnerTimer = setInterval(checkRandomPartnerSearch, 6000);
   }).catch(function(error) {
     console.warn('Could not restore partner search:', error);
-    setRandomPartnerStatus(partnerRequestErrorMessage(error, 'Could not reconnect to your partner search. Tap Find a Partner to try again.'));
+    setRandomPartnerStatus(partnerRequestErrorMessage(error, 'Could not reconnect to your partner search.'), true);
     try { sessionStorage.removeItem('reclaimPartnerSearchActive'); } catch(e) {}
   }).then(function() { randomPartnerRestorePending = false; });
 }
@@ -303,7 +314,7 @@ function cancelRandomPartnerSearch(endMessage) {
     setRandomPartnerStatus(endMessage || 'Your search has been cancelled. You can start again any time.');
   }).catch(function() {
     resetRandomPartnerControls();
-    setRandomPartnerStatus('Could not reach partner matching. Your search may still be active; try again when connected.');
+    setRandomPartnerStatus('Could not reach partner matching. Your search may still be active; check your connection, then retry or cancel the search.', true);
   });
 }
 
