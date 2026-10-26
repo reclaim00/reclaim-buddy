@@ -442,6 +442,9 @@ function trackHTML() {
   // Streaks viewer
   h += streaksHTML();
 
+  // Keep the recovery calendar available directly alongside saved history.
+  h += calendarHTML(true);
+
   // Mood history
   h += '<div class="card"><h3>'+t('Mood History')+'</h3>';
   h += '<input type="text" id="ms" placeholder="'+t('Search moods...')+'" oninput="filterMoods(this.value)" style="margin-bottom:8px;width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;box-sizing:border-box">';
@@ -3688,10 +3691,25 @@ function setCalendarHistoryFilter(filter) {
   CAL_HISTORY_FILTER = allowed.indexOf(filter) !== -1 ? filter : 'all';
   CAL_HISTORY_OPEN = true;
   _pageCache.calendar = null;
+  _pageCache.track = null;
   render();
 }
 
-function calendarHTML() {
+function changeCalendarMonth(amount) {
+  CAL_MONTH_OFFSET += amount;
+  _pageCache.calendar = null;
+  _pageCache.track = null;
+  render();
+}
+
+function jumpToCurrentCalendarMonth() {
+  CAL_MONTH_OFFSET = 0;
+  _pageCache.calendar = null;
+  _pageCache.track = null;
+  render();
+}
+
+function calendarHTML(embedded) {
   var now = new Date();
   var d = new Date(now.getFullYear(), now.getMonth() + CAL_MONTH_OFFSET, 1);
   var year = d.getFullYear(), month = d.getMonth();
@@ -3711,10 +3729,10 @@ function calendarHTML() {
   var soberFromKey = Math.max(monthStartKey, journeyStartKey);
   var soberToKey = Math.min(monthEndKey, todayKey);
   var soberDaysThisMonth = journeyStart && journeyStartKey <= todayKey && soberFromKey <= soberToKey ? Math.floor((soberToKey - soberFromKey) / 86400000) + 1 : 0;
-  var h = '<h2 class="page-title">'+t('Streak Calendar')+'</h2>';
+  var h = embedded ? '<h3 style="font-size:16px;margin:12px 0 6px">'+t('Streak Calendar')+'</h3>' : '<h2 class="page-title">'+t('Streak Calendar')+'</h2>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:8px">'+t('Color-coded view of your daily activity and sobriety journey.')+'</p>';
   h += '<div class="card">';
-  h += '<div class="cal-nav"><button onclick="CAL_MONTH_OFFSET--;_pageCache.calendar=null;render()">'+t('Prev')+'</button><span style="font-weight:700;font-size:15px">'+months[month]+' '+year+'</span><button onclick="CAL_MONTH_OFFSET++;_pageCache.calendar=null;render()">'+t('Next')+'</button></div>';
+  h += '<div class="cal-nav"><button onclick="changeCalendarMonth(-1)">'+t('Prev')+'</button><span style="font-weight:700;font-size:15px">'+months[month]+' '+year+'</span><button onclick="changeCalendarMonth(1)">'+t('Next')+'</button></div>';
   h += '<div class="stat-card" style="margin:8px 0 10px;text-align:center"><div class="num">'+soberDaysThisMonth+'</div><div class="label">Sober '+(soberDaysThisMonth===1?'day':'days')+' in '+months[month]+'</div>'+(journeyStart ? '' : '<div style="font-size:11px;color:var(--muted);margin-top:4px">Start your journey to begin tracking sober days.</div>')+'</div>';
   var monthMeetings = (D.meetingLog || []).filter(function(m){var x=new Date(m.date+'T00:00:00');return x.getFullYear()===year&&x.getMonth()===month}).length;
   var monthReminders = (D.reminders || []).filter(function(r){var x=new Date(r.date+'T00:00:00');return x.getFullYear()===year&&x.getMonth()===month}).length;
@@ -3757,7 +3775,7 @@ function calendarHTML() {
   h += '</div>';
   h += '<div class="cal-legend"><span><span class="swatch" style="background:var(--primary)"></span>'+t('Mood+Habits')+'</span><span><span class="swatch" style="background:#2d6a4f"></span>'+t('Mood+Journal')+'</span><span><span class="swatch" style="background:#4a8a63"></span>'+t('Mood')+'</span><span><span class="swatch" style="background:var(--accent)"></span>'+t('Habits')+'</span><span><span class="swatch" style="background:var(--border)"></span>'+t('Inactive')+'</span><span><span class="swatch sober-swatch"></span>Sober day</span></div>';
   h += calendarHistoryHTML(year, month);
-  h += '<button class="btn btn-outline btn-sm" onclick="CAL_MONTH_OFFSET=0;_pageCache.calendar=null;render()" style="margin-top:8px">'+t('Jump to Today')+'</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="jumpToCurrentCalendarMonth()" style="margin-top:8px">'+t('Jump to Today')+'</button>';
   h += '</div>';
   return h;
 }
