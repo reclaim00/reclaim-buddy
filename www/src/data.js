@@ -453,7 +453,7 @@ if ('serviceWorker' in navigator) {
 function defaultData() {
   return {
     version: 1,
-    name: '', phoneNumber: '', avatar: '', joinDate: Date.now(), theme: 'green', darkMode: false,
+    name: '', phoneNumber: '', avatar: '', joinDate: Date.now(), theme: 'green', darkMode: false, textSize: 'normal',
     language: 'English',
     hopes: '', triggerSituations: '', stayOnTrack: '', fightingFor: '',
     moods: [],
@@ -2106,7 +2106,7 @@ function showSignIn(mode) {
     '<input class="si-input" type="email" id="si-email" aria-label="'+t('Email address')+'" placeholder="'+t('your@email.com')+'" autocomplete="email" inputmode="email" required>' +
     '<input class="si-input" type="password" id="si-password" aria-label="'+t('Password')+'" placeholder="'+t('Password')+'" autocomplete="current-password" minlength="6" required>' +
     '<div id="si-password-help" class="si-password-help" style="display:none">'+t('Use at least 6 characters.')+'</div>' +
-    '<div id="si-forgot-container" style="text-align:right;font-size:11px;margin:2px 0 4px"><button type="button" class="si-forgot-btn" id="si-forgot-link" style="display:none" onclick="handleForgotPassword()">'+t('Forgot password?')+'</button></div>' +
+    '<div id="si-forgot-container" style="text-align:right;font-size:11px;margin:2px 0 4px"><button type="button" class="si-forgot-btn" id="si-forgot-link" aria-label="Reset account password by email" style="display:none" onclick="handleForgotPassword()">'+t('Forgot password?')+'</button></div>' +
     '<div id="si-error" role="alert" aria-live="polite" style="font-size:12px;color:var(--danger);margin:4px 0;text-align:center"></div>' +
     '<button type="submit" class="si-btn" id="si-auth-btn"><span id="si-btn-label">'+t('Sign In')+'</span></button>' +
     '</form>' +
@@ -2128,9 +2128,10 @@ function handleForgotPassword() {
   var email = document.getElementById('si-email');
   var error = document.getElementById('si-error');
   var link = document.getElementById('si-forgot-link');
-  if (!email || !email.value.trim()) { if (error) error.textContent = t('Enter your email address first.'); if (email) email.focus(); return; }
+  if (!email || !email.value.trim()) { if (error) error.textContent = t('Enter your email address first.'); if (email) { email.setAttribute('aria-invalid','true'); email.focus(); } return; }
   var emailStr = email.value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { if (error) error.textContent = t('Enter a valid email address.'); email.focus(); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)) { if (error) error.textContent = t('Enter a valid email address.'); email.setAttribute('aria-invalid','true'); email.focus(); return; }
+  email.removeAttribute('aria-invalid');
   if (!firebase || !firebase.auth) { if (error) error.textContent = t('Cloud authentication is not available.'); return; }
   if (error) { error.style.color = 'var(--muted)'; error.textContent = t('Sending reset link...'); }
   if (link) { link.disabled = true; link.setAttribute('aria-busy','true'); }

@@ -1369,11 +1369,11 @@ function reflectHTML() {
     h += '<div style="background:var(--primary-light);padding:10px 12px;border-radius:10px;margin-bottom:8px;font-size:13px;line-height:1.5;border-left:3px solid var(--primary);display:flex;align-items:center;gap:10px"><span style="font-size:20px">&#128081;</span><div><strong>'+t('Guided reflections are Premium')+'</strong><br><span style="font-size:12px;color:var(--muted)">'+t('Get a daily prompt written for your journey and deep analysis of every entry.')+'</span></div><button class="btn btn-sm btn-primary" onclick="showPaywall()" style="margin-left:auto;width:auto;font-size:11px;white-space:nowrap">'+t('Unlock')+'</button></div>';
   }
   // Optional mood for your entry
-  h += '<div class="mood-row" id="ref-moods">';
+  h += '<div class="mood-row" id="ref-moods" role="group" aria-label="Choose your mood">';
   var moodEmojis = ['&#128542;','&#128533;','&#128528;','&#128578;','&#128513;'];
   var labels = [t('Terrible'),t('Bad'),t('Okay'),t('Good'),t('Great')];
   for (var i=0;i<5;i++) {
-    h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="pickRefMood(this)"><span style="font-size:18px;display:block">'+moodEmojis[i]+'</span>'+labels[i]+'</button>';
+    h += '<button class="mood-btn" aria-pressed="false" data-val="'+(i+1)+'" onclick="pickRefMood(this)"><span style="font-size:18px;display:block">'+moodEmojis[i]+'</span>'+labels[i]+'</button>';
   }
   h += '</div>';
   h += '<textarea id="ref-entry" placeholder="'+t('Write whatever is on your mind')+'..." style="min-height:140px" oninput="updateWordCount(this)"></textarea>';
@@ -1480,8 +1480,9 @@ function pickJournalType(btn, tid) {
 
 function pickRefMood(btn) {
   if (!btn) return;
-  [].forEach.call(document.querySelectorAll('#ref-moods .mood-btn'), function(b){ b.classList.remove('active'); });
+  [].forEach.call(btn.parentNode.querySelectorAll('.mood-btn'), function(b){ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });
   btn.classList.add('active');
+  btn.setAttribute('aria-pressed','true');
 }
 
 function setRefJournalMode(mode) {
@@ -2016,11 +2017,11 @@ function careHTML() {
   // Quick Mood (moved from Journal)
   h += '<div class="card"><h3>&#9889; '+t('Quick Mood')+'</h3>';
   h += '<p style="font-size:12px;color:var(--muted);margin-bottom:8px">'+t('Log your mood in a moment. No writing needed.')+'</p>';
-  h += '<div class="mood-row" id="ref-moods">';
+  h += '<div class="mood-row" id="ref-moods" role="group" aria-label="Choose your mood">';
   var qmEmojis = ['&#128542;','&#128533;','&#128528;','&#128578;','&#128513;'];
   var qmLabels = [t('Terrible'),t('Bad'),t('Okay'),t('Good'),t('Great')];
   for (var qmi=0;qmi<5;qmi++) {
-    h += '<button class="mood-btn" data-val="'+(qmi+1)+'" onclick="pickRefMood(this)"><span style="font-size:18px;display:block">'+qmEmojis[qmi]+'</span>'+qmLabels[qmi]+'</button>';
+    h += '<button class="mood-btn" aria-pressed="false" data-val="'+(qmi+1)+'" onclick="pickRefMood(this)"><span style="font-size:18px;display:block">'+qmEmojis[qmi]+'</span>'+qmLabels[qmi]+'</button>';
   }
   h += '</div>';
   h += '<button class="btn btn-primary btn-sm" onclick="saveQuickMood()" style="width:100%">&#9889; '+t('Log Quick Mood')+'</button></div>';
@@ -2427,9 +2428,9 @@ function accCheckin() {
   var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:4px">&#128170; Accountability Check-In</h3>';
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did the interaction with ' + (D.buddy?D.buddy.name:'your partner') + ' go?</p>';
   h += '<div style="margin-bottom:10px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">How are you feeling about your recovery right now?</label>';
-  h += '<div class="mood-row" id="acc-moods">';
+  h += '<div class="mood-row" id="acc-moods" role="group" aria-label="Choose how you feel">';
   var labels = ['Struggling','Tough','Okay','Good','Strong'];
-  for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#acc-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
+  for (var i=0;i<5;i++) h += '<button class="mood-btn" aria-pressed="false" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#acc-moods .mood-btn\'),function(b){b.classList.remove(\'active\');b.setAttribute(\'aria-pressed\',\'false\')});this.classList.add(\'active\');this.setAttribute(\'aria-pressed\',\'true\')">'+labels[i]+'</button>';
   h += '</div></div>';
   h += '<textarea id="acc-note" placeholder="Any wins, concerns, or things you discussed?" style="min-height:80px"></textarea>';
   h += '<button class="btn btn-primary btn-sm" onclick="accSave()" style="width:100%">Save Check-In</button>';
@@ -3441,9 +3442,9 @@ function saveBuddy() {
 function buddyCheckin() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Private Check-In</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">This stays in your account. How did your interaction with ' + safe(D.buddy ? D.buddy.name : 'your partner') + ' go?</p><div class="mood-row" id="checkin-moods">';
+  var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">Private Check-In</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">This stays in your account. How did your interaction with ' + safe(D.buddy ? D.buddy.name : 'your partner') + ' go?</p><div class="mood-row" id="checkin-moods" role="group" aria-label="Choose your check-in mood">';
   var labels = ['Tough','Hard','Okay','Good','Great'];
-  for (var i=0;i<5;i++) h += '<button class="mood-btn" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#checkin-moods .mood-btn\'),function(b){b.classList.remove(\'active\')});this.classList.add(\'active\')">'+labels[i]+'</button>';
+  for (var i=0;i<5;i++) h += '<button class="mood-btn" aria-pressed="false" data-val="'+(i+1)+'" onclick="[].forEach.call(document.querySelectorAll(\'#checkin-moods .mood-btn\'),function(b){b.classList.remove(\'active\');b.setAttribute(\'aria-pressed\',\'false\')});this.classList.add(\'active\');this.setAttribute(\'aria-pressed\',\'true\')">'+labels[i]+'</button>';
   h += '</div><textarea id="checkin-note" placeholder="What did you talk about? Any wins?" style="min-height:80px"></textarea><button class="btn btn-primary" onclick="saveBuddyCheckin(this)">Save Check-In</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
   overlay.innerHTML = h;
   document.body.appendChild(overlay);
@@ -4176,6 +4177,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
 h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Language')+'</span><select onchange="changeLanguage(this.value)" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px">';
   for (var li=0;li<LANGUAGES.length;li++) h += '<option value="'+LANGUAGES[li]+'"'+(D.language===LANGUAGES[li]?' selected':'')+'>'+LANGUAGES[li]+'</option>';
   h += '</select></div>';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0"><label for="profile-text-size" style="font-size:14px">Text size</label><select id="profile-text-size" onchange="D.textSize=this.value;saveDataSilent();applyTheme()" style="width:auto;padding:6px 10px;font-size:13px;margin:0;max-width:180px"><option value="normal"'+((D.textSize||'normal')==='normal'?' selected':'')+'>Standard</option><option value="large"'+(D.textSize==='large'?' selected':'')+'>Large</option><option value="larger"'+(D.textSize==='larger'?' selected':'')+'>Largest</option></select></div>';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0"><span style="font-size:14px">'+t('Accent Colour')+'</span><div style="display:flex;gap:4px">';
   var colorOpts = {green:'#2d6a4f',purple:'#a78bfa',pink:'#f472b6',orange:'#fb923c',red:'#f87171'};
   for (var co in colorOpts) {
@@ -4260,6 +4262,8 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '<button class="btn btn-sm btn-primary" onclick="syncToFirestore()" style="margin-bottom:6px">'+t('Sync Now')+'</button></div>';
   h += '<button class="btn btn-primary btn-sm" onclick="showProgressReport()" style="margin-top:8px">&#128202; '+t('Progress Report')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:6px">'+t('Export My Data')+'</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="exportPasswordProtectedData()" style="margin-top:6px">Export Password-Protected Backup</button>';
+  h += '<p style="font-size:11px;color:var(--muted);line-height:1.45;margin-top:4px">Use this backup when moving devices. Keep its passphrase separate; it cannot be recovered if lost.</p>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportJournalText()" style="margin-top:6px">'+t('Journal')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="importData()" style="margin-top:6px">'+t('Import Data')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="showHelpCenter()" style="margin-top:8px">Help & account recovery</button>';
@@ -4336,8 +4340,67 @@ function exportData() {
   downloadDataExport(D);
 }
 
+function exportPasswordProtectedData() {
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.setAttribute('role','dialog');
+  overlay.setAttribute('aria-modal','true');
+  overlay.setAttribute('aria-labelledby','protected-backup-title');
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px"><h3 id="protected-backup-title" style="font-size:18px;margin-bottom:6px">Create a protected backup</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">Choose a backup passphrase with at least 8 characters. You will need it to restore this file. Re.Claim cannot recover a forgotten passphrase.</p><label class="form-label" for="backup-passphrase">Backup passphrase</label><input id="backup-passphrase" type="password" autocomplete="new-password" minlength="8"><label class="form-label" for="backup-passphrase-confirm">Confirm passphrase</label><input id="backup-passphrase-confirm" type="password" autocomplete="new-password" minlength="8"><div id="backup-export-error" role="alert" aria-live="polite" style="font-size:12px;color:var(--danger);min-height:18px"></div><button id="backup-export-btn" class="btn btn-primary" onclick="createPasswordProtectedDataExport(this)">Create backup file</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  document.body.appendChild(overlay);
+  var input = document.getElementById('backup-passphrase');
+  if (input) input.focus();
+}
+
+function createPasswordProtectedDataExport(button) {
+  var pass = document.getElementById('backup-passphrase');
+  var confirmPass = document.getElementById('backup-passphrase-confirm');
+  var error = document.getElementById('backup-export-error');
+  if (!pass || pass.value.length < 8) { if (error) error.textContent = 'Use at least 8 characters.'; if (pass) pass.focus(); return; }
+  if (!confirmPass || pass.value !== confirmPass.value) { if (error) error.textContent = 'The passphrases do not match.'; if (confirmPass) confirmPass.focus(); return; }
+  if (!window.crypto || !crypto.subtle || typeof deriveEncryptionKey !== 'function' || typeof encryptText !== 'function') { if (error) error.textContent = 'Protected backups are not available in this app environment.'; return; }
+  var passphrase = pass.value;
+  var salt = crypto.getRandomValues(new Uint8Array(16));
+  button.disabled = true;
+  button.setAttribute('aria-busy','true');
+  if (error) error.textContent = 'Encrypting your backup…';
+  deriveEncryptionKey(passphrase, salt).then(function(key) {
+    return encryptText(JSON.stringify(makeDataExport(D)), key);
+  }).then(function(payload) {
+    var saltString = '';
+    for (var i=0;i<salt.length;i++) saltString += String.fromCharCode(salt[i]);
+    var file = { _exportVersion: 3, _exportedAt: new Date().toISOString(), _encryptedBackup: { scheme: 'PBKDF2-SHA256-AES-256-GCM', iterations: 600000, salt: btoa(saltString), payload: payload } };
+    var blob = new Blob([JSON.stringify(file, null, 2)], {type:'application/json'});
+    var url = URL.createObjectURL(blob);
+    var anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'reclaim-protected-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+    var overlay = document.querySelector('.overlay');
+    if (overlay) overlay.remove();
+    showToast('Password-protected backup created. Store its passphrase safely.', 'success');
+  }).catch(function(err) {
+    console.warn('Could not create protected backup:', err);
+    button.disabled = false;
+    button.removeAttribute('aria-busy');
+    if (error) error.textContent = 'Could not create the backup. Please try again.';
+  });
+}
+
 var _pendingImportData = null;
 var _pendingImportFileName = '';
+var _pendingEncryptedBackup = null;
+
+function setPendingImport(parsed, fileName, exportedAt) {
+  var data = parsed && parsed._exportVersion && parsed.data ? parsed.data : parsed;
+  if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('Invalid backup');
+  _pendingImportData = validateData(JSON.parse(JSON.stringify(data)));
+  _pendingImportFileName = fileName || 'backup file';
+  showImportPreview(exportedAt || (parsed && parsed._exportedAt) || 'Unknown date');
+}
 
 function importData() {
   var input = document.createElement('input');
@@ -4351,13 +4414,8 @@ function importData() {
     reader.onload = function(ev) {
       try {
         var parsed = JSON.parse(ev.target.result);
-        var data;
-        if (parsed && parsed._exportVersion && parsed.data) data = parsed.data;
-        else if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) data = parsed;
-        else throw new Error('Invalid backup');
-        _pendingImportData = validateData(JSON.parse(JSON.stringify(data)));
-        _pendingImportFileName = file.name || 'backup file';
-        showImportPreview(parsed && parsed._exportedAt ? parsed._exportedAt : 'Unknown date');
+        if (parsed && parsed._encryptedBackup) { promptEncryptedBackupImport(parsed, file.name); return; }
+        setPendingImport(parsed, file.name, parsed && parsed._exportedAt);
       } catch(err) {
         _pendingImportData = null;
         alert(t('This file is not a valid Re.Claim data backup.'));
@@ -4367,6 +4425,46 @@ function importData() {
     reader.readAsText(file);
   };
   input.click();
+}
+
+function promptEncryptedBackupImport(file, fileName) {
+  var backup = file && file._encryptedBackup;
+  if (!backup || backup.scheme !== 'PBKDF2-SHA256-AES-256-GCM' || !backup.salt || !backup.payload || !backup.payload.enc) { alert('This protected backup file is invalid or unsupported.'); return; }
+  _pendingEncryptedBackup = { file:file, fileName:fileName || 'protected backup' };
+  var overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.setAttribute('role','dialog'); overlay.setAttribute('aria-modal','true'); overlay.setAttribute('aria-labelledby','backup-unlock-title');
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:420px"><h3 id="backup-unlock-title" style="font-size:18px;margin-bottom:6px">Unlock protected backup</h3><p style="font-size:13px;color:var(--muted);line-height:1.5">Enter the passphrase used when this file was created. This is separate from your account password.</p><label class="form-label" for="backup-import-passphrase">Backup passphrase</label><input id="backup-import-passphrase" type="password" autocomplete="current-password"><div id="backup-import-error" role="alert" aria-live="polite" style="font-size:12px;color:var(--danger);min-height:18px"></div><button id="backup-import-unlock" class="btn btn-primary" onclick="unlockProtectedBackup(this)">Unlock backup</button><button class="btn btn-outline" onclick="_pendingEncryptedBackup=null;this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  document.body.appendChild(overlay);
+  var input = document.getElementById('backup-import-passphrase');
+  if (input) input.focus();
+}
+
+function unlockProtectedBackup(button) {
+  var pending = _pendingEncryptedBackup;
+  var input = document.getElementById('backup-import-passphrase');
+  var error = document.getElementById('backup-import-error');
+  if (!pending || !input || !input.value) { if (error) error.textContent = 'Enter the backup passphrase.'; if (input) input.focus(); return; }
+  var backup = pending.file._encryptedBackup;
+  var salt;
+  try { salt = new Uint8Array(atob(backup.salt).split('').map(function(ch) { return ch.charCodeAt(0); })); } catch (decodeError) { if (error) error.textContent = 'This protected backup file is damaged or invalid.'; return; }
+  button.disabled = true; button.setAttribute('aria-busy','true');
+  if (error) error.textContent = 'Unlocking backup…';
+  deriveEncryptionKey(input.value, salt).then(function(key) {
+    return decryptText(backup.payload, key);
+  }).then(function(plain) {
+    var parsed = JSON.parse(plain);
+    var file = pending.file;
+    var filename = pending.fileName;
+    setPendingImport(parsed, filename, file._exportedAt);
+    _pendingEncryptedBackup = null;
+    var overlay = document.getElementById('backup-unlock-title');
+    if (overlay && overlay.closest('.overlay')) overlay.closest('.overlay').remove();
+  }).catch(function() {
+    button.disabled = false; button.removeAttribute('aria-busy');
+    if (error) error.textContent = 'Could not unlock this backup. Check the passphrase and make sure the file is complete.';
+    input.value = ''; input.focus();
+  });
 }
 
 function showImportPreview(exportedAt) {
@@ -5027,6 +5125,9 @@ function applyTheme() {
   var c = pal[D.accentColor] || pal.green;
   var el = document.body, root = document.documentElement;
   if (!el) return;
+  el.classList.remove('text-large','text-larger');
+  if (D.textSize === 'large') el.classList.add('text-large');
+  else if (D.textSize === 'larger') el.classList.add('text-larger');
   if (D.darkMode) {
     var p = c.dp || c.primary, pd = c.dDark || c.dark;
     el.classList.add('dark');
@@ -5405,7 +5506,7 @@ function buddyThreadHTML() {
   h += '<div class="buddy-thread-identity"><div class="buddy-thread-name">' + buddyName + '</div><div class="buddy-thread-status"><span class="buddy-link-check" aria-hidden="true">&#10003;</span>Connected on Re.Claim</div></div>';
   h += '<span id="comrade-unread-pill" class="comrade-unread-pill" style="display:none"></span>';
   h += '</div>';
-  h += '<button class="btn btn-outline btn-sm" onclick="showPartnerSafetyOptions()" style="width:100%;margin:8px 0">Report or block</button>';
+  h += '<button class="btn btn-outline btn-sm" onclick="showPartnerSafetyOptions()" aria-label="Partner safety: report or block" style="width:100%;margin:8px 0">&#128737; Partner safety: report or block</button>';
   h += '<div class="buddy-quick-label">Quick check-in</div><div class="buddy-quick-actions">';
   h += '<button type="button" class="buddy-quick-btn" onclick="quickBuddyCheckin(\'okay\')">I’m doing okay</button>';
   h += '<button type="button" class="buddy-quick-btn" onclick="quickBuddyCheckin(\'tough\')">Having a tough moment</button>';
