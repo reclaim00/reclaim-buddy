@@ -2346,7 +2346,7 @@ function accountabilityHTML() {
   }
   if (!D.accountability) D.accountability = { frequency: 1, lastCheckin: null, streak: 0, bestStreak: 0, checkins: [] };
   var acc = D.accountability;
-  var buddyName = D.buddy.name;
+  var buddyName = safe(D.buddy.name);
   h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">Stay consistent with ' + buddyName + '. Choose how often you check in and track your reliability.</p>';
 
   // Stats
@@ -2426,7 +2426,7 @@ function accCheckin() {
   overlay.className = 'overlay';
   overlay.id = 'acc-ov';
   var h = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:4px">&#128170; Accountability Check-In</h3>';
-  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did the interaction with ' + (D.buddy?D.buddy.name:'your partner') + ' go?</p>';
+  h += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">How did the interaction with ' + safe(D.buddy?D.buddy.name:'your partner') + ' go?</p>';
   h += '<div style="margin-bottom:10px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">How are you feeling about your recovery right now?</label>';
   h += '<div class="mood-row" id="acc-moods" role="group" aria-label="Choose how you feel">';
   var labels = ['Struggling','Tough','Okay','Good','Strong'];
@@ -2470,7 +2470,7 @@ function accPendingHTML() {
   var now = Date.now();
   var nextDue = D.accountability.lastCheckin ? D.accountability.lastCheckin + D.accountability.frequency * 86400000 : now;
   if (D.accountability.lastCheckin && now < nextDue) return '';
-  var buddyName = D.buddy.name;
+  var buddyName = safe(D.buddy.name);
   var daysSince = D.accountability.lastCheckin ? Math.round((now - D.accountability.lastCheckin) / 86400000) : 0;
   var h = '<div class="card" style="border-left:4px solid var(--accent);cursor:pointer;background:linear-gradient(135deg,var(--primary-light),var(--card))" onclick="accCheckin()">';
   h += '<div style="display:flex;align-items:center;gap:10px"><div style="font-size:32px">&#128170;</div><div><div style="font-weight:700;font-size:14px">Accountability Check-In</div><div style="font-size:12px;color:var(--muted)">' + (daysSince > 0 ? daysSince + ' day' + (daysSince !== 1 ? 's' : '') + ' since last check-in' : 'Time to check in') + ' with ' + buddyName + '.</div></div></div></div>';
@@ -3462,7 +3462,7 @@ function saveBuddyCheckin(btn) {
 function addGoal() {
   var overlay = document.createElement('div');
   overlay.className = 'overlay';
-  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('New Shared Goal')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">'+t('Set a goal with')+' ' + (D.buddy ? D.buddy.name : t('your partner')) + '</p><input type="text" id="goal-title" placeholder="'+t('Goal title')+'"><textarea id="goal-desc" placeholder="'+t('Description')+'" style="min-height:60px"></textarea><button class="btn btn-primary" onclick="saveGoal(this)">'+t('Save Goal')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
+  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('New Shared Goal')+'</h3><p style="font-size:13px;color:var(--muted);margin-bottom:12px">'+t('Set a goal with')+' ' + safe(D.buddy ? D.buddy.name : t('your partner')) + '</p><input type="text" id="goal-title" placeholder="'+t('Goal title')+'"><textarea id="goal-desc" placeholder="'+t('Description')+'" style="min-height:60px"></textarea><button class="btn btn-primary" onclick="saveGoal(this)">'+t('Save Goal')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -3481,7 +3481,7 @@ function editBuddy() {
   overlay.className = 'overlay';
   var opts = '';
   for (var li=0;li<LANGUAGES.length;li++) opts += '<option value="'+LANGUAGES[li]+'"'+(LANGUAGES[li]===(D.buddy.language||D.language||'English')?' selected':'')+'>'+LANGUAGES[li]+'</option>';
-  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('Edit Partner')+'</h3><label class="form-label" for="eb-name">'+t('Name')+'</label><input type="text" id="eb-name" value="'+(D.buddy.name||'')+'" placeholder="'+t('Name')+'"><label class="form-label" for="eb-contact">Account email or local contact</label><input type="text" id="eb-contact" value="'+(D.buddy.contact||'')+'" placeholder="'+t('Contact')+'" '+(buddyIsPaired(D.buddy)?'disabled aria-describedby="eb-contact-note"':'')+'>'+ (buddyIsPaired(D.buddy)?'<p id="eb-contact-note" class="partner-field-note">To change a connected account, end this partnership and connect again with a new invite.</p>':'') +'<label class="form-label" for="eb-rel">'+t('Relationship')+'</label><input type="text" id="eb-rel" value="'+(D.buddy.relationship||'')+'" placeholder="'+t('Relationship')+'"><label class="form-label" for="eb-lang">Language</label><select id="eb-lang" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">'+opts+'</select><button class="btn btn-primary" onclick="saveBuddyEdit(this)">'+t('Save')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
+  overlay.innerHTML = '<div class="overlay-content"><h3 style="font-size:18px;font-weight:700;margin-bottom:8px">'+t('Edit Partner')+'</h3><label class="form-label" for="eb-name">'+t('Name')+'</label><input type="text" id="eb-name" value="'+safe(D.buddy.name||'')+'" placeholder="'+t('Name')+'"><label class="form-label" for="eb-contact">Account email or local contact</label><input type="text" id="eb-contact" value="'+safe(D.buddy.contact||'')+'" placeholder="'+t('Contact')+'" '+(buddyIsPaired(D.buddy)?'disabled aria-describedby="eb-contact-note"':'')+'>'+ (buddyIsPaired(D.buddy)?'<p id="eb-contact-note" class="partner-field-note">To change a connected account, end this partnership and connect again with a new invite.</p>':'') +'<label class="form-label" for="eb-rel">'+t('Relationship')+'</label><input type="text" id="eb-rel" value="'+safe(D.buddy.relationship||'')+'" placeholder="'+t('Relationship')+'"><label class="form-label" for="eb-lang">Language</label><select id="eb-lang" style="width:100%;padding:10px 12px;font-size:14px;margin:0 0 8px">'+opts+'</select><button class="btn btn-primary" onclick="saveBuddyEdit(this)">'+t('Save')+'</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">'+t('Cancel')+'</button></div>';
   document.body.appendChild(overlay);
 }
 
@@ -3610,7 +3610,7 @@ function fetchBuddyProgress() {
     var el = document.getElementById('comrade-progress');
     if (!el) return;
     if (!p) {
-      el.innerHTML = '<div class="empty-state">' + (D.buddy ? D.buddy.name : 'Buddy') + ' has not shared progress yet. Encourage them to use the Share Progress button!</div>';
+      el.innerHTML = '<div class="empty-state">' + safe(D.buddy ? D.buddy.name : 'Buddy') + ' has not shared progress yet. Encourage them to use the Share Progress button!</div>';
       return;
     }
     if (p.partnershipCode !== D.buddy.partnershipCode || !Array.isArray(p.participants) || p.participants.indexOf(AUTH_EMAIL) === -1) {
@@ -4259,7 +4259,7 @@ h += '<div style="display:flex;align-items:center;justify-content:space-between;
   h += '<p style="font-size:11px;color:var(--muted);margin-bottom:6px">'+t('Your data syncs automatically to the cloud when you\'re signed in.')+' On a new device, sign in to restore your latest snapshot. If encryption is on, you will also need your passphrase.</p>';
   h += '<div id="cloud-backup-status" role="status" aria-live="polite" style="font-size:12px;line-height:1.5;padding:8px 10px;margin:6px 0;background:var(--primary-light);border-radius:8px">'+safe(typeof cloudBackupStatusText === 'function' ? cloudBackupStatusText() : 'Backup status is not available yet.')+'</div>';
   h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:12px;color:var(--muted)">'+t('Last confirmed backup')+':</span><span id="sync-time-display" style="font-size:12px;font-weight:600">'+(_lastSyncTime||t('Never'))+'</span></div>';
-  h += '<button class="btn btn-sm btn-primary" onclick="syncToFirestore()" style="margin-bottom:6px">'+t('Sync Now')+'</button></div>';
+  h += '<button class="btn btn-sm btn-primary" onclick="manualSyncNow()" style="margin-bottom:6px">'+t('Sync Now')+'</button></div>';
   h += '<button class="btn btn-primary btn-sm" onclick="showProgressReport()" style="margin-top:8px">&#128202; '+t('Progress Report')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportData()" style="margin-top:6px">'+t('Export My Data')+'</button>';
   h += '<button class="btn btn-outline btn-sm" onclick="exportPasswordProtectedData()" style="margin-top:6px">Export Password-Protected Backup</button>';
@@ -4611,33 +4611,21 @@ function exportProgressReport() {
 
 async function deleteAccount() {
   if (!confirm('Delete your account and all data? This cannot be undone.')) return;
-  if (!confirm('Are you absolutely sure? All Firestore data, local data, and your account will be permanently removed.')) return;
+  if (!confirm('Are you absolutely sure? Your account, partner messages, shared progress, and local data will be removed. Safety reports will be retained without account identifiers.')) return;
   var user = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser;
   if (!user) { clearLocalData(); return; }
   if (!DB || !AUTH_EMAIL) { showToast('Could not connect to your account data. Check your connection and try again. Your data is still here.','error'); return; }
-  var uid = AUTH_EMAIL;
-  var batch = DB.batch();
-  batch.delete(DB.collection('appData').doc(uid));
-  batch.delete(DB.collection('users').doc(uid));
-  batch.delete(DB.collection('pairingCodes').doc(uid)); // legacy email-keyed invite
-  var ownInviteCode = localStorage.getItem('rc_pair_code');
-  if (ownInviteCode) batch.delete(DB.collection('pairingCodes').doc(ownInviteCode));
-  batch.delete(DB.collection('pushSubscriptions').doc(uid));
-  batch.delete(DB.collection('progress').doc(uid));
-  var closePartnership = Promise.resolve();
-  var activeCode = D.buddy && buddyIsPaired(D.buddy) && D.buddy.partnershipCode ? D.buddy.partnershipCode : '';
-  if (activeCode && activeCode !== ownInviteCode) {
-    closePartnership = DB.collection('pairingCodes').doc(activeCode).get().then(function(doc){
-      var link = doc.exists ? doc.data() : null;
-      if (link && link.ownerEmail !== uid) return DB.collection('pairingCodes').doc(activeCode).update({ended:true,endedBy:uid,endedAt:firebase.firestore.FieldValue.serverTimestamp()});
-    });
+  var lastSignIn = user.metadata && Date.parse(user.metadata.lastSignInTime || '');
+  if (!lastSignIn || Date.now() - lastSignIn > 5 * 60 * 1000) {
+    showToast('For your security, sign out and sign back in, then request account deletion again. Your data has not been removed.','warning');
+    return;
   }
+  if (window._syncTimer) { clearTimeout(window._syncTimer); window._syncTimer = null; }
   try {
-    await closePartnership;
-    await batch.commit();
+    await requestRandomPartner('delete_account');
   } catch(e) {
     console.warn('Account cleanup failed:',e);
-    showToast('Could not remove your cloud data. Check your connection and try again. Your account and device data are still here.','error');
+    showToast('Could not remove all account data. Your account and device data are still here; try again when connected.','error');
     return;
   }
   try {
@@ -4646,11 +4634,11 @@ async function deleteAccount() {
   } catch(e) {
     console.warn('Account deletion failed:',e);
     if (e && e.code === 'auth/requires-recent-login') {
-      showToast('Your cloud data was removed, but Firebase needs a recent sign-in to close the account. Sign out, sign back in, then choose Delete Account again. Your device copy is still here.','warning');
+      showToast('Your account data was removed, but Firebase needs a recent sign-in to close the account. Sign out, sign back in, then choose Delete Account again.','warning');
     } else if (e && e.code === 'auth/network-request-failed') {
-      showToast('Your cloud data was removed, but the account could not be closed because the connection failed. Reconnect, sign in again, and choose Delete Account again. Your device copy is still here.','error');
+      showToast('Your account data was removed, but the account could not be closed because the connection failed. Reconnect, sign in again, and choose Delete Account again.','error');
     } else {
-      showToast('Your cloud data was removed, but the account could not be closed. Sign in again and retry Delete Account. Your device copy is still here.','error');
+      showToast('Your account data was removed, but the account could not be closed. Sign in again and retry Delete Account.','error');
     }
   }
 }
@@ -5409,7 +5397,7 @@ function startBuddyMessaging() {
       } else if (pg === 'buddy') {
         markBuddyMsgsRead();
       } else {
-        showToast('New message from ' + safe(D.buddy ? D.buddy.name : 'your partner'), 'info');
+        showToast('New message from ' + (D.buddy ? D.buddy.name : 'your partner'), 'info');
       }
     }
     _buddyMsgReady = true;

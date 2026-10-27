@@ -184,12 +184,22 @@ function routeNativeAction(action) {
 }
 
 // ====== CLOUD SYNC (Firestore cross-device) ======
-function syncToFirestore(retries) {
+var _cloudRevision = 0;
+var _syncConflict = false;
+var _syncOwnerEmail = '';
+function resetSyncStateForCurrentAccount() {
+  if (_syncOwnerEmail !== AUTH_EMAIL) {
+    _syncOwnerEmail = AUTH_EMAIL || '';
+    _cloudRevision = 0;
+    _syncConflict = false;
+  }
+}
+function syncToFirestore(retries, forceCloudReplace) {
+  resetSyncStateForCurrentAccount();
   if (!AUTH_EMAIL) { syncStatusOffline(); return; }
   if (!firebase || !firebase.auth().currentUser) { syncStatusOffline(); return; }
   // While encryption is enabled but locked, never write the plaintext snapshot to the cloud.
   if (isEncryptionEnabled() && !ENC_KEY) { syncStatusOffline(); return; }
-  D._lastSync = Date.now();
   if (retries === undefined) retries = 0;
   syncStatusSyncing();
   // Debounce: clear pending sync and schedule a new one
@@ -204,24 +214,54 @@ function syncToFirestore(retries) {
       }
       return { data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() };
     }).then(function(body){
-      return DB.collection('appData').doc(AUTH_EMAIL).set(body);
+      var ref = DB.collection('appData').doc(AUTH_EMAIL);
+      return DB.runTransaction(function(transaction) {
+        return transaction.get(ref).then(function(snapshot) {
+          var current = snapshot.exists ? snapshot.data() : null;
+          var currentRevision = current && Number(current.syncRevision) || 0;
+          if (!forceCloudReplace && currentRevision > _cloudRevision) {
+            var conflict = new Error('A newer cloud backup exists on another device. Sync was paused to protect both copies.');
+            conflict.code = 'sync/cloud-conflict';
+            throw conflict;
+          }
+          var nextRevision = currentRevision + 1;
+          var payload = Object.assign({}, body, { syncRevision: nextRevision });
+          var encodedSize = new TextEncoder().encode(JSON.stringify(payload)).length;
+          if (encodedSize > 900 * 1024) {
+            var tooLarge = new Error('Cloud backup is close to Firestore’s document size limit. Export a device backup and remove older large attachments before syncing.');
+            tooLarge.code = 'sync/document-too-large';
+            throw tooLarge;
+          }
+          transaction.set(ref, payload);
+          return nextRevision;
+        });
+      }).then(function(revision) { _cloudRevision = revision; _syncConflict = false; D._lastSync = Date.now(); });
     }).then(function(){
       setCloudBackupAvailable(true, Date.now());
       syncStatusSynced();
     }).catch(function(e){
       console.warn(e);
-      if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1); }, 1000 * (retries + 1));
+      if (e && (e.code === 'sync/cloud-conflict' || e.code === 'sync/document-too-large')) {
+        if (e.code === 'sync/cloud-conflict') _syncConflict = true;
+        syncStatusError();
+        showToast(e.message, 'warning');
+        return;
+      }
+      if (retries < 2) setTimeout(function(){ syncToFirestore(retries + 1, forceCloudReplace); }, 1000 * (retries + 1));
       else syncStatusError();
     });
   }, 500);
 }
 
 function loadFromFirestore(callback) {
+  resetSyncStateForCurrentAccount();
   if (!AUTH_EMAIL) { if (callback) callback(null); syncStatusOffline(); return; }
+  if (_syncConflict) { syncStatusError(); if (callback) callback(null); return; }
   syncStatusSyncing();
   DB.collection('appData').doc(AUTH_EMAIL).get().then(function(doc) {
-    if (!(doc.exists && doc.data().data)) { setCloudBackupAvailable(false); syncStatusSynced(); if (callback) callback(null); return; }
+    if (!(doc.exists && doc.data().data)) { _cloudRevision = 0; setCloudBackupAvailable(false); syncStatusSynced(); if (callback) callback(null); return; }
     var raw = doc.data();
+    _cloudRevision = Number(raw.syncRevision) || 0;
     var cloudUpdatedAt = raw.lastUpdated && raw.lastUpdated.toMillis ? raw.lastUpdated.toMillis() : 0;
     setCloudBackupAvailable(true, cloudUpdatedAt);
     var sealed = raw.enc && raw.data && raw.data.enc;
@@ -267,6 +307,11 @@ function handleSealedCloud(finish, raw) {
   D.encryption = { enabled: true, salt: raw.enc.salt, keyCheck: raw.enc.keyCheck };
   _sealedCloudResume = function(){ loadFromFirestore(finish); };
   if (typeof promptSealedCloudUnlock === 'function') promptSealedCloudUnlock();
+}
+
+function manualSyncNow() {
+  if (_syncConflict && !confirm('A newer cloud backup exists. Syncing this device now will replace that cloud copy with the data on this device. Continue only if this is the copy you want to keep.')) return;
+  syncToFirestore(0, _syncConflict);
 }
 
 // ====== AUTH ======
@@ -318,18 +363,6 @@ function onAuthReady(email, isNew) {
   window._autoSyncTimer = setInterval(function(){
     if (AUTH_EMAIL && firebase && firebase.auth().currentUser) syncToFirestore();
   }, 120000);
-  // Sync on page unload
-  window.addEventListener('beforeunload', function(){
-    if (!(AUTH_EMAIL && firebase && firebase.auth().currentUser)) return;
-    if (isEncryptionEnabled() && !ENC_KEY) return;
-    if (isEncryptionEnabled()) {
-      encryptText(JSON.stringify(D), ENC_KEY).then(function(seal){
-        DB.collection('appData').doc(AUTH_EMAIL).set({ data: seal, enc: { salt: D.encryption.salt, keyCheck: D.encryption.keyCheck }, lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(e){ console.warn('beforeunload save failed:', e); });
-      }).catch(function(e){ console.warn(e); });
-      return;
-    }
-    DB.collection('appData').doc(AUTH_EMAIL).set({ data: JSON.parse(JSON.stringify(D)), lastUpdated: firebase.firestore.FieldValue.serverTimestamp() }).catch(function(e){ console.warn('beforeunload save failed:', e); });
-  });
 }
 
 // ====== SYNC STATUS TRACKING ======

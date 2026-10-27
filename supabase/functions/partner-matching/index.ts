@@ -34,6 +34,8 @@ function encodeValue(value: unknown): FirestoreValue {
   if (typeof value === "number") return Number.isInteger(value) ? { integerValue: String(value) } : { doubleValue: value };
   if (value === null) return { nullValue: null };
   if (value instanceof Date) return { timestampValue: value.toISOString() };
+  if (Array.isArray(value)) return { arrayValue: { values: value.map(encodeValue) } };
+  if (value && typeof value === "object") return { mapValue: { fields: encodeFields(value as Record<string, unknown>) } };
   return { stringValue: String(value) };
 }
 
@@ -158,6 +160,73 @@ async function queryDocuments(project: string, token: string, transaction: strin
   };
   const rows = await firestoreRequest(`${documentsUrl(project)}:runQuery`, token, query) as Array<{ document?: FirestoreDocument }>;
   return (rows || []).flatMap((row) => row.document ? [{ document: row.document, data: decodeFields(row.document.fields) }] : []);
+}
+
+async function queryAccountDocuments(project: string, token: string, collection: string, field: string, email: string, arrayContains = false) {
+  const documents: FirestoreDocument[] = [];
+  let startAfter: string | null = null;
+  while (true) {
+    const structuredQuery: Record<string, unknown> = {
+      from: [{ collectionId: collection }],
+      where: { fieldFilter: { field: { fieldPath: field }, op: arrayContains ? "ARRAY_CONTAINS" : "EQUAL", value: { stringValue: email } } },
+      orderBy: [{ field: { fieldPath: "__name__" }, direction: "ASCENDING" }],
+      limit: 500,
+    };
+    if (startAfter) structuredQuery.startAt = { values: [{ referenceValue: startAfter }], before: false };
+    const rows = await firestoreRequest(`${documentsUrl(project)}:runQuery`, token, { structuredQuery }) as Array<{ document?: FirestoreDocument }>;
+    const page = (rows || []).flatMap((row) => row.document ? [row.document] : []);
+    documents.push(...page);
+    if (page.length < 500) return documents;
+    startAfter = page[page.length - 1].name;
+  }
+}
+
+async function writeAccountCleanup(project: string, token: string, deletes: string[], updates: Array<{name:string; fields:Record<string,unknown>; updateMask?:string[]} = []) {
+  const writes = [
+    ...deletes.map((name) => ({ delete: name })),
+    ...updates.map((item) => ({ update: { name: item.name, fields: encodeFields(item.fields) }, updateMask: { fieldPaths: item.updateMask || Object.keys(item.fields) } })),
+  ];
+  for (let offset = 0; offset < writes.length; offset += 400) {
+    const result = await firestoreRequest(`${documentsUrl(project)}:batchWrite`, token, { writes: writes.slice(offset, offset + 400) }) as { status?: Array<{ code?: number; message?: string }> };
+    const failed = (result.status || []).find((item) => Number(item.code || 0) !== 0);
+    if (failed) throw new Error(`Account cleanup write failed: ${failed.message || "Firestore rejected a cleanup operation"}`);
+  }
+}
+
+async function deleteAccountData(project: string, token: string, email: string) {
+  const [sent, received, ownedPairings, joinedPairings, blockedBy, blockedUser, sharedProgress, reportsFiled, reportsAbout] = await Promise.all([
+    queryAccountDocuments(project, token, "messages", "from", email),
+    queryAccountDocuments(project, token, "messages", "to", email),
+    queryAccountDocuments(project, token, "pairingCodes", "ownerEmail", email),
+    queryAccountDocuments(project, token, "pairingCodes", "consumedBy", email),
+    queryAccountDocuments(project, token, "partnerBlocks", "blockerEmail", email),
+    queryAccountDocuments(project, token, "partnerBlocks", "blockedEmail", email),
+    queryAccountDocuments(project, token, "progress", "participants", email, true),
+    queryAccountDocuments(project, token, "partnerReports", "reporterEmail", email),
+    queryAccountDocuments(project, token, "partnerReports", "reportedEmail", email),
+  ]);
+  const docs = [...sent, ...received, ...ownedPairings, ...joinedPairings, ...blockedBy, ...blockedUser];
+  const deletes = new Set(docs.map((doc) => doc.name));
+  ["appData", "users", "pushSubscriptions", "partnerQueue", "progress", "pairingCodes"].forEach((collection) => deletes.add(docPath(project, collection, email)));
+  const progressUpdates = sharedProgress.flatMap((doc) => {
+    if (doc.name === docPath(project, "progress", email)) return [];
+    const participants = decodeFields(doc.fields).participants;
+    if (!Array.isArray(participants)) return [];
+    return [{ name: doc.name, fields: { participants: participants.filter((participant) => participant !== email) }, updateMask: ["participants"] }];
+  });
+  const reports = new Map<string, Record<string, unknown>>();
+  [...reportsFiled, ...reportsAbout].forEach((doc) => {
+    const data = decodeFields(doc.fields);
+    reports.set(doc.name, data);
+  });
+  const reportUpdates = Array.from(reports.entries()).map(([name, data]) => ({
+    name,
+    fields: { reporterEmail: "[deleted account]", reportedEmail: "[deleted account]", details: "", partnershipCode: "", accountDeleted: true },
+    updateMask: ["reporterEmail", "reportedEmail", "details", "partnershipCode", "accountDeleted"],
+  }));
+  // Preserve the safety report audit record while removing identifying information.
+  await writeAccountCleanup(project, token, Array.from(deletes), [...progressUpdates, ...reportUpdates]);
+  return { cleaned: true, retainedAnonymizedReports: reportUpdates.length };
 }
 
 async function queryWaiting(project: string, token: string, transaction: string) {
@@ -364,14 +433,14 @@ async function unblockPartner(project: string, token: string, email: string, tar
   return { unblocked: true };
 }
 
-async function reportPartner(project: string, token: string, email: string, targetEmail: string, code: string, category: string, alsoBlock: boolean) {
+async function reportPartner(project: string, token: string, email: string, targetEmail: string, code: string, category: string, details: string, alsoBlock: boolean) {
   const allowed = new Set(["harassment", "spam", "inappropriate", "safety", "other"]);
   if (!allowed.has(category)) throw new Error("Choose a report reason.");
   const transaction = await beginTransaction(project, token);
   await verifyActivePair(project, token, transaction, email, targetEmail, code);
   const id = crypto.randomUUID();
   const now = new Date();
-  const report = { partnershipCode: code, category, reporterEmail: email, reportedEmail: targetEmail, createdAt: now, status: "new" };
+  const report = { partnershipCode: code, category, details: details.trim().slice(0, 1000), reporterEmail: email, reportedEmail: targetEmail, createdAt: now, status: "new" };
   const writes: unknown[] = [{ update: { name: docPath(project, "partnerReports", id), fields: encodeFields(report) }, currentDocument: { exists: false } }];
   if (alsoBlock) {
     const blockId = b64url(`${email}\n${targetEmail}`);
@@ -409,6 +478,7 @@ async function listPartnerReports(project: string, token: string) {
     return [{
       id: documentId(row.document),
       category: String(data.category || "other"),
+      details: typeof data.details === "string" ? data.details : "",
       status: String(data.status || "new"),
       createdAt: data.createdAt || null,
       reporterEmail: typeof data.reporterEmail === "string" ? data.reporterEmail : "",
@@ -461,7 +531,7 @@ Deno.serve(async (request) => {
     if (!email) return Response.json({ error: "Invalid sign-in" }, { status: 401, headers: corsHeaders });
     const input = await request.json();
     const action = input?.action;
-    if (!["search", "cancel", "block", "unblock", "report", "admin_check", "admin_list_reports", "admin_update_report"].includes(action)) return Response.json({ error: "Invalid request" }, { status: 400, headers: corsHeaders });
+    if (!["search", "cancel", "block", "unblock", "report", "delete_account", "admin_check", "admin_list_reports", "admin_update_report"].includes(action)) return Response.json({ error: "Invalid request" }, { status: 400, headers: corsHeaders });
     const isReportAdmin = reportAdminEmails().has(email);
     if (action === "admin_check") return Response.json({ isAdmin: isReportAdmin }, { headers: corsHeaders });
     if (action === "admin_list_reports" || action === "admin_update_report") {
@@ -476,6 +546,7 @@ Deno.serve(async (request) => {
 
     const account = serviceAccount();
     const accessToken = await googleAccessToken(account);
+    if (action === "delete_account") return Response.json(await deleteAccountData(account.project_id, accessToken, email), { headers: corsHeaders });
     if (action === "cancel") {
       return Response.json(await cancelSearch(account.project_id, accessToken, email), { headers: corsHeaders });
     }
@@ -487,7 +558,7 @@ Deno.serve(async (request) => {
       if (!code) return Response.json({ error: "Invalid partner connection" }, { status: 400, headers: corsHeaders });
       const result = action === "block"
         ? await blockPartner(account.project_id, accessToken, email, targetEmail, code)
-        : await reportPartner(account.project_id, accessToken, email, targetEmail, code, String(input?.category || ""), input?.block === true);
+        : await reportPartner(account.project_id, accessToken, email, targetEmail, code, String(input?.category || ""), String(input?.details || ""), input?.block === true);
       return Response.json(result, { headers: corsHeaders });
     }
     const name = String(input?.name || "Re.Claim member").trim().slice(0, 60) || "Re.Claim member";

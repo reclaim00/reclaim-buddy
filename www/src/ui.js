@@ -155,7 +155,15 @@ function showToast(text, type) {
   var icons = {info:'&#128172;',success:'&#10004;',warning:'&#9888;',danger:'&#10060;'};
   var t = document.createElement('div');
   t.className = 'toast toast-' + type;
-  t.innerHTML = '<span style="opacity:.6;margin-right:6px">' + (icons[type]||'&#128172;') + '</span>' + text;
+  var icon = document.createElement('span');
+  icon.style.cssText = 'opacity:.6;margin-right:6px';
+  icon.innerHTML = icons[type] || '&#128172;';
+  t.appendChild(icon);
+  var message = String(text == null ? '' : text).replace(/&#(\d+);/g, function(entity, code) {
+    var point = Number(code);
+    return point > 0 && point <= 0x10ffff ? String.fromCodePoint(point) : entity;
+  });
+  t.appendChild(document.createTextNode(message));
   c.appendChild(t);
   setTimeout(function() {
     t.className += ' toast-out';
@@ -566,6 +574,34 @@ function decryptAllEntries() {
   });
   return Promise.all(jobs);
 }
+function transformJournalText(key, decrypt) {
+  var jobs = [];
+  (D.journal || []).forEach(function(entry) {
+    if (!entry) return;
+    if (decrypt && entry.text && typeof entry.text === 'object' && entry.text.enc) {
+      jobs.push(decryptText(entry.text, key).then(function(value) { entry.text = value; }));
+    } else if (!decrypt && typeof entry.text === 'string' && entry.text) {
+      jobs.push(encryptText(entry.text, key).then(function(value) { entry.text = value; }));
+    }
+    (entry.reflections || []).forEach(function(reflection) {
+      if (!reflection || !reflection.a) return;
+      if (decrypt && typeof reflection.a === 'object' && reflection.a.enc) {
+        jobs.push(decryptText(reflection.a, key).then(function(value) { reflection.a = value; }));
+      } else if (!decrypt && typeof reflection.a === 'string') {
+        jobs.push(encryptText(reflection.a, key).then(function(value) { reflection.a = value; }));
+      }
+    });
+  });
+  return Promise.all(jobs);
+}
+function restoreJournalEncryptionState(snapshot, key) {
+  D.journal = snapshot.journal;
+  D.encryption = snapshot.encryption;
+  ENC_KEY = key;
+  ENC_CACHE = {};
+  saveData();
+  return decryptAllEntries();
+}
 function getEntryText(entry) {
   if (!entry || !entry.text) return '';
   if (typeof entry.text === 'string') return entry.text;
@@ -599,29 +635,30 @@ function unlockEncryption(passphrase) {
 }
 function changeEncryptionPassphrase(oldPass, newPass) {
   if (!isEncryptionEnabled() || !ENC_KEY) return Promise.reject('Not unlocked');
-  // Decrypt the current ciphertext back to plaintext with the existing key first,
-  // otherwise entries stay locked under the old key and become unreadable.
-  return Promise.all(D.journal.map(function(entry, i) {
-    if (entry.text && typeof entry.text === 'object' && entry.text.enc) {
-      return decryptText(entry.text, ENC_KEY).then(function(text) { D.journal[i].text = text; });
-    }
-  })).then(function() {
+  var oldKey = ENC_KEY;
+  var snapshot = JSON.parse(JSON.stringify({journal:D.journal, encryption:D.encryption}));
+  return (oldPass ? verifyEncryptionPassphrase(oldPass) : Promise.resolve()).then(function() {
+    return transformJournalText(oldKey, true);
+  }).then(function() {
     D.encryption = { enabled: false, salt: null, keyCheck: null };
+    ENC_KEY = null;
     return setupEncryption(newPass);
+  }).catch(function(error) {
+    return restoreJournalEncryptionState(snapshot, oldKey).then(function() { throw error; });
   });
 }
 function disableEncryption() {
   if (!isEncryptionEnabled()) return Promise.resolve();
   if (!ENC_KEY) { alert('Unlock encryption first.'); return Promise.reject(); }
-  return Promise.all(D.journal.map(function(entry, i) {
-    if (entry.text && typeof entry.text === 'object' && entry.text.enc) {
-      return decryptText(entry.text, ENC_KEY).then(function(text) { D.journal[i].text = text; });
-    }
-  })).then(function() {
+  var oldKey = ENC_KEY;
+  var snapshot = JSON.parse(JSON.stringify({journal:D.journal, encryption:D.encryption}));
+  return transformJournalText(oldKey, true).then(function() {
     D.encryption = { enabled: false, salt: null, keyCheck: null };
     ENC_KEY = null; ENC_CACHE = {};
     saveData();
     if (typeof syncToFirestore === 'function') syncToFirestore();
+  }).catch(function(error) {
+    return restoreJournalEncryptionState(snapshot, oldKey).then(function() { throw error; });
   });
 }
 
