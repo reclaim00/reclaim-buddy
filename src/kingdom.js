@@ -654,12 +654,8 @@ function homeHTML() {
   h += homePageHTML();
   h += missionHTML();
 
-  h += '<nav class="home-action-grid" aria-label="Quick actions">' +
-    '<button type="button" class="home-action" onclick="goTo(\'reflect\')"><span aria-hidden="true">&#10024;</span><strong>Check in</strong><small>Log how today feels</small></button>' +
-    '<button type="button" class="home-action" onclick="goTo(\'coping\')"><span aria-hidden="true">&#127807;</span><strong>Find support</strong><small>Open your coping tools</small></button>' +
-    '<button type="button" class="home-action" onclick="goTo(\'buddy\')"><span aria-hidden="true">&#129309;</span><strong>Partner</strong><small>' + (D.buddy && D.buddy.name ? 'Connect with ' + safe(D.buddy.name) : 'Find someone you trust') + '</small></button>' +
-    '<button type="button" class="home-action home-action-share" onclick="showShareCard()"><span aria-hidden="true">&#128200;</span><strong>Share progress</strong><small>Choose what you share</small></button>' +
-    '</nav>';
+  h += homeContinuityHTML();
+  h += homeActionsHTML();
 
   // Crisis widget � always visible on home
   h += '<button type="button" class="home-support-action" onclick="showSOS()" aria-label="Open urgent support options"><span aria-hidden="true">&#128222;</span><span><strong>' + t('Need help right now?') + '</strong><small>Open urgent support options</small></span><span class="home-support-chevron" aria-hidden="true">&#8250;</span></button>';
@@ -686,6 +682,44 @@ function homeHTML() {
 
 
   return h;
+}
+
+function homeActionsHTML() {
+  var actions = [
+    {id:'checkin',html:'<span aria-hidden="true">&#10024;</span><strong>Check in</strong><small>Log how today feels</small>',click:"goTo('reflect')"},
+    {id:'support',html:'<span aria-hidden="true">&#127807;</span><strong>Find support</strong><small>Open your coping tools</small>',click:"goTo('coping')"},
+    {id:'partner',html:'<span aria-hidden="true">&#129309;</span><strong>Partner</strong><small>'+ (D.buddy && D.buddy.name ? 'Connect with ' + safe(D.buddy.name) : 'Find someone you trust') + '</small>',click:"goTo('buddy')"},
+    {id:'share',html:'<span aria-hidden="true">&#128200;</span><strong>Share progress</strong><small>Choose what you share</small>',click:'showShareCard()'}
+  ];
+  var prefs = D._homeActions || {};
+  var h = '<nav class="home-action-grid" aria-label="Quick actions">';
+  actions.forEach(function(a){ if (prefs[a.id] !== false) h += '<button type="button" class="home-action" onclick="'+a.click+'">'+a.html+'</button>'; });
+  h += '</nav><button type="button" class="btn btn-outline btn-sm" onclick="showHomePreferences()" style="width:auto;margin:-4px 0 10px">Personalize Home</button>';
+  return h;
+}
+
+function showHomePreferences() {
+  if (!D._homeActions) D._homeActions = {};
+  var items = [['checkin','Daily check-in'],['support','Coping tools'],['partner','Partner'],['share','Share progress']];
+  var overlay = document.createElement('div'); overlay.className = 'overlay'; overlay.setAttribute('role','dialog'); overlay.setAttribute('aria-modal','true');
+  var h = '<div class="overlay-content"><h3>Personalize Home</h3><p style="font-size:13px;color:var(--muted)">Choose which shortcuts appear. SOS and urgent support stay available.</p>';
+  items.forEach(function(item){ h += '<label style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><input type="checkbox" data-home-action="'+item[0]+'" '+(D._homeActions[item[0]] !== false?'checked':'')+' style="width:auto">'+item[1]+'</label>'; });
+  h += '<button class="btn btn-primary" onclick="saveHomePreferences(this)" style="margin-top:12px">Save</button><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:6px">Cancel</button></div>';
+  overlay.innerHTML = h; document.body.appendChild(overlay);
+}
+function saveHomePreferences(btn) {
+  var overlay = btn.closest('.overlay');
+  overlay.querySelectorAll('[data-home-action]').forEach(function(input){ D._homeActions[input.getAttribute('data-home-action')] = input.checked; });
+  saveDataSilent(); overlay.remove(); _pageCache.home = null; render();
+}
+
+function homeContinuityHTML() {
+  var journal = D.journal || [];
+  var latest = journal.length ? journal[journal.length - 1] : null;
+  if (!latest || new Date(latest.date).toDateString() === new Date().toDateString()) return '';
+  var h = '<div class="card home-followup-card"><div><strong>Pick up where you left off</strong>';
+  h += '<p>Your last journal entry was '+safe(new Date(latest.date).toLocaleDateString())+'. You can continue in your journal whenever you’re ready.</p><button class="btn btn-outline btn-sm" onclick="goTo(\'reflect\')">Open journal</button>';
+  return h+'</div></div>';
 }
 
 

@@ -1579,6 +1579,7 @@ function renderOnboardingStep() {
     '<div class="onb-title">'+t(s.title)+'</div>' +
     '<div style="font-size:13px;color:var(--text);line-height:1.6;margin-bottom:10px;padding:0 2px">'+t(s.desc)+'</div>' +
     body +
+    (ONBOARDING_STEP >= 2 ? '<button class="btn btn-outline btn-sm" onclick="finishOnboardingEarly()" style="width:100%;margin-top:6px">'+t('Start now; finish setup later')+'</button>' : '') +
     '<div class="onb-progress"><div class="fill" style="width:'+pct+'%"></div></div>' +
     '<div id="onb-err" class="onb-err"></div>' +
     '<div class="onb-nav">' +
@@ -1621,6 +1622,34 @@ function closeOnboarding() {
   if (!D.sobriety.startDate) { pg = 'home'; _pageCache = {}; render(); }
 }
 
+function finishOnboardingEarly() {
+  var dateInput = document.getElementById('onb-quitdate');
+  if (dateInput && dateInput.value) ONB_QUIT_DATE = new Date(dateInput.value + 'T00:00:00').getTime();
+  if (!D.addictionType) { showToast(t('Choose your challenge first.'), 'warning'); ONBOARDING_STEP = 0; renderOnboardingStep(); return; }
+  if (!ONB_QUIT_DATE || !isFinite(ONB_QUIT_DATE)) ONB_QUIT_DATE = D.sobriety.startDate || Date.now();
+  var step = ONBOARDING_STEPS[ONBOARDING_STEP];
+  if (step && step.kind === 'goals') {
+    if (!D.recoveryGoals) D.recoveryGoals = [];
+    document.querySelectorAll('#onboarding-ov [data-gi].selected').forEach(function(el){
+      var goal = GOAL_PRESETS[parseInt(el.getAttribute('data-gi'),10)];
+      if (goal && !D.recoveryGoals.some(function(g){return g.text === goal.text;})) D.recoveryGoals.push({text:goal.text,logs:[]});
+    });
+    var custom = document.getElementById('onb-goal-custom');
+    if (custom && custom.value.trim()) custom.value.split(/[,;]+/).map(function(x){return x.trim()}).filter(Boolean).forEach(function(value){if(!D.recoveryGoals.some(function(g){return g.text===value;}))D.recoveryGoals.push({text:value,logs:[]});});
+  } else if (step && step.kind === 'textarea') {
+    var textarea = document.getElementById('onb-txt');
+    if (textarea) D[step.key] = textarea.value.trim();
+  } else if (step && step.kind === 'notifications') {
+    var daily = document.getElementById('onb-notif-daily'), craving = document.getElementById('onb-notif-craving');
+    if (daily) { D.notifications.morning = daily.checked; D.notifications.evening = daily.checked; }
+    if (craving) D.notifications.craving = craving.checked;
+  } else if (step && step.kind === 'theme') {
+    D.theme = ONB_APPEARANCE === 'dark' ? 'gothic' : 'woodland';
+    D.darkMode = ONB_APPEARANCE === 'dark'; applyTheme();
+  }
+  finalizeOnboarding();
+}
+
 function advanceOnboarding() {
   var s = ONBOARDING_STEPS[ONBOARDING_STEP];
   var errEl = document.getElementById('onb-err');
@@ -1636,6 +1665,8 @@ function advanceOnboarding() {
     if (isNaN(t0)) { er(t('Please choose a valid date.')); return; }
     if (t0 > Date.now()) { er(t('Your start date can\u2019t be in the future.')); return; }
     ONB_QUIT_DATE = t0;
+    D._onbQuitDate = t0;
+    saveDataSilent();
   } else if (s.kind === 'goals') {
     if (!D.recoveryGoals) D.recoveryGoals = [];
     var added = 0;
