@@ -352,7 +352,7 @@ function checkPartnerReportAdmin() {
   var slot = document.getElementById('partner-report-admin-tools');
   if (!slot || !AUTH_EMAIL) return;
   if (_partnerReportAdminEmailChecked === AUTH_EMAIL) {
-    if (_partnerReportAdmin) slot.innerHTML = '<div class="card"><h3>Safety report review</h3><p style="font-size:13px;color:var(--muted)">Review reports submitted by partner-system users.</p><button class="btn btn-outline btn-sm" onclick="showPartnerReports()">Open report inbox</button></div>';
+    if (_partnerReportAdmin) slot.innerHTML = '<div class="card"><h3>Safety report review</h3><p style="font-size:13px;color:var(--muted)">Check this queue each business day. Review new safety reports first, then work through other new reports in order. This inbox is not monitored continuously.</p><button class="btn btn-outline btn-sm" onclick="showPartnerReports()">Open report inbox</button></div>';
     return;
   }
   if (_partnerReportAdminCheckPending) return;
@@ -361,7 +361,7 @@ function checkPartnerReportAdmin() {
     _partnerReportAdminEmailChecked = AUTH_EMAIL;
     _partnerReportAdmin = !!(result && result.isAdmin);
     var currentSlot = document.getElementById('partner-report-admin-tools');
-    if (currentSlot && _partnerReportAdmin) currentSlot.innerHTML = '<div class="card"><h3>Safety report review</h3><p style="font-size:13px;color:var(--muted)">Review reports submitted by partner-system users.</p><button class="btn btn-outline btn-sm" onclick="showPartnerReports()">Open report inbox</button></div>';
+    if (currentSlot && _partnerReportAdmin) currentSlot.innerHTML = '<div class="card"><h3>Safety report review</h3><p style="font-size:13px;color:var(--muted)">Check this queue each business day. Review new safety reports first, then work through other new reports in order. This inbox is not monitored continuously.</p><button class="btn btn-outline btn-sm" onclick="showPartnerReports()">Open report inbox</button></div>';
   }).catch(function(error) {
     console.warn('Could not check report review access:', error);
   }).then(function() { _partnerReportAdminCheckPending = false; });
@@ -371,7 +371,7 @@ function showPartnerReports() {
   if (!_partnerReportAdmin) { showToast('You do not have access to review safety reports.', 'warning'); return; }
   var overlay = document.getElementById('partner-report-inbox');
   if (!overlay) { overlay = document.createElement('div'); overlay.className = 'overlay'; overlay.id = 'partner-report-inbox'; document.body.appendChild(overlay); }
-  overlay.innerHTML = '<div class="overlay-content" style="max-width:620px;max-height:85vh;overflow:auto"><h3 style="font-size:18px;margin-bottom:6px">Partner safety reports</h3><p style="font-size:12px;color:var(--muted)">Submitted reports are available to authorized Re.Claim administrators. For immediate danger, contact local emergency services.</p><div id="partner-report-list" class="empty-state">Loading reports…</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
+  overlay.innerHTML = '<div class="overlay-content" style="max-width:620px;max-height:85vh;overflow:auto"><h3 style="font-size:18px;margin-bottom:6px">Partner safety reports</h3><p style="font-size:12px;color:var(--muted)">Review new safety reports first, then handle other new reports oldest-first. Mark a report In review before investigating, follow up with the reporter, record any action, and close it when finished. This queue is checked manually, not monitored continuously. For immediate danger, contact local emergency services.</p><button class="btn btn-outline btn-sm" onclick="showPartnerReports()" style="margin:0 0 8px">Refresh queue</button><div id="partner-report-list" class="empty-state">Loading reports…</div><button class="btn btn-outline" onclick="this.closest(\'.overlay\').remove()" style="margin-top:8px">Close</button></div>';
   requestRandomPartner('admin_list_reports').then(function(result) {
     renderPartnerReportList(overlay, result && Array.isArray(result.reports) ? result.reports : []);
   }).catch(function(error) {
@@ -382,11 +382,23 @@ function showPartnerReports() {
 
 function renderPartnerReportList(overlay, reports) {
   if (!overlay || !overlay.isConnected) return;
+  reports.sort(function(a, b) {
+    function rank(report) {
+      if (report.status === 'closed') return 4;
+      if (report.status === 'action_taken') return 3;
+      if (report.category === 'safety') return 0;
+      if (report.status === 'new') return 1;
+      return 2;
+    }
+    var rankDiff = rank(a) - rank(b);
+    if (rankDiff) return rankDiff;
+    return (new Date(a.createdAt || 0).getTime()) - (new Date(b.createdAt || 0).getTime());
+  });
   _partnerReportRows = reports;
   var list = overlay.querySelector('#partner-report-list');
   if (!list) return;
   if (!reports.length) { list.textContent = 'No partner reports have been submitted.'; return; }
-  var labels = { harassment: 'Harassment or unwanted contact', spam: 'Spam or scam', inappropriate: 'Inappropriate content', safety: 'User feels unsafe', other: 'Other concern' };
+  var labels = { harassment: 'Harassment or unwanted contact', spam: 'Spam or scam', inappropriate: 'Inappropriate content', safety: 'User feels unsafe — review first', other: 'Other concern' };
   var statuses = [['new','New'],['in_review','In review'],['action_taken','Action taken'],['closed','Closed']];
   var html = '';
   reports.forEach(function(report, index) {
@@ -467,7 +479,7 @@ function submitPartnerReport(blockToo, button) {
     var overlay = document.querySelector('.overlay');
     if (overlay) overlay.remove();
     if (result && result.blocked) finishBlockingCurrentPartner();
-    else showToast('Report sent to Re.Claim for review.', 'success');
+    else showToast('Report sent for manual review. If you feel unsafe, block this person and use SOS or local emergency support.', 'success');
   }).catch(function(error) {
     if (button) { button.disabled = false; button.textContent = blockToo ? 'Report and block' : 'Send report'; }
     showToast(error && error.message ? error.message : 'Could not send the report. Try again when connected.', 'error');

@@ -1,15 +1,31 @@
-# Partner report review setup
+# Partner safety report review process
 
-The report inbox is available to a Re.Claim account only when its Firebase sign-in email is included in the Supabase Edge Function secret `PARTNER_REPORT_ADMIN_EMAILS`. The server checks this list for every report-list and status-update request; the app does not decide access on its own.
+This process is for the person or small team responsible for reviewing partner safety reports. The inbox is private to Firebase sign-in emails allowlisted by the Supabase Edge Function secret `PARTNER_REPORT_ADMIN_EMAILS`.
 
-## Enable the inbox
+## Set up the reviewer
 
 1. In the Supabase dashboard, open project `odndoykzrjmvonsyhvtx`.
-2. Open **Edge Functions** and select **Secrets**.
-3. Add `PARTNER_REPORT_ADMIN_EMAILS` with the email address used to sign in to Re.Claim as an administrator. For more than one administrator, separate the email addresses with commas.
-4. Deploy the updated `partner-matching` Edge Function.
-5. Sign in to the app with an allowlisted account and open **Partner**. The **Safety report review** card will appear there.
+2. Open **Edge Functions** → **Secrets**.
+3. Set `PARTNER_REPORT_ADMIN_EMAILS` to the Firebase sign-in email for each reviewer. Separate multiple email addresses with commas.
+4. Deploy the current `partner-matching` Edge Function so it can check the secret.
+5. Sign in to Re.Claim using an allowlisted account, open **Partner**, and confirm the **Safety report review** card appears. Open the inbox and confirm the reports load.
 
-Do not put administrator credentials in the app or in this file. The inbox shows up to 100 most recent reports and allows an administrator to mark each report **New**, **In review**, **Action taken**, or **Closed**, and open an email reply to the reporter when their email is available. Reports remain private in Firestore; normal app users cannot read or change them directly.
+Never put reviewer credentials or service keys in the app or this file.
 
-Reports are reviewed manually and are not monitored in real time. The inbox does not send an alert when a report arrives.
+## Review reports each business day
+
+1. Open **Partner** → **Safety report review** → **Open report inbox**. Press **Refresh queue** when checking for new submissions.
+2. Start with reports labeled **User feels unsafe — review first**. The inbox places those first, then other new reports oldest-first. Reports already in progress and completed reports follow.
+3. Set a new report to **In review** and save it before investigating. Read only what is needed to assess the report. Treat the report details as sensitive.
+4. If a reporter's email is available, use **Email reporter** to acknowledge the report or request relevant information. Do not promise a response time or outcome that the team cannot meet.
+5. When the review is complete, set **Action taken** if the team took an action, or **Closed** if no further review is needed. The inbox records the status and reviewer update; it does not provide a private investigation-notes field. Keep any necessary case notes only in an approved, access-controlled system.
+
+If no reviewer can check the inbox each business day, pause partner matching until coverage is restored. The app does not notify reviewers when a report arrives, and the inbox displays only the latest 100 reports.
+
+## Immediate safety
+
+Re.Claim's report inbox is manually reviewed and is not monitored continuously. It is not an emergency service. If someone is in immediate danger, they should use local emergency services or the app's SOS resources. A report by itself does not block the other person; the reporter can use **Block** to end contact. A **Report and block** submission also blocks that partner.
+
+## What this process supports
+
+The app stores reports privately in Firestore and lets allowlisted reviewers view them and update their status. It does not automatically investigate reports, notify a reviewer, suspend an account across the app, or guarantee a response time. Keep the in-app wording and any public safety promises aligned with these limits.
