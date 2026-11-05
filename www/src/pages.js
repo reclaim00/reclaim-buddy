@@ -318,6 +318,11 @@ var MOODS = [
   {val:5, emoji:'😄', label:'Great'}
 ];
 
+function journalMoodLabel(mood) {
+  var value = Number(mood);
+  return Number.isInteger(value) && value >= 1 && value <= MOODS.length ? ' &middot; ' + MOODS[value - 1].label : '';
+}
+
 // ====== RECOVERY TIMELINE ======
 function timelineHTML() {
   var events = [];
@@ -1397,7 +1402,7 @@ function reflectHTML() {
       var idx = D.journal.length - 1 - i;
       var entryTextRefl = getEntryText(entries[i]);
       h += '<div class="card journal-entry" data-search="' + (entryTextRefl.replace(/"/g,'&quot;').replace(/'/g,'&#39;') + ' ' + entries[i].date).toLowerCase() + '">';
-      h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + (entries[i].mood ? ' &middot; ' + MOODS[entries[i].mood-1].label : '') + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
+      h += '<div class="entry-item"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="date">' + regnalDate(entries[i].date) + journalMoodLabel(entries[i].mood) + (entries[i].type ? ' <span class="badge badge-green" style="font-size:9px">' + entries[i].type + '</span>' : '') + '</div></div><button class="btn btn-sm btn-danger" onclick="deleteJournalEntry(' + idx + ')" style="padding:4px 8px;width:auto;font-size:11px;margin:0" title="Delete entry">&#10005;</button></div>';
       h += '<div style="margin-top:6px;font-size:14px;line-height:1.5">' + entryTextRefl.replace(/\n/g,'<br>') + '</div></div>';
       h += '<button class="btn btn-sm btn-primary" onclick="requireReflection(' + idx + ')" style="margin-top:8px">Reflect</button>';
       h += '</div>';
