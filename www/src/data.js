@@ -412,18 +412,22 @@ function updateSyncUI() {
   var timeEl = document.getElementById('sync-time-display');
   var backupEl = document.getElementById('cloud-backup-status');
   if (!AUTH_EMAIL || !firebase || !firebase.auth().currentUser) {
-    if (el) el.style.display = 'none';
+    if (el) { el.style.display = 'none'; el.tabIndex = -1; }
     if (timeEl) timeEl.textContent = 'Offline';
     if (backupEl) backupEl.textContent = 'Only on this device. Sign in to enable cloud recovery.';
     return;
   }
   if (el) {
     el.style.display = 'inline-flex';
-    if (_syncStatus === 'syncing') { el.innerHTML = '&#8987;'; el.className = 'sync-indicator syncing'; el.title = 'Syncing...'; }
-    else if (_syncStatus === 'synced') { el.innerHTML = '&#10003;'; el.className = 'sync-indicator synced'; el.title = 'Synced ' + _lastSyncTime; }
-    else if (_syncStatus === 'error') { el.innerHTML = '&#9888;'; el.className = 'sync-indicator error'; el.title = 'Sync failed. Tap to retry.'; }
-    else if (_syncStatus === 'offline') { el.innerHTML = '&#9888;'; el.className = 'sync-indicator offline'; el.title = 'No connection'; }
-    else { el.innerHTML = '?'; el.className = 'sync-indicator'; el.title = 'Sync status unknown'; }
+    if (_syncStatus === 'syncing') { el.innerHTML = '&#8987;'; el.className = 'sync-indicator syncing'; el.title = 'Syncing...'; el.setAttribute('aria-label', 'Syncing saved changes.'); }
+    else if (_syncStatus === 'synced' && _cloudBackupAvailable) { el.innerHTML = '&#10003;'; el.className = 'sync-indicator synced'; el.title = 'Synced ' + _lastSyncTime; el.setAttribute('aria-label', 'Cloud backup confirmed. Last updated ' + _lastSyncTime + '.'); }
+    else if (_syncStatus === 'synced') { el.innerHTML = '?'; el.className = 'sync-indicator'; el.title = 'No cloud backup has been confirmed yet.'; el.setAttribute('aria-label', 'No cloud backup has been confirmed yet.'); }
+    else if (_syncStatus === 'error') { el.innerHTML = '&#9888;'; el.className = 'sync-indicator error'; el.title = 'Sync failed. Tap to retry.'; el.setAttribute('aria-label', 'Cloud sync failed. Activate to retry.'); }
+    else if (_syncStatus === 'offline') { el.innerHTML = '&#9888;'; el.className = 'sync-indicator offline'; el.title = 'No connection'; el.setAttribute('aria-label', _cloudBackupAvailable ? 'Offline. Changes are on this device. Last confirmed backup: ' + _lastSyncTime + '.' : 'Offline. Changes are on this device; no cloud backup has been confirmed.'); }
+    else { el.innerHTML = '?'; el.className = 'sync-indicator'; el.title = 'Sync status unknown'; el.setAttribute('aria-label', 'Cloud sync status unknown.'); }
+    var retryAvailable = _syncStatus === 'error';
+    el.setAttribute('role', retryAvailable ? 'button' : 'status');
+    el.tabIndex = retryAvailable ? 0 : -1;
   }
   if (timeEl) timeEl.textContent = _lastSyncTime || 'Never';
   if (backupEl) backupEl.textContent = cloudBackupStatusText();
@@ -1574,6 +1578,7 @@ function validateData(d) {
     else if (Array.isArray(def[k]) && !Array.isArray(d[k])) d[k] = [];
     else if (typeof def[k] === 'object' && def[k] !== null && !Array.isArray(def[k]) && (typeof d[k] !== 'object' || d[k] === null || Array.isArray(d[k]))) d[k] = JSON.parse(JSON.stringify(def[k]));
   }
+  if (typeof ReclaimDataValidation !== 'undefined') d.journal = ReclaimDataValidation.normalizeJournalEntries(d.journal);
   if (!d.version || d.version < 1) d.version = 1;
   // Schema migrations — bump version in defaultData() when schema changes
   if (d.version < 2) {

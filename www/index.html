@@ -17,7 +17,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>Re.Claim</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://api.qrserver.com; connect-src 'self' https://api.qrserver.com https://*.firebaseio.com https://*.googleapis.com https://*.firestore.googleapis.com https://*.supabase.co wss://*.firebaseio.com; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; upgrade-insecure-requests">
-<link rel="stylesheet" href="src/style.css?v=20261031a">
+<link rel="stylesheet" href="src/style.css?v=20261104a">
 </head>
 <body>
 <div id="landscape-bg" aria-hidden="true"></div>
@@ -47,7 +47,7 @@
 <div class="top-bar">
   <div style="display:flex;align-items:center;gap:8px"><div class="globe-logo" role="heading" aria-level="1"><img src="globe-icon.png" alt="" width="32" height="32" aria-hidden="true"></div><div><div class="logo-text" role="heading" aria-level="1">Re.<span style="color:var(--primary)">Claim</span></div><div id="journey-header" class="journey-header"></div></div></div>
   <div style="display:flex;gap:6px;align-items:center">
-    <span id="sync-indicator" class="sync-indicator" onclick="if(_syncStatus==='error'){syncToFirestore()}" style="display:none" title="Sync status" role="status" aria-live="polite">?</span>
+    <span id="sync-indicator" class="sync-indicator" onclick="if(_syncStatus==='error'){syncToFirestore()}" onkeydown="if(_syncStatus==='error'&&(event.key==='Enter'||event.key===' ')){event.preventDefault();syncToFirestore()}" tabindex="-1" style="display:none" title="Sync status" aria-label="Cloud sync status" role="status" aria-live="polite">?</span>
     <button class="sos-btn-float" onclick="showSOS()" title="SOS - Get help now" aria-label="SOS - Get help now">SOS</button>
     <button class="profile-btn-float" onclick="goTo('profile')" title="Profile" aria-label="Profile"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></button>
   </div>
@@ -78,14 +78,15 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
-<script src="src/data.js?v=20261031a"></script>
-<script src="src/buddy.js?v=20261031a"></script>
-<script src="src/sober.js?v=20261031a"></script>
-<script src="src/pages.js?v=20261031a"></script>
- <script src="src/paywall.js?v=20261031a"></script>
- <script src="src/kingdom.js?v=20261031a"></script>
- <script src="src/ui.js?v=20261031a"></script>
-<script src="src/mfa.js?v=20261031a"></script>
+<script src="src/data-validation.js?v=20261104a"></script>
+<script src="src/data.js?v=20261104a"></script>
+<script src="src/buddy.js?v=20261104a"></script>
+<script src="src/sober.js?v=20261104a"></script>
+<script src="src/pages.js?v=20261104a"></script>
+ <script src="src/paywall.js?v=20261104a"></script>
+ <script src="src/kingdom.js?v=20261104a"></script>
+ <script src="src/ui.js?v=20261104a"></script>
+<script src="src/mfa.js?v=20261104a"></script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(e){console.warn('SW registration failed:',e)})}</script>
 </body>
 </html>

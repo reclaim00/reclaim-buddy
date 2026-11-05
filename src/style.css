@@ -848,9 +848,10 @@ body.dark .card{border-color:color-mix(in srgb,var(--border) 86%,transparent)}
 .tab-label{font-size:10px;font-weight:600;letter-spacing:.2px;line-height:1}
 .globe-logo{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;overflow:hidden;box-shadow:0 1px 4px rgba(15,23,42,.14),0 0 0 1px rgba(255,255,255,.4);flex-shrink:0}
 .journey-header{font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:-2px;white-space:nowrap}
-.sos-btn-float{display:flex;align-items:center;justify-content:center;height:32px;min-width:44px;padding:0 12px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border:none;border-radius:20px;font-weight:900;font-size:12px;letter-spacing:1px;cursor:pointer;box-shadow:0 2px 8px rgba(220,38,38,.35);transition:transform .15s,box-shadow .2s}
+.sos-btn-float{display:flex;align-items:center;justify-content:center;min-height:44px;min-width:44px;padding:0 12px;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;border:none;border-radius:22px;font-weight:900;font-size:12px;letter-spacing:1px;cursor:pointer;box-shadow:0 2px 8px rgba(220,38,38,.35);transition:transform .15s,box-shadow .2s}
 .sos-btn-float:active{transform:scale(.94)}
-.profile-btn-float{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--primary-light);color:var(--primary-dark);border:none;cursor:pointer;transition:transform .15s,background .2s}
+.sync-indicator:focus-visible{outline:3px solid color-mix(in srgb,var(--primary) 46%,white);outline-offset:3px}
+.profile-btn-float{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:var(--primary-light);color:var(--primary-dark);border:none;cursor:pointer;transition:transform .15s,background .2s}
 .profile-btn-float:active{transform:scale(.92)}
 .top-bar .logo-text{font-size:20px;font-weight:800;letter-spacing:-.5px;line-height:1.1}
 .section-h{font-size:13px;font-weight:700;color:var(--primary);margin:12px 0 4px}

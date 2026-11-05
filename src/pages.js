@@ -319,8 +319,7 @@ var MOODS = [
 ];
 
 function journalMoodLabel(mood) {
-  var value = Number(mood);
-  return Number.isInteger(value) && value >= 1 && value <= MOODS.length ? ' &middot; ' + MOODS[value - 1].label : '';
+  return ReclaimDataValidation.journalMoodLabel(mood, MOODS);
 }
 
 // ====== RECOVERY TIMELINE ======

@@ -4,6 +4,7 @@ const FILES = [
   'src/style.css',
   'src/landscape-day.svg',
   'src/landscape-night.svg',
+  'src/data-validation.js',
   'src/data.js',
   'src/buddy.js',
   'src/sober.js',

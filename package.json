@@ -4,6 +4,7 @@
   "description": "",
   "main": "sw.js",
   "scripts": {
+    "test": "node --test",
     "build:web": "node scripts/build-web.mjs",
     "sync": "npm run build:web && cap sync",
     "prepare:assets": "node scripts/prepare-assets.mjs && capacitor-assets generate --ios --android",
