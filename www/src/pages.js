@@ -4613,8 +4613,7 @@ function exportProgressReport() {
 }
 
 async function deleteAccount() {
-  if (!confirm('Delete your account and all data? This cannot be undone.')) return;
-  if (!confirm('Are you absolutely sure? Your account, partner messages, shared progress, and local data will be removed. Safety reports will be retained without account identifiers.')) return;
+  if (!confirm('Delete this account? This permanently removes your Firebase account, synced recovery data, partner messages and connections, shared progress, and this account’s device copy. Safety reports are retained only after identifiers and report details are removed. You need an internet connection and a recent sign-in. This cannot be undone.')) return;
   var user = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser;
   if (!user) { clearLocalData(); return; }
   if (!DB || !AUTH_EMAIL) { showToast('Could not connect to your account data. Check your connection and try again. Your data is still here.','error'); return; }
@@ -4628,7 +4627,7 @@ async function deleteAccount() {
     await requestRandomPartner('delete_account');
   } catch(e) {
     console.warn('Account cleanup failed:',e);
-    showToast('Could not remove all account data. Your account and device data are still here; try again when connected.','error');
+    showToast('Could not finish account deletion. Some cloud data may already have been removed; your account and this device copy are still here. Reconnect and retry.','error');
     return;
   }
   try {
