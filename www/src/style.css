@@ -65,7 +65,6 @@ body.dark .kingdom-scene.k-upgraded{box-shadow:0 0 20px rgba(255,215,0,.15),0 0 
 .k-rain .kd-sun,.k-storm .kd-sun,.k-fog .kd-sun,.k-mist .kd-sun,.k-cloudy .kd-sun,.k-aurora .kd-sun{opacity:.3}
 @keyframes rainDrop{0%{transform:translateY(-20px);opacity:0}15%{opacity:.6}100%{transform:translateY(280px);opacity:0}}
 @keyframes lightningFlash{0%,100%{opacity:0}3%{opacity:.7}6%{opacity:0}12%{opacity:.4}15%{opacity:0}}
-@keyframes fogDrift{0%{transform:translateX(0)}100%{transform:translateX(40px)}}
 @keyframes rainbowArc{0%,100%{opacity:.3}50%{opacity:.8}}
 @keyframes auroraWave{0%{transform:translateX(0)}50%{transform:translateX(25px)}100%{transform:translateX(0)}}
 /* Round Table NPC animations */
